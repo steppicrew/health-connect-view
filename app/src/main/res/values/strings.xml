@@ -102,4 +102,26 @@
     <string name="range_month">30 days</string>
     <string name="range_quarter">90 days</string>
     <string name="range_year">1 year</string>
+
+    <!-- Permissions screen -->
+    <string name="permissions_title">Choose what to show</string>
+    <string name="permissions_intro">Pick the data you want to see. You can grant as little or as much as you like, and change it later at any time.</string>
+    <string name="permissions_granted_count">%1$d of %2$d types allowed</string>
+    <string name="permission_already_granted">Allowed</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_privacy">Privacy</string>
+    <string name="action_continue">Skip</string>
+    <string name="action_grant_selected">Allow %1$d selected</string>
+
+    <!-- Availability -->
+    <string name="availability_missing_title">Health Connect not available</string>
+    <string name="availability_missing_body">This device has no Health Connect provider, so there is no data to show. On Android 14 and later it is part of system settings; on older versions it is a separate app.</string>
+    <string name="availability_update_title">Update Health Connect</string>
+    <string name="availability_update_body">The installed version of Health Connect is too old for this app to read from it.</string>
+
+    <!-- Catalog -->
+    <string name="status_has_data">Has data</string>
+    <string name="status_no_data">No data recorded</string>
+    <string name="status_not_granted">Not allowed</string>
+    <string name="status_unknown">Unknown</string>
 </resources>
