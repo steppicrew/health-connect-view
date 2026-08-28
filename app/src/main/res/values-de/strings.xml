@@ -126,4 +126,10 @@
     <string name="privacy_purchases_body">Optionale kostenpflichtige Funktionen werden vollständig über Google Play abgewickelt. Die App sieht Ihre Zahlungsdaten nie, und die Kaufprüfung läuft über die Play-Store-App statt über das Netzwerk.</string>
     <string name="privacy_contact_title">Quellcode und Kontakt</string>
     <string name="privacy_contact_body">Der Quellcode ist öffentlich, jede Aussage auf dieser Seite lässt sich also überprüfen. Probleme melden Sie bitte über den Issue-Tracker des Projekts auf GitHub.</string>
+
+    <!-- Einheiten mit Wortcharakter; Symbole wie kg/km/kcal bleiben unübersetzt -->
+    <string name="unit_steps">Schritte</string>
+    <string name="unit_rpm_breath">Atemzüge/min</string>
+    <string name="unit_pushes">Schübe</string>
+    <string name="unit_floors">Etagen</string>
 </resources>
