@@ -101,7 +101,10 @@
         <item quantity="one">%1$d Datensatz</item>
         <item quantity="other">%1$d Datensätze</item>
     </plurals>
-    <string name="detail_truncated">Es werden nur die neuesten %1$d Datensätze angezeigt. Diagramme umfassen weiterhin den gesamten Zeitraum.</string>
+    <plurals name="detail_truncated">
+        <item quantity="one">Es wird nur der neueste Datensatz angezeigt. Diagramme umfassen weiterhin den gesamten Zeitraum.</item>
+        <item quantity="other">Es werden nur die neuesten %1$d Datensätze angezeigt. Diagramme umfassen weiterhin den gesamten Zeitraum.</item>
+    </plurals>
     <plurals name="detail_multiple_writers">
         <item quantity="one">%1$d App hat diese Daten geschrieben.</item>
         <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
