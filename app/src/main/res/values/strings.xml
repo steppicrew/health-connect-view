@@ -58,13 +58,13 @@
     <string name="unit_rpm" translatable="false">rpm</string>
     <string name="unit_km" translatable="false">km</string>
     <string name="unit_m" translatable="false">m</string>
-    <string name="unit_floors" translatable="false">floors</string>
+    <string name="unit_floors">floors</string>
     <string name="unit_w" translatable="false">W</string>
     <string name="unit_kmh" translatable="false">km/h</string>
-    <string name="unit_steps" translatable="false">steps</string>
+    <string name="unit_steps">steps</string>
     <string name="unit_spm" translatable="false">spm</string>
     <string name="unit_vo2" translatable="false">mL/kg/min</string>
-    <string name="unit_pushes" translatable="false">pushes</string>
+    <string name="unit_pushes">pushes</string>
     <string name="unit_percent" translatable="false">%</string>
     <string name="unit_kg" translatable="false">kg</string>
     <string name="unit_cm" translatable="false">cm</string>
@@ -73,7 +73,7 @@
     <string name="unit_mmhg" translatable="false">mmHg</string>
     <string name="unit_bpm" translatable="false">bpm</string>
     <string name="unit_ms" translatable="false">ms</string>
-    <string name="unit_rpm_breath" translatable="false">breaths/min</string>
+    <string name="unit_rpm_breath">breaths/min</string>
     <string name="unit_l" translatable="false">L</string>
     <string name="unit_h" translatable="false">h</string>
 

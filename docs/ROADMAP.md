@@ -66,7 +66,36 @@ A single place for the preferences that currently have no UI at all.
 All of this is non-health UI state and belongs in the existing DataStore. Health values
 themselves are still never persisted.
 
-## 3. Chart refinement
+## 3. Source selection
+
+When several apps write the same metric, let the user see the combined view by default but
+switch to a single source.
+
+### Behaviour
+
+- Default stays the **combined, deduplicated** view. That is what Health Connect's own
+  aggregation produces, and it is the correct answer for "how many steps did I take" — it is
+  not the same as any one app's figure, which is the point.
+- Where more than one app contributed, offer a source picker: "All sources (deduplicated)"
+  plus one entry per contributing app, resolved to its display name.
+- Selecting one source filters both the raw list and the chart to that app alone.
+
+### Implementation notes
+
+- Verified as directly supported: `ReadRecordsRequest`, `AggregateRequest` and the grouped
+  aggregate requests all take a `dataOriginFilter: Set<DataOrigin>`. Passing a single origin
+  scopes everything to that app; passing an empty set is the current all-sources behaviour.
+- Contributing apps are already known — `AggregationResult.dataOrigins` is what the existing
+  "N apps wrote this data" note reads, so the picker needs no extra query.
+- **"Primary source" is not ours to define.** Health Connect keeps a user-configured app
+  priority list, used to decide which record wins when two overlap, and it is not exposed to
+  apps through the Jetpack client. So the honest options are the deduplicated view (which
+  already respects that priority) or an explicit per-app view. Do not invent a "primary" by
+  picking the app with the most records — that would silently disagree with the platform.
+- A per-app view must never be presented as a total for the day. It is "what this app
+  recorded", and the label should say so.
+
+## 4. Chart refinement
 
 The current chart is a deliberately plain Compose Canvas line: axis min/max, date endpoints,
 guide lines. Known gaps, in rough priority order:
@@ -82,7 +111,7 @@ changed the axis API surface. Revisit if the chart requirements grow beyond what
 comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
 signature, so it stays a single-file swap.
 
-## 4. Deferred
+## 5. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
