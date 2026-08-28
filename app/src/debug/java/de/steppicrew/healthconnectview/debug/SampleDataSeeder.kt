@@ -5,6 +5,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.units.Mass
 import java.time.Instant
@@ -44,7 +45,7 @@ object SampleDataSeeder {
                             endTime = start.plus(2, ChronoUnit.HOURS),
                             endZoneOffset = offset,
                             count = (1500 + random.nextInt(2500)).toLong(),
-                            metadata = Metadata.manualEntry(),
+                            metadata = Metadata.activelyRecorded(Device(type = Device.TYPE_PHONE)),
                         ),
                     )
                 }
@@ -55,7 +56,7 @@ object SampleDataSeeder {
                         time = dayStart.plus(7, ChronoUnit.HOURS),
                         zoneOffset = offset,
                         weight = Mass.kilograms(78.0 + sin(dayOffset / 6.0) * 1.4),
-                        metadata = Metadata.manualEntry(),
+                        metadata = Metadata.activelyRecorded(Device(type = Device.TYPE_PHONE)),
                     ),
                 )
 
@@ -73,7 +74,7 @@ object SampleDataSeeder {
                         endTime = samples.last().time.plus(1, ChronoUnit.MINUTES),
                         endZoneOffset = offset,
                         samples = samples,
-                        metadata = Metadata.manualEntry(),
+                        metadata = Metadata.activelyRecorded(Device(type = Device.TYPE_PHONE)),
                     ),
                 )
             }

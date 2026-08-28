@@ -111,7 +111,28 @@ changed the axis API surface. Revisit if the chart requirements grow beyond what
 comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
 signature, so it stays a single-file swap.
 
-## 5. Deferred
+## 5. Known environment limitation: aggregation on the emulator
+
+The API 36 `google_apis_playstore` emulator image returns **empty aggregation results** even
+where `readRecords` returns data over the identical window. Ruled out as causes: bucket
+alignment, `TimeRangeFilter` type, permissions, recording method (`manualEntry` vs
+`activelyRecorded`), and device storage. The call succeeds and returns the right number of
+correctly-bounded daily buckets — every one with a null value and zero data origins — and a
+plain non-grouped `aggregate()` likewise reports no origins.
+
+Note that `aggregate*()` **requires a `LocalDateTime`-based `TimeRangeFilter`**; passing an
+instant-based one throws `IllegalArgumentException: Either use TimeRangeFilter with
+LocalDateTime or AggregateGroupByDurationRequest`. The app already does this correctly, but
+it is an easy mistake to reintroduce.
+
+The app degrades honestly here: with no aggregate available it charts raw readings and labels
+them as such ("Individual readings" / "Einzelmessungen") rather than presenting them as
+deduplicated totals.
+
+**Aggregation therefore still needs verifying on a real device**, ideally one where two apps
+write the same metric, which is exactly the case the deduplication exists for.
+
+## 6. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
