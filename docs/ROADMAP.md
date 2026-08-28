@@ -111,26 +111,31 @@ changed the axis API surface. Revisit if the chart requirements grow beyond what
 comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
 signature, so it stays a single-file swap.
 
-## 5. Known environment limitation: aggregation on the emulator
+## 5. Aggregation: verified working, with one caveat
 
-The API 36 `google_apis_playstore` emulator image returns **empty aggregation results** even
-where `readRecords` returns data over the identical window. Ruled out as causes: bucket
-alignment, `TimeRangeFilter` type, permissions, recording method (`manualEntry` vs
-`activelyRecorded`), and device storage. The call succeeds and returns the right number of
-correctly-bounded daily buckets — every one with a null value and zero data origins — and a
-plain non-grouped `aggregate()` likewise reports no origins.
+**Verified on a real device.** With three apps writing steps (Garmin Connect, Health Sync and
+the phone itself), 1708 raw records over seven days aggregate to plausible daily totals of
+4,560-18,014 steps. The UI correctly labels them "deduplicated daily totals" and reports that
+three apps contributed. Summing those raw records would have multiplied the real count -- the
+reason all totals go through `aggregate*()` and never through arithmetic on raw records.
 
-Note that `aggregate*()` **requires a `LocalDateTime`-based `TimeRangeFilter`**; passing an
+**Caveat found while testing: identical overlapping intervals aggregate to nothing.** Seeding
+the emulator twice produced two byte-identical `StepsRecord` entries per time slot; every
+daily bucket then came back with a null value while `readRecords` still returned all 180
+records. Instantaneous types (Weight, HeartRate) were unaffected -- 30 of 30 buckets had
+values -- because a point in time cannot overlap ambiguously the way an interval can.
+
+This is a data problem rather than an app bug, and it does not arise from normal multi-writer
+data, where records differ. It is worth knowing because it looks exactly like broken
+aggregation: the call succeeds, the buckets are correctly bounded, and every value is null.
+
+Note also that `aggregate*()` **requires a `LocalDateTime`-based `TimeRangeFilter`**. An
 instant-based one throws `IllegalArgumentException: Either use TimeRangeFilter with
-LocalDateTime or AggregateGroupByDurationRequest`. The app already does this correctly, but
-it is an easy mistake to reintroduce.
+LocalDateTime or AggregateGroupByDurationRequest`. The app does this correctly, but it is easy
+to reintroduce.
 
-The app degrades honestly here: with no aggregate available it charts raw readings and labels
-them as such ("Individual readings" / "Einzelmessungen") rather than presenting them as
-deduplicated totals.
-
-**Aggregation therefore still needs verifying on a real device**, ideally one where two apps
-write the same metric, which is exactly the case the deduplication exists for.
+Where no aggregate is available the app degrades honestly, charting raw readings labelled as
+individual measurements rather than presenting them as totals.
 
 ## 6. Considered and rejected: a React/Vite UI in a WebView
 
@@ -154,7 +159,21 @@ less than a bridge plus a JS toolchain.
 Worth revisiting if the UI grows into something genuinely interactive that a JS charting
 library would do far better, or if the same UI is ever wanted on the web.
 
-## 7. Deferred
+## 7. Testing note: adb input injection on Xiaomi/HyperOS
+
+`adb shell input tap` fails on HyperOS with:
+
+    SecurityException: Injecting input events requires the caller ... INJECT_EVENTS permission
+
+Enabling it needs Developer options -> "USB debugging (Security settings)", which requires a
+signed-in Mi account. Screenshots (`adb exec-out screencap`), logcat, `am start` and file
+push all work regardless.
+
+So on such a device, drive the UI by hand and read the result from screenshots and logs. The
+debug-only `AggregationCheckActivity` exists for exactly this: it is startable with `am start`
+and reports raw-versus-aggregated counts per type without needing a single tap.
+
+## 8. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
