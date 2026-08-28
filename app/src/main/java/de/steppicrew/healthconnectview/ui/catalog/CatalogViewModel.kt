@@ -69,6 +69,7 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
     private suspend fun probeForData(granted: Set<String>) {
         val gate = Semaphore(MAX_CONCURRENT_PROBES)
         val range = TimeRange.YEAR.filter()
+        val localRange = TimeRange.YEAR.localFilter()
 
         coroutineScope {
             RecordRegistry.all
@@ -76,7 +77,14 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
                 .map { spec ->
                     async {
                         gate.withPermit {
-                            val status = runCatching { repository.hasData(spec.type, range) }
+                            val status = runCatching {
+                                repository.hasData(
+                                    type = spec.type,
+                                    range = range,
+                                    aggregateRange = localRange,
+                                    metric = spec.aggregate,
+                                )
+                            }
                                 .map { if (it) TypeStatus.HAS_DATA else TypeStatus.NO_DATA }
                                 .getOrDefault(TypeStatus.UNKNOWN)
                             spec.type.simpleName.orEmpty() to status

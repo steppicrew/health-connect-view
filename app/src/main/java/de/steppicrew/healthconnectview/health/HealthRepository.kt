@@ -63,13 +63,31 @@ class HealthRepository(private val context: Context) {
         collected
     }
 
-    /** True if any record of this type exists in the range — a cheap catalog probe. */
-    suspend fun <T : Record> hasData(type: KClass<T>, range: TimeRangeFilter): Boolean =
-        withContext(Dispatchers.IO) {
-            client.readRecords(
-                ReadRecordsRequest(recordType = type, timeRangeFilter = range, pageSize = 1),
-            ).records.isNotEmpty()
+    /**
+     * True if this type has anything to show — a cheap catalog probe.
+     *
+     * Checks aggregation as well as raw records, because some types derive a value without
+     * storing records: basal metabolic rate is computed from height and weight, so reading
+     * records returns nothing while a daily total exists.
+     */
+    suspend fun <T : Record> hasData(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        aggregateRange: TimeRangeFilter? = null,
+        metric: AggregateMetric<*>? = null,
+    ): Boolean = withContext(Dispatchers.IO) {
+        val hasRecords = client.readRecords(
+            ReadRecordsRequest(recordType = type, timeRangeFilter = range, pageSize = 1),
+        ).records.isNotEmpty()
+
+        if (hasRecords || metric == null || aggregateRange == null) {
+            hasRecords
+        } else {
+            runCatching { client.aggregate(AggregateRequest(setOf(metric), aggregateRange)) }
+                .map { it.contains(metric) }
+                .getOrDefault(false)
         }
+    }
 
     /** Deduplicated per-day buckets. The only legitimate source of totals. */
     suspend fun dailyTotals(
