@@ -34,6 +34,7 @@ import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.components.LoadingView
+import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.MessageView
 
 /**
@@ -49,6 +50,8 @@ fun CatalogScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    OnResume { viewModel.refresh() }
 
     Scaffold(
         modifier = modifier,

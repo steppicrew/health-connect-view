@@ -111,6 +111,15 @@ val verifyNoNetworkPermission by tasks.registering {
         check(offenders.isEmpty()) {
             "Network permission leaked into the merged manifest: $offenders"
         }
+
+        // The debug seeder needs WRITE access; release must never ship it.
+        val releaseWrites = manifests.get().asFile.walkTopDown()
+            .filter { it.name == "AndroidManifest.xml" && it.path.contains("release") }
+            .filter { "permission.health.WRITE" in it.readText() }
+            .toList()
+        check(releaseWrites.isEmpty()) {
+            "Release build requests write access to health data: $releaseWrites"
+        }
     }
 }
 

@@ -43,21 +43,13 @@ fun LineChart(
     val gridColor = MaterialTheme.colorScheme.outlineVariant
 
     Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = Formatting.number(maxValue),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = Formatting.number(minValue),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        // Max sits at the top of the plot and min at the bottom, matching where the line
+        // actually reaches; putting them side by side would read as start/end instead.
+        Text(
+            text = Formatting.number(maxValue),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         Canvas(
             modifier = Modifier
@@ -101,6 +93,12 @@ fun LineChart(
                 }
             }
         }
+
+        Text(
+            text = Formatting.number(minValue),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),

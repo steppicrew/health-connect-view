@@ -36,6 +36,7 @@ import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.components.LoadingView
+import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.MessageView
 
 /**
@@ -52,6 +53,9 @@ fun PermissionsScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    // Health Connect grants happen in its own UI, so state is re-read on every return.
+    OnResume { viewModel.onPermissionResult() }
 
     Scaffold(
         modifier = modifier,

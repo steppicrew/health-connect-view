@@ -25,12 +25,15 @@ enum class TimeRange(@param:StringRes val labelRes: Int, val days: Long) {
         TimeRangeFilter.between(start(now), now)
 
     /**
-     * Local-time filter. Aggregation buckets by calendar day, which is a local-time
-     * concept, so grouped queries must not use instants.
+     * Local-time filter for day-grouped aggregation.
+     *
+     * The window is snapped to midnight boundaries. Health Connect slices a Period.ofDays(1)
+     * request from the filter's start instant, so an unaligned start produces buckets running
+     * (say) 20:58 to 20:58 -- which straddle two calendar days and return no value for a
+     * "daily total". Aggregation is a local-time concept, so this must not use instants.
      */
-    fun localFilter(zone: ZoneId = ZoneId.systemDefault(), now: Instant = Instant.now()): TimeRangeFilter =
-        TimeRangeFilter.between(
-            LocalDateTime.ofInstant(start(now), zone),
-            LocalDateTime.ofInstant(now, zone),
-        )
+    fun localFilter(zone: ZoneId = ZoneId.systemDefault(), now: Instant = Instant.now()): TimeRangeFilter {
+        val endOfToday = LocalDateTime.ofInstant(now, zone).toLocalDate().plusDays(1).atStartOfDay()
+        return TimeRangeFilter.between(endOfToday.minusDays(days), endOfToday)
+    }
 }
