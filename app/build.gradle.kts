@@ -15,12 +15,20 @@ val env = Properties().apply {
 }
 fun env(key: String): String? = (System.getenv(key) ?: env.getProperty(key))?.takeIf { it.isNotBlank() }
 
+/** Real android.jar, located from the SDK env — never a hardcoded absolute path. */
+val androidJar: File = File(
+    System.getenv("ANDROID_HOME")
+        ?: System.getenv("ANDROID_SDK_ROOT")
+        ?: "${System.getProperty("user.home")}/Android/Sdk",
+    "platforms/android-37.0/android.jar",
+)
+
 val releaseKeystore = env("KEYSTORE_PATH")?.let(::File)
 val hasReleaseSigning = releaseKeystore?.exists() == true
 
 android {
     namespace = "de.steppicrew.healthconnectview"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "de.steppicrew.healthconnectview"
@@ -29,7 +37,7 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        resourceConfigurations += listOf(
+        androidResources.localeFilters += listOf(
             "en", "de", "es", "fr", "it", "pt-rBR", "nl", "pl", "tr",
             "ru", "ja", "ko", "zh-rCN", "zh-rTW", "hi", "in", "ar",
         )
@@ -78,7 +86,9 @@ android {
         disable += "MissingTranslation"
     }
 
-    testOptions.unitTests.isIncludeAndroidResources = true
+    testOptions.unitTests.all { it.systemProperty("java.awt.headless", "true") }
+    // Real android.jar (not the stubbed one) so tests can reflect over platform constants.
+    testOptions.unitTests.isReturnDefaultValues = true
 
     packaging.resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
 }
@@ -106,5 +116,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
+    // Real android.jar so tests can reflect over platform permission constants.
+    // Path is derived from the SDK location, never hardcoded.
+    testImplementation(files(androidJar))
 }

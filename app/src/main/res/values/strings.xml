@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Connect View</string>
+
+    <!-- Categories -->
+    <string name="category_activity">Activity</string>
+    <string name="category_body">Body</string>
+    <string name="category_vitals">Vitals</string>
+    <string name="category_nutrition">Nutrition</string>
+    <string name="category_sleep">Sleep</string>
+    <string name="category_cycle">Cycle</string>
+
+    <!-- Record type names -->
+    <string name="type_active_calories_burned">Active calories</string>
+    <string name="type_basal_metabolic_rate">Basal metabolic rate</string>
+    <string name="type_cycling_pedaling_cadence">Cycling cadence</string>
+    <string name="type_distance">Distance</string>
+    <string name="type_elevation_gained">Elevation gained</string>
+    <string name="type_exercise_session">Workouts</string>
+    <string name="type_floors_climbed">Floors climbed</string>
+    <string name="type_planned_exercise">Planned workouts</string>
+    <string name="type_power">Power</string>
+    <string name="type_speed">Speed</string>
+    <string name="type_steps">Steps</string>
+    <string name="type_steps_cadence">Step cadence</string>
+    <string name="type_total_calories_burned">Total calories</string>
+    <string name="type_vo2_max">VO₂ max</string>
+    <string name="type_wheelchair_pushes">Wheelchair pushes</string>
+    <string name="type_body_fat">Body fat</string>
+    <string name="type_body_water_mass">Body water mass</string>
+    <string name="type_bone_mass">Bone mass</string>
+    <string name="type_height">Height</string>
+    <string name="type_lean_body_mass">Lean body mass</string>
+    <string name="type_weight">Weight</string>
+    <string name="type_basal_body_temperature">Basal body temperature</string>
+    <string name="type_blood_glucose">Blood glucose</string>
+    <string name="type_blood_pressure">Blood pressure</string>
+    <string name="type_body_temperature">Body temperature</string>
+    <string name="type_heart_rate">Heart rate</string>
+    <string name="type_hrv">Heart rate variability</string>
+    <string name="type_oxygen_saturation">Oxygen saturation</string>
+    <string name="type_respiratory_rate">Respiratory rate</string>
+    <string name="type_resting_heart_rate">Resting heart rate</string>
+    <string name="type_skin_temperature">Skin temperature</string>
+    <string name="type_hydration">Hydration</string>
+    <string name="type_nutrition">Nutrition</string>
+    <string name="type_sleep_session">Sleep</string>
+    <string name="type_cervical_mucus">Cervical mucus</string>
+    <string name="type_intermenstrual_bleeding">Intermenstrual bleeding</string>
+    <string name="type_menstruation_flow">Menstruation flow</string>
+    <string name="type_menstruation_period">Menstruation period</string>
+    <string name="type_ovulation_test">Ovulation test</string>
+    <string name="type_sexual_activity">Sexual activity</string>
+
+    <!-- Units -->
+    <string name="unit_kcal" translatable="false">kcal</string>
+    <string name="unit_kcal_day" translatable="false">kcal/day</string>
+    <string name="unit_rpm" translatable="false">rpm</string>
+    <string name="unit_km" translatable="false">km</string>
+    <string name="unit_m" translatable="false">m</string>
+    <string name="unit_floors" translatable="false">floors</string>
+    <string name="unit_w" translatable="false">W</string>
+    <string name="unit_kmh" translatable="false">km/h</string>
+    <string name="unit_steps" translatable="false">steps</string>
+    <string name="unit_spm" translatable="false">spm</string>
+    <string name="unit_vo2" translatable="false">mL/kg/min</string>
+    <string name="unit_pushes" translatable="false">pushes</string>
+    <string name="unit_percent" translatable="false">%</string>
+    <string name="unit_kg" translatable="false">kg</string>
+    <string name="unit_cm" translatable="false">cm</string>
+    <string name="unit_celsius" translatable="false">°C</string>
+    <string name="unit_mmoll" translatable="false">mmol/L</string>
+    <string name="unit_mmhg" translatable="false">mmHg</string>
+    <string name="unit_bpm" translatable="false">bpm</string>
+    <string name="unit_ms" translatable="false">ms</string>
+    <string name="unit_rpm_breath" translatable="false">breaths/min</string>
+    <string name="unit_l" translatable="false">L</string>
+    <string name="unit_h" translatable="false">h</string>
+
+    <!-- Record detail field labels -->
+    <string name="field_systolic">Systolic</string>
+    <string name="field_diastolic">Diastolic</string>
+    <string name="field_title">Title</string>
+    <string name="field_stages">Stages</string>
+    <string name="field_samples">Samples</string>
+    <string name="field_source_app">Source app</string>
+    <string name="field_record_id">Record ID</string>
+    <string name="field_time">Time</string>
+    <string name="field_start">Start</string>
+    <string name="field_end">End</string>
+    <string name="field_duration">Duration</string>
+    <string name="field_zone_offset">Time zone offset</string>
+    <string name="field_energy">Energy</string>
+    <string name="field_notes">Notes</string>
+    <string name="field_type">Type</string>
+    <string name="field_average">Average</string>
+    <string name="field_min">Minimum</string>
+    <string name="field_max">Maximum</string>
+</resources>
