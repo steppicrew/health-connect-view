@@ -54,8 +54,15 @@ build: release signing falls back to the debug key when `.env` is absent.
 ```bash
 cp .env.example .env             # then fill it in
 ./scripts/make-keystore.sh       # creates the signing key (run this yourself)
+./scripts/check-keystore.sh      # verifies the path, password and alias in .env
 ./scripts/deploy.sh bundle       # signed .aab for the Play Store
 ```
+
+`check-keystore.sh` is worth running whenever signing misbehaves: it reports which of the
+three — file, password, alias — is wrong, instead of letting the build fail deep inside R8.
+Add `--prompt` to test a password interactively without writing it to `.env`. A release
+build refuses to start unless these checks pass, so it can never silently fall back to the
+debug key.
 
 `.env` holds the keystore path and passwords and is gitignored. `make-keystore.sh` reads the
 path and alias from it but leaves passwords to `keytool`'s own prompt, so no script ever

@@ -63,11 +63,22 @@ case "$COMMAND" in
         ;;
 
     release)
+        # Fail early with a clear message rather than midway through R8.
+        "$SCRIPT_DIR/check-keystore.sh" >/dev/null 2>&1 || {
+            echo "Signing is not configured correctly. Details:"
+            "$SCRIPT_DIR/check-keystore.sh"
+            exit 1
+        }
         ./gradlew :app:assembleRelease
         echo "APK: app/build/outputs/apk/release/app-release.apk"
         ;;
 
     bundle)
+        "$SCRIPT_DIR/check-keystore.sh" >/dev/null 2>&1 || {
+            echo "Signing is not configured correctly. Details:"
+            "$SCRIPT_DIR/check-keystore.sh"
+            exit 1
+        }
         ./gradlew :app:bundleRelease
         echo "Bundle: app/build/outputs/bundle/release/app-release.aab"
         ;;
