@@ -147,16 +147,44 @@ to reintroduce.
 Where no aggregate is available the app degrades honestly, charting raw readings labelled as
 individual measurements rather than presenting them as totals.
 
-### Two behaviours this uncovered
+### Measured data shape (real device, 30 days)
+
+Recorded so test fixtures can match reality. No health values here — record counts, cadence
+and writer counts only.
+
+| Type | Writers | Records | Per day | Gap |
+|---|---|---|---|---|
+| RespiratoryRate | 1 | 5000+ | 1132 | 1 min |
+| HeartRate | 3 | 5000+ | 742 (×11 samples) | 2 min |
+| OxygenSaturation | 1 | 5000+ | 439 | 1 min |
+| Steps | 3 | 5000+ | 215 | 1 min |
+| ElevationGained | 1 | 1788 | 123 | 1 min |
+| ActiveCaloriesBurned | 3 | 1012 | 37 | 15 min |
+| HeartRateVariability | 1 | 2713 | 91 | 5 min |
+| SleepSession, RestingHeartRate | 2 | 60 | 2 | ~10 h |
+| Weight, Height, BodyFat | 1-2 | 4-10 | 1-3 | days |
+| Vo2Max, BloodPressure | 1 | 1-3 | — | — |
+
+Two consequences: the 5000-record paging cap is reached routinely rather than rarely, and
+charts must cope with anything from one point to tens of thousands.
+
+### Three behaviours this uncovered
 
 **Some types aggregate without storing records.** `BasalMetabolicRate` returned 0 raw records
 but a value in all 30 daily buckets and no data origins: Health Connect derives it from height
 and weight rather than storing it. Treating "no raw records" as empty hid a chart the platform
 could draw, so both the catalog probe and the detail screen now consider aggregation as well.
 
-**The 5000-record paging cap is reached in practice.** Steps, Distance and HeartRate each
-exceed it within a month. Only the raw list is affected; charts read aggregates that Health
-Connect computes over the full period, so trends stay correct. The notice now says so.
+**The 5000-record paging cap is reached in practice.** Steps, Distance, HeartRate,
+OxygenSaturation and RespiratoryRate each exceed it within a month. Only the raw list is
+affected; charts read aggregates that Health Connect computes over the full period, so trends
+stay correct. The notice now says so.
+
+**Skin temperature charted nothing.** The spec extracted no points and read only the nullable
+`baseline`, while the measurements live in `deltas`. On a device that records deltas the app
+listed thirty records as em-dashes with an empty chart. Now fixed — found only because the
+shape measurement reported zero extractable values against thirty records, which is the kind
+of contradiction worth looking at.
 
 ## 6. Considered and rejected: a React/Vite UI in a WebView
 
