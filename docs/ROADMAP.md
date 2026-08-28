@@ -113,11 +113,21 @@ signature, so it stays a single-file swap.
 
 ## 5. Aggregation: verified working, with one caveat
 
-**Verified on a real device.** With three apps writing steps (Garmin Connect, Health Sync and
-the phone itself), 1708 raw records over seven days aggregate to plausible daily totals of
-4,560-18,014 steps. The UI correctly labels them "deduplicated daily totals" and reports that
-three apps contributed. Summing those raw records would have multiplied the real count -- the
-reason all totals go through `aggregate*()` and never through arithmetic on raw records.
+**Verified on a real device, across every aggregatable type.** Aggregation returned values for
+all 16 types that hold data, and **12 of those 16 have more than one writing app** -- Garmin
+Connect, Health Sync, Life Fitness and the phone's own step counter, in combinations that vary
+per type:
+
+| Type | Writers | Raw records (30d) |
+|---|---|---|
+| Steps, Distance, HeartRate | 3 | 5000+ each (paging cap) |
+| ActiveCaloriesBurned | 3 | 1012 |
+| ExerciseSession, Speed | 3 | 126 / 50 |
+| TotalCaloriesBurned, FloorsClimbed, RestingHeartRate, SleepSession, Weight, Power | 2 | 10-188 |
+
+Multi-writer data is therefore the normal case here, not an edge case, which is why every
+total goes through `aggregate*()` and never through arithmetic on raw records. Over seven
+days, 1708 raw step records aggregate to plausible daily totals of 4,560-18,014.
 
 **Caveat found while testing: identical overlapping intervals aggregate to nothing.** Seeding
 the emulator twice produced two byte-identical `StepsRecord` entries per time slot; every
@@ -136,6 +146,17 @@ to reintroduce.
 
 Where no aggregate is available the app degrades honestly, charting raw readings labelled as
 individual measurements rather than presenting them as totals.
+
+### Two behaviours this uncovered
+
+**Some types aggregate without storing records.** `BasalMetabolicRate` returned 0 raw records
+but a value in all 30 daily buckets and no data origins: Health Connect derives it from height
+and weight rather than storing it. Treating "no raw records" as empty hid a chart the platform
+could draw, so both the catalog probe and the detail screen now consider aggregation as well.
+
+**The 5000-record paging cap is reached in practice.** Steps, Distance and HeartRate each
+exceed it within a month. Only the raw list is affected; charts read aggregates that Health
+Connect computes over the full period, so trends stay correct. The notice now says so.
 
 ## 6. Considered and rejected: a React/Vite UI in a WebView
 

@@ -126,7 +126,7 @@
         <item quantity="one">%1$d record</item>
         <item quantity="other">%1$d records</item>
     </plurals>
-    <string name="detail_truncated">Showing the most recent records only.</string>
+    <string name="detail_truncated">Showing the most recent %1$d records only. Charts still cover the whole period.</string>
     <plurals name="detail_multiple_writers">
         <item quantity="one">%1$d app wrote this data.</item>
         <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>

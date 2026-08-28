@@ -162,7 +162,10 @@ private fun DetailContent(
         if (data.truncated) {
             item(key = "truncated") {
                 Text(
-                    text = stringResource(R.string.detail_truncated),
+                    text = stringResource(
+                        R.string.detail_truncated,
+                        de.steppicrew.healthconnectview.health.HealthRepository.MAX_RECORDS,
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

@@ -80,8 +80,12 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             val result = runCatching { loadData(spec, range) }
             result.fold(
                 onSuccess = { data ->
+                    // Some types have no stored records but still aggregate to a value:
+                    // Health Connect derives basal metabolic rate from height and weight, for
+                    // instance. Treating "no raw records" as empty would hide a real chart.
+                    val hasSomething = data.records.isNotEmpty() || data.points.isNotEmpty()
                     _state.update {
-                        if (data.records.isEmpty()) UiState.Empty else UiState.Data(data)
+                        if (hasSomething) UiState.Data(data) else UiState.Empty
                     }
                 },
                 onFailure = { error ->
