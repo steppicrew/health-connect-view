@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug-only. The seeder writes synthetic records so the UI can be exercised and store
+    screenshots taken without touching real health data. These WRITE permissions exist only
+    in debug builds; the release manifest requests read access exclusively.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.health.WRITE_STEPS" />
+    <uses-permission android:name="android.permission.health.WRITE_WEIGHT" />
+    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+
+    <application>
+        <activity
+            android:name="de.steppicrew.healthconnectview.debug.SeedActivity"
+            android:exported="true" />
+    </application>
+</manifest>

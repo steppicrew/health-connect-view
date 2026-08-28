@@ -124,4 +124,17 @@
     <string name="status_no_data">No data recorded</string>
     <string name="status_not_granted">Not allowed</string>
     <string name="status_unknown">Unknown</string>
+
+    <!-- Type detail -->
+    <string name="action_back">Back</string>
+    <string name="detail_no_permission_title">Not allowed yet</string>
+    <string name="detail_no_permission_body">You have not given this app access to this data type. You can allow it from the permissions screen.</string>
+    <string name="detail_empty_title">Nothing recorded</string>
+    <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
+    <string name="detail_error_title">Could not read data</string>
+    <string name="detail_records_header">%1$d records</string>
+    <string name="detail_truncated">Showing the most recent records only.</string>
+    <string name="detail_multiple_writers">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</string>
+    <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
+    <string name="chart_source_raw">Individual readings</string>
 </resources>
