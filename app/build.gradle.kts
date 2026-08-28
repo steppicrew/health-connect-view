@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.play.publisher)
 }
 
 /**
@@ -25,6 +26,15 @@ val androidJar: File = File(
 
 val releaseKeystore = env("KEYSTORE_PATH")?.let(::File)
 val hasReleaseSigning = releaseKeystore?.exists() == true
+
+play {
+    // Uploads are opt-in: without a service account this stays inert rather than failing.
+    val serviceAccount = env("PLAY_SERVICE_ACCOUNT_JSON")
+    enabled.set(serviceAccount != null)
+    if (serviceAccount != null) serviceAccountCredentials.set(File(serviceAccount))
+    defaultToAppBundles.set(true)
+    track.set("internal")
+}
 
 android {
     namespace = "de.steppicrew.healthconnectview"
