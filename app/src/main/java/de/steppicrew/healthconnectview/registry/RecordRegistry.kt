@@ -358,10 +358,20 @@ object RecordRegistry {
             displayNameRes = R.string.type_skin_temperature,
             category = Category.VITALS,
             unitRes = R.string.unit_celsius,
-            shape = Shape.INTERVAL,
+            shape = Shape.SERIES,
             startTime = { it.startTime },
-            points = { emptyList() },
-            summary = { it.baseline?.let { b -> Formatting.number(b.inCelsius) + " °C" } ?: "—" },
+            // The measurements live in deltas; baseline is often absent, so charting only the
+            // baseline would leave the chart empty while records were still listed.
+            points = { r -> r.deltas.map { Point(it.time, it.delta.inCelsius) } },
+            summary = { r ->
+                val baseline = r.baseline?.let { "%s °C".format(Formatting.number(it.inCelsius)) }
+                val deltas = r.deltas.map { it.delta.inCelsius }
+                when {
+                    baseline != null -> baseline
+                    deltas.isEmpty() -> "—"
+                    else -> "%+.2f °C".format(deltas.average())
+                }
+            },
         ),
         RecordTypeSpec(
             type = HydrationRecord::class,
