@@ -96,4 +96,10 @@
     <string name="field_average">Average</string>
     <string name="field_min">Minimum</string>
     <string name="field_max">Maximum</string>
+
+    <!-- Time ranges -->
+    <string name="range_week">7 days</string>
+    <string name="range_month">30 days</string>
+    <string name="range_quarter">90 days</string>
+    <string name="range_year">1 year</string>
 </resources>

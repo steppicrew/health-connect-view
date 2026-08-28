@@ -93,6 +93,29 @@ android {
     packaging.resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
 }
 
+/**
+ * Privacy gate: the app must never gain network access, not even transitively. A dependency
+ * that declares INTERNET or ACCESS_NETWORK_STATE would otherwise be merged in silently.
+ */
+val verifyNoNetworkPermission by tasks.registering {
+    val manifests = layout.buildDirectory.dir("intermediates/merged_manifest")
+    doLast {
+        val offenders = manifests.get().asFile.walkTopDown()
+            .filter { it.name == "AndroidManifest.xml" && !it.path.contains("Test") }
+            .filter { file ->
+                val text = file.readText()
+                "android.permission.INTERNET" in text ||
+                    "android.permission.ACCESS_NETWORK_STATE" in text
+            }
+            .toList()
+        check(offenders.isEmpty()) {
+            "Network permission leaked into the merged manifest: $offenders"
+        }
+    }
+}
+
+tasks.named("check") { dependsOn(verifyNoNetworkPermission) }
+
 dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -110,7 +133,13 @@ dependencies {
 
     implementation(libs.health.connect)
     implementation(libs.vico.compose.m3)
-    implementation(libs.billing.ktx)
+    implementation(libs.billing.ktx) {
+        // Play Billing drags in Google's datatransport/Firebase telemetry uploader. The app
+        // has no INTERNET permission so it could never transmit, but a privacy-focused health
+        // app should not ship a dormant analytics pipeline at all.
+        exclude(group = "com.google.android.datatransport")
+        exclude(group = "com.google.firebase")
+    }
     implementation(libs.datastore.preferences)
 
     debugImplementation(libs.compose.ui.tooling)
