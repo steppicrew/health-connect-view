@@ -78,24 +78,8 @@
     <string name="unit_h" translatable="false">h</string>
 
     <!-- Record detail field labels -->
-    <string name="field_systolic">Systolic</string>
-    <string name="field_diastolic">Diastolic</string>
-    <string name="field_title">Title</string>
-    <string name="field_stages">Stages</string>
-    <string name="field_samples">Samples</string>
     <string name="field_source_app">Source app</string>
     <string name="field_record_id">Record ID</string>
-    <string name="field_time">Time</string>
-    <string name="field_start">Start</string>
-    <string name="field_end">End</string>
-    <string name="field_duration">Duration</string>
-    <string name="field_zone_offset">Time zone offset</string>
-    <string name="field_energy">Energy</string>
-    <string name="field_notes">Notes</string>
-    <string name="field_type">Type</string>
-    <string name="field_average">Average</string>
-    <string name="field_min">Minimum</string>
-    <string name="field_max">Maximum</string>
 
     <!-- Time ranges -->
     <string name="range_week">7 days</string>
@@ -106,12 +90,18 @@
     <!-- Permissions screen -->
     <string name="permissions_title">Choose what to show</string>
     <string name="permissions_intro">Pick the data you want to see. You can grant as little or as much as you like, and change it later at any time.</string>
-    <string name="permissions_granted_count">%1$d of %2$d types allowed</string>
+    <plurals name="permissions_granted_count">
+        <item quantity="one">%1$d of %2$d type allowed</item>
+        <item quantity="other">%1$d of %2$d types allowed</item>
+    </plurals>
     <string name="permission_already_granted">Allowed</string>
     <string name="action_select_all">Select all</string>
     <string name="action_privacy">Privacy</string>
     <string name="action_continue">Skip</string>
-    <string name="action_grant_selected">Allow %1$d selected</string>
+    <plurals name="action_grant_selected">
+        <item quantity="one">Allow %1$d selected</item>
+        <item quantity="other">Allow %1$d selected</item>
+    </plurals>
 
     <!-- Availability -->
     <string name="availability_missing_title">Health Connect not available</string>
@@ -132,9 +122,15 @@
     <string name="detail_empty_title">Nothing recorded</string>
     <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
     <string name="detail_error_title">Could not read data</string>
-    <string name="detail_records_header">%1$d records</string>
+    <plurals name="detail_records_header">
+        <item quantity="one">%1$d record</item>
+        <item quantity="other">%1$d records</item>
+    </plurals>
     <string name="detail_truncated">Showing the most recent records only.</string>
-    <string name="detail_multiple_writers">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</string>
+    <plurals name="detail_multiple_writers">
+        <item quantity="one">%1$d app wrote this data.</item>
+        <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>
+    </plurals>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
     <string name="chart_source_raw">Individual readings</string>
 
