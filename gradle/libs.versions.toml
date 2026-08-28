@@ -8,7 +8,6 @@ lifecycle = "2.11.0"
 navigation = "2.10.0"
 coroutines = "1.11.0"
 healthConnect = "1.1.0"
-vico = "3.3.0"
 billing = "9.1.0"
 datastore = "1.2.1"
 gpp = "4.1.1"
@@ -23,7 +22,6 @@ lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-com
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 health-connect = { module = "androidx.health.connect:connect-client", version.ref = "healthConnect" }
-vico-compose-m3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
