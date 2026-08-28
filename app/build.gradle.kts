@@ -132,7 +132,6 @@ dependencies {
     implementation(libs.coroutines.android)
 
     implementation(libs.health.connect)
-    implementation(libs.vico.compose.m3)
     implementation(libs.billing.ktx) {
         // Play Billing drags in Google's datatransport/Firebase telemetry uploader. The app
         // has no INTERNET permission so it could never transmit, but a privacy-focused health
