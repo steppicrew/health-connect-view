@@ -47,6 +47,8 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Keep only the locales this app actually translates. Without this the APK also
+        // carries roughly eighty AndroidX locales it never uses.
         androidResources.localeFilters += listOf(
             "en", "de", "es", "fr", "it", "pt-rBR", "nl", "pl", "tr",
             "ru", "ja", "ko", "zh-rCN", "zh-rTW", "hi", "in", "ar",

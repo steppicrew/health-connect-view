@@ -46,7 +46,27 @@ showing the selected stats for a single day.
 - Does "advanced dashboard" (custom tiles beyond a free allowance) become a premium feature?
   `Feature.CUSTOM_DASHBOARD` is already reserved in the entitlement enum.
 
-## 2. Chart refinement
+## 2. Settings screen
+
+A single place for the preferences that currently have no UI at all.
+
+- **Language** — default "System", plus an explicit list of the shipped translations. On
+  Android 13+ this should drive the platform's own per-app language API
+  (`AppCompatDelegate.setApplicationLocales` / `LocaleManager`), so the choice also shows up
+  in Android's own per-app language settings rather than being a private override. A
+  `res/xml/locales_config.xml` declaring the supported locales is required for that.
+- **Theme** — Light / Dark / System (default System). Dynamic colour is on by default on
+  Android 12+; worth a toggle for people who prefer the app's own palette.
+- **Shown stats** — which types appear on the dashboard (see section 1) and in what order.
+  This is the same configuration the dashboard tiles read, so build it alongside them.
+- **Manage access** — a shortcut into Health Connect's own permission screen, and a
+  "revoke all" that calls `PermissionController.revokeAllPermissions()`.
+- Link to the privacy policy and the source repository.
+
+All of this is non-health UI state and belongs in the existing DataStore. Health values
+themselves are still never persisted.
+
+## 3. Chart refinement
 
 The current chart is a deliberately plain Compose Canvas line: axis min/max, date endpoints,
 guide lines. Known gaps, in rough priority order:
@@ -62,7 +82,7 @@ changed the axis API surface. Revisit if the chart requirements grow beyond what
 comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
 signature, so it stays a single-file swap.
 
-## 3. Deferred
+## 4. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
