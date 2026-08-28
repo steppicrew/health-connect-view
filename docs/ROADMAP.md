@@ -132,7 +132,29 @@ deduplicated totals.
 **Aggregation therefore still needs verifying on a real device**, ideally one where two apps
 write the same metric, which is exactly the case the deduplication exists for.
 
-## 6. Deferred
+## 6. Considered and rejected: a React/Vite UI in a WebView
+
+Asked whether the UI would be easier as TypeScript/React talking to Kotlin, and whether that
+is possible without the INTERNET permission.
+
+**It is possible.** A WebView loading `file:///android_asset/` needs no INTERNET permission —
+that is local file access, not networking — and `addJavascriptInterface` passes data from
+Kotlin into JS over the JNI bridge with no HTTP involved. The privacy guarantee would survive
+intact. (An HTTP API, even to localhost, would not be worth it: it needs a local server and
+muddies the "cannot reach the network" story that the manifest currently makes obvious.)
+
+**Not adopted, because "easier" does not hold for this app.** The hard problems here were the
+record-to-permission mapping, deduplicating overlapping writers, and locale-correct
+formatting. A rewrite re-solves none of them and adds a serialisation layer in front of each.
+It would cost dynamic colour, the platform per-app language integration, and Compose's
+built-in accessibility, and it would add a second build system and language for screens that
+already work. The remaining chart gaps (section 4) are a few hundred lines of Canvas — much
+less than a bridge plus a JS toolchain.
+
+Worth revisiting if the UI grows into something genuinely interactive that a JS charting
+library would do far better, or if the same UI is ever wanted on the web.
+
+## 7. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
