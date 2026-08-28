@@ -61,7 +61,7 @@ fun RecordDetailScreen(
                 .padding(16.dp),
         ) {
             Text(
-                text = spec.summaryOf(record),
+                text = de.steppicrew.healthconnectview.ui.detail.summaryWithUnit(spec, record),
                 style = MaterialTheme.typography.headlineSmall,
             )
             Text(

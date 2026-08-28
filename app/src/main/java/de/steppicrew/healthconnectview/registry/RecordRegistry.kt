@@ -100,6 +100,7 @@ object RecordRegistry {
         RecordTypeSpec(
             type = FloorsClimbedRecord::class,
             displayNameRes = R.string.type_floors_climbed,
+            summaryUnitRes = R.string.unit_floors,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_floors,
             shape = Shape.INTERVAL,
@@ -143,12 +144,13 @@ object RecordRegistry {
         RecordTypeSpec(
             type = StepsRecord::class,
             displayNameRes = R.string.type_steps,
+            summaryUnitRes = R.string.unit_steps,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_steps,
             shape = Shape.INTERVAL,
             startTime = { it.startTime },
             points = { listOf(Point(it.startTime, it.count.toDouble())) },
-            summary = { Formatting.integer(it.count) + " steps" },
+            summary = { Formatting.integer(it.count) },
             aggregate = StepsRecord.COUNT_TOTAL,
         ),
         RecordTypeSpec(
@@ -186,6 +188,7 @@ object RecordRegistry {
         RecordTypeSpec(
             type = WheelchairPushesRecord::class,
             displayNameRes = R.string.type_wheelchair_pushes,
+            summaryUnitRes = R.string.unit_pushes,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_pushes,
             shape = Shape.INTERVAL,
@@ -331,12 +334,13 @@ object RecordRegistry {
         RecordTypeSpec(
             type = RespiratoryRateRecord::class,
             displayNameRes = R.string.type_respiratory_rate,
+            summaryUnitRes = R.string.unit_rpm_breath,
             category = Category.VITALS,
             unitRes = R.string.unit_rpm_breath,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.rate)) },
-            summary = { Formatting.number(it.rate) + " breaths/min" },
+            summary = { Formatting.number(it.rate) },
         ),
         RecordTypeSpec(
             type = RestingHeartRateRecord::class,
