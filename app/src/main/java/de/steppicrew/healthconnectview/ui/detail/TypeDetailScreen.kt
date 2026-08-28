@@ -27,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.Record
@@ -146,8 +147,9 @@ private fun DetailContent(
         if (data.contributingApps.size > 1) {
             item(key = "contributors") {
                 Text(
-                    text = stringResource(
-                        R.string.detail_multiple_writers,
+                    text = pluralStringResource(
+                        R.plurals.detail_multiple_writers,
+                        data.contributingApps.size,
                         data.contributingApps.size,
                     ),
                     style = MaterialTheme.typography.bodySmall,
@@ -170,7 +172,11 @@ private fun DetailContent(
 
         item(key = "records_header") {
             Text(
-                text = stringResource(R.string.detail_records_header, data.records.size),
+                text = pluralStringResource(
+                    R.plurals.detail_records_header,
+                    data.records.size,
+                    data.records.size,
+                ),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )

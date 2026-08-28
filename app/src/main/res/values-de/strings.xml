@@ -53,24 +53,8 @@
     <string name="type_sexual_activity">Sexuelle Aktivität</string>
 
     <!-- Feldbezeichnungen -->
-    <string name="field_systolic">Systolisch</string>
-    <string name="field_diastolic">Diastolisch</string>
-    <string name="field_title">Titel</string>
-    <string name="field_stages">Phasen</string>
-    <string name="field_samples">Messwerte</string>
     <string name="field_source_app">Quell-App</string>
     <string name="field_record_id">Datensatz-ID</string>
-    <string name="field_time">Zeit</string>
-    <string name="field_start">Beginn</string>
-    <string name="field_end">Ende</string>
-    <string name="field_duration">Dauer</string>
-    <string name="field_zone_offset">Zeitzonen-Offset</string>
-    <string name="field_energy">Energie</string>
-    <string name="field_notes">Notizen</string>
-    <string name="field_type">Typ</string>
-    <string name="field_average">Durchschnitt</string>
-    <string name="field_min">Minimum</string>
-    <string name="field_max">Maximum</string>
 
     <!-- Zeiträume -->
     <string name="range_week">7 Tage</string>
@@ -81,12 +65,18 @@
     <!-- Berechtigungen -->
     <string name="permissions_title">Auswählen, was angezeigt wird</string>
     <string name="permissions_intro">Wählen Sie die Daten, die Sie sehen möchten. Sie können so wenig oder so viel freigeben, wie Sie möchten, und das jederzeit ändern.</string>
-    <string name="permissions_granted_count">%1$d von %2$d Typen freigegeben</string>
+    <plurals name="permissions_granted_count">
+        <item quantity="one">%1$d von %2$d Typ freigegeben</item>
+        <item quantity="other">%1$d von %2$d Typen freigegeben</item>
+    </plurals>
     <string name="permission_already_granted">Freigegeben</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="action_privacy">Datenschutz</string>
     <string name="action_continue">Überspringen</string>
-    <string name="action_grant_selected">%1$d ausgewählte freigeben</string>
+    <plurals name="action_grant_selected">
+        <item quantity="one">%1$d Auswahl freigeben</item>
+        <item quantity="other">%1$d ausgewählte freigeben</item>
+    </plurals>
 
     <!-- Verfügbarkeit -->
     <string name="availability_missing_title">Health Connect nicht verfügbar</string>
@@ -107,9 +97,15 @@
     <string name="detail_empty_title">Nichts aufgezeichnet</string>
     <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
-    <string name="detail_records_header">%1$d Datensätze</string>
+    <plurals name="detail_records_header">
+        <item quantity="one">%1$d Datensatz</item>
+        <item quantity="other">%1$d Datensätze</item>
+    </plurals>
     <string name="detail_truncated">Es werden nur die neuesten Datensätze angezeigt.</string>
-    <string name="detail_multiple_writers">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</string>
+    <plurals name="detail_multiple_writers">
+        <item quantity="one">%1$d App hat diese Daten geschrieben.</item>
+        <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
+    </plurals>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
     <string name="chart_source_raw">Einzelmessungen</string>
 
