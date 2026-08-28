@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Connect View</string>
+
+    <!-- Kategorien -->
+    <string name="category_activity">Aktivität</string>
+    <string name="category_body">Körper</string>
+    <string name="category_vitals">Vitalwerte</string>
+    <string name="category_nutrition">Ernährung</string>
+    <string name="category_sleep">Schlaf</string>
+    <string name="category_cycle">Zyklus</string>
+
+    <!-- Datentypen -->
+    <string name="type_active_calories_burned">Aktive Kalorien</string>
+    <string name="type_basal_metabolic_rate">Grundumsatz</string>
+    <string name="type_cycling_pedaling_cadence">Trittfrequenz</string>
+    <string name="type_distance">Distanz</string>
+    <string name="type_elevation_gained">Höhenmeter</string>
+    <string name="type_exercise_session">Trainings</string>
+    <string name="type_floors_climbed">Etagen</string>
+    <string name="type_planned_exercise">Geplante Trainings</string>
+    <string name="type_power">Leistung</string>
+    <string name="type_speed">Geschwindigkeit</string>
+    <string name="type_steps">Schritte</string>
+    <string name="type_steps_cadence">Schrittfrequenz</string>
+    <string name="type_total_calories_burned">Gesamtkalorien</string>
+    <string name="type_vo2_max">VO₂max</string>
+    <string name="type_wheelchair_pushes">Rollstuhl-Schübe</string>
+    <string name="type_body_fat">Körperfett</string>
+    <string name="type_body_water_mass">Körperwasser</string>
+    <string name="type_bone_mass">Knochenmasse</string>
+    <string name="type_height">Größe</string>
+    <string name="type_lean_body_mass">Magermasse</string>
+    <string name="type_weight">Gewicht</string>
+    <string name="type_basal_body_temperature">Basaltemperatur</string>
+    <string name="type_blood_glucose">Blutzucker</string>
+    <string name="type_blood_pressure">Blutdruck</string>
+    <string name="type_body_temperature">Körpertemperatur</string>
+    <string name="type_heart_rate">Herzfrequenz</string>
+    <string name="type_hrv">Herzfrequenzvariabilität</string>
+    <string name="type_oxygen_saturation">Sauerstoffsättigung</string>
+    <string name="type_respiratory_rate">Atemfrequenz</string>
+    <string name="type_resting_heart_rate">Ruhepuls</string>
+    <string name="type_skin_temperature">Hauttemperatur</string>
+    <string name="type_hydration">Flüssigkeit</string>
+    <string name="type_nutrition">Ernährung</string>
+    <string name="type_sleep_session">Schlaf</string>
+    <string name="type_cervical_mucus">Zervixschleim</string>
+    <string name="type_intermenstrual_bleeding">Zwischenblutung</string>
+    <string name="type_menstruation_flow">Menstruationsstärke</string>
+    <string name="type_menstruation_period">Menstruationsperiode</string>
+    <string name="type_ovulation_test">Ovulationstest</string>
+    <string name="type_sexual_activity">Sexuelle Aktivität</string>
+
+    <!-- Feldbezeichnungen -->
+    <string name="field_systolic">Systolisch</string>
+    <string name="field_diastolic">Diastolisch</string>
+    <string name="field_title">Titel</string>
+    <string name="field_stages">Phasen</string>
+    <string name="field_samples">Messwerte</string>
+    <string name="field_source_app">Quell-App</string>
+    <string name="field_record_id">Datensatz-ID</string>
+    <string name="field_time">Zeit</string>
+    <string name="field_start">Beginn</string>
+    <string name="field_end">Ende</string>
+    <string name="field_duration">Dauer</string>
+    <string name="field_zone_offset">Zeitzonen-Offset</string>
+    <string name="field_energy">Energie</string>
+    <string name="field_notes">Notizen</string>
+    <string name="field_type">Typ</string>
+    <string name="field_average">Durchschnitt</string>
+    <string name="field_min">Minimum</string>
+    <string name="field_max">Maximum</string>
+
+    <!-- Zeiträume -->
+    <string name="range_week">7 Tage</string>
+    <string name="range_month">30 Tage</string>
+    <string name="range_quarter">90 Tage</string>
+    <string name="range_year">1 Jahr</string>
+
+    <!-- Berechtigungen -->
+    <string name="permissions_title">Auswählen, was angezeigt wird</string>
+    <string name="permissions_intro">Wählen Sie die Daten, die Sie sehen möchten. Sie können so wenig oder so viel freigeben, wie Sie möchten, und das jederzeit ändern.</string>
+    <string name="permissions_granted_count">%1$d von %2$d Typen freigegeben</string>
+    <string name="permission_already_granted">Freigegeben</string>
+    <string name="action_select_all">Alle auswählen</string>
+    <string name="action_privacy">Datenschutz</string>
+    <string name="action_continue">Überspringen</string>
+    <string name="action_grant_selected">%1$d ausgewählte freigeben</string>
+
+    <!-- Verfügbarkeit -->
+    <string name="availability_missing_title">Health Connect nicht verfügbar</string>
+    <string name="availability_missing_body">Auf diesem Gerät gibt es keinen Health-Connect-Dienst, daher sind keine Daten vorhanden. Ab Android 14 ist er Teil der Systemeinstellungen, davor eine separate App.</string>
+    <string name="availability_update_title">Health Connect aktualisieren</string>
+    <string name="availability_update_body">Die installierte Version von Health Connect ist zu alt, damit diese App daraus lesen kann.</string>
+
+    <!-- Übersicht -->
+    <string name="status_has_data">Daten vorhanden</string>
+    <string name="status_no_data">Keine Daten aufgezeichnet</string>
+    <string name="status_not_granted">Nicht freigegeben</string>
+    <string name="status_unknown">Unbekannt</string>
+
+    <!-- Detailansicht -->
+    <string name="action_back">Zurück</string>
+    <string name="detail_no_permission_title">Noch nicht freigegeben</string>
+    <string name="detail_no_permission_body">Sie haben dieser App keinen Zugriff auf diesen Datentyp gegeben. Sie können ihn in den Berechtigungen freigeben.</string>
+    <string name="detail_empty_title">Nichts aufgezeichnet</string>
+    <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
+    <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
+    <string name="detail_records_header">%1$d Datensätze</string>
+    <string name="detail_truncated">Es werden nur die neuesten Datensätze angezeigt.</string>
+    <string name="detail_multiple_writers">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</string>
+    <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
+    <string name="chart_source_raw">Einzelmessungen</string>
+
+    <!-- Datenschutz -->
+    <string name="privacy_title">Datenschutz</string>
+    <string name="privacy_summary">Diese App zeigt Ihnen die Gesundheitsdaten, die Health Connect bereits auf Ihrem Gerät gespeichert hat. Sie ist ein Betrachter: Sie liest, sie zeigt an, mehr nicht.</string>
+    <string name="privacy_no_network_title">Ihre Daten verlassen Ihr Gerät nicht</string>
+    <string name="privacy_no_network_body">Die App hat überhaupt keine Internet-Berechtigung. Das ist kein Versprechen über unser Verhalten — Android selbst verhindert, dass die App eine Netzwerkverbindung aufbaut. Es gibt keinen Server, an den Daten gesendet werden könnten, und keinerlei Analyse-, Tracking- oder Werbe-Code.</string>
+    <string name="privacy_read_only_title">Nur Lesezugriff</string>
+    <string name="privacy_read_only_body">Es werden ausschließlich Leseberechtigungen angefragt. Die App kann Ihre Gesundheitsdaten weder ändern noch löschen. Sie wählen einzeln aus, welche Datentypen freigegeben werden; nichts ist vorausgewählt.</string>
+    <string name="privacy_storage_title">Nichts wird gespeichert</string>
+    <string name="privacy_storage_body">Gesundheitsdaten liegen nur im Arbeitsspeicher, solange Sie sie ansehen, und werden nie auf den Datenträger geschrieben. Die App speichert lediglich Ihre Anzeigeeinstellungen. Backup und Geräteübertragung sind deaktiviert, es wird also nichts in die Cloud kopiert.</string>
+    <string name="privacy_sharing_title">Keine Weitergabe</string>
+    <string name="privacy_sharing_body">Ihre Gesundheitsdaten werden an niemanden weitergegeben, auch nicht an den Entwickler. Keine Drittanbieter-SDKs erhalten sie.</string>
+    <string name="privacy_control_title">Sie behalten die Kontrolle</string>
+    <string name="privacy_control_body">Sie können den Zugriff jederzeit in den Health-Connect-Einstellungen entziehen. Beim Deinstallieren wird alles entfernt, was die App hält — und das ist nichts außer Ihren Einstellungen.</string>
+    <string name="privacy_purchases_title">Käufe</string>
+    <string name="privacy_purchases_body">Optionale kostenpflichtige Funktionen werden vollständig über Google Play abgewickelt. Die App sieht Ihre Zahlungsdaten nie, und die Kaufprüfung läuft über die Play-Store-App statt über das Netzwerk.</string>
+    <string name="privacy_contact_title">Quellcode und Kontakt</string>
+    <string name="privacy_contact_body">Der Quellcode ist öffentlich, jede Aussage auf dieser Seite lässt sich also überprüfen. Probleme melden Sie bitte über den Issue-Tracker des Projekts auf GitHub.</string>
+</resources>
