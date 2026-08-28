@@ -33,6 +33,15 @@ pick_device() {
 
 install_or_push() {
     local apk="$1" device="$2" package="$3"
+
+    # A device low on space fails the install but the app keeps running from the old build,
+    # which looks exactly like a change that did not take effect. Warn before that happens.
+    local avail
+    avail="$(adb -s "$device" shell df /data 2>/dev/null | awk 'NR==2 {print $4}' | tr -d '\r')"
+    if [ -n "$avail" ] && [ "$avail" -lt 262144 ]; then
+        echo "warning: only $(( avail / 1024 )) MB free on $device; installs may fail" >&2
+    fi
+
     if adb -s "$device" install -r "$apk" 2>&1 | tee /dev/stderr | grep -q "^Success"; then
         adb -s "$device" shell am start -n "$package/de.steppicrew.healthconnectview.MainActivity" >/dev/null
         echo "Installed and launched on $device."
