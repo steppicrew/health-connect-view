@@ -192,6 +192,14 @@ private fun DetailContent(
     }
 }
 
+/** Appends the localised unit, for the types whose unit is a word rather than a symbol. */
+@Composable
+internal fun summaryWithUnit(spec: RecordTypeSpec<*>, record: Record): String {
+    val value = spec.summaryOf(record)
+    val unit = spec.summaryUnitRes?.let { stringResource(it) } ?: return value
+    return "$value $unit"
+}
+
 @Composable
 private fun RecordRow(
     spec: RecordTypeSpec<*>,
@@ -205,7 +213,7 @@ private fun RecordRow(
             .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
         Text(
-            text = spec.summaryOf(record),
+            text = summaryWithUnit(spec, record),
             style = MaterialTheme.typography.bodyLarge,
         )
         Text(

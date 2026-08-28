@@ -32,6 +32,12 @@ data class RecordTypeSpec<T : Record>(
      */
     val points: (T) -> List<Point>,
     val summary: (T) -> String,
+    /**
+     * Unit appended to [summary] at render time. Only set where the unit is a word rather
+     * than an international symbol -- "steps" needs translating, "kg" does not -- because a
+     * summary lambda has no Context and cannot resolve resources itself.
+     */
+    @param:StringRes val summaryUnitRes: Int? = null,
     val details: (T) -> List<Field> = { emptyList() },
     /**
      * Start of the record's time span. Supplied per type because the shape interfaces
