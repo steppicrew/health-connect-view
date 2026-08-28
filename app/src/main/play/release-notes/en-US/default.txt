@@ -1,0 +1,1 @@
+First release. Browse and chart every Health Connect data type, with no network access at all.

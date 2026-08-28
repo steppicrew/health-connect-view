@@ -1,0 +1,26 @@
+Health Connect speichert die Daten, die Uhr, Waage und Fitness-Apps schreiben — aber es gibt keine einfache Möglichkeit, sie anzusehen. Diese App ist genau dieser fehlende Betrachter.
+
+WAS SIE KANN
+
+• Alle von Health Connect unterstützten Datentypen durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
+• Einzelne Datensätze mit genauen Zeitstempeln, Werten und Einheiten ansehen
+• Erkennen, welche App welchen Datensatz geschrieben hat
+• Trends über 7 Tage, 30 Tage, 90 Tage oder ein Jahr grafisch darstellen
+
+IHRE DATEN BLEIBEN AUF IHREM GERÄT
+
+Diese App hat keine Internet-Berechtigung. Das ist kein Versprechen, nichts hochzuladen — Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
+
+Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben.
+
+SIE ENTSCHEIDEN, WAS SIE TEILEN
+
+Berechtigungen werden einzeln pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten, und ändern Sie das jederzeit in den Health-Connect-Einstellungen.
+
+KORREKTE SUMMEN
+
+Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte — überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, sodass Tagessummen korrekt sind und nicht doppelt gezählt werden.
+
+OPEN SOURCE
+
+Der Quellcode ist öffentlich, jede Aussage lässt sich also überprüfen.
