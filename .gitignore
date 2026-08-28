@@ -1,0 +1,22 @@
+# Secrets — never commit
+.env
+*.jks
+*.keystore
+play-service-account.json
+*service-account*.json
+
+# Machine-specific (contains sdk.dir path)
+local.properties
+
+# Build output
+build/
+.gradle/
+captures/
+.externalNativeBuild/
+.cxx/
+build/store/
+
+# IDE
+.idea/
+*.iml
+.DS_Store
