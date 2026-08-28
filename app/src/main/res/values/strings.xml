@@ -137,4 +137,22 @@
     <string name="detail_multiple_writers">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</string>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
     <string name="chart_source_raw">Individual readings</string>
+
+    <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_summary">This app shows you the health data already stored on your device by Health Connect. It is a viewer: it reads, it displays, and it does nothing else.</string>
+    <string name="privacy_no_network_title">Your data never leaves your device</string>
+    <string name="privacy_no_network_body">The app has no internet permission at all. This is not a promise about how we behave — Android itself prevents the app from making any network connection. There is no server to send your data to, and no analytics, tracking or advertising code of any kind.</string>
+    <string name="privacy_read_only_title">Read-only access</string>
+    <string name="privacy_read_only_body">Only read permissions are requested, so the app cannot change or delete your health records. You choose which data types to allow, one by one, and nothing is selected by default.</string>
+    <string name="privacy_storage_title">Nothing is stored</string>
+    <string name="privacy_storage_body">Health data is held in memory only while you are looking at it, and is never written to disk. The app keeps only your display settings. Backup and device transfer are disabled, so nothing is copied to the cloud.</string>
+    <string name="privacy_sharing_title">No sharing</string>
+    <string name="privacy_sharing_body">Your health data is never shared with anyone, including the developer. No third-party SDKs receive it.</string>
+    <string name="privacy_control_title">You stay in control</string>
+    <string name="privacy_control_body">You can withdraw access at any time in Health Connect settings. Uninstalling the app removes everything it holds, because it holds nothing beyond your settings.</string>
+    <string name="privacy_purchases_title">Purchases</string>
+    <string name="privacy_purchases_body">Optional paid features are handled entirely by Google Play. The app never sees your payment details, and purchase checks happen through the Play Store app rather than over the network.</string>
+    <string name="privacy_contact_title">Source and contact</string>
+    <string name="privacy_contact_body">The source code is public, so every claim on this page can be checked. Please report issues through the project\'s issue tracker on GitHub.</string>
 </resources>

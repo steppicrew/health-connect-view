@@ -15,11 +15,13 @@ import de.steppicrew.healthconnectview.ui.detail.TypeDetailScreen
 import de.steppicrew.healthconnectview.ui.detail.TypeDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsViewModel
+import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
 
 object Routes {
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
+    const val PRIVACY = "privacy"
 
     fun typeDetail(typeName: String) = "type/$typeName"
 }
@@ -46,8 +48,12 @@ fun HealthNavGraph(
                 viewModel = viewModel,
                 onRequestPermissions = onRequestPermissions,
                 onContinue = { navController.popBackStack() },
-                onOpenPrivacy = { },
+                onOpenPrivacy = { navController.navigate(Routes.PRIVACY) },
             )
+        }
+
+        composable(Routes.PRIVACY) {
+            PrivacyScreen()
         }
 
         composable(
