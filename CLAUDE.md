@@ -2,8 +2,11 @@
 
 Read-only Android viewer for Health Connect data. Kotlin + Compose, no network access.
 
-Roadmap and design decisions: `docs/ROADMAP.md`. This file is the things that are easy to get
-wrong and expensive to rediscover.
+Roadmap and design decisions: `docs/ROADMAP.md`. Feature ideas: `docs/FEATURE-IDEAS.md`.
+This file is the things that are easy to get wrong and expensive to rediscover.
+
+`private/` is gitignored and holds commercial notes (pricing, market sizing). Never quote it
+into a tracked file, and never publish its contents.
 
 ## Non-negotiables
 

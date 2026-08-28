@@ -1,3 +1,6 @@
+# Private notes — commercial strategy, kept out of the public repo
+private/
+
 # Secrets — never commit
 .env
 *.jks

@@ -40,6 +40,10 @@ showing the selected stats for a single day.
 
 ### Open questions
 
+- **Check which types actually arrive before designing tiles around them.** Not everything a
+  wearable tracks internally (Body Battery, Training Status, and similar proprietary metrics)
+  is exposed as a Health Connect record type, so a tile can be designed for data that never
+  appears. The measured shape in section 5 shows what one real device actually receives.
 - Which stats form the default tile set for a first run?
 - Should a tile show a comparison (vs. yesterday, vs. 7-day average)? Useful, but it is a
   second aggregation per tile.
