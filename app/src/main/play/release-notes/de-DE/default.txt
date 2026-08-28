@@ -1,0 +1,1 @@
+Erste Version. Alle Health-Connect-Datentypen durchsuchen und grafisch darstellen — ganz ohne Netzwerkzugriff.

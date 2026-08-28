@@ -1,0 +1,26 @@
+Health Connect stores the data your watch, scale and fitness apps write — but there is no simple way to look at it. This app is that missing viewer.
+
+WHAT IT DOES
+
+• Browse every data type Health Connect supports, from steps and sleep to blood pressure and VO₂ max
+• See individual records with exact timestamps, values and units
+• Find out which app wrote each record
+• Chart trends over 7 days, 30 days, 90 days or a year
+
+YOUR DATA STAYS ON YOUR PHONE
+
+This app has no internet permission. Not "we promise not to upload anything" — Android itself prevents it from making any network connection at all. There is no account, no server, no analytics, no advertising and no tracking.
+
+It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk, so uninstalling removes everything.
+
+YOU CHOOSE WHAT TO SHARE
+
+Permissions are requested one data type at a time, and nothing is selected by default. Allow only what you want to see, and change your mind whenever you like in Health Connect settings.
+
+ACCURATE TOTALS
+
+When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are correct rather than double-counted, and it tells you when more than one app contributed.
+
+OPEN SOURCE
+
+The source code is public, so every claim above can be verified.
