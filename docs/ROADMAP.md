@@ -166,8 +166,11 @@ library would do far better, or if the same UI is ever wanted on the web.
     SecurityException: Injecting input events requires the caller ... INJECT_EVENTS permission
 
 Enabling it needs Developer options -> "USB debugging (Security settings)", which requires a
-signed-in Mi account. Screenshots (`adb exec-out screencap`), logcat, `am start` and file
-push all work regardless.
+signed-in Mi account. Deliberately not done: tying a vendor account to a device that holds
+personal health data is a poor trade for the convenience of scripted taps, in a project whose
+whole point is that the data stays put. Screenshots (`adb exec-out screencap`), logcat,
+`am start` and file push all work regardless, and `adb install` is blocked by the same
+restriction -- push the APK to Downloads and install it by tapping instead.
 
 So on such a device, drive the UI by hand and read the result from screenshots and logs. The
 debug-only `AggregationCheckActivity` exists for exactly this: it is startable with `am start`
