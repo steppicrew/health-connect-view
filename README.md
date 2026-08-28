@@ -44,7 +44,12 @@ Requires JDK 17+, the Android SDK with API 37, and a device or emulator on API 2
 ./gradlew assembleDebug          # build
 ./scripts/deploy.sh debug        # build, install and launch
 ./gradlew check                  # tests plus the privacy build checks
+./scripts/make-avd.sh            # create the emulator this project tests against
 ```
+
+The AVD it creates is 1080x2160 — exactly the 2:1 maximum aspect ratio Play accepts for
+phone screenshots, so store assets need no cropping — with a 16 GB data partition, because
+a full one makes installs fail while the previous build keeps running.
 
 `local.properties` needs `sdk.dir` pointing at your Android SDK. No secrets are required to
 build: release signing falls back to the debug key when `.env` is absent.
