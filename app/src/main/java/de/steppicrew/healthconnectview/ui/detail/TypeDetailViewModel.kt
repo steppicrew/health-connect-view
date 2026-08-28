@@ -103,6 +103,9 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         val aggregated = if (metric != null) {
             runCatching { aggregatePoints(spec, range) }
                 .onFailure { Log.w(TAG, "aggregation failed for ${spec.type.simpleName}", it) }
+                .onSuccess { pts ->
+                    Log.i(TAG, "AGG ${spec.type.simpleName}: ${pts.size} aggregated points")
+                }
                 .getOrDefault(emptyList())
         } else {
             emptyList()

@@ -13,5 +13,8 @@
         <activity
             android:name="de.steppicrew.healthconnectview.debug.SeedActivity"
             android:exported="true" />
+        <activity
+            android:name="de.steppicrew.healthconnectview.debug.AggregationCheckActivity"
+            android:exported="true" />
     </application>
 </manifest>
