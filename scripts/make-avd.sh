@@ -58,4 +58,8 @@ Created '$AVD_NAME' (1080x2160, 16 GB data partition).
 
 Start it with:
   \$ANDROID_HOME/emulator/emulator -avd $AVD_NAME
+
+First boot takes a few minutes, and with a software GPU System UI often crashes once on
+the way up ("System UI isn't responding"). Dismiss it and wait: it recovers on its own.
+A black screen shortly afterwards is still the recovery, not a broken AVD.
 EOF
