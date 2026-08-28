@@ -118,7 +118,10 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         return TypeDetailData(
             spec = spec,
             records = records,
-            points = aggregated.ifEmpty { records.flatMap { spec.pointsOf(it) } },
+            // Records arrive newest-first for the list; a chart has to read left to right.
+            points = aggregated.ifEmpty {
+                records.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
+            },
             pointsAreAggregated = aggregated.isNotEmpty(),
             contributingApps = contributors,
             truncated = records.size >= HealthRepository.MAX_RECORDS,

@@ -52,6 +52,7 @@ class HealthRepository(private val context: Context) {
                 ReadRecordsRequest(
                     recordType = type,
                     timeRangeFilter = range,
+                    ascendingOrder = false,
                     pageSize = PAGE_SIZE,
                     pageToken = pageToken,
                 ),
