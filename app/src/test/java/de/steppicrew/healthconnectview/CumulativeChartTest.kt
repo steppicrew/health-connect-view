@@ -114,4 +114,40 @@ class CumulativeChartTest {
         assertEquals(900L, java.time.Duration.between(series[0].time, series[1].time).seconds)
         assert(series[1].value > series[0].value)
     }
+
+    /**
+     * Records commonly overlap -- a device writing every few minutes emits intervals that
+     * abut or overlap -- so a naive ramp per record sends the series backwards in time and
+     * the chart draws a zigzag. A running total must never go back in either axis.
+     */
+    @Test
+    fun `a cumulative series never moves backwards in time or value`() {
+        val base = Instant.parse("2026-08-28T00:00:00Z")
+        // Overlapping records: the second starts before the first ends.
+        val intervals = listOf(
+            Triple(0L, 600L, 100.0),
+            Triple(300L, 900L, 150.0),
+            Triple(600L, 1200L, 120.0),
+        )
+
+        var sum = 0.0
+        var last = base
+        val series = buildList {
+            add(Point(base, 0.0))
+            intervals.forEach { (startSec, endSec, value) ->
+                val rampStart = maxOf(base.plusSeconds(startSec), last)
+                val rampEnd = maxOf(base.plusSeconds(endSec), rampStart)
+                if (rampStart.isAfter(last)) add(Point(rampStart, sum))
+                sum += value
+                add(Point(rampEnd, sum))
+                last = rampEnd
+            }
+        }
+
+        series.zipWithNext().forEach { (a, b) ->
+            assert(!b.time.isBefore(a.time)) { "time went backwards: ${a.time} -> ${b.time}" }
+            assert(b.value >= a.value) { "value went backwards: ${a.value} -> ${b.value}" }
+        }
+        assertEquals(370.0, series.last().value, 0.001)
+    }
 }
