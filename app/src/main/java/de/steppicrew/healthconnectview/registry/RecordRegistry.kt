@@ -75,6 +75,7 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.distance.inKilometers)) },
             summary = { Formatting.number(it.distance.inKilometers) + " km" },
             aggregate = DistanceRecord.DISTANCE_TOTAL,
+            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 5.0),
         ),
         RecordTypeSpec(
             type = ElevationGainedRecord::class,
@@ -109,6 +110,7 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.floors)) },
             summary = { Formatting.number(it.floors) },
             aggregate = FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,
+            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 10.0),
         ),
         RecordTypeSpec(
             type = PlannedExerciseSessionRecord::class,
@@ -153,6 +155,7 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.count.toDouble())) },
             summary = { Formatting.integer(it.count) },
             aggregate = StepsRecord.COUNT_TOTAL,
+            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 10_000.0),
         ),
         RecordTypeSpec(
             type = StepsCadenceRecord::class,
@@ -175,6 +178,7 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
             summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
             aggregate = TotalCaloriesBurnedRecord.ENERGY_TOTAL,
+            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 2_200.0),
         ),
         RecordTypeSpec(
             type = Vo2MaxRecord::class,
@@ -311,6 +315,7 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.beatsPerMinute.toDouble()) } },
             summary = { r -> seriesSummary(r.samples.map { it.beatsPerMinute.toDouble() }, "bpm") },
             aggregate = HeartRateRecord.BPM_AVG,
+            tile = TileSpec(TileSpec.Form.CURVE, colorScale = 50.0..160.0),
         ),
         RecordTypeSpec(
             type = HeartRateVariabilityRmssdRecord::class,
