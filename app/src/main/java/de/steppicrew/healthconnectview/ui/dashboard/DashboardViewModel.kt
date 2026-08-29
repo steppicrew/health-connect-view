@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.health.dayFilter
 import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
 import kotlinx.coroutines.async
@@ -104,6 +105,50 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             store.save(config)
             loadTiles()
         }
+    }
+
+    /** Removes a tile and persists the layout. */
+    fun removeTile(typeName: String) {
+        config = config.without(typeName)
+        viewModelScope.launch {
+            store.save(config)
+            loadTiles()
+        }
+    }
+
+    /** Pins a type. Ignored if already present, so double-adding cannot duplicate a tile. */
+    fun addTile(typeName: String) {
+        config = config.plus(Tile(typeName))
+        viewModelScope.launch {
+            store.save(config)
+            loadTiles()
+        }
+    }
+
+    /**
+     * Moves a tile one place. Reordering by single steps rather than drag-and-drop: it is
+     * reachable without a gesture the user has to discover, and it cannot drop a tile in an
+     * unintended slot.
+     */
+    fun moveTile(typeName: String, forward: Boolean) {
+        val from = config.tiles.indexOfFirst { it.typeName == typeName }
+        if (from < 0) return
+        val to = if (forward) from + 1 else from - 1
+        val moved = config.moved(from, to)
+        if (moved === config) return
+        config = moved
+        viewModelScope.launch {
+            store.save(config)
+            loadTiles()
+        }
+    }
+
+    /** Types that may be pinned but are not yet: the add picker's contents. */
+    fun addableTypes(): List<RecordTypeSpec<*>> {
+        val pinned = config.tiles.map { it.typeName }.toSet()
+        return RecordRegistry.all
+            .filter { it.isChartable && it.type.simpleName !in pinned }
+            .sortedBy { it.type.simpleName }
     }
 
     fun showPreviousDay() {

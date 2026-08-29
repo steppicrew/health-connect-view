@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -25,13 +27,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
@@ -111,6 +116,44 @@ fun TileDetailScreen(
 
 @Composable
 private fun SpanContent(data: TileDetailData) {
+    LazyColumn {
+        item(key = "summary") { SpanSummary(data) }
+
+        if (data.truncated) {
+            item(key = "truncated") {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.detail_truncated,
+                        HealthRepository.MAX_RECORDS,
+                        HealthRepository.MAX_RECORDS,
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
+        }
+
+        item(key = "records_header") {
+            Text(
+                text = pluralStringResource(
+                    R.plurals.detail_records_header,
+                    data.records.size,
+                    data.records.size,
+                ),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+        }
+
+        items(data.records, key = { it.metadata.id }) { record ->
+            RecordRow(spec = data.spec, record = record, onClick = {})
+        }
+    }
+}
+
+@Composable
+private fun SpanSummary(data: TileDetailData) {
     Column(Modifier.padding(16.dp)) {
         // First: it changes how a short chart should be read -- not missing data, but data
         // the app is not allowed to see.

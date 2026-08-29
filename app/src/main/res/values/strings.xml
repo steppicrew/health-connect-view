@@ -5,6 +5,13 @@
     <string name="dashboard_previous_day">Previous day</string>
     <string name="dashboard_next_day">Next day</string>
     <string name="dashboard_open_catalog">All data types</string>
+    <string name="dashboard_edit">Edit dashboard</string>
+    <string name="dashboard_done">Done</string>
+    <string name="dashboard_add_tile">Add tile</string>
+    <string name="tile_move_up">Move up</string>
+    <string name="tile_move_down">Move down</string>
+    <string name="tile_remove">Remove</string>
+    <string name="tile_set_goal">Set goal</string>
     <string name="dashboard_empty_title">No tiles yet</string>
     <string name="dashboard_empty_body">Add the stats you want to see from the list of all data types.</string>
     <string name="tile_no_data" translatable="false">–</string>

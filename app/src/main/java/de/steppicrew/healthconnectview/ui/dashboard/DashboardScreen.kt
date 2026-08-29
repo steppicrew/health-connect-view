@@ -5,6 +5,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
@@ -28,6 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -70,6 +78,16 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
+    var editing by remember { mutableStateOf(false) }
+    var addingTile by remember { mutableStateOf(false) }
+
+    if (addingTile) {
+        AddTileDialog(
+            candidates = viewModel.addableTypes(),
+            onDismiss = { addingTile = false },
+            onAdd = viewModel::addTile,
+        )
+    }
 
     editingGoalFor?.let { editing ->
         GoalDialog(
@@ -114,11 +132,31 @@ fun DashboardScreen(
                             contentDescription = stringResource(R.string.dashboard_open_catalog),
                         )
                     }
-                    IconButton(onClick = onOpenPermissions) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.permissions_title),
-                        )
+                    if (editing) {
+                        IconButton(onClick = { addingTile = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(R.string.dashboard_add_tile),
+                            )
+                        }
+                        TextButton(onClick = { editing = false }) {
+                            Text(stringResource(R.string.dashboard_done))
+                        }
+                    } else {
+                        // Long-press also enters edit mode, but a gesture alone is
+                        // undiscoverable and unreachable with accessibility services.
+                        IconButton(onClick = { editing = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.dashboard_edit),
+                            )
+                        }
+                        IconButton(onClick = onOpenPermissions) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = stringResource(R.string.permissions_title),
+                            )
+                        }
                     }
                 },
             )
@@ -162,14 +200,17 @@ fun DashboardScreen(
                 items(state.tiles, key = { it.tile.typeName }) { tile ->
                     TileCard(
                         data = tile,
-                        onClick = { onOpenType(tile.tile.typeName) },
-                        // Long-press sets the goal for now; it becomes the full edit mode
-                        // (move, delete, add) in the next step.
-                        onLongClick = {
-                            if (tile.spec.tile.form == TileSpec.Form.RING) {
-                                editingGoalFor = tile
-                            }
+                        editing = editing,
+                        onClick = {
+                            // In edit mode a tap must not navigate away: the user is arranging
+                            // tiles, not reading them.
+                            if (!editing) onOpenType(tile.tile.typeName)
                         },
+                        onLongClick = { editing = true },
+                        onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },
+                        onMoveDown = { viewModel.moveTile(tile.tile.typeName, forward = true) },
+                        onRemove = { viewModel.removeTile(tile.tile.typeName) },
+                        onSetGoal = { editingGoalFor = tile },
                     )
                 }
             }
@@ -183,7 +224,16 @@ fun DashboardScreen(
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TileCard(data: TileData, onClick: () -> Unit, onLongClick: () -> Unit) {
+private fun TileCard(
+    data: TileData,
+    editing: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onRemove: () -> Unit,
+    onSetGoal: () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -210,7 +260,17 @@ private fun TileCard(data: TileData, onClick: () -> Unit, onLongClick: () -> Uni
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                TileBody(data)
+                if (editing) {
+                    TileEditControls(
+                        canSetGoal = data.spec.tile.form == TileSpec.Form.RING,
+                        onMoveUp = onMoveUp,
+                        onMoveDown = onMoveDown,
+                        onRemove = onRemove,
+                        onSetGoal = onSetGoal,
+                    )
+                } else {
+                    TileBody(data)
+                }
             }
 
             data.spec.unitRes?.let { unit ->
@@ -218,6 +278,56 @@ private fun TileCard(data: TileData, onClick: () -> Unit, onLongClick: () -> Uni
                     text = stringResource(unit),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Edit affordances shown in place of a tile's value.
+ *
+ * Reordering is by single steps rather than drag-and-drop: it needs no gesture to discover,
+ * works with accessibility services, and cannot drop a tile into an unintended slot. Ordering
+ * is the whole layout, so a mis-drop is not a trivial mistake to undo.
+ */
+@Composable
+private fun TileEditControls(
+    canSetGoal: Boolean,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onRemove: () -> Unit,
+    onSetGoal: () -> Unit,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row {
+            IconButton(onClick = onMoveUp) {
+                Icon(
+                    imageVector = Icons.Default.ArrowUpward,
+                    contentDescription = stringResource(R.string.tile_move_up),
+                )
+            }
+            IconButton(onClick = onMoveDown) {
+                Icon(
+                    imageVector = Icons.Default.ArrowDownward,
+                    contentDescription = stringResource(R.string.tile_move_down),
+                )
+            }
+        }
+        Row {
+            if (canSetGoal) {
+                IconButton(onClick = onSetGoal) {
+                    Icon(
+                        imageVector = Icons.Default.Flag,
+                        contentDescription = stringResource(R.string.tile_set_goal),
+                    )
+                }
+            }
+            IconButton(onClick = onRemove) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.tile_remove),
+                    tint = MaterialTheme.colorScheme.error,
                 )
             }
         }

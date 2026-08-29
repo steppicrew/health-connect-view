@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.ui.dashboard
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
@@ -31,6 +32,13 @@ data class TileDetailData(
     val contributingApps: Set<String>,
     val start: LocalDate,
     val end: LocalDate,
+    /**
+     * The raw records behind the chart. Inspecting exactly what each app stored is the point
+     * of the app, and it is the only place a whole-day summary record can be told apart from
+     * an itemised one.
+     */
+    val records: List<Record>,
+    val truncated: Boolean,
 )
 
 /**
@@ -106,7 +114,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             result.fold(
                 onSuccess = { data ->
                     _state.update {
-                        if (data.points.isEmpty() && data.total == null) {
+                        if (data.points.isEmpty() && data.total == null && data.records.isEmpty()) {
                             UiState.Empty
                         } else {
                             UiState.Data(data)
@@ -167,6 +175,11 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             }.getOrDefault(emptySet())
         }
 
+        // Newest first, matching how the other list reads.
+        val records = runCatching {
+            repository.read(spec.type, span.instantFilter(offset))
+        }.getOrDefault(emptyList())
+
         return TileDetailData(
             spec = spec,
             points = points,
@@ -177,6 +190,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             historyCapped = historyCapped,
             start = span.startDate(offset),
             end = span.endDate(offset).minusDays(1),
+            records = records,
+            truncated = records.size >= HealthRepository.MAX_RECORDS,
         )
     }
 }
