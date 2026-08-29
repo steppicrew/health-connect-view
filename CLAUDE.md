@@ -97,6 +97,18 @@ daily `aggregate()` is correct; only the intraday slicing double-counts. Intrada
 therefore rescaled to finish on the daily aggregate -- buckets supply the timing, the platform
 supplies the magnitude -- and the chart says so when it has done this.
 
+**Sessions are not linked to the readings taken during them.** There is no session id on a
+record; `ExerciseSessionRecord` carries only type, title, notes, segments, laps and route.
+Distance, power and calories are separate types over the same window, so session statistics
+must be assembled by time overlap — and every surface showing them must say so. Writers also
+disagree about the activity: the same indoor bike session arrives as `BIKING` from a watch and
+`BIKING_STATIONARY` from the machine's own app. Prefer the writer that set a title; only the
+specific apps name their sessions.
+
+**Sleep spans midnight, so a day-bounded read misses it.** A night credited to the morning it
+ends on starts the previous evening (measured: 22:48 to 05:15). Search sessions over a widened
+window and clip to the visible range.
+
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*
 aggregates.
@@ -138,7 +150,7 @@ settings while backgrounded.
 
 The Xiaomi test phone (HyperOS) blocks `adb install` **and** `adb shell input tap`
 (`SecurityException: INJECT_EVENTS`). Both need a signed-in Mi account, deliberately not
-created — see `docs/ROADMAP.md` §8. So:
+created — see `docs/ROADMAP.md` §9. So:
 
 - **Install:** `adb push` the APK to `/sdcard/Download/hcv.apk` -- always that exact name, so
   the user is never hunting for the newest of several files -- and ask the user to tap it.
