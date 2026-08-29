@@ -32,6 +32,7 @@ import java.time.Duration
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import java.time.Instant
 
 /**
@@ -53,6 +54,11 @@ fun LineChart(
     goalCrossing: Instant? = null,
     /** Unit shown beside a touched point's value; omitted when the type has none. */
     @StringRes unitRes: Int? = null,
+    /**
+     * Bucket starts that held no data. The line is broken across these rather than drawn
+     * through, so a day nothing was recorded does not read as a measured value.
+     */
+    emptyBuckets: List<Instant> = emptyList(),
 ) {
     if (points.isEmpty()) return
 
@@ -78,6 +84,7 @@ fun LineChart(
     // Each point's horizontal position as a fraction of the width. Computed once here so the
     // touch handler and the drawing agree exactly on where a point sits.
     val fractions = remember(points) { horizontalFractions(points) }
+    val segments = remember(points, emptyBuckets) { segmentAtGaps(points, emptyBuckets) }
 
     fun nearestIndex(x: Float, width: Int): Int? {
         if (fractions.isEmpty() || width <= 0) return null
@@ -200,18 +207,36 @@ fun LineChart(
                 }
             }
 
-            val path = if (smooth && offsets.size > 2) {
-                smoothPath(offsets)
-            } else {
-                Path().apply {
-                    points.forEachIndexed { index, point ->
-                        val x = xFor(index)
-                        val y = yFor(point.value)
-                        if (index == 0) moveTo(x, y) else lineTo(x, y)
+            // Each run of consecutive points is stroked on its own, so a gap stays a gap.
+            var drawn = 0
+            segments.forEach { segment ->
+                val segmentOffsets = offsets.subList(drawn, drawn + segment.size)
+                drawn += segment.size
+                if (segmentOffsets.isEmpty()) return@forEach
+
+                val path = if (smooth && segmentOffsets.size > 2) {
+                    smoothPath(segmentOffsets)
+                } else {
+                    Path().apply {
+                        segmentOffsets.forEachIndexed { index, offset ->
+                            if (index == 0) moveTo(offset.x, offset.y)
+                            else lineTo(offset.x, offset.y)
+                        }
                     }
                 }
+
+                if (segmentOffsets.size == 1) {
+                    // A lone point between two gaps has no line to draw, so it is marked
+                    // instead -- otherwise a day surrounded by empty days vanishes entirely.
+                    drawCircle(
+                        color = lineColor,
+                        radius = 3.dp.toPx(),
+                        center = segmentOffsets.first(),
+                    )
+                } else {
+                    drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
+                }
             }
-            drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
 
             // Drawn after the line so the marker is not overdrawn by it.
             if (crossingX != null && goal != null) {

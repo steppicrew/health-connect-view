@@ -224,6 +224,7 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
                 unitRes = data.spec.unitRes,
+                emptyBuckets = data.emptyBuckets,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(
@@ -240,6 +241,20 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            // A break in the line is only unambiguous once it is named; without this it reads
+            // as a rendering artefact rather than as an absence of data.
+            if (data.emptyBuckets.isNotEmpty()) {
+                Text(
+                    text = pluralStringResource(
+                        R.plurals.chart_gaps,
+                        data.emptyBuckets.size,
+                        data.emptyBuckets.size,
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

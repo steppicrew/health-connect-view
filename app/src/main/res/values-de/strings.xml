@@ -171,6 +171,10 @@
         <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
     </plurals>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
+    <plurals name="chart_gaps">
+        <item quantity="one">Die Lücke ist ein Tag ohne Aufzeichnung – das ist nicht dasselbe wie ein Tag mit dem Wert null.</item>
+        <item quantity="other">Die %1$d Lücken sind Tage ohne Aufzeichnung – das ist nicht dasselbe wie Tage mit dem Wert null.</item>
+    </plurals>
     <string name="chart_source_aggregated_weekly">Wochensummen, von Health Connect entdoppelt</string>
     <string name="chart_source_cumulative">Laufende Summe über den Tag, von Health Connect entdoppelt</string>
     <string name="chart_source_cumulative_scaled">Laufende Summe über den Tag. Der Endwert ist die entdoppelte Summe; die Punkte dazwischen sind aufgeteilt, weil eine App einen Tageswert statt einzelner Einträge meldet.</string>

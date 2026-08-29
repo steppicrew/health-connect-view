@@ -198,6 +198,10 @@
         <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>
     </plurals>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
+    <plurals name="chart_gaps">
+        <item quantity="one">The gap is a day with nothing recorded, which is not the same as a day of zero.</item>
+        <item quantity="other">The %1$d gaps are days with nothing recorded, which is not the same as days of zero.</item>
+    </plurals>
     <string name="chart_source_aggregated_weekly">Weekly totals, deduplicated by Health Connect</string>
     <string name="chart_source_cumulative">Running total through the day, deduplicated by Health Connect</string>
     <string name="chart_source_cumulative_scaled">Running total through the day. The final value is the deduplicated total; points in between are apportioned, because one app reports a whole-day figure rather than individual entries.</string>
