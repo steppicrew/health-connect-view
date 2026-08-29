@@ -314,6 +314,7 @@ private fun SpanSummary(
                 emptyBuckets = data.emptyBuckets,
                 sessions = data.sessions,
                 colorScale = data.lineColorScale,
+                extent = data.extent,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(
