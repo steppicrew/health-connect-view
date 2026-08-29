@@ -1,1 +1,3 @@
+0.2 — Training und Schlaf als eigene Kacheln, jede Sitzung mit der dabei aufgezeichneten Herzfrequenz. Herzfrequenz wird in voller Auflösung dargestellt und nach Zonen eingefärbt; die Zeitachse lässt sich zoomen. Sitzungen liegen jetzt hinter allen Aktivitätsdiagrammen. Behoben: Ein Tag mit nur einem Tagessummen-Datensatz zeigte keine Kurve.
+
 Erste Version. Alle Health-Connect-Datentypen durchsuchen und grafisch darstellen — ganz ohne Netzwerkzugriff.

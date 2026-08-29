@@ -82,6 +82,21 @@ SHOT_ROUTES=(
     "6-catalog:catalog"
 )
 
+# The debug build labels itself "✻ Health Connect View" so it can be told apart from the Play
+# build in the launcher. That marker is right on a device and wrong in a store listing, where
+# it appears in "Written by ..." lines. Screenshots are therefore taken with the override
+# temporarily removed, and it is restored however this script exits.
+DEBUG_LABEL="app/src/debug/res/values/strings.xml"
+STASHED_LABEL=""
+
+restore_label() {
+    if [ -n "$STASHED_LABEL" ] && [ -f "$STASHED_LABEL" ]; then
+        mv "$STASHED_LABEL" "$DEBUG_LABEL"
+        STASHED_LABEL=""
+    fi
+}
+trap restore_label EXIT INT TERM
+
 take_shots() {
     need magick
     local device lang
@@ -101,6 +116,14 @@ take_shots() {
     # and a day's fixture spans the full 24 hours. Today is therefore empty by design.
     local day
     day="$(date -d yesterday +%Y-%m-%d)"
+
+    # Rebuild without the debug launcher label, so no frame shows the "✻" marker.
+    if [ -f "$DEBUG_LABEL" ]; then
+        STASHED_LABEL="$(mktemp)"
+        mv "$DEBUG_LABEL" "$STASHED_LABEL"
+        ./gradlew assembleDebug -q >/dev/null
+        adb -s "$device" install -r app/build/outputs/apk/debug/app-debug.apk >/dev/null
+    fi
 
     adb -s "$device" shell cmd locale set-app-locales "$PACKAGE" --locales "$lang" >/dev/null 2>&1 || true
 

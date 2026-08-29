@@ -1,1 +1,3 @@
+0.2 — Workouts and sleep as their own tiles, each session showing the heart rate recorded during it. Heart rate is charted at full resolution and coloured by zone; pinch to zoom the time axis. Session bands now sit behind every activity chart. Fixed: a day whose only record was a whole-day summary showed no curve.
+
 First release. Browse and chart every Health Connect data type, with no network access at all.
