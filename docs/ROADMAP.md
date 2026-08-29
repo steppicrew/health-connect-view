@@ -470,14 +470,33 @@ Enabling it needs Developer options -> "USB debugging (Security settings)", whic
 signed-in Mi account. Deliberately not done: tying a vendor account to a device that holds
 personal health data is a poor trade for the convenience of scripted taps, in a project whose
 whole point is that the data stays put. Screenshots (`adb exec-out screencap`), logcat,
-`am start` and file push all work regardless, and `adb install` is blocked by the same
-restriction -- push the APK to Downloads and install it by tapping instead.
+`am start` and file push all work regardless. **`adb install -r` does work** -- the block is
+specifically on *input injection*, not on installing -- so the install/screenshot loop can be
+driven entirely from the host; only gestures need a person.
 
 So on such a device, drive the UI by hand and read the result from screenshots and logs. The
 debug-only `AggregationCheckActivity` exists for exactly this: it is startable with `am start`
 and reports raw-versus-aggregated counts per type without needing a single tap.
 
-## 10. Deferred
+## 10. Known issues, not yet fixed
+
+Reported after using the internal-testing build. None is a data-correctness problem; all three
+are navigation or refresh behaviour.
+
+- **The dashboard still flickers on return.** A short-TTL cache was added so returning from a
+  tile does not re-read everything, but a flicker remains. Check whether the cache is actually
+  being hit on the way back -- a key that includes something which changes between the two
+  loads would invalidate it every time and make the cache a no-op.
+- **Back should walk the hierarchy, not the history.** From a tile's detail, Back returns to
+  wherever the user came from, so stepping to a previous day and then pressing Back walks the
+  days again instead of leaving the screen. It should go up a level -- to the dashboard --
+  regardless of how many days were stepped through.
+- **Date stepping stays live in tile edit mode.** While a tile's settings are open the day
+  arrows still work, and Back changes the date rather than closing the settings. Both are the
+  same underlying problem: the settings are a mode on the screen rather than a destination
+  with its own back behaviour.
+
+## 11. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
