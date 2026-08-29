@@ -18,6 +18,7 @@ import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
 import kotlinx.coroutines.coroutineScope
@@ -77,22 +78,22 @@ data class TileDetailData(
     /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
     val heartRateLocked: Boolean = false,
     /**
-     * Colour range for [sessionCurves], taken from the heart-rate type's own TileSpec so the
+     * Value bands for [sessionCurves], the user's for heart rate where they set them, so the
      * same reading is the same colour here as on the dashboard tile. Fixed rather than
-     * window-relative: a scale from each session's own extent would paint a calm walk in the
+     * window-relative: bands from each session's own extent would paint a calm walk in the
      * full sweep and make two sessions incomparable.
      */
-    val sessionCurveScale: ClosedFloatingPointRange<Double>? = null,
+    val sessionCurveZones: ValueZones? = null,
     /** Unit for the readout on a session's curve, from the heart-rate type's own spec. */
     @param:StringRes val sessionCurveUnitRes: Int? = null,
     /**
-     * Value range to colour the chart's line across, or null for a plain line.
+     * Value bands to colour the chart's line by, or null for a plain line.
      *
      * Only within a day, and only where the type declares a scale on its tile. Across days
      * each point is a daily average rather than a reading, so colouring one red would claim
      * an alarming measurement where the data says an unremarkable mean.
      */
-    val lineColorScale: ClosedFloatingPointRange<Double>? = null,
+    val lineZones: ValueZones? = null,
     /**
      * Horizontal extent the chart is drawn across, or null to span exactly the readings.
      *
@@ -350,18 +351,33 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         chosenShapeWriter = dominant?.key
         val records = dominant?.value ?: allRecords
 
-        val steps = records
-            .mapNotNull { record ->
-                val start = spec.timeOf(record)
-                val end = spec.endTimeOf(record) ?: start
-                val value = spec.pointsOf(record).sumOf { it.value }
-                if (Duration.between(start, end) >= WHOLE_DAY_THRESHOLD) {
-                    null
-                } else {
-                    Interval(start = start, end = end, value = value)
-                }
-            }
-            .sortedBy { it.start }
+        val intervals = records.map { record ->
+            val start = spec.timeOf(record)
+            val end = spec.endTimeOf(record) ?: start
+            Interval(
+                start = start,
+                end = end,
+                value = spec.pointsOf(record).sumOf { it.value },
+            )
+        }
+
+        // A whole-day summary says nothing about *when*, so it is normally dropped: including
+        // it would either add one huge step at midnight or, if spread, reintroduce the
+        // smearing this path exists to avoid. Its contribution still reaches the chart,
+        // because the series is rescaled to the deduplicated daily total afterwards.
+        val itemised = intervals.filter {
+            Duration.between(it.start, it.end) < WHOLE_DAY_THRESHOLD
+        }
+
+        // Unless the summary is all there is. On a real device one app wrote a single
+        // whole-day floors record and nothing else, and dropping it left the chart empty
+        // while the total and the record list below both showed the figure -- which reads as
+        // a rendering fault rather than as "this app only reported a daily total".
+        //
+        // Drawn as the one honest thing such a record supports: a single rise across the
+        // interval it actually covers. The caption already tells the reader the shape is
+        // apportioned rather than measured.
+        val steps = itemised.ifEmpty { intervals }.sortedBy { it.start }
 
         if (steps.isEmpty()) return emptyList()
 
@@ -527,6 +543,17 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         end = span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
         kinds = kinds,
     )
+
+    /**
+     * The value bands in force for a type: the user's override if they set one, else the
+     * type's default. Read from the same store as the goal, for the same reason.
+     */
+    private suspend fun zonesFor(spec: RecordTypeSpec<*>?): ValueZones? {
+        val name = spec?.type?.simpleName ?: return null
+        val stored = runCatching { dashboardStore.config.first() }.getOrNull()
+        return stored?.tiles?.firstOrNull { it.typeName == name }?.effectiveZones
+            ?: spec.tile.defaultZones
+    }
 
     /** The user's goal for this type if they set one, else the type's default. */
     private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
@@ -752,9 +779,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             emptyBuckets = emptyBuckets,
             sessions = sessions,
             sessionCurves = sessionCurves,
-            sessionCurveScale = heartRateSpec()?.tile?.colorScale,
+            sessionCurveZones = zonesFor(heartRateSpec()),
             sessionCurveUnitRes = heartRateSpec()?.unitRes,
-            lineColorScale = spec.tile.colorScale.takeIf { span.intradayBucket != null },
+            lineZones = zonesFor(spec).takeIf { span.intradayBucket != null },
             extent = dayExtent(span, offset),
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
