@@ -104,6 +104,38 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     /** Per-type source filter, shared with the full-screen view so the two agree. */
     private var sources: Map<String, String> = emptyMap()
 
+    /**
+     * What the tiles currently on screen were loaded for, and when.
+     *
+     * Returning from a tile re-ran every read, so the dashboard blanked to placeholders and
+     * refilled a second later -- on data that could not have changed in the time it takes to
+     * look at one chart and press Back. The values are re-read whenever anything they depend
+     * on differs, so this only ever suppresses a load that would produce the same answer.
+     *
+     * Deliberately in memory only: health values are never written to disk (see the app's
+     * non-negotiables), and a cache that outlives the process would be exactly that.
+     */
+    private var cache: CacheKey? = null
+
+    /**
+     * Everything a tile's value depends on. Permissions are part of it, so a grant made in
+     * settings takes effect on return rather than waiting out the TTL.
+     */
+    private data class CacheKey(
+        val date: LocalDate,
+        val tiles: List<Tile>,
+        val sources: Map<String, String>,
+        val granted: Set<String>,
+        val loadedAt: Long,
+    ) {
+        fun isFresh(now: Long, other: CacheKey): Boolean =
+            date == other.date &&
+                tiles == other.tiles &&
+                sources == other.sources &&
+                granted == other.granted &&
+                now - loadedAt < CACHE_TTL_MS
+    }
+
     init {
         refresh()
     }
@@ -198,7 +230,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     private suspend fun loadTiles() {
         val date = _state.value.date
+        // Always re-read: permissions are authoritative from Health Connect and can be
+        // revoked while backgrounded, so they are never taken from the cache.
         val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+
+        val now = System.currentTimeMillis()
+        val key = CacheKey(date, config.tiles, sources, granted, now)
+        val loadedTiles = _state.value.tiles.takeIf { it.none(TileData::loading) }
+        if (loadedTiles != null && cache?.isFresh(now, key) == true) {
+            // Nothing the values depend on has changed and they are still fresh, so the reads
+            // would return what is already on screen. Skipping them is what keeps the
+            // dashboard from blanking on the way back from a tile.
+            return
+        }
 
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
@@ -224,6 +268,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }.awaitAll()
         }
         _state.update { it.copy(tiles = loaded) }
+        cache = key.copy(loadedAt = System.currentTimeMillis())
     }
 
     /**
@@ -335,6 +380,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private companion object {
         const val MAX_CONCURRENT_TILES = 4
+
+        /**
+         * How long loaded values stay good. Long enough to cover leaving the dashboard and
+         * coming back, short enough that a genuinely new reading appears without the user
+         * wondering why it has not. Anything the values depend on invalidates them regardless.
+         */
+        const val CACHE_TTL_MS = 30_000L
 
         /** Trailing window for a curve tile. */
         const val CURVE_HOURS = 4L
