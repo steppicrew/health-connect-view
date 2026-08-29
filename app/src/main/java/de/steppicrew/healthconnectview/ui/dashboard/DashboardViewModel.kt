@@ -21,6 +21,7 @@ import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
+import de.steppicrew.healthconnectview.registry.ValueZones
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -161,6 +162,17 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun setGoal(typeName: String, goal: Double?) {
         val sanitised = goal?.takeIf { it > 0.0 }
         config = config.withGoal(typeName, sanitised)
+        viewModelScope.launch {
+            store.save(config)
+            loadTiles()
+        }
+    }
+
+    /**
+     * Changes a tile's colour zones and persists them. Null restores the type's defaults.
+     */
+    fun setZones(typeName: String, zones: ValueZones?) {
+        config = config.withZones(typeName, zones?.takeIf { it.bounds.isNotEmpty() })
         viewModelScope.launch {
             store.save(config)
             loadTiles()

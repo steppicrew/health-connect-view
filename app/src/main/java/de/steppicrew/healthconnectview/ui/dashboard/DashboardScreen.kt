@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -85,6 +86,7 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
+    var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editing by remember { mutableStateOf(false) }
     var addingTile by remember { mutableStateOf(false) }
 
@@ -103,6 +105,17 @@ fun DashboardScreen(
             currentGoal = editing.tile.effectiveGoal,
             onDismiss = { editingGoalFor = null },
             onSave = viewModel::setGoal,
+        )
+    }
+
+    editingZonesFor?.let { editing ->
+        ZonesDialog(
+            typeName = editing.tile.typeName,
+            displayName = stringResource(editing.spec.displayNameRes),
+            currentZones = editing.tile.zones,
+            defaultZones = editing.spec.tile.defaultZones,
+            onDismiss = { editingZonesFor = null },
+            onSave = viewModel::setZones,
         )
     }
 
@@ -218,6 +231,7 @@ fun DashboardScreen(
                         onMoveDown = { viewModel.moveTile(tile.tile.typeName, forward = true) },
                         onRemove = { viewModel.removeTile(tile.tile.typeName) },
                         onSetGoal = { editingGoalFor = tile },
+                        onSetZones = { editingZonesFor = tile },
                     )
                 }
             }
@@ -240,6 +254,7 @@ private fun TileCard(
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
+    onSetZones: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -270,10 +285,14 @@ private fun TileCard(
                 if (editing) {
                     TileEditControls(
                         canSetGoal = data.spec.tile.form == TileSpec.Form.RING,
+                        // Only where a curve is actually coloured by them; a ring or a plain
+                        // number has nothing for zones to change.
+                        canSetZones = data.spec.tile.defaultZones != null,
                         onMoveUp = onMoveUp,
                         onMoveDown = onMoveDown,
                         onRemove = onRemove,
                         onSetGoal = onSetGoal,
+                        onSetZones = onSetZones,
                     )
                 } else {
                     TileBody(data)
@@ -338,10 +357,12 @@ private fun TileCard(
 @Composable
 private fun TileEditControls(
     canSetGoal: Boolean,
+    canSetZones: Boolean,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
+    onSetZones: () -> Unit,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
@@ -367,6 +388,14 @@ private fun TileEditControls(
                     )
                 }
             }
+            if (canSetZones) {
+                IconButton(onClick = onSetZones) {
+                    Icon(
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = stringResource(R.string.tile_set_zones),
+                    )
+                }
+            }
             IconButton(onClick = onRemove) {
                 Icon(
                     imageVector = Icons.Default.Delete,
@@ -386,7 +415,8 @@ private fun TileEditControls(
 @Composable
 private fun TileBody(data: TileData) {
     val progress = data.progress
-    val scale = data.spec.tile.colorScale
+    // The user's bands where they set them; the type's defaults otherwise.
+    val zones = data.tile.effectiveZones
 
     when {
         !data.granted -> TileValue(data)
@@ -402,7 +432,7 @@ private fun TileBody(data: TileData) {
                 TileValue(data)
             }
 
-        data.spec.tile.form == TileSpec.Form.CURVE && scale != null && data.curve.size > 1 ->
+        data.spec.tile.form == TileSpec.Form.CURVE && zones != null && data.curve.size > 1 ->
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -411,7 +441,7 @@ private fun TileBody(data: TileData) {
                 TileValue(data)
                 SparkCurve(
                     points = data.curve,
-                    scale = scale,
+                    zones = zones,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(CURVE_HEIGHT.dp)

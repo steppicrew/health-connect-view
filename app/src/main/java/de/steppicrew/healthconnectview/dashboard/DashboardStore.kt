@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import de.steppicrew.healthconnectview.registry.ValueZones
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -50,6 +51,9 @@ class DashboardStore(private val context: Context) {
                     put(FIELD_WIDTH, tile.width)
                     put(FIELD_HEIGHT, tile.height)
                     tile.goal?.let { put(FIELD_GOAL, it) }
+                    tile.zones?.let { zones ->
+                        put(FIELD_ZONES, JSONArray().apply { zones.bounds.forEach { put(it) } })
+                    }
                 },
             )
         }
@@ -67,6 +71,13 @@ class DashboardStore(private val context: Context) {
                 width = item.optInt(FIELD_WIDTH, 1).coerceAtLeast(1),
                 height = item.optInt(FIELD_HEIGHT, 1).coerceAtLeast(1),
                 goal = if (item.has(FIELD_GOAL)) item.optDouble(FIELD_GOAL) else null,
+                zones = item.optJSONArray(FIELD_ZONES)?.let { stored ->
+                    // Sanitised on read as well as on write: a hand-edited or half-written
+                    // value must not put unsorted bounds in front of the colour lookup.
+                    ValueZones((0 until stored.length()).map { stored.optDouble(it) })
+                        .sanitised()
+                        .takeIf { it.bounds.isNotEmpty() }
+                },
             )
         }
         return DashboardConfig(tiles)
@@ -78,5 +89,6 @@ class DashboardStore(private val context: Context) {
         const val FIELD_WIDTH = "w"
         const val FIELD_HEIGHT = "h"
         const val FIELD_GOAL = "goal"
+        const val FIELD_ZONES = "zones"
     }
 }

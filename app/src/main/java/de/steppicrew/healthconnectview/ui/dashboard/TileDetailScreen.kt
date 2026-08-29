@@ -49,6 +49,7 @@ import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -208,7 +209,7 @@ private fun SpanContent(
                 SessionRow(
                     session = session,
                     curve = data.sessionCurves[session.start],
-                    scale = data.sessionCurveScale,
+                    zones = data.sessionCurveZones,
                     heartRateUnitRes = data.sessionCurveUnitRes,
                     heartRateLocked = data.heartRateLocked,
                     onClick = { onOpenSession(session) },
@@ -346,7 +347,7 @@ private fun SpanSummary(
                 unitRes = data.spec.unitRes,
                 emptyBuckets = data.emptyBuckets,
                 sessions = data.sessions,
-                colorScale = data.lineColorScale,
+                zones = data.lineZones,
                 extent = data.extent,
                 modifier = Modifier.padding(top = 16.dp),
             )
@@ -448,7 +449,7 @@ private fun SessionCaption(session: Session, onClick: () -> Unit) {
 private fun SessionRow(
     session: Session,
     curve: List<Point>?,
-    scale: ClosedFloatingPointRange<Double>?,
+    zones: ValueZones?,
     @StringRes heartRateUnitRes: Int?,
     heartRateLocked: Boolean,
     onClick: () -> Unit,
@@ -508,7 +509,7 @@ private fun SessionRow(
                 points = curve,
                 smooth = false,
                 unitRes = heartRateUnitRes,
-                colorScale = scale,
+                zones = zones,
                 extent = session.start..session.end,
             )
 

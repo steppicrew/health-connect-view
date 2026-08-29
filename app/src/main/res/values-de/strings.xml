@@ -160,6 +160,13 @@
     <string name="session_no_stats">Während dieser Sitzung wurde sonst nichts aufgezeichnet.</string>
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
     <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
+    <string name="zones_title">Farbzonen</string>
+    <string name="zones_explained">Die Kurve wird danach eingefärbt, in welchen Bereich ein Messwert fällt. Lege die Grenze zwischen je zwei Bereichen fest.</string>
+    <string name="zones_upper_bound">Bis (ab %1$s)</string>
+    <string name="zones_above">Über %1$s</string>
+    <string name="zones_invalid">Grenzen müssen Zahlen sein, jede größer als die vorherige.</string>
+    <string name="zones_reset">Standard verwenden</string>
+    <string name="tile_set_zones">Farbzonen festlegen</string>
     <string name="sessions_none">Keine</string>
     <plurals name="sessions_detail_header">
         <item quantity="one">%1$d Sitzung</item>

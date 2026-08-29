@@ -367,7 +367,7 @@ object RecordRegistry {
             aggregate = HeartRateRecord.BPM_AVG,
             tile = TileSpec(
                 TileSpec.Form.CURVE,
-                colorScale = 50.0..160.0,
+                defaultZones = ValueZones.DEFAULT_HEART_RATE,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
