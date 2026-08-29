@@ -9,16 +9,16 @@
 # always shows as much recent history as the limit allows rather than being truncated
 # mid-sentence by the Console.
 #
-# Entries live in changelogs/<versionCode>.txt per language, which is the layout the Play
-# publisher plugin reads. This script assembles the rolling file from the per-version
-# entries, so editing history means editing one small file rather than a running text.
+# Per-version entries live in <lang>/entries/<versionCode>.txt. This script assembles them
+# into the <lang>/default.txt that the Play publisher plugin actually uploads, so editing
+# history means editing one small file rather than a running text.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$ROOT_DIR"
 
-METADATA="fastlane/metadata/android"
+METADATA="app/src/main/play/release-notes"
 # Play's hard limit. Exceeding it is rejected at upload, not silently trimmed.
 LIMIT=500
 MODE="${1:-write}"
@@ -29,7 +29,7 @@ version_code() {
     grep -oP 'versionCode\s*=\s*\K[0-9]+' app/build.gradle.kts | head -1
 }
 
-# Languages are whatever has a listing directory; a new locale needs no change here.
+# Languages are whatever has a release-notes directory; a new locale needs no change here.
 languages() {
     find "$METADATA" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
 }
@@ -71,9 +71,11 @@ main() {
         [ -d "$dir" ] || { echo "$lang: no entries/, skipped"; continue; }
         [ -f "$dir/$code.txt" ] || { echo "$lang: MISSING entry for version $code"; failed=1; continue; }
 
+        # default.txt is what the plugin uploads for every release; the entries beside it
+        # are the history it is assembled from.
         local notes target
         notes="$(build_notes "$lang")"
-        target="$METADATA/$lang/changelogs/$code.txt"
+        target="$METADATA/$lang/default.txt"
 
         if [ "$MODE" = "--check" ]; then
             printf '%-6s %3s chars\n' "$lang" "${#notes}"
