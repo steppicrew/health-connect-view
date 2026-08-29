@@ -1,0 +1,27 @@
+Health Connect View zeigt dir die Gesundheitsdaten, die Health Connect bereits auf deinem Handy gespeichert hat. Die App ist ein Betrachter: Sie liest, sie zeigt an, und sonst nichts.
+
+KEIN NETZWERKZUGRIFF, VON GRUND AUF
+
+Die App fordert keine Internet-Berechtigung an. Nicht für Analyse, nicht für Absturzberichte, für nichts. Das ist kein Versprechen über den Umgang mit den Daten — es gibt schlicht keinen Weg, auf dem sie irgendwohin gesendet werden könnten, und der Build schlägt fehl, sobald eine Abhängigkeit das versucht.
+
+Deine Gesundheitsdaten werden von dieser App nie auf den Speicher geschrieben, nie gesichert und nie bei einer Geräteübertragung mitgenommen. Sie liegen nur im Arbeitsspeicher, solange du sie ansiehst.
+
+NUR LESEN
+
+Die App fragt ausschließlich Leseberechtigungen an, und nur für die Datentypen, die du freigibst. Sie kann in Health Connect nichts hinzufügen, ändern oder löschen.
+
+WAS SIE ZEIGT
+
+• Ein Dashboard mit den Werten, die dich interessieren, Tag für Tag
+• Diagramme nach Tag, Woche, vier Wochen oder Jahr
+• Schritte, Herzfrequenz, Schlaf, Training, Gewicht, Kalorien, Distanz und mehr
+• Schlaf- und Trainingssitzungen hinterlegt hinter den Tagesdiagrammen, damit eine Spitze oder ein Tief eine Erklärung hat
+• Die Rohdaten hinter jedem Wert, samt der App, die sie geschrieben hat
+
+EHRLICH ZU DEN DATEN
+
+Oft schreiben mehrere Apps denselben Wert, und sie widersprechen sich. Summen stammen aus der Entdopplung von Health Connect selbst und nicht aus dem Addieren von Datensätzen, und die App sagt dir, wenn ein Wert nur von einer App stammt statt aus der Gesamtsumme.
+
+Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo die App Statistiken zu einer Sitzung zeigt, sagt sie deshalb klar, dass sie über die Zeit zugeordnet sind.
+
+Du brauchst Health Connect mit Daten aus den Apps und Geräten, die du ohnehin nutzt.
