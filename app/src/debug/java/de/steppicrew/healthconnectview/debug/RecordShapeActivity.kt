@@ -144,6 +144,94 @@ class RecordShapeActivity : ComponentActivity() {
                 )
             }
 
+            // Steps per writer for the same day, and what the ordering looks like: the
+            // cumulative chart builds from records, so overlapping or out-of-order intervals
+            // between writers are what would send the line backwards.
+            val stepRecords = runCatching {
+                repository.read(StepsRecord::class, dayInstants(day, zone))
+            }.getOrDefault(emptyList())
+
+            stepRecords.groupBy { it.metadata.dataOrigin.packageName }.forEach { (pkg, recs) ->
+                val sorted = recs.sortedBy { it.startTime }
+                var overlaps = 0
+                sorted.zipWithNext().forEach { (a, b) ->
+                    if (b.startTime < a.endTime) overlaps++
+                }
+                Log.i(
+                    TAG,
+                    "STEPS-ORIGIN $pkg records=${recs.size} sum=${recs.sumOf { it.count }} " +
+                        "internalOverlaps=$overlaps " +
+                        "first=${sorted.first().startTime.atZone(zone).toLocalTime()} " +
+                        "last=${sorted.last().endTime.atZone(zone).toLocalTime()}",
+                )
+                val scoped = runCatching {
+                    repository.total(
+                        StepsRecord.COUNT_TOTAL,
+                        de.steppicrew.healthconnectview.health.dayFilter(day),
+                        setOf(androidx.health.connect.client.records.metadata.DataOrigin(pkg)),
+                    )
+                }.getOrNull()
+                Log.i(TAG, "STEPS-ORIGIN $pkg aggregate=$scoped")
+            }
+
+            // Cross-writer overlap on the merged set: this is what the all-sources chart sees.
+            val allSorted = stepRecords.sortedBy { it.startTime }
+            var crossOverlaps = 0
+            allSorted.zipWithNext().forEach { (a, b) ->
+                if (b.startTime < a.endTime) crossOverlaps++
+            }
+            val combined = runCatching {
+                repository.total(
+                    StepsRecord.COUNT_TOTAL,
+                    de.steppicrew.healthconnectview.health.dayFilter(day),
+                )
+            }.getOrNull()
+            Log.i(
+                TAG,
+                "STEPS-ALL records=${stepRecords.size} rawSum=${stepRecords.sumOf { it.count }} " +
+                    "aggregate=$combined crossWriterOverlaps=$crossOverlaps",
+            )
+
+            // Are exercise sessions and the readings taken during them connected? Health
+            // Connect stores them as separate record types with no foreign key, so the only
+            // available link is the time range. This measures whether that link is usable:
+            // how many heart-rate samples fall inside each session's window.
+            val sessions = runCatching {
+                repository.read(
+                    androidx.health.connect.client.records.ExerciseSessionRecord::class,
+                    androidx.health.connect.client.time.TimeRangeFilter.between(
+                        day.minusDays(7).atStartOfDay(zone).toInstant(),
+                        day.plusDays(1).atStartOfDay(zone).toInstant(),
+                    ),
+                )
+            }.getOrDefault(emptyList())
+
+            val hr = runCatching {
+                repository.read(
+                    androidx.health.connect.client.records.HeartRateRecord::class,
+                    androidx.health.connect.client.time.TimeRangeFilter.between(
+                        day.minusDays(7).atStartOfDay(zone).toInstant(),
+                        day.plusDays(1).atStartOfDay(zone).toInstant(),
+                    ),
+                )
+            }.getOrDefault(emptyList())
+
+            Log.i(TAG, "SESSIONS count=${sessions.size} hrRecords=${hr.size}")
+            sessions.sortedBy { it.startTime }.forEach { session ->
+                val inWindow = hr.filter {
+                    it.startTime < session.endTime && it.endTime > session.startTime
+                }
+                val samples = inWindow.sumOf { it.samples.size }
+                Log.i(
+                    TAG,
+                    "SESSION type=${session.exerciseType} title=${session.title} " +
+                        "start=${session.startTime.atZone(zone).toLocalDateTime()} " +
+                        "durationMin=${Duration.between(session.startTime, session.endTime).toMinutes()} " +
+                        "origin=${session.metadata.dataOrigin.packageName} " +
+                        "hrRecordsInWindow=${inWindow.size} hrSamplesInWindow=$samples",
+                )
+            }
+
             Log.i(TAG, "done")
             finish()
         }

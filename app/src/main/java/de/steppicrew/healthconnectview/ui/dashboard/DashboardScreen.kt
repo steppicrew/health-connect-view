@@ -74,7 +74,7 @@ import java.time.format.FormatStyle
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    onOpenType: (String) -> Unit,
+    onOpenType: (String, String) -> Unit,
     onOpenCatalog: () -> Unit,
     onOpenPermissions: () -> Unit,
     modifier: Modifier = Modifier,
@@ -207,7 +207,7 @@ fun DashboardScreen(
                         onClick = {
                             // In edit mode a tap must not navigate away: the user is arranging
                             // tiles, not reading them.
-                            if (!editing) onOpenType(tile.tile.typeName)
+                            if (!editing) onOpenType(tile.tile.typeName, state.date.toString())
                         },
                         onLongClick = { editing = true },
                         onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },

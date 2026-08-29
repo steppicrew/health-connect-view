@@ -28,12 +28,12 @@ object Routes {
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
-    const val TILE_DETAIL = "tile/{typeName}"
+    const val TILE_DETAIL = "tile/{typeName}?date={date}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
 
     fun typeDetail(typeName: String) = "type/$typeName"
-    fun tileDetail(typeName: String) = "tile/$typeName"
+    fun tileDetail(typeName: String, date: String) = "tile/$typeName?date=$date"
 }
 
 @Composable
@@ -47,7 +47,9 @@ fun HealthNavGraph(
             val viewModel: DashboardViewModel = viewModel()
             DashboardScreen(
                 viewModel = viewModel,
-                onOpenType = { navController.navigate(Routes.tileDetail(it)) },
+                onOpenType = { type, date ->
+                    navController.navigate(Routes.tileDetail(type, date))
+                },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                 onOpenPermissions = { navController.navigate(Routes.SETTINGS) },
             )
@@ -89,11 +91,18 @@ fun HealthNavGraph(
 
         composable(
             route = Routes.TILE_DETAIL,
-            arguments = listOf(navArgument("typeName") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("typeName") { type = NavType.StringType },
+                navArgument("date") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+            ),
         ) { entry ->
             val typeName = entry.arguments?.getString("typeName").orEmpty()
+            val date = entry.arguments?.getString("date").orEmpty()
             val viewModel: TileDetailViewModel = viewModel()
-            LaunchedEffect(typeName) { viewModel.load(typeName) }
+            LaunchedEffect(typeName, date) { viewModel.load(typeName, date) }
             TileDetailScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
