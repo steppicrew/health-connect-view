@@ -25,6 +25,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import java.time.Instant
 
@@ -72,14 +75,14 @@ fun LineChart(
      */
     sessions: List<Session> = emptyList(),
     /**
-     * Value range to colour the line across, blue to red, or null for a single-colour line.
+     * Value bands to colour the line by, or null for a single-colour line.
      *
-     * Set for the types that declare one on their tile, so the same reading is the same
-     * colour on the dashboard and on the chart it opens. The scale is the type's own fixed
-     * clinical range and never the window's extent: a window-relative scale would paint every
-     * day in the full sweep, making a calm day look identical to an alarming one.
+     * Set for the types that declare zones, so the same reading is the same colour on the
+     * dashboard and on the chart it opens. The bands are fixed values, never the window's own
+     * extent: a window-relative scale would paint every day in the full sweep, making a calm
+     * day look identical to an alarming one.
      */
-    colorScale: ClosedFloatingPointRange<Double>? = null,
+    zones: ValueZones? = null,
     /**
      * Horizontal extent of the plot, or null to span exactly the readings.
      *
@@ -296,21 +299,34 @@ fun LineChart(
                     // A lone point between two gaps has no line to draw, so it is marked
                     // instead -- otherwise a day surrounded by empty days vanishes entirely.
                     segmentOffsets.size == 1 -> drawCircle(
-                        color = colorScale
-                            ?.let { colorForValue(segment.first().value, it) }
-                            ?: lineColor,
+                        color = zones?.colorFor(segment.first().value) ?: lineColor,
                         radius = 3.dp.toPx(),
                         center = segmentOffsets.first(),
                     )
 
-                    // A coloured line is stroked span by span, because a path can only take
-                    // one colour. That costs the smoothing -- a curve is a single path by
-                    // definition -- and the colour is worth more here: it says whether a
-                    // reading was high, which no amount of rounded corners conveys.
-                    colorScale != null -> segmentOffsets.zipWithNext()
+                    // Each span is drawn as a gradient between its two endpoints' colours,
+                    // so the colour tracks the value continuously along the line.
+                    //
+                    // Colouring a whole span by one endpoint made the colour depend on the
+                    // direction of travel: a rise from 100 to 135 came out red while the fall
+                    // back from 135 to 95 came out blue, so the same reading wore two colours
+                    // depending on which way the line was going. A gradient has no such
+                    // asymmetry -- every point on the line carries the colour of the value at
+                    // that point.
+                    zones != null -> segmentOffsets.zipWithNext()
                         .forEachIndexed { index, (from, to) ->
+                            val fromColor = zones.colorFor(segment[index].value)
+                            val toColor = zones.colorFor(segment[index + 1].value)
                             drawLine(
-                                color = colorForValue(segment[index + 1].value, colorScale),
+                                brush = if (fromColor == toColor) {
+                                    SolidColor(fromColor)
+                                } else {
+                                    Brush.linearGradient(
+                                        colors = listOf(fromColor, toColor),
+                                        start = from,
+                                        end = to,
+                                    )
+                                },
                                 start = from,
                                 end = to,
                                 strokeWidth = 3.dp.toPx(),

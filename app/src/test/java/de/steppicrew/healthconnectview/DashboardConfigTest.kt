@@ -119,8 +119,8 @@ class DashboardConfigTest {
                     spec.tile.defaultGoal != null && spec.aggregate != null,
                 )
                 TileSpec.Form.CURVE -> assertTrue(
-                    "${spec.type.simpleName} is a curve with no colour scale",
-                    spec.tile.colorScale != null,
+                    "${spec.type.simpleName} is a curve with no colour zones",
+                    spec.tile.defaultZones != null,
                 )
                 // A session tile counts spans of one kind. Without a kind it has nothing to
                 // count and would render a permanent zero.
