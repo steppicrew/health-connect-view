@@ -25,5 +25,8 @@
         <activity
             android:name="de.steppicrew.healthconnectview.debug.HistoryReachActivity"
             android:exported="true" />
+        <activity
+            android:name="de.steppicrew.healthconnectview.debug.RecordShapeActivity"
+            android:exported="true" />
     </application>
 </manifest>

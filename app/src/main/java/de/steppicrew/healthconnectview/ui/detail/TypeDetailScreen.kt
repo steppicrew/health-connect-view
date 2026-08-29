@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.Record
@@ -37,6 +38,7 @@ import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
@@ -157,18 +159,33 @@ private fun DetailContent(
             }
         }
 
-        if (data.contributingApps.size > 1) {
+        if (data.contributingApps.isNotEmpty()) {
             item(key = "contributors") {
-                Text(
-                    text = pluralStringResource(
-                        R.plurals.detail_multiple_writers,
-                        data.contributingApps.size,
-                        data.contributingApps.size,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                )
+                val context = LocalContext.current
+                val names = data.contributingApps
+                    .map { context.appLabelFor(it) }
+                    .sorted()
+                    .joinToString(", ")
+                Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text(
+                        text = stringResource(R.string.detail_written_by, names),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    // Only worth explaining when more than one app writes: that is when the
+                    // deduplicated total stops matching what any single app would report.
+                    if (data.contributingApps.size > 1) {
+                        Text(
+                            text = pluralStringResource(
+                                R.plurals.detail_multiple_writers,
+                                data.contributingApps.size,
+                                data.contributingApps.size,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
         }
 
@@ -234,7 +251,15 @@ private fun RecordRow(
             style = MaterialTheme.typography.bodyLarge,
         )
         Text(
-            text = Formatting.dateTime(spec.timeOf(record)),
+            text = Formatting.timeSpan(spec.timeOf(record), spec.endTimeOf(record)),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        // Every row names its writer. Several apps commonly write the same type -- one
+        // itemising as it goes, another posting a daily summary -- so without the source a
+        // legitimate whole-day record is indistinguishable from a duplicate or an error.
+        Text(
+            text = LocalContext.current.appLabelFor(spec.originOf(record)),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

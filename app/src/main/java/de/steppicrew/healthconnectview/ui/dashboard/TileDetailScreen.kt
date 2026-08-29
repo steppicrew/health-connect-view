@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +35,7 @@ import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -130,6 +132,20 @@ private fun SpanContent(data: TileDetailData) {
             Text(
                 text = Formatting.number(total),
                 style = MaterialTheme.typography.headlineMedium,
+            )
+        }
+
+        if (data.contributingApps.isNotEmpty()) {
+            val context = LocalContext.current
+            Text(
+                text = stringResource(
+                    R.string.detail_written_by,
+                    data.contributingApps.map { context.appLabelFor(it) }.sorted()
+                        .joinToString(", "),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
 

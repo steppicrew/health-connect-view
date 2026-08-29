@@ -42,6 +42,32 @@ object Formatting {
             .withZone(zone)
             .format(instant)
 
+    /**
+     * A record's time span: a single time for an instantaneous record, "start - end" for an
+     * interval. Without the end, a whole-day summary record and a fifteen-minute one look
+     * identical, and the summary reads as a stray midnight entry.
+     *
+     * The date is shown once; only the end's clock time is appended when the record ends on
+     * the same day, which is the common case.
+     */
+    fun timeSpan(
+        start: Instant,
+        end: Instant?,
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): String {
+        if (end == null || end == start) return dateTime(start, zone)
+
+        val startLocal = start.atZone(zone)
+        val endLocal = end.atZone(zone)
+        val endFormat = if (startLocal.toLocalDate() == endLocal.toLocalDate()) {
+            DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+        } else {
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+        }
+        val endText = endFormat.withLocale(Locale.getDefault()).withZone(zone).format(end)
+        return dateTime(start, zone) + " – " + endText
+    }
+
     /** Compact duration such as "7h 32m"; the unit letters come from resources at call sites. */
     fun duration(duration: Duration): String {
         val hours = duration.toHours()

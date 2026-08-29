@@ -44,6 +44,15 @@ data class RecordTypeSpec<T : Record>(
      * (InstantaneousRecord / IntervalRecord) are internal to the library in Kotlin.
      */
     val startTime: (T) -> Instant,
+    /**
+     * End of the record's time span, or null for an instantaneous type.
+     *
+     * Supplied per type for the same reason as [startTime]: IntervalRecord is public in
+     * bytecode but internal to the library in Kotlin, so `is IntervalRecord` does not compile.
+     * Without this a record covering a whole day and one covering a minute are shown
+     * identically, which makes a daily-summary row look like a stray midnight entry.
+     */
+    val endTime: ((T) -> Instant)? = null,
     /** Deduplicating metric for totals; null means no total may be shown for this type. */
     val aggregate: AggregateMetric<*>? = null,
     /**
@@ -67,10 +76,16 @@ data class RecordTypeSpec<T : Record>(
      */
     val isChartable: Boolean get() = unitRes != null
 
-    // The three casts below are safe by construction: a spec is only ever applied to records
+    // The casts below are safe by construction: a spec is only ever applied to records
     // read via ReadRecordsRequest(spec.type), so the runtime type always matches T.
     @Suppress("UNCHECKED_CAST")
     fun timeOf(record: Record): Instant = startTime(record as T)
+
+    @Suppress("UNCHECKED_CAST")
+    fun endTimeOf(record: Record): Instant? = endTime?.invoke(record as T)
+
+    /** Writing app's package name. Every record carries one; several apps may write a type. */
+    fun originOf(record: Record): String = record.metadata.dataOrigin.packageName
 
     @Suppress("UNCHECKED_CAST")
     fun pointsOf(record: Record): List<Point> = points(record as T)

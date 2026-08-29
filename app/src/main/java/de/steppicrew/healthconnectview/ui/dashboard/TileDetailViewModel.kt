@@ -27,6 +27,8 @@ data class TileDetailData(
     val weeklyBuckets: Boolean,
     /** True when the window reaches past 30 days without the history permission. */
     val historyCapped: Boolean,
+    /** Apps that wrote into this window, so every number on screen names its source. */
+    val contributingApps: Set<String>,
     val start: LocalDate,
     val end: LocalDate,
 )
@@ -152,11 +154,25 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             null
         }
 
+        // Aggregation reports its origins directly; for the raw-record path the writers have
+        // to be collected from the records themselves.
+        val contributors = if (metric != null) {
+            runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
+                .getOrDefault(emptySet())
+        } else {
+            runCatching {
+                repository.read(spec.type, span.instantFilter(offset))
+                    .map { spec.originOf(it) }
+                    .toSet()
+            }.getOrDefault(emptySet())
+        }
+
         return TileDetailData(
             spec = spec,
             points = points,
             total = total,
             aggregated = metric != null,
+            contributingApps = contributors,
             weeklyBuckets = span.bucket.days > 1,
             historyCapped = historyCapped,
             start = span.startDate(offset),
