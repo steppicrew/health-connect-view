@@ -8,11 +8,8 @@ import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.SleepSessionRecord
 import de.steppicrew.healthconnectview.health.Session
-import de.steppicrew.healthconnectview.health.dedupeSessions
-import de.steppicrew.healthconnectview.health.toSession
+import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
@@ -20,6 +17,7 @@ import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
@@ -67,6 +65,23 @@ data class TileDetailData(
     val goalCrossing: Instant?,
     /** Sleep or exercise spans shaded behind the chart, associated by time overlap only. */
     val sessions: List<Session>,
+    /**
+     * Heart rate through each session's own window, keyed by session start.
+     *
+     * Only filled for a [TileSpec.Form.SESSIONS] type, where the sessions are the content of
+     * the screen rather than context behind a chart. A missing entry means no heart rate was
+     * recorded then, which is distinct from an empty list and is said in different words.
+     */
+    val sessionCurves: Map<Instant, List<Point>> = emptyMap(),
+    /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
+    val heartRateLocked: Boolean = false,
+    /**
+     * Colour range for [sessionCurves], taken from the heart-rate type's own TileSpec so the
+     * same reading is the same colour here as on the dashboard tile. Fixed rather than
+     * window-relative: a scale from each session's own extent would paint a calm walk in the
+     * full sweep and make two sessions incomparable.
+     */
+    val sessionCurveScale: ClosedFloatingPointRange<Double>? = null,
     /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
@@ -244,7 +259,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             result.fold(
                 onSuccess = { data ->
                     _state.update {
-                        if (data.points.isEmpty() && data.total == null && data.records.isEmpty()) {
+                        if (data.points.isEmpty() && data.total == null &&
+                            data.records.isEmpty() && data.sessions.isEmpty()
+                        ) {
                             UiState.Empty
                         } else {
                             UiState.Data(data)
@@ -392,51 +409,62 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /**
-     * Sleep and exercise spans overlapping the window.
+     * Heart rate through each session's own window, keyed by the session's start.
      *
-     * Read unfiltered by source: a session written by any app is still a fact about what the
-     * user was doing, and the source filter is about which app's *measurements* to trust.
-     * Overlapping duplicates are collapsed, preferring the writer that named the activity.
+     * Read raw rather than aggregated, and that is safe here in a way it would not be for a
+     * total: heart rate is instantaneous, so two apps writing the same beat duplicate a point
+     * on the curve rather than inflating a sum. Sessions with nothing recorded are left out
+     * of the map entirely, so the UI can say "none was recorded" rather than draw an empty
+     * box.
+     *
+     * The association is by time, like every other session statistic in this app: Health
+     * Connect stores no session id on a sample, so these are the readings taken during the
+     * session and deliberately not readings tagged as belonging to it.
+     */
+    private suspend fun curvesFor(sessions: List<Session>): Map<Instant, List<Point>> {
+        val spec = heartRateSpec() ?: return emptyMap()
+        val gate = Semaphore(MAX_CONCURRENT_STATS)
+
+        return coroutineScope {
+            sessions.map { session ->
+                async {
+                    gate.withPermit {
+                        val points = runCatching {
+                            repository.readForChart(
+                                spec.type,
+                                TimeRangeFilter.between(session.start, session.end),
+                            ).flatMap { spec.pointsOf(it) }.sortedBy { it.time }
+                        }.getOrDefault(emptyList())
+                        points.takeIf { it.size > 1 }?.let { session.start to it }
+                    }
+                }
+            }.awaitAll().filterNotNull().toMap()
+        }
+    }
+
+    private fun heartRateSpec(): RecordTypeSpec<*>? = RecordRegistry.specOrNull(HEART_RATE)
+
+    private suspend fun heartRateGranted(): Boolean {
+        val permission = heartRateSpec()?.permission ?: return false
+        val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+        return permission in granted
+    }
+
+    /**
+     * Sleep and exercise spans overlapping the window, for the bands behind the chart.
+     *
+     * The widening, deduplication and clipping all live in [sessionsIn], shared with the
+     * dashboard so a session counted on a tile is the same session shaded on the chart.
      */
     private suspend fun loadSessions(
         span: Span,
         offset: Int,
         kinds: Set<Session.Kind>,
-    ): List<Session> {
-        // Widened by a night either side. A sleep session belongs to the morning it ends on
-        // but starts the previous evening -- measured on a real device, 22:48 to 05:15 -- so a
-        // day-bounded read is the wrong query for it whatever the filter's overlap semantics.
-        // Bands are clipped to the visible range when drawn, so the margin costs nothing.
-        val visibleStart = span.startDate(offset)
-            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
-        val visibleEnd = span.endDate(offset)
-            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
-        val range = TimeRangeFilter.between(
-            visibleStart.minus(SESSION_MARGIN),
-            visibleEnd.plus(SESSION_MARGIN),
-        )
-
-        val exercise = if (Session.Kind.EXERCISE in kinds) {
-            runCatching {
-                repository.read(ExerciseSessionRecord::class, range).map { it.toSession() }
-            }.getOrDefault(emptyList())
-        } else {
-            emptyList()
-        }
-
-        val sleep = if (Session.Kind.SLEEP in kinds) {
-            runCatching {
-                repository.read(SleepSessionRecord::class, range).map { it.toSession() }
-            }.getOrDefault(emptyList())
-        } else {
-            emptyList()
-        }
-
-        // Only sessions that actually touch the window are worth drawing; the margin was for
-        // catching one that started outside it, not for showing the neighbouring night.
-        return dedupeSessions(exercise + sleep)
-            .filter { it.start < visibleEnd && it.end > visibleStart }
-    }
+    ): List<Session> = repository.sessionsIn(
+        start = span.startDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+        end = span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+        kinds = kinds,
+    )
 
     /** The user's goal for this type if they set one, else the type's default. */
     private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
@@ -596,12 +624,31 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // up instead as the shape-source note, which says exactly whose readings these are.
         val approximated = cumulative && scaledPoints !== chartPoints && chosenShapeWriter == null
 
-        // Only within a day: across weeks a band would be thinner than the line it sits
-        // behind and would say nothing.
-        val sessions = if (span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty()) {
-            loadSessions(span, offset, spec.tile.overlaySessions)
+        // Two different reasons to load sessions, and they need different windows.
+        //
+        // As bands behind someone else's chart they are context, so they are only worth
+        // drawing within a day: across weeks a band would be thinner than the line it sits
+        // behind and would say nothing. As the content of a session type's own screen they
+        // are the point of the view, so they are listed for whatever window is shown.
+        val sessionKind = spec.tile.sessionKind.takeIf { spec.tile.form == TileSpec.Form.SESSIONS }
+        val sessions = when {
+            sessionKind != null -> loadSessions(span, offset, setOf(sessionKind))
+
+            span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty() ->
+                loadSessions(span, offset, spec.tile.overlaySessions)
+
+            else -> emptyList()
+        }
+
+        // The samples are already there, taken during the session; drawing them per session
+        // is the only place they answer "what was this activity like" rather than "what did
+        // the day look like". Only for a session type's own screen -- elsewhere the sessions
+        // are bands behind a chart that is already showing something.
+        val heartRateGranted = sessionKind != null && heartRateGranted()
+        val sessionCurves = if (sessionKind != null && heartRateGranted) {
+            curvesFor(sessions)
         } else {
-            emptyList()
+            emptyMap()
         }
 
         // Deliberately unfiltered: this drives the source picker, so it must list every app
@@ -635,6 +682,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             goalCrossing = goalCrossing(scaledPoints, goal),
             emptyBuckets = emptyBuckets,
             sessions = sessions,
+            sessionCurves = sessionCurves,
+            sessionCurveScale = heartRateSpec()?.tile?.colorScale,
+            heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
@@ -653,14 +703,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
          */
         const val MAX_CONCURRENT_STATS = 4
 
-        val WHOLE_DAY_THRESHOLD: Duration = Duration.ofHours(12)
+        /** The type whose readings describe a session from the inside. */
+        const val HEART_RATE = "HeartRateRecord"
 
-        /**
-         * How far outside the visible window sessions are searched. A night's sleep begins
-         * well before the midnight it is credited to -- measured on a device, 22:48 to 05:15
-         * -- so half a day either side catches it without dragging in the night before.
-         */
-        val SESSION_MARGIN: Duration = Duration.ofHours(12)
+        val WHOLE_DAY_THRESHOLD: Duration = Duration.ofHours(12)
     }
 
 }

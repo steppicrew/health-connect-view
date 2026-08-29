@@ -22,8 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.registry.Formatting
-import java.time.Duration
 
 /**
  * Everything recorded during one session.
@@ -65,9 +65,7 @@ fun SessionSheet(
                         R.string.session_span,
                         Formatting.time(session.start),
                         Formatting.time(session.end),
-                    ) + "  " + Formatting.duration(
-                        Duration.between(session.start, session.end),
-                    ),
+                    ) + "  " + Formatting.duration(session.duration),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

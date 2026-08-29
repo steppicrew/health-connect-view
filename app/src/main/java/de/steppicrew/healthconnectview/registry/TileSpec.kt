@@ -56,6 +56,14 @@ data class TileSpec(
      * Empty by default -- a band is context, and context that is not wanted is clutter.
      */
     val overlaySessions: Set<Session.Kind> = emptySet(),
+    /**
+     * Which kind of session this tile counts, for [Form.SESSIONS]. Null for every other form.
+     *
+     * A session tile is a count and a list rather than one metric charted, so it is a
+     * genuinely second shape of tile -- but it stays in the registry rather than becoming a
+     * dashboard concept of its own, so the dashboard still never branches on record type.
+     */
+    val sessionKind: Session.Kind? = null,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
@@ -66,5 +74,14 @@ data class TileSpec(
 
         /** A short curve of recent readings, coloured across [colorScale]. */
         CURVE,
+
+        /**
+         * The day's count of sessions of [sessionKind], with their total duration beneath.
+         *
+         * A session is a span rather than a reading, so neither a total nor a latest value
+         * describes it: "three activities, 1h 40m" is the honest summary of a day's exercise,
+         * where a summed duration alone loses that it was three separate things.
+         */
+        SESSIONS,
     }
 }
