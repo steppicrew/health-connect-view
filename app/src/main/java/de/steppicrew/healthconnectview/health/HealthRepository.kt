@@ -158,6 +158,21 @@ class HealthRepository(private val context: Context) {
         )
     }
 
+    /**
+     * One deduplicated total for a range. A dashboard tile's headline number.
+     *
+     * Uses `aggregate()` rather than `aggregateGroupByPeriod()`: a tile needs a single figure,
+     * and the grouped call would return one bucket to unwrap for no benefit. Returns null when
+     * the range holds nothing, which the caller must keep distinct from a total of zero.
+     */
+    suspend fun total(
+        metric: AggregateMetric<*>,
+        range: TimeRangeFilter,
+    ): Double? = withContext(Dispatchers.IO) {
+        val result = client.aggregate(AggregateRequest(setOf(metric), range))
+        result[metric]?.let(::numericAggregate)
+    }
+
     /** Which apps contributed to a range, so a total can be explained to the user. */
     suspend fun contributingApps(
         metric: AggregateMetric<*>,

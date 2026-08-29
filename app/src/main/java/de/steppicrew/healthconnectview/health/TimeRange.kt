@@ -4,9 +4,27 @@ import androidx.annotation.StringRes
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.R
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
+
+/**
+ * A single calendar day, local time, for a dashboard tile.
+ *
+ * Separate from [TimeRange], which means "the last N days from now". A day tile needs exact
+ * midnight-to-midnight bounds: Health Connect requires a LocalDateTime filter for aggregation,
+ * and an unaligned window silently returns nothing for a daily total.
+ */
+fun dayFilter(date: LocalDate): TimeRangeFilter =
+    TimeRangeFilter.between(date.atStartOfDay(), date.plusDays(1).atStartOfDay())
+
+/** Instant bounds for the same day, for reading raw records. */
+fun dayInstants(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): TimeRangeFilter =
+    TimeRangeFilter.between(
+        date.atStartOfDay(zone).toInstant(),
+        date.plusDays(1).atStartOfDay(zone).toInstant(),
+    )
 
 /** Selectable window of history. */
 enum class TimeRange(@param:StringRes val labelRes: Int, val days: Long) {
