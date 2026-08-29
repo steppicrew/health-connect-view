@@ -223,6 +223,7 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 smooth = data.spec.tile.smoothChart,
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
+                unitRes = data.spec.unitRes,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(

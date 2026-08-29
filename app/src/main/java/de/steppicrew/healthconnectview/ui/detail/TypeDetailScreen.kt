@@ -143,7 +143,11 @@ private fun DetailContent(
         if (data.points.isNotEmpty()) {
             item(key = "chart") {
                 Column(Modifier.padding(16.dp)) {
-                    LineChart(points = data.points, smooth = data.spec.tile.smoothChart)
+                    LineChart(
+                        points = data.points,
+                        smooth = data.spec.tile.smoothChart,
+                        unitRes = data.spec.unitRes,
+                    )
                     Text(
                         text = stringResource(
                             when {
