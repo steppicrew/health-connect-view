@@ -96,6 +96,29 @@ class RecordShapeActivity : ComponentActivity() {
                 Log.i(TAG, "ORIGIN $pkg aggregate=$scoped rawSumStartingThatDay=$scopedRaw")
             }
 
+            // Hourly buckets, the exact call the day chart makes, to see whether the
+            // whole-day summary record is being spread across every hour.
+            val hourly = runCatching {
+                repository.intradayTotals(
+                    FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,
+                    dayInstants(day, zone),
+                    java.time.Duration.ofHours(1),
+                )
+            }.getOrDefault(emptyList())
+            var running = 0.0
+            hourly.forEach { bucket ->
+                val v = bucket.result[FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL]
+                if (v != null) {
+                    running += v
+                    Log.i(
+                        TAG,
+                        "HOUR ${bucket.startTime.atZone(zone).toLocalTime()} value=$v " +
+                            "running=$running",
+                    )
+                }
+            }
+            Log.i(TAG, "HOURLY buckets=${hourly.size} sumOfBuckets=$running")
+
             val total = runCatching {
                 repository.total(
                     FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,

@@ -66,6 +66,13 @@ AggregateGroupByDurationRequest`. Use `TimeRange.localFilter()`, never `filter()
 the filter's start, so an unaligned start yields buckets running 20:58→20:58, which straddle
 two calendar days and return null values.
 
+**A bucket-wide interval aggregates to nothing.** A record exactly as long as the aggregation
+bucket -- an app posting one 00:00-23:59 summary per day -- yields null buckets while
+`readRecords` returns it. Filtering aggregation to that app alone therefore produces an empty
+chart with a visible record underneath. Where a *single* source is selected its own records
+may be summed directly, since one writer cannot overlap itself; never do this for the combined
+view.
+
 **Identical overlapping intervals aggregate to nothing.** Two byte-identical `StepsRecord`
 entries for the same slot produce null buckets while `readRecords` still returns both.
 Instantaneous types are immune. Normal multi-writer data does not trigger it — repeated
@@ -80,6 +87,15 @@ succeeding and then fails partway through — and fails *further up the list* on
 which reads as data being progressively revoked. `getGrantedPermissions()` keeps reporting
 every type as granted throughout. Keep adb-driven probes short, or expect the tail of the run
 to be meaningless.
+
+**Hourly buckets do not deduplicate.** `aggregateGroupByDuration` with a sub-day slicer
+spreads a whole-day record evenly across every bucket instead of letting data-origin priority
+drop it. Measured on the phone: one writer's 00:00-23:59 summary of 13 floors contributed
+13/24 to each of 24 buckets while another writer's three itemised climbs (12 total) sat on
+top, so a running total ended at **24.6 against an authoritative daily total of 12**. The
+daily `aggregate()` is correct; only the intraday slicing double-counts. Intraday series are
+therefore rescaled to finish on the daily aggregate -- buckets supply the timing, the platform
+supplies the magnitude -- and the chart says so when it has done this.
 
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*

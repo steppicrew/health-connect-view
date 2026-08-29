@@ -145,6 +145,10 @@
     </plurals>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
     <string name="chart_source_aggregated_weekly">Wochensummen, von Health Connect entdoppelt</string>
+    <string name="chart_source_cumulative">Laufende Summe über den Tag, von Health Connect entdoppelt</string>
+    <string name="chart_source_cumulative_scaled">Laufende Summe über den Tag. Der Endwert ist die entdoppelte Summe; die Punkte dazwischen sind aufgeteilt, weil eine App einen Tageswert statt einzelner Einträge meldet.</string>
+    <string name="chart_goal_reached">Ziel von %1$s erreicht</string>
+    <string name="chart_goal_remaining">%1$s von %2$s</string>
     <string name="chart_source_raw">Einzelmessungen</string>
     <string name="chart_source_sampled">Einzelmessungen, über den Zeitraum verteilt</string>
 

@@ -31,6 +31,19 @@ data class TileSpec(
      * marked wherever few enough of them fit.
      */
     val smoothChart: Boolean = true,
+    /**
+     * Whether an intraday chart accumulates through the day rather than showing each bucket
+     * on its own.
+     *
+     * Right for quantities that add up -- steps, floors, distance, calories -- where the
+     * question is "how far through the day am I", and the rising line can be read against a
+     * goal. Wrong for anything measured rather than counted: cumulative weight or heart rate
+     * is meaningless.
+     *
+     * Only affects the within-a-day view. Across days each bucket is already a daily total,
+     * and accumulating those would answer a different question.
+     */
+    val cumulativeIntraday: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
