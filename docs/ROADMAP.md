@@ -131,16 +131,39 @@ switch to a single source.
 The current chart is a deliberately plain Compose Canvas line: axis min/max, date endpoints,
 guide lines. Known gaps, in rough priority order:
 
+- **A badge where a cumulative curve crosses its goal line**, marking the moment the goal was
+  reached. The crossing is already visible but unlabelled; the interesting fact is the *time*,
+  which the chart knows and does not say. Interpolate the crossing between the two points that
+  straddle the goal rather than snapping to the later one, or a goal met mid-climb would be
+  reported minutes late.
 - Y-axis gridline labels at intermediate values, not just min/max.
 - X-axis tick labels between the endpoints.
 - Touch a point to read its exact value and timestamp.
-- Bar rendering for count-like types (steps, floors) where a line implies false continuity.
 - Empty-day gaps shown as gaps rather than interpolated straight through.
+
+Bar rendering for count-like types was on this list and is no longer needed: an intraday
+cumulative chart steps at each record's own interval, so the line no longer implies continuity
+between counted events.
 
 Vico was the original choice and was dropped because Vico 3.x's Compose Multiplatform rewrite
 changed the axis API surface. Revisit if the chart requirements grow beyond what is
 comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
 signature, so it stays a single-file swap.
+
+### Chart invariants worth not breaking
+
+Each of these was a real defect found on a device, not a hypothetical:
+
+- **Points are placed by timestamp, never by list position.** Even spacing put a 12:45 event
+  at seven eighths of the width because it was the seventh of eight points.
+- **A cumulative series ends on the deduplicated daily total.** Hourly buckets do not
+  deduplicate, so a whole-day summary record from a second writer inflated a running total to
+  24.6 against an authoritative 12.
+- **Smoothing is clamped inside each segment, horizontally and vertically.** Otherwise a curve
+  overshoots below zero between two counts, or doubles back on itself where neighbours are far
+  apart in time.
+- **A goal takes part in the vertical scale.** Clipped off the top, "not reached" looks
+  identical to "reached".
 
 ## 5. Aggregation: verified working, with one caveat
 
