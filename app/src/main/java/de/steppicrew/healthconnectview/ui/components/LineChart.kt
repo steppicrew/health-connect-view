@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -83,9 +84,11 @@ fun LineChart(
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val goalColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.surface
-    // Faint enough to read as background. Distinct hues rather than one, so sleep and
-    // exercise can be told apart without a legend on a phone-width chart.
-    val sleepColor = MaterialTheme.colorScheme.secondary.copy(alpha = BAND_ALPHA)
+    // Faint enough to read as background. Sleep is a fixed blue rather than a theme colour:
+    // it means night, and under dynamic colour a themed hue would drift with the wallpaper
+    // until it no longer read as sleep at all. Exercise stays themed, having no such
+    // convention to honour.
+    val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = MaterialTheme.typography.labelSmall
@@ -544,7 +547,10 @@ private const val AXIS_TICKS = 4
 private const val AXIS_GAP = 14f
 
 /** Bands sit behind the data and must not compete with it. */
-private const val BAND_ALPHA = 0.14f
+private const val BAND_ALPHA = 0.16f
+
+/** A calm night blue, fixed so it keeps meaning "asleep" whatever the wallpaper. */
+private val SLEEP_BAND = Color(0xFF5C7CFA)
 
 private const val HOURS_IN_DAY = 24L
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -42,6 +43,7 @@ import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.detail.RecordRow
+import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
@@ -272,23 +274,34 @@ private fun SpanSummary(
             // The bands are context; naming them is what turns a shaded region into
             // "that peak was the bike ride".
             data.sessions.forEach { session ->
-                Text(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onOpenSession(session) }
                         .padding(vertical = 4.dp),
-                    text = listOfNotNull(
-                        session.title ?: stringResource(R.string.session_sleep)
-                            .takeIf { session.kind == Session.Kind.SLEEP },
-                        stringResource(
-                            R.string.session_span,
-                            Formatting.time(session.start),
-                            Formatting.time(session.end),
-                        ),
-                    ).joinToString("  "),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Icon(
+                        imageVector = iconFor(session),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(SESSION_ICON.dp),
+                    )
+                    Text(
+                        text = listOfNotNull(
+                            session.title ?: stringResource(R.string.session_sleep)
+                                .takeIf { session.kind == Session.Kind.SLEEP },
+                            stringResource(
+                                R.string.session_span,
+                                Formatting.time(session.start),
+                                Formatting.time(session.end),
+                            ),
+                        ).joinToString("  "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
 
             // Naming the writer the shape came from: the total is everyone's, the path is
@@ -432,6 +445,8 @@ private fun WindowStepper(
         }
     }
 }
+
+private const val SESSION_ICON = 16
 
 @Composable
 private fun titleFor(state: UiState<TileDetailData>): String =
