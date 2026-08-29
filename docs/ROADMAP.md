@@ -226,7 +226,21 @@ to the visible range.
 - An icon per activity, falling back to a generic sports mark rather than to nothing.
 - Tapping a session opens its assembled statistics.
 
-### Next: an Activities tile
+### Next: two chart refinements, then an Activities tile
+
+Requested, not yet built:
+
+- **Icons on the time axis at each session's position**, so a band can be matched to the
+  activity it represents. The list below the chart names the sessions but does not say which
+  band is which, and with two or three bands that is guesswork. Place each icon at the band's
+  midpoint on the axis, using the same fractions the plot uses.
+- **The current day always spans the full 24 hours.** Today's chart currently ends at the last
+  recorded point, so midday sits wherever the data happens to stop and the axis means something
+  different at 09:00 than it will at 21:00. Fix the horizontal extent to midnight-to-midnight
+  for the day span, while the *line* still ends at the last real point — the empty remainder is
+  the honest picture of a day in progress, and it keeps 12:00 in the middle.
+
+### Then: an Activities tile
 
 Agreed with the user, not yet built.
 
