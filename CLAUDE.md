@@ -140,7 +140,8 @@ The Xiaomi test phone (HyperOS) blocks `adb install` **and** `adb shell input ta
 (`SecurityException: INJECT_EVENTS`). Both need a signed-in Mi account, deliberately not
 created — see `docs/ROADMAP.md` §8. So:
 
-- **Install:** `adb push` the APK to `/sdcard/Download/` and ask the user to tap it.
+- **Install:** `adb push` the APK to `/sdcard/Download/hcv.apk` -- always that exact name, so
+  the user is never hunting for the newest of several files -- and ask the user to tap it.
 - **Drive the UI:** ask the user to tap; read the result from `screencap` and `logcat`.
 - **Avoid tapping entirely** where possible — the debug activities are startable with
   `am start`: `SeedActivity`, `AggregationCheckActivity`, `DataShapeActivity`.
