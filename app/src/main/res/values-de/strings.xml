@@ -5,6 +5,13 @@
     <string name="dashboard_previous_day">Vorheriger Tag</string>
     <string name="dashboard_next_day">Nächster Tag</string>
     <string name="dashboard_open_catalog">Alle Datentypen</string>
+    <string name="dashboard_edit">Dashboard bearbeiten</string>
+    <string name="dashboard_done">Fertig</string>
+    <string name="dashboard_add_tile">Kachel hinzufügen</string>
+    <string name="tile_move_up">Nach oben</string>
+    <string name="tile_move_down">Nach unten</string>
+    <string name="tile_remove">Entfernen</string>
+    <string name="tile_set_goal">Ziel festlegen</string>
     <string name="dashboard_empty_title">Noch keine Kacheln</string>
     <string name="dashboard_empty_body">Füge die Werte hinzu, die du sehen möchtest – aus der Liste aller Datentypen.</string>
     <string name="tile_locked">Nicht freigegeben</string>

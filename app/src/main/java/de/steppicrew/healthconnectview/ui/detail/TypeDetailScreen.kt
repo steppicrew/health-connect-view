@@ -234,8 +234,15 @@ internal fun summaryWithUnit(spec: RecordTypeSpec<*>, record: Record): String {
     return "$value $unit"
 }
 
+/**
+ * One stored record: its value, its full time span, and the app that wrote it.
+ *
+ * Shared with the span view so both lists describe a record identically -- the span and the
+ * source are what make a legitimate whole-day summary legible next to itemised records from
+ * another app.
+ */
 @Composable
-private fun RecordRow(
+internal fun RecordRow(
     spec: RecordTypeSpec<*>,
     record: Record,
     onClick: () -> Unit,
