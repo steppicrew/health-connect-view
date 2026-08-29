@@ -491,6 +491,23 @@ are navigation or refresh behaviour.
   wherever the user came from, so stepping to a previous day and then pressing Back walks the
   days again instead of leaving the screen. It should go up a level -- to the dashboard --
   regardless of how many days were stepped through.
+- **The source picker can be missing while the records below name two writers.** Reported on
+  the internal-testing build: the chips were absent although the record list plainly showed
+  Garmin Connect and Health Sync.
+
+  Likely cause, worth checking first: the picker is driven by `contributingApps()`, which
+  reads `dataOrigins` off the *aggregate*, while the list below comes from `readRecords`.
+  Those legitimately disagree -- a writer whose records do not contribute to the aggregate is
+  absent from the origins set but still present in the raw list. The whole-day-summary case
+  is exactly that: a record as wide as its bucket aggregates to nothing, so its writer never
+  appears among the origins, and with only one contributor left the picker hides itself
+  (`sources.size > 1`).
+
+  If that is confirmed, the fix is to union the aggregate's origins with the writers actually
+  seen in the records, since the picker's job is to list every app that wrote into the window
+  rather than every app the aggregate happened to use. Note the same call is not source
+  filtered on purpose -- scoping it to the current selection would strand the user on one app.
+
 - **Seeded sleep looks too hectic.** The fixture's overnight heart rate wanders more than a
   real night does, so the sleep stretch of a seeded chart reads as restless rather than as
   sleep. Only affects synthetic data -- the seeder, not the app -- but these frames become
