@@ -118,6 +118,7 @@
     <string name="detail_empty_title">Nichts aufgezeichnet</string>
     <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
+    <string name="detail_written_by">Geschrieben von %1$s</string>
     <string name="detail_history_capped">Es werden nur die letzten 30 Tage angezeigt. Gib auf dem Berechtigungs-Bildschirm ältere Daten frei, um den ganzen Zeitraum zu sehen.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d Datensatz</item>

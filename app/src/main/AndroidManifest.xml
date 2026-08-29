@@ -53,11 +53,25 @@
     <!-- Older than 30 days; requested on demand, not at first launch. -->
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
 
-    <!-- Without this, getSdkStatus misreports and source-app labels cannot be resolved. -->
+    <!--
+        Without this, getSdkStatus misreports and source-app labels cannot be resolved.
+
+        A record names its writer only by package name, so showing "Garmin Connect" instead of
+        "com.garmin.android.apps.connectmobile" needs that package to be visible. Android 11+
+        hides packages by default, and an app is visible here only if it matches one of these
+        entries, so an app that writes health data but does not handle the rationale intent
+        was falling back to its raw package name. Health Connect client apps are exactly the
+        ones that can appear as a data source, so they are matched by the permission-usage
+        intent every such app declares.
+    -->
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+            <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
         </intent>
     </queries>
 

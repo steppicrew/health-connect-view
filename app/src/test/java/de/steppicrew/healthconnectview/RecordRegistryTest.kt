@@ -1,8 +1,11 @@
 package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.registry.RecordRegistry
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
@@ -52,5 +55,34 @@ class RecordRegistryTest {
         RecordRegistry.byCategory.forEach { (category, specs) ->
             assertTrue("$category is empty", specs.isNotEmpty())
         }
+    }
+
+    /**
+     * A row showing only a start time cannot distinguish a whole-day summary record from a
+     * one-minute one, which is how a legitimate daily total ends up looking like a stray
+     * midnight entry. Interval types must therefore expose their end.
+     */
+    @Test
+    fun `every interval type exposes an end time`() {
+        RecordRegistry.all
+            .filter { it.shape == RecordTypeSpec.Shape.INTERVAL }
+            .forEach { spec ->
+                assertNotNull(
+                    "${spec.type.simpleName} is an interval type with no endTime",
+                    spec.endTime,
+                )
+            }
+    }
+
+    @Test
+    fun `instantaneous types do not claim an end time`() {
+        RecordRegistry.all
+            .filter { it.shape == RecordTypeSpec.Shape.INSTANT }
+            .forEach { spec ->
+                assertNull(
+                    "${spec.type.simpleName} is instantaneous but declares an endTime",
+                    spec.endTime,
+                )
+            }
     }
 }
