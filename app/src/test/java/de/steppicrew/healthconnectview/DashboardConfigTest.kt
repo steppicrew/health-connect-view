@@ -28,10 +28,10 @@ class DashboardConfigTest {
     }
 
     @Test
-    fun `default layout pins only chartable types`() {
+    fun `default layout pins only pinnable types`() {
         DashboardConfig.DEFAULT.tiles.forEach { tile ->
             val spec = tile.spec ?: return@forEach
-            assertTrue("${tile.typeName} has nothing to show", spec.isChartable)
+            assertTrue("${tile.typeName} has nothing to show", spec.isPinnable)
         }
     }
 
@@ -111,7 +111,7 @@ class DashboardConfigTest {
     }
 
     @Test
-    fun `ring tiles declare a default goal and curve tiles a colour scale`() {
+    fun `every tile form declares what its renderer needs`() {
         de.steppicrew.healthconnectview.registry.RecordRegistry.all.forEach { spec ->
             when (spec.tile.form) {
                 TileSpec.Form.RING -> assertTrue(
@@ -121,6 +121,12 @@ class DashboardConfigTest {
                 TileSpec.Form.CURVE -> assertTrue(
                     "${spec.type.simpleName} is a curve with no colour scale",
                     spec.tile.colorScale != null,
+                )
+                // A session tile counts spans of one kind. Without a kind it has nothing to
+                // count and would render a permanent zero.
+                TileSpec.Form.SESSIONS -> assertTrue(
+                    "${spec.type.simpleName} counts sessions but names no kind",
+                    spec.tile.sessionKind != null,
                 )
                 TileSpec.Form.NUMBER -> Unit
             }

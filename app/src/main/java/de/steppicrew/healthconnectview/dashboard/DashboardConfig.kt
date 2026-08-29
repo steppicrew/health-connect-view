@@ -68,6 +68,7 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
             listOf(
                 Tile("StepsRecord"),
                 Tile("HeartRateRecord"),
+                Tile("ExerciseSessionRecord"),
                 Tile("SleepSessionRecord"),
                 Tile("WeightRecord"),
                 Tile("TotalCaloriesBurnedRecord"),

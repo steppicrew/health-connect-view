@@ -71,10 +71,21 @@ data class RecordTypeSpec<T : Record>(
     val permission: String get() = HealthPermission.getReadPermission(type)
 
     /**
-     * Also decides dashboard eligibility: a tile with no number to show is an empty box, so
-     * the non-numeric types (cycle events, sexual activity) cannot be pinned.
+     * Whether the type has a numeric value that can be charted or summed. The non-numeric
+     * types (cycle events, sexual activity) have none, so they contribute no number anywhere
+     * -- including to a session's assembled statistics.
      */
     val isChartable: Boolean get() = unitRes != null
+
+    /**
+     * Whether the type can be pinned to the dashboard.
+     *
+     * Wider than [isChartable]: a session tile shows a count and a list rather than a charted
+     * metric, so it is useful with no unit at all -- ExerciseSessionRecord has none, because
+     * "an activity" is not measured in anything. [isChartable] keeps its narrower meaning, as
+     * it also decides which types can contribute a number to a session's statistics.
+     */
+    val isPinnable: Boolean get() = isChartable || tile.form == TileSpec.Form.SESSIONS
 
     // The casts below are safe by construction: a spec is only ever applied to records
     // read via ReadRecordsRequest(spec.type), so the runtime type always matches T.

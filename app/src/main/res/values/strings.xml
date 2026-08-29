@@ -186,6 +186,16 @@
     <string name="session_no_stats">Nothing else was recorded during this session.</string>
     <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
+    <string name="sessions_none">None</string>
+    <string name="sessions_count" translatable="false">%1$d</string>
+    <plurals name="sessions_detail_header">
+        <item quantity="one">%1$d session</item>
+        <item quantity="other">%1$d sessions</item>
+    </plurals>
+    <string name="sessions_total_duration">%1$s in total</string>
+    <string name="sessions_curve_note">Heart rate during each session, matched by time. Health Connect does not tag readings with a session.</string>
+    <string name="sessions_curve_missing">No heart rate was recorded during this one.</string>
+    <string name="sessions_locked_heart_rate">Allow heart rate to see the curve for each session.</string>
     <string name="source_all">All sources</string>
     <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
     <string name="source_showing_one">Showing only %1$s. This is what that app recorded, not your deduplicated total.</string>

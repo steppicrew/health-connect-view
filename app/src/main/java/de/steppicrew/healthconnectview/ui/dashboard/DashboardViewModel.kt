@@ -11,9 +11,12 @@ import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.dayFilter
 import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.resolveAvailability
+import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
@@ -29,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -46,6 +50,14 @@ data class TileData(
     val value: Double? = null,
     /** Recent readings for a curve tile; empty for every other form. */
     val curve: List<Point> = emptyList(),
+    /**
+     * The day's sessions for a [TileSpec.Form.SESSIONS] tile; empty for every other form.
+     *
+     * The tile's face is the count of these and its subtitle their total duration, so the
+     * list itself is what the tile is showing rather than a derived number: "three
+     * activities, 1h 40m" cannot be recovered from a summed duration alone.
+     */
+    val sessions: List<Session> = emptyList(),
     val granted: Boolean = true,
     val loading: Boolean = true,
     /**
@@ -55,6 +67,9 @@ data class TileData(
      */
     val source: String? = null,
 ) {
+    /** Everything the day's sessions covered, for the subtitle under a session count. */
+    val sessionDuration: Duration get() = sessions.totalDuration()
+
     /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
     val progress: Float?
         get() {
@@ -160,7 +175,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun addableTypes(): List<RecordTypeSpec<*>> {
         val pinned = config.tiles.map { it.typeName }.toSet()
         return RecordRegistry.all
-            .filter { it.isChartable && it.type.simpleName !in pinned }
+            .filter { it.isPinnable && it.type.simpleName !in pinned }
             .sortedBy { it.type.simpleName }
     }
 
@@ -221,6 +236,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     private suspend fun load(placeholder: TileData, date: LocalDate): TileData {
         val spec = placeholder.spec
+
+        // A session tile counts spans rather than measuring a metric, so neither branch below
+        // describes it: its face is how many activities there were, not how much of anything.
+        spec.tile.sessionKind?.takeIf { spec.tile.form == TileSpec.Form.SESSIONS }?.let { kind ->
+            val sessions = runCatching { daySessions(date, kind) }.getOrDefault(emptyList())
+            return placeholder.copy(sessions = sessions, loading = false)
+        }
+
         val metric = spec.aggregate
         val origins = placeholder.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
@@ -251,6 +274,24 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         return placeholder.copy(value = value, curve = curve, loading = false)
+    }
+
+    /**
+     * The day's sessions of one kind.
+     *
+     * Read unfiltered by source, matching the chart's bands: a session written by any app is
+     * still a fact about what the user was doing, while the source filter is about which
+     * app's *measurements* to trust. Overlapping duplicates are collapsed by [sessionsIn]
+     * preferring the writer that named the activity, so a workout recorded by both a watch
+     * and a machine counts once.
+     */
+    private suspend fun daySessions(date: LocalDate, kind: Session.Kind): List<Session> {
+        val zone = HealthRepository.DEFAULT_ZONE
+        return repository.sessionsIn(
+            start = date.atStartOfDay(zone).toInstant(),
+            end = date.plusDays(1).atStartOfDay(zone).toInstant(),
+            kinds = setOf(kind),
+        )
     }
 
     /** One app's own records for the day, summed. Only valid for a single-source filter. */

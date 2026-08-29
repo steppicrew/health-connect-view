@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -39,12 +40,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.duration
+import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -142,6 +148,59 @@ private fun SpanContent(
 ) {
     LazyColumn {
         item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession) }
+
+        // A session type's own screen: the sessions are the content, not context behind a
+        // chart, so they get a row each with the heart rate recorded during them.
+        if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
+            item(key = "sessions_header") {
+                Column {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.sessions_detail_header,
+                            data.sessions.size,
+                            data.sessions.size,
+                        ),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                    // The count answers "how many"; the sum answers "how much of the day",
+                    // and on a week or a month that is the figure being looked for.
+                    if (data.sessions.isNotEmpty()) {
+                        Text(
+                            text = stringResource(
+                                R.string.sessions_total_duration,
+                                Formatting.duration(data.sessions.totalDuration()),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
+                    Text(
+                        text = stringResource(
+                            if (data.heartRateLocked) {
+                                R.string.sessions_locked_heart_rate
+                            } else {
+                                R.string.sessions_curve_note
+                            },
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
+            }
+
+            items(data.sessions, key = { it.start.toString() }) { session ->
+                SessionRow(
+                    session = session,
+                    curve = data.sessionCurves[session.start],
+                    scale = data.sessionCurveScale,
+                    heartRateLocked = data.heartRateLocked,
+                    onClick = { onOpenSession(session) },
+                )
+            }
+        }
 
         if (data.truncated) {
             item(key = "truncated") {
@@ -272,35 +331,11 @@ private fun SpanSummary(
             )
 
             // The bands are context; naming them is what turns a shaded region into
-            // "that peak was the bike ride".
-            data.sessions.forEach { session ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOpenSession(session) }
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Icon(
-                        imageVector = iconFor(session),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(SESSION_ICON.dp),
-                    )
-                    Text(
-                        text = listOfNotNull(
-                            session.title ?: stringResource(R.string.session_sleep)
-                                .takeIf { session.kind == Session.Kind.SLEEP },
-                            stringResource(
-                                R.string.session_span,
-                                Formatting.time(session.start),
-                                Formatting.time(session.end),
-                            ),
-                        ).joinToString("  "),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+            // "that peak was the bike ride". Only where the sessions sit *behind* a chart --
+            // on a session type's own screen they are the content, listed in full below.
+            if (data.spec.tile.form != TileSpec.Form.SESSIONS) {
+                data.sessions.forEach { session ->
+                    SessionCaption(session = session, onClick = { onOpenSession(session) })
                 }
             }
 
@@ -333,6 +368,121 @@ private fun SpanSummary(
         }
     }
 }
+
+/** One session named on a single line, under the chart it explains. */
+@Composable
+private fun SessionCaption(session: Session, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(
+            imageVector = iconFor(session),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(SESSION_ICON.dp),
+        )
+        Text(
+            text = listOfNotNull(
+                sessionTitle(session),
+                stringResource(
+                    R.string.session_span,
+                    Formatting.time(session.start),
+                    Formatting.time(session.end),
+                ),
+            ).joinToString("  "),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * One session as a row on a session type's own screen: what it was, when, how long, and the
+ * heart rate recorded during it.
+ *
+ * The curve is the reason this is a row rather than a caption. A session is a span with no
+ * value of its own -- the readings that describe it are separate types over the same window --
+ * so showing them here is what turns "a 53-minute activity" into something you can read.
+ */
+@Composable
+private fun SessionRow(
+    session: Session,
+    curve: List<Point>?,
+    scale: ClosedFloatingPointRange<Double>?,
+    heartRateLocked: Boolean,
+    onClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Icon(
+                imageVector = iconFor(session),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = sessionTitle(session) ?: stringResource(R.string.session_untitled),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = stringResource(
+                        R.string.session_span,
+                        Formatting.time(session.start),
+                        Formatting.time(session.end),
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = Formatting.duration(session.duration),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        when {
+            curve != null && scale != null -> SparkCurve(
+                points = curve,
+                scale = scale,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(SESSION_CURVE_HEIGHT.dp)
+                    .padding(top = 8.dp),
+            )
+
+            // Distinct explanations for the same blank space: nothing was recorded, versus
+            // the app is not allowed to look. The locked case is said once for the whole
+            // list rather than repeated on every row.
+            !heartRateLocked -> Text(
+                text = stringResource(R.string.sessions_curve_missing),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+    }
+}
+
+/** A session's own name, falling back to "Sleep" for a night no app bothered to title. */
+@Composable
+private fun sessionTitle(session: Session): String? =
+    session.title
+        ?: stringResource(R.string.session_sleep).takeIf { session.kind == Session.Kind.SLEEP }
 
 /**
  * Source picker plus a plain statement of what the number above actually is.
@@ -447,6 +597,7 @@ private fun WindowStepper(
 }
 
 private const val SESSION_ICON = 16
+private const val SESSION_CURVE_HEIGHT = 40
 
 @Composable
 private fun titleFor(state: UiState<TileDetailData>): String =

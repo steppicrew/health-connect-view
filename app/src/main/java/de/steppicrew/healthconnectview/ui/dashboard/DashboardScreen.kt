@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -55,6 +56,7 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
+import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
@@ -281,13 +283,16 @@ private fun TileCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
             ) {
-                data.spec.unitRes?.let { unit ->
-                    Text(
-                        text = stringResource(unit),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                // Not for a session tile: its face is a count and its subtitle a duration, so
+                // the type's own unit ("h", for sleep) would label neither of them.
+                data.spec.unitRes?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
+                    ?.let { unit ->
+                        Text(
+                            text = stringResource(unit),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 // A filtered tile shows one app's figure, which differs from the combined
                 // total the same tile shows unfiltered. Naming the source is what keeps that
                 // difference explicable rather than looking like a wrong number.
@@ -367,7 +372,13 @@ private fun TileBody(data: TileData) {
     val scale = data.spec.tile.colorScale
 
     when {
-        !data.granted || data.loading || data.value == null -> TileValue(data)
+        !data.granted -> TileValue(data)
+
+        // Before the loading and null-value checks: a session tile never has a value, and
+        // zero sessions is a real answer rather than an absence of data.
+        data.spec.tile.form == TileSpec.Form.SESSIONS -> SessionCount(data)
+
+        data.loading || data.value == null -> TileValue(data)
 
         data.spec.tile.form == TileSpec.Form.RING && progress != null ->
             ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
@@ -392,6 +403,65 @@ private fun TileBody(data: TileData) {
             }
 
         else -> TileValue(data)
+    }
+}
+
+/**
+ * The day's session count, with everything they covered beneath it.
+ *
+ * Zero is shown as a word rather than as the missing-data dash: a day with no activities is a
+ * fact about the day, not a gap in what was recorded. That is the opposite of the reasoning
+ * for a measured type, where a null total genuinely means nothing was written.
+ */
+@Composable
+private fun SessionCount(data: TileData) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (data.loading) {
+            Text(
+                text = stringResource(R.string.tile_no_data),
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            return@Column
+        }
+
+        if (data.sessions.isEmpty()) {
+            Text(
+                text = stringResource(R.string.sessions_none),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            return@Column
+        }
+
+        Text(
+            text = stringResource(R.string.sessions_count, data.sessions.size),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = Formatting.duration(data.sessionDuration),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        // The activities themselves, as far as they fit: two or three icons say "a ride and a
+        // walk" where the bare count says only "two".
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(top = 4.dp),
+        ) {
+            data.sessions.take(TILE_ICONS).forEach { session ->
+                Icon(
+                    imageVector = iconFor(session),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(TILE_ICON_SIZE.dp),
+                )
+            }
+        }
     }
 }
 
@@ -439,3 +509,7 @@ private fun dayLabel(date: LocalDate): String =
 
 private const val TILE_COLUMNS = 2
 private const val CURVE_HEIGHT = 28
+
+/** How many activity icons fit on a tile face beside the count without crowding it. */
+private const val TILE_ICONS = 3
+private const val TILE_ICON_SIZE = 14
