@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,6 +80,16 @@ fun LineChart(
      * day in the full sweep, making a calm day look identical to an alarming one.
      */
     colorScale: ClosedFloatingPointRange<Double>? = null,
+    /**
+     * Horizontal extent of the plot, or null to span exactly the readings.
+     *
+     * Set for a single day, where the axis should mean the same thing all day: without it a
+     * chart ends at the last recorded point, so midday sits wherever the data happens to stop
+     * and 12:00 is in the middle of the morning at 09:00 and off to the left by 21:00. The
+     * *line* still ends at its last real point -- the empty remainder is the honest picture of
+     * a day in progress, and drawing to the edge would invent readings that do not exist.
+     */
+    extent: ClosedRange<Instant>? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -108,7 +120,15 @@ fun LineChart(
 
     // Each point's horizontal position as a fraction of the width. Computed once here so the
     // touch handler and the drawing agree exactly on where a point sits.
-    val fractions = remember(points) { horizontalFractions(points) }
+    val fractions = remember(points, extent) { horizontalFractions(points, extent) }
+    // The plot's own time range, shared with the icon row so an icon lands on the band it
+    // names. Null where the series has no elapsed time and the fractions fall back to even
+    // spacing, which no time can be mapped onto.
+    val timeExtent = remember(points, extent) {
+        val start = extent?.start ?: points.first().time
+        val end = extent?.endInclusive ?: points.last().time
+        (start..end).takeIf { end > start }
+    }
     val segments = remember(points, emptyBuckets) { segmentAtGaps(points, emptyBuckets) }
 
     fun nearestIndex(x: Float, width: Int): Int? {
@@ -155,8 +175,11 @@ fun LineChart(
                     )
                 },
         ) {
-            val firstTime = points.first().time.toEpochMilli()
-            val lastTime = points.last().time.toEpochMilli()
+            // The plot's time origin, which is the extent where one is given and the first
+            // reading otherwise. Bands, the goal marker and the line all measure from it, so
+            // a band cannot drift away from the stretch of line it explains.
+            val firstTime = (extent?.start ?: points.first().time).toEpochMilli()
+            val lastTime = (extent?.endInclusive ?: points.last().time).toEpochMilli()
             val timeSpan = (lastTime - firstTime).takeIf { it > 0L }
 
             fun xFor(index: Int): Float = fractions[index] * size.width
@@ -345,7 +368,14 @@ fun LineChart(
             }
         }
 
-        TimeAxis(points = points, fractions = fractions)
+        // Above the hour labels rather than among them: a band says *when* something
+        // happened but not *what*, and the list below the chart names the sessions without
+        // saying which band is which. With two or three bands that is guesswork.
+        if (sessions.isNotEmpty() && timeExtent != null) {
+            SessionAxisIcons(sessions = sessions, extent = timeExtent)
+        }
+
+        TimeAxis(points = points, fractions = fractions, extent = extent)
     }
 }
 
@@ -359,18 +389,81 @@ private const val CHART_HEIGHT = 200
  * The format follows the span: clock times read naturally within a day, dates across weeks,
  * and a date on an intraday chart would repeat itself at every tick.
  */
+/**
+ * An icon on the axis at each session's midpoint, matching the band behind the chart.
+ *
+ * Positioned by the same extent the plot uses, so an icon sits under the stretch of line its
+ * session covers rather than being spread evenly and implying a regularity the day did not
+ * have. The midpoint rather than the start, because that is where the band is widest and the
+ * pairing is most obvious.
+ *
+ * A session whose midpoint falls outside the plot is skipped: the bands are clipped to the
+ * window, so an icon pinned to the edge would name a band that is barely there.
+ */
 @Composable
-private fun TimeAxis(points: List<Point>, fractions: List<Float>) {
-    val first = points.first().time
-    val last = points.last().time
+private fun SessionAxisIcons(sessions: List<Session>, extent: ClosedRange<Instant>) {
+    val start = extent.start.toEpochMilli()
+    val span = (extent.endInclusive.toEpochMilli() - start).toDouble()
+
+    val placed = remember(sessions, extent) {
+        sessions.mapNotNull { session ->
+            val middle = (session.start.toEpochMilli() + session.end.toEpochMilli()) / 2
+            val fraction = ((middle - start) / span).toFloat()
+            if (fraction in 0f..1f) session to fraction else null
+        }
+    }
+    if (placed.isEmpty()) return
+
+    Layout(
+        content = {
+            placed.forEach { (session, _) ->
+                Icon(
+                    imageVector = iconFor(session),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(AXIS_ICON.dp),
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 2.dp),
+    ) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
+        val height = placeables.maxOfOrNull { it.height } ?: 0
+
+        layout(constraints.maxWidth, height) {
+            placeables.forEachIndexed { index, placeable ->
+                // Centred on the midpoint, then held inside the plot so an icon near an edge
+                // is not half cut off.
+                val centre = placed[index].second * constraints.maxWidth
+                val x = (centre - placeable.width / 2f).toInt()
+                    .coerceIn(0, (constraints.maxWidth - placeable.width).coerceAtLeast(0))
+                placeable.place(x, 0)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TimeAxis(
+    points: List<Point>,
+    fractions: List<Float>,
+    extent: ClosedRange<Instant>? = null,
+) {
+    // The axis measures the plot, so it follows the extent wherever one is fixed. Reading it
+    // off the points instead would label a 24-hour plot with the hours the data happened to
+    // cover, which is the mismatch the extent exists to remove.
+    val first = extent?.start ?: points.first().time
+    val last = extent?.endInclusive ?: points.last().time
     val spanHours = Duration.between(first, last).toHours()
     val intraday = spanHours in 1..HOURS_IN_DAY
 
     // Within a day, ticks are placed at round hours rather than snapped to samples: a
     // record-built series has points at whatever minute activity happened, so snapping gave
     // labels like 06:02 and 16:51, which read as arbitrary rather than as an axis.
-    val ticks = remember(points, intraday) {
-        if (intraday) hourlyTicks(points) else axisTicks(points, fractions)
+    val ticks = remember(points, intraday, first, last) {
+        if (intraday) hourlyTicks(first, last) else axisTicks(points, fractions)
     }
 
     Layout(
@@ -413,10 +506,7 @@ private fun TimeAxis(points: List<Point>, fractions: List<Float>) {
  * at 06:02 and 16:51 reads as arbitrary. The interval is chosen so the labels stay legible on
  * a phone-width chart.
  */
-private fun hourlyTicks(points: List<Point>): List<AxisTick> {
-    if (points.size < 2) return emptyList()
-    val start = points.first().time
-    val end = points.last().time
+private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
     val spanMillis = (end.toEpochMilli() - start.toEpochMilli()).takeIf { it > 0L }
         ?: return emptyList()
 
@@ -469,20 +559,29 @@ private fun axisTicks(points: List<Point>, fractions: List<Float>): List<AxisTic
  *
  * Shared by the drawing and the touch handler so both agree on where a point is: computing it
  * twice invites them to drift, and a highlight that lands beside the line it names is worse
- * than no highlight.
+ * than no highlight. Internal rather than private so the extent behaviour can be pinned by a
+ * test: it decides where every band, marker and label lands.
  */
-private fun horizontalFractions(points: List<Point>): List<Float> {
+internal fun horizontalFractions(
+    points: List<Point>,
+    extent: ClosedRange<Instant>? = null,
+): List<Float> {
     if (points.isEmpty()) return emptyList()
-    val first = points.first().time.toEpochMilli()
-    val span = points.last().time.toEpochMilli() - first
+    val first = (extent?.start ?: points.first().time).toEpochMilli()
+    val span = (extent?.endInclusive ?: points.last().time).toEpochMilli() - first
 
     // A series with no elapsed time (one point, or several sharing an instant) has no
-    // meaningful time axis, so fall back to even spacing.
+    // meaningful time axis, so fall back to even spacing. An extent always has width, so this
+    // is only ever reached without one.
     if (span <= 0L) {
         if (points.size == 1) return listOf(0.5f)
         return points.indices.map { it / (points.size - 1).toFloat() }
     }
-    return points.map { (it.time.toEpochMilli() - first).toDouble().div(span).toFloat() }
+    // Clamped, because a reading can fall outside a fixed extent -- a sleep session running
+    // past midnight, most obviously -- and a fraction outside 0..1 would draw off the plot.
+    return points.map {
+        ((it.time.toEpochMilli() - first).toDouble() / span).toFloat().coerceIn(0f, 1f)
+    }
 }
 
 /**
@@ -581,5 +680,8 @@ private const val BAND_ALPHA = 0.16f
 private val SLEEP_BAND = Color(0xFF5C7CFA)
 
 private const val HOURS_IN_DAY = 24L
+
+/** Small enough to read as an axis mark rather than as a control. */
+private const val AXIS_ICON = 14
 
 private const val MAX_DOTS = 60

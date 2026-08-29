@@ -91,6 +91,16 @@ data class TileDetailData(
      */
     val lineColorScale: ClosedFloatingPointRange<Double>? = null,
     /**
+     * Horizontal extent the chart is drawn across, or null to span exactly the readings.
+     *
+     * Fixed to midnight-to-midnight for a single day, including today: an axis that ends at
+     * the last reading means something different at 09:00 than it will at 21:00, and the hour
+     * you are looking for slides across the screen as the day fills in. The line still stops
+     * at its last real point, so the empty remainder reads as a day in progress rather than as
+     * readings that were never taken.
+     */
+    val extent: ClosedRange<Instant>? = null,
+    /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
      */
@@ -459,6 +469,20 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /**
+     * Midnight to midnight for a single day, else null.
+     *
+     * Only the day span: across a week or a month the chart already runs edge to edge, since
+     * every bucket in the window produces a point whether or not anything was recorded in it.
+     * It is within a day that the series stops at the last reading.
+     */
+    private fun dayExtent(span: Span, offset: Int): ClosedRange<Instant>? {
+        if (span.intradayBucket == null) return null
+        val zone = HealthRepository.DEFAULT_ZONE
+        return span.startDate(offset).atStartOfDay(zone).toInstant()..
+            span.endDate(offset).atStartOfDay(zone).toInstant()
+    }
+
+    /**
      * Sleep and exercise spans overlapping the window, for the bands behind the chart.
      *
      * The widening, deduplication and clipping all live in [sessionsIn], shared with the
@@ -693,6 +717,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessionCurves = sessionCurves,
             sessionCurveScale = heartRateSpec()?.tile?.colorScale,
             lineColorScale = spec.tile.colorScale.takeIf { span.intradayBucket != null },
+            extent = dayExtent(span, offset),
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             shapeSource = shapeSource,
