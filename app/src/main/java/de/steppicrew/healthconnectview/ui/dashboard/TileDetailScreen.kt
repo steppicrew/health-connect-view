@@ -183,7 +183,15 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
             val reached = (data.total ?: 0.0) >= goal
             Text(
                 text = if (reached) {
-                    stringResource(R.string.chart_goal_reached, Formatting.number(goal))
+                    // The time is the point of the badge: that the goal was met is already
+                    // visible from the curve crossing the line.
+                    data.goalCrossing?.let { crossing ->
+                        stringResource(
+                            R.string.chart_goal_reached_at,
+                            Formatting.number(goal),
+                            Formatting.time(crossing),
+                        )
+                    } ?: stringResource(R.string.chart_goal_reached, Formatting.number(goal))
                 } else {
                     stringResource(
                         R.string.chart_goal_remaining,
@@ -214,6 +222,7 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 // within the two values it joins, so a plateau cannot bulge.
                 smooth = data.spec.tile.smoothChart,
                 goal = data.goal,
+                goalCrossing = data.goalCrossing,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(
