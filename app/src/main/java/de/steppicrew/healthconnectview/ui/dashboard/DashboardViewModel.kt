@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import android.app.Application
+import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
@@ -11,7 +12,9 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.dayFilter
 import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.resolveAvailability
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.TileSpec
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -23,7 +26,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * What one tile shows.
@@ -36,6 +41,8 @@ data class TileData(
     val tile: Tile,
     val spec: RecordTypeSpec<*>,
     val value: Double? = null,
+    /** Recent readings for a curve tile; empty for every other form. */
+    val curve: List<Point> = emptyList(),
     val granted: Boolean = true,
     val loading: Boolean = true,
 ) {
@@ -82,6 +89,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }
 
             config = store.config.first()
+            loadTiles()
+        }
+    }
+
+    /**
+     * Changes a tile's goal and persists it. A goal of zero or less would make the ring
+     * meaningless, so it clears the override rather than storing an unusable value.
+     */
+    fun setGoal(typeName: String, goal: Double?) {
+        val sanitised = goal?.takeIf { it > 0.0 }
+        config = config.withGoal(typeName, sanitised)
+        viewModelScope.launch {
+            store.save(config)
             loadTiles()
         }
     }
@@ -150,11 +170,43 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }.getOrNull()
         }
 
-        return placeholder.copy(value = value, loading = false)
+        val curve = if (spec.tile.form == TileSpec.Form.CURVE) {
+            runCatching { recentPoints(spec, date) }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+
+        return placeholder.copy(value = value, curve = curve, loading = false)
+    }
+
+    /**
+     * The trailing few hours of readings, for a curve tile.
+     *
+     * Raw points are safe here only because curve types are instantaneous -- a heart rate
+     * sample is a reading at a moment, so overlapping writers duplicate points rather than
+     * inflating a total. An interval type charted this way would double-count and would need
+     * aggregation instead; TileSpec should not put one on a curve.
+     *
+     * On the current day the window ends now; on an earlier day it ends at that day's close,
+     * so stepping back shows the same span rather than an empty slice.
+     */
+    private suspend fun recentPoints(spec: RecordTypeSpec<*>, date: LocalDate): List<Point> {
+        val zone = HealthRepository.DEFAULT_ZONE
+        val today = LocalDate.now()
+        val end = if (date == today) Instant.now() else date.plusDays(1).atStartOfDay(zone).toInstant()
+        val start = end.minus(CURVE_HOURS, ChronoUnit.HOURS)
+            .coerceAtLeast(date.atStartOfDay(zone).toInstant())
+
+        return repository.read(spec.type, TimeRangeFilter.between(start, end))
+            .flatMap { spec.pointsOf(it) }
+            .sortedBy { it.time }
     }
 
     private companion object {
         const val MAX_CONCURRENT_TILES = 4
+
+        /** Trailing window for a curve tile. */
+        const val CURVE_HOURS = 4L
 
         /** read() returns newest-first, so one record is the latest reading. */
         const val LATEST_ONLY = 1

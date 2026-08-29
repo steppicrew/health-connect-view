@@ -8,6 +8,11 @@
     <string name="dashboard_empty_title">Noch keine Kacheln</string>
     <string name="dashboard_empty_body">Füge die Werte hinzu, die du sehen möchtest – aus der Liste aller Datentypen.</string>
     <string name="tile_locked">Nicht freigegeben</string>
+    <string name="goal_title">Tagesziel</string>
+    <string name="goal_hint">Zielwert</string>
+    <string name="goal_reset">Standard verwenden</string>
+    <string name="action_save">Speichern</string>
+    <string name="action_cancel">Abbrechen</string>
 
     <!-- Kategorien -->
     <string name="category_activity">Aktivität</string>

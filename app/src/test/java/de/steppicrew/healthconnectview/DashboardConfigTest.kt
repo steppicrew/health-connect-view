@@ -85,6 +85,27 @@ class DashboardConfigTest {
     }
 
     @Test
+    fun `setting a goal overrides only that tile`() {
+        val updated = config.withGoal("StepsRecord", 7_500.0)
+        assertEquals(7_500.0, updated.tiles.first().effectiveGoal!!, 0.0)
+        assertNull(updated.tiles[1].goal)
+        assertEquals(config.tiles.size, updated.tiles.size)
+    }
+
+    @Test
+    fun `clearing a goal falls back to the type default`() {
+        val overridden = config.withGoal("StepsRecord", 7_500.0)
+        val cleared = overridden.withGoal("StepsRecord", null)
+        assertEquals(10_000.0, cleared.tiles.first().effectiveGoal!!, 0.0)
+    }
+
+    @Test
+    fun `a goal for an unpinned type changes nothing`() {
+        val updated = config.withGoal("SleepSessionRecord", 8.0)
+        assertEquals(config.tiles, updated.tiles)
+    }
+
+    @Test
     fun `a type with no ring has no goal`() {
         assertNull(Tile("HeartRateRecord").effectiveGoal)
     }

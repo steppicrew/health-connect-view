@@ -9,6 +9,11 @@
     <string name="dashboard_empty_body">Add the stats you want to see from the list of all data types.</string>
     <string name="tile_no_data" translatable="false">–</string>
     <string name="tile_locked">Not allowed</string>
+    <string name="goal_title">Daily goal</string>
+    <string name="goal_hint">Target value</string>
+    <string name="goal_reset">Use default</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
 
     <!-- Categories -->
     <string name="category_activity">Activity</string>
