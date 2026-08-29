@@ -491,6 +491,10 @@ are navigation or refresh behaviour.
   wherever the user came from, so stepping to a previous day and then pressing Back walks the
   days again instead of leaving the screen. It should go up a level -- to the dashboard --
   regardless of how many days were stepped through.
+- **Seeded sleep looks too hectic.** The fixture's overnight heart rate wanders more than a
+  real night does, so the sleep stretch of a seeded chart reads as restless rather than as
+  sleep. Only affects synthetic data -- the seeder, not the app -- but these frames become
+  store screenshots, so it is worth a calmer overnight drift.
 - **Date stepping stays live in tile edit mode.** While a tile's settings are open the day
   arrows still work, and Back changes the date rather than closing the settings. Both are the
   same underlying problem: the settings are a mode on the screen rather than a destination
