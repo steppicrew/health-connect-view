@@ -27,6 +27,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.layout.Layout
+import java.time.Duration
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
@@ -248,26 +250,83 @@ fun LineChart(
             }
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = Formatting.date(points.first().time),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = Formatting.date(points.last().time),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        TimeAxis(points = points, fractions = fractions)
     }
 }
 
 private const val CHART_HEIGHT = 200
+/**
+ * Tick labels along the time axis.
+ *
+ * Positioned by the same fractions the plot uses, so a label sits under the moment it names
+ * rather than being spread evenly and implying a regularity the data does not have.
+ *
+ * The format follows the span: clock times read naturally within a day, dates across weeks,
+ * and a date on an intraday chart would repeat itself at every tick.
+ */
+@Composable
+private fun TimeAxis(points: List<Point>, fractions: List<Float>) {
+    val first = points.first().time
+    val last = points.last().time
+    val spanHours = Duration.between(first, last).toHours()
+    val intraday = spanHours in 1..HOURS_IN_DAY
+
+    val ticks = remember(points) { axisTicks(points, fractions) }
+
+    Layout(
+        content = {
+            ticks.forEach { tick ->
+                Text(
+                    text = if (intraday) {
+                        Formatting.time(tick.time)
+                    } else {
+                        Formatting.dayAndMonth(tick.time)
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
+        val height = placeables.maxOfOrNull { it.height } ?: 0
+
+        layout(constraints.maxWidth, height) {
+            placeables.forEachIndexed { index, placeable ->
+                // Centred on the tick, then held inside the chart so the first and last
+                // labels are not half off the edge.
+                val centre = ticks[index].fraction * constraints.maxWidth
+                val x = (centre - placeable.width / 2f).toInt()
+                    .coerceIn(0, (constraints.maxWidth - placeable.width).coerceAtLeast(0))
+                placeable.place(x, 0)
+            }
+        }
+    }
+}
+
+/** One tick: where it sits across the width, and the moment it names. */
+private data class AxisTick(val fraction: Float, val time: Instant)
+
+/**
+ * Evenly spaced ticks across the elapsed time, each snapped to the nearest real point.
+ *
+ * Snapping matters: a label reading a time no sample was taken at invites the reader to
+ * believe the series was measured there. Duplicate snaps are dropped, so a sparse series shows
+ * fewer labels rather than the same one repeated.
+ */
+private fun axisTicks(points: List<Point>, fractions: List<Float>): List<AxisTick> {
+    if (points.size < 2 || fractions.size != points.size) return emptyList()
+
+    return (0..AXIS_TICKS).map { step ->
+        val target = step / AXIS_TICKS.toFloat()
+        val index = fractions.indices.minByOrNull { kotlin.math.abs(fractions[it] - target) }
+            ?: 0
+        AxisTick(fraction = fractions[index], time = points[index].time)
+    }.distinctBy { it.time }
+}
+
 /**
  * Each point's horizontal position as a fraction of the plot width, from its timestamp.
  *
@@ -371,5 +430,10 @@ private const val GUIDE_INTERVALS = 4
 
 /** Breathing room right of a gridline label, so the line does not touch the glyphs. */
 private const val LABEL_PAD = 4f
+
+/** Four intervals gives five ticks, which fit without crowding at phone width. */
+private const val AXIS_TICKS = 4
+
+private const val HOURS_IN_DAY = 24L
 
 private const val MAX_DOTS = 60
