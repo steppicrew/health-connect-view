@@ -2,10 +2,13 @@ Health Connect stores the data your watch, scale and fitness apps write — but 
 
 WHAT IT DOES
 
+• A dashboard of the figures you care about, one day at a time
 • Browse every data type Health Connect supports, from steps and sleep to blood pressure and VO₂ max
 • See individual records with exact timestamps, values and units
 • Find out which app wrote each record
-• Chart trends over 7 days, 30 days, 90 days or a year
+• Chart trends by day, week, four weeks or year
+• Sleep and workouts shaded behind the day's charts, so a peak or a trough has an explanation
+• Each workout with the heart rate recorded during it
 
 YOUR DATA STAYS ON YOUR PHONE
 
@@ -20,6 +23,8 @@ Permissions are requested one data type at a time, and nothing is selected by de
 ACCURATE TOTALS
 
 When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are correct rather than double-counted, and it tells you when more than one app contributed.
+
+Health Connect stores no link between a workout and the readings taken during it. Where this app shows a session's statistics, it says plainly that they are matched by time rather than pretending to a certainty the data does not support.
 
 OPEN SOURCE
 

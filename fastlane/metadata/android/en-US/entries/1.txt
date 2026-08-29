@@ -1,3 +1,0 @@
-1.0 — First release.
-
-See your Health Connect data: a dashboard by day, charts by week, month or year, and the raw records behind every figure. Sleep and workouts are shaded behind the day's charts. No network permission, read-only, nothing written to disk.

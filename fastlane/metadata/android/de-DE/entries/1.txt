@@ -1,3 +1,0 @@
-1.0 — Erste Version.
-
-Zeigt deine Health-Connect-Daten: ein Dashboard pro Tag, Diagramme nach Woche, Monat oder Jahr, und die Rohdaten hinter jedem Wert. Schlaf und Training sind hinter den Tagesdiagrammen hinterlegt. Keine Netzwerkberechtigung, nur lesend, nichts wird gespeichert.

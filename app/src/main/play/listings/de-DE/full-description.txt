@@ -2,10 +2,13 @@ Health Connect speichert die Daten, die Uhr, Waage und Fitness-Apps schreiben �
 
 WAS SIE KANN
 
+• Ein Dashboard mit den Werten, die dich interessieren, Tag für Tag
 • Alle von Health Connect unterstützten Datentypen durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
 • Einzelne Datensätze mit genauen Zeitstempeln, Werten und Einheiten ansehen
 • Erkennen, welche App welchen Datensatz geschrieben hat
-• Trends über 7 Tage, 30 Tage, 90 Tage oder ein Jahr grafisch darstellen
+• Trends nach Tag, Woche, vier Wochen oder Jahr grafisch darstellen
+• Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
+• Jedes Training mit der dabei aufgezeichneten Herzfrequenz
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
@@ -20,6 +23,8 @@ Berechtigungen werden einzeln pro Datentyp angefragt, nichts ist vorausgewählt.
 KORREKTE SUMMEN
 
 Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte — überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, sodass Tagessummen korrekt sind und nicht doppelt gezählt werden.
+
+Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo diese App Statistiken zu einer Sitzung zeigt, sagt sie klar, dass sie über die Zeit zugeordnet sind — statt eine Sicherheit vorzugeben, die die Daten nicht hergeben.
 
 OPEN SOURCE
 
