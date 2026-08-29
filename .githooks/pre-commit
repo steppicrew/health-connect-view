@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Keeps the published privacy page in step with the app's privacy strings.
+#
+# The page is generated from those strings, so editing them without republishing leaves the
+# website contradicting the app -- and the Play listing links to the website. Rather than
+# rely on remembering, the sync runs whenever the strings are part of a commit.
+#
+# Enable with:  git config core.hooksPath .githooks
+set -euo pipefail
+
+# Only when a strings.xml is actually staged; every other commit is untouched.
+if ! git diff --cached --name-only | grep -qE 'app/src/main/res/values(-[a-zA-Z-]+)?/strings\.xml'; then
+    exit 0
+fi
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+echo "privacy strings changed; regenerating the public page"
+./scripts/sync-privacy.sh

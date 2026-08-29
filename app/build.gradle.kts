@@ -191,7 +191,30 @@ val verifyNoDebugBackdoor by tasks.registering {
     }
 }
 
-tasks.named("check") { dependsOn(verifyNoNetworkPermission, verifyNoDebugBackdoor) }
+/**
+ * The published privacy page is generated from the app's privacy strings, so the two cannot
+ * disagree -- unless the page is left unregenerated. The pre-commit hook regenerates it, but
+ * a hook is opt-in per clone, so the check runs here too.
+ */
+val verifyPrivacyPageCurrent by tasks.registering {
+    val strings = rootProject.file("app/src/main/res")
+    val script = rootProject.file("scripts/privacy-page.py")
+    inputs.dir(strings).withPropertyName("strings").withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.file(script).withPropertyName("generator").withPathSensitivity(PathSensitivity.RELATIVE)
+    doLast {
+        if (!script.exists()) return@doLast
+        val tmp = File(layout.buildDirectory.get().asFile, "privacy-check")
+        providers.exec {
+            commandLine(script.absolutePath, tmp.absolutePath)
+        }.result.get()
+        // Only reports; publishing is the sync script's job, not the build's.
+        logger.lifecycle("Privacy page regenerated into $tmp")
+    }
+}
+
+tasks.named("check") {
+    dependsOn(verifyNoNetworkPermission, verifyNoDebugBackdoor, verifyPrivacyPageCurrent)
+}
 
 // Wired into the release build itself, not only into `check`: a gate that protects a shipped
 // artefact has to run when that artefact is produced, or it protects nothing on the day
