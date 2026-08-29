@@ -97,7 +97,9 @@ fun LineChart(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(CHART_HEIGHT.dp)
-                .padding(vertical = 8.dp)
+                // Room below the plot for the bottom gridline label, which is drawn under
+                // its own line rather than clamped up on top of the series.
+                .padding(top = 8.dp, bottom = AXIS_GAP.dp)
                 .pointerInput(points) {
                     // Drag as well as tap: reading a series means sweeping along it, and
                     // lifting clears so the chart does not keep a stale highlight.
@@ -162,10 +164,15 @@ fun LineChart(
                 )
 
                 val label = textMeasurer.measure(Formatting.number(guide), labelStyle)
-                // Nudged inside the plot at the extremes so the top and bottom labels are not
-                // half-clipped by the canvas edge.
-                val labelY = (y - label.size.height / 2f)
-                    .coerceIn(0f, size.height - label.size.height)
+                // Centred on its line, except the bottom one: clamping that inside the plot
+                // puts it on top of the line and whatever the series does there, which on a
+                // rising chart is exactly where the data starts. Below the axis it is clear
+                // of both, and the padding reserved beneath the canvas leaves room for it.
+                val labelY = if (guide == guides.first()) {
+                    size.height
+                } else {
+                    (y - label.size.height / 2f).coerceAtLeast(0f)
+                }
                 // The label sits on top of the grid and goal lines, so it is backed out to
                 // stay readable where they cross it.
                 drawRect(
@@ -433,6 +440,9 @@ private const val LABEL_PAD = 4f
 
 /** Four intervals gives five ticks, which fit without crowding at phone width. */
 private const val AXIS_TICKS = 4
+
+/** Space between the plot and its tick labels. */
+private const val AXIS_GAP = 14f
 
 private const val HOURS_IN_DAY = 24L
 
