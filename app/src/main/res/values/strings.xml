@@ -180,6 +180,8 @@
     <string name="detail_error_title">Could not read data</string>
     <string name="detail_written_by">Written by %1$s</string>
     <string name="source_phone_sensors">This phone</string>
+    <string name="session_sleep">Sleep</string>
+    <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="source_all">All sources</string>
     <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
     <string name="source_showing_one">Showing only %1$s. This is what that app recorded, not your deduplicated total.</string>

@@ -154,6 +154,7 @@
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
     <string name="detail_written_by">Geschrieben von %1$s</string>
     <string name="source_phone_sensors">Dieses Telefon</string>
+    <string name="session_sleep">Schlaf</string>
     <string name="source_all">Alle Quellen</string>
     <string name="source_all_explained">Von Health Connect zusammengeführt und entdoppelt. Nicht identisch mit dem Wert einer einzelnen App.</string>
     <string name="source_showing_one">Es wird nur %1$s angezeigt. Das ist der Wert dieser App, nicht deine entdoppelte Summe.</string>

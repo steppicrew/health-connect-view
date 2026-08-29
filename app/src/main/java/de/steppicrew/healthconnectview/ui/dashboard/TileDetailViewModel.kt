@@ -7,6 +7,11 @@ import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.SleepSessionRecord
+import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.dedupeSessions
+import de.steppicrew.healthconnectview.health.toSession
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
@@ -54,6 +59,8 @@ data class TileDetailData(
     val emptyBuckets: List<Instant>,
     /** When the series first reached the goal, interpolated; null if it never did. */
     val goalCrossing: Instant?,
+    /** Sleep or exercise spans shaded behind the chart, associated by time overlap only. */
+    val sessions: List<Session>,
     /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
@@ -346,6 +353,39 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
 
+    /**
+     * Sleep and exercise spans overlapping the window.
+     *
+     * Read unfiltered by source: a session written by any app is still a fact about what the
+     * user was doing, and the source filter is about which app's *measurements* to trust.
+     * Overlapping duplicates are collapsed, preferring the writer that named the activity.
+     */
+    private suspend fun loadSessions(
+        span: Span,
+        offset: Int,
+        kinds: Set<Session.Kind>,
+    ): List<Session> {
+        val range = span.instantFilter(offset)
+
+        val exercise = if (Session.Kind.EXERCISE in kinds) {
+            runCatching {
+                repository.read(ExerciseSessionRecord::class, range).map { it.toSession() }
+            }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+
+        val sleep = if (Session.Kind.SLEEP in kinds) {
+            runCatching {
+                repository.read(SleepSessionRecord::class, range).map { it.toSession() }
+            }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+
+        return dedupeSessions(exercise + sleep)
+    }
+
     /** The user's goal for this type if they set one, else the type's default. */
     private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
         val typeName = spec.type.simpleName ?: return spec.tile.defaultGoal
@@ -504,6 +544,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // up instead as the shape-source note, which says exactly whose readings these are.
         val approximated = cumulative && scaledPoints !== chartPoints && chosenShapeWriter == null
 
+        // Only within a day: across weeks a band would be thinner than the line it sits
+        // behind and would say nothing.
+        val sessions = if (span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty()) {
+            loadSessions(span, offset, spec.tile.overlaySessions)
+        } else {
+            emptyList()
+        }
+
         // Deliberately unfiltered: this drives the source picker, so it must list every app
         // that wrote into the window. Scoping it to the current selection would collapse the
         // picker to that one app and strand the user there with no way back.
@@ -534,6 +582,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             cumulative = cumulative,
             goalCrossing = goalCrossing(scaledPoints, goal),
             emptyBuckets = emptyBuckets,
+            sessions = sessions,
             approximated = approximated,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,

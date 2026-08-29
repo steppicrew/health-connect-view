@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.registry
 
+import de.steppicrew.healthconnectview.health.Session
+
 /**
  * How a type is drawn on the dashboard.
  *
@@ -44,6 +46,16 @@ data class TileSpec(
      * and accumulating those would answer a different question.
      */
     val cumulativeIntraday: Boolean = false,
+    /**
+     * Session kinds shaded behind this type's intraday chart.
+     *
+     * Sleep behind heart rate explains an overnight trough; an exercise band explains a spike
+     * that would otherwise look like stress. Only meaningful within a day: across weeks the
+     * bands would be thinner than the line and say nothing.
+     *
+     * Empty by default -- a band is context, and context that is not wanted is clutter.
+     */
+    val overlaySessions: Set<Session.Kind> = emptySet(),
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
