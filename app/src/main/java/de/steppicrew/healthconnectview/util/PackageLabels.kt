@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.util
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import de.steppicrew.healthconnectview.R
 
 /**
@@ -20,6 +21,18 @@ fun Context.appLabelFor(packageName: String): String {
         val info = packageManager.getApplicationInfo(packageName, 0)
         packageManager.getApplicationLabel(info).toString()
     }.getOrDefault(packageName)
+}
+
+/**
+ * The writing app's launcher icon, or null when it cannot be had.
+ *
+ * Null for the phone's own synthetic sensor origin -- no such package is installed, so there
+ * is no icon to load -- and for an app that has since been uninstalled. Every caller must
+ * therefore keep the label as a fallback rather than treating the icon as guaranteed.
+ */
+fun Context.appIconFor(packageName: String): Drawable? {
+    if (packageName.startsWith(PHONE_SENSOR_PREFIX)) return null
+    return runCatching { packageManager.getApplicationIcon(packageName) }.getOrNull()
 }
 
 private const val PHONE_SENSOR_PREFIX = "com.android.healthconnect.phone"
