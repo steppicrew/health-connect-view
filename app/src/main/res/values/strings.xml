@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Health Connect View</string>
+    <string name="dashboard_title">Today</string>
+    <string name="dashboard_previous_day">Previous day</string>
+    <string name="dashboard_next_day">Next day</string>
+    <string name="dashboard_open_catalog">All data types</string>
+    <string name="dashboard_empty_title">No tiles yet</string>
+    <string name="dashboard_empty_body">Add the stats you want to see from the list of all data types.</string>
+    <string name="tile_no_data" translatable="false">–</string>
+    <string name="tile_locked">Not allowed</string>
 
     <!-- Categories -->
     <string name="category_activity">Activity</string>

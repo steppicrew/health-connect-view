@@ -11,6 +11,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import de.steppicrew.healthconnectview.ui.catalog.CatalogScreen
 import de.steppicrew.healthconnectview.ui.catalog.CatalogViewModel
+import de.steppicrew.healthconnectview.ui.dashboard.DashboardScreen
+import de.steppicrew.healthconnectview.ui.dashboard.DashboardViewModel
 import de.steppicrew.healthconnectview.ui.detail.TypeDetailScreen
 import de.steppicrew.healthconnectview.ui.detail.TypeDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
@@ -18,6 +20,7 @@ import de.steppicrew.healthconnectview.ui.permissions.PermissionsViewModel
 import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
 
 object Routes {
+    const val DASHBOARD = "dashboard"
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
@@ -31,7 +34,17 @@ fun HealthNavGraph(
     onRequestPermissions: (Set<String>) -> Unit,
     navController: NavHostController = rememberNavController(),
 ) {
-    NavHost(navController = navController, startDestination = Routes.CATALOG) {
+    NavHost(navController = navController, startDestination = Routes.DASHBOARD) {
+
+        composable(Routes.DASHBOARD) {
+            val viewModel: DashboardViewModel = viewModel()
+            DashboardScreen(
+                viewModel = viewModel,
+                onOpenType = { navController.navigate(Routes.typeDetail(it)) },
+                onOpenCatalog = { navController.navigate(Routes.CATALOG) },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
+        }
 
         composable(Routes.CATALOG) {
             val viewModel: CatalogViewModel = viewModel()
@@ -39,6 +52,7 @@ fun HealthNavGraph(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.typeDetail(it)) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+                onBack = { navController.popBackStack() },
             )
         }
 

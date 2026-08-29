@@ -6,26 +6,17 @@ import androidx.health.connect.client.records.Record
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
-import androidx.health.connect.client.units.Energy
-import androidx.health.connect.client.units.Length
-import androidx.health.connect.client.units.Mass
-import androidx.health.connect.client.units.Percentage
-import androidx.health.connect.client.units.Power
-import androidx.health.connect.client.units.Pressure
-import androidx.health.connect.client.units.Temperature
-import androidx.health.connect.client.units.Velocity
-import androidx.health.connect.client.units.Volume
 import de.steppicrew.healthconnectview.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Duration
 
 data class TypeDetailData(
     val spec: RecordTypeSpec<*>,
@@ -171,7 +162,7 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         val metric = spec.aggregate ?: return emptyList()
         return repository.dailyTotals(metric, range.localFilter())
             .mapNotNull { bucket ->
-                val value = bucket.result[metric]?.let(::numericValue) ?: return@mapNotNull null
+                val value = bucket.result[metric]?.let(::numericAggregate) ?: return@mapNotNull null
                 Point(
                     time = bucket.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
                     value = value,
@@ -183,24 +174,4 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         const val TAG = "TypeDetail"
     }
 
-    /**
-     * Aggregates come back as a plain number, a Duration, or one of the library's unit types.
-     * Each unit is converted to the same scale the corresponding spec displays, so the chart
-     * axis matches the raw rows beneath it.
-     */
-    private fun numericValue(value: Any): Double? = when (value) {
-        is Long -> value.toDouble()
-        is Double -> value
-        is Duration -> value.toMinutes() / 60.0
-        is Mass -> value.inKilograms
-        is Length -> value.inKilometers
-        is Energy -> value.inKilocalories
-        is Volume -> value.inLiters
-        is Power -> value.inWatts
-        is Velocity -> value.inKilometersPerHour
-        is Percentage -> value.value
-        is Pressure -> value.inMillimetersOfMercury
-        is Temperature -> value.inCelsius
-        else -> null
-    }
 }

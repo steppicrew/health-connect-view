@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Health Connect View</string>
+    <string name="dashboard_title">Heute</string>
+    <string name="dashboard_previous_day">Vorheriger Tag</string>
+    <string name="dashboard_next_day">Nächster Tag</string>
+    <string name="dashboard_open_catalog">Alle Datentypen</string>
+    <string name="dashboard_empty_title">Noch keine Kacheln</string>
+    <string name="dashboard_empty_body">Füge die Werte hinzu, die du sehen möchtest – aus der Liste aller Datentypen.</string>
+    <string name="tile_locked">Nicht freigegeben</string>
 
     <!-- Kategorien -->
     <string name="category_activity">Aktivität</string>
