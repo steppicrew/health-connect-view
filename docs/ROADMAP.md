@@ -177,7 +177,7 @@ Each of these was a real defect found on a device, not a hypothetical:
   Computing them twice invites drift, and a highlight beside the line it names is worse than
   none.
 
-## 5. Sessions: what the data supports — built, two refinements open
+## 5. Sessions: what the data supports — built
 
 ### The association is by time, not by identity
 
@@ -268,19 +268,26 @@ A coloured line is stroked span by span, since a path takes one colour, which co
 smoothing for those types — the right trade, as the colour says whether a reading was high and
 rounded corners do not.
 
-### Still open: two chart refinements
+### Built: the day pinned to 24 hours, and icons on the axis
 
-Requested, not yet built:
+A day's chart ended at the last recorded point, so midday sat wherever the data happened to
+stop — the axis meant something different at 09:00 than it would at 21:00, and the hour you
+were looking for slid across the screen as the day filled in.
 
-- **Icons on the time axis at each session's position**, so a band can be matched to the
-  activity it represents. The list below the chart names the sessions but does not say which
-  band is which, and with two or three bands that is guesswork. Place each icon at the band's
-  midpoint on the axis, using the same fractions the plot uses.
-- **The current day always spans the full 24 hours.** Today's chart currently ends at the last
-  recorded point, so midday sits wherever the data happens to stop and the axis means something
-  different at 09:00 than it will at 21:00. Fix the horizontal extent to midnight-to-midnight
-  for the day span, while the *line* still ends at the last real point — the empty remainder is
-  the honest picture of a day in progress, and it keeps 12:00 in the middle.
+The plot now takes an explicit **extent**, fixed midnight-to-midnight for the day span, and
+every horizontal position derives from it: fractions, bands, the goal marker, the axis ticks.
+Nothing can drift away from the line it describes. The *line* still stops at its last real
+point — the empty remainder is the honest picture of a day in progress, and drawing to the edge
+would invent readings that have not been taken. Points outside a fixed extent are clamped,
+since a sleep session running past midnight is the normal case rather than the exception.
+
+**An icon per session sits on the axis** at the band's midpoint, where the band is widest,
+placed by the same extent the plot uses. The list below the chart named the sessions but not
+their positions, and with two or three bands that was guesswork.
+
+`horizontalFractions` is `internal` rather than private so `ChartExtentTest` can pin the extent
+behaviour: it decides where every band, marker and label lands, and the phone is a slow place
+to discover it is wrong.
 
 ## 6. Aggregation: verified working, with one caveat
 
