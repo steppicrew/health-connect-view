@@ -98,7 +98,16 @@ android {
         disable += "MissingTranslation"
     }
 
-    testOptions.unitTests.all { it.systemProperty("java.awt.headless", "true") }
+    testOptions.unitTests.all { test ->
+        test.systemProperty("java.awt.headless", "true")
+        // TranslationsTest reads src/main/res directly rather than through generated R
+        // classes, so Gradle cannot infer the dependency and would serve a cached pass after
+        // a string was added without its translation -- the exact case the test exists to
+        // catch. Declaring the directory makes the resources a real input.
+        test.inputs.dir("src/main/res")
+            .withPropertyName("stringResources")
+            .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
+    }
     // Real android.jar (not the stubbed one) so tests can reflect over platform constants.
     testOptions.unitTests.isReturnDefaultValues = true
 

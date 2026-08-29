@@ -159,6 +159,15 @@
     <string name="session_loading">Wird zusammengestellt …</string>
     <string name="session_no_stats">Während dieser Sitzung wurde sonst nichts aufgezeichnet.</string>
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
+    <string name="sessions_none">Keine</string>
+    <plurals name="sessions_detail_header">
+        <item quantity="one">%1$d Sitzung</item>
+        <item quantity="other">%1$d Sitzungen</item>
+    </plurals>
+    <string name="sessions_total_duration">%1$s insgesamt</string>
+    <string name="sessions_curve_note">Herzfrequenz während der jeweiligen Sitzung, über die Zeit zugeordnet. Health Connect verknüpft Messwerte nicht mit Sitzungen.</string>
+    <string name="sessions_curve_missing">Während dieser Sitzung wurde keine Herzfrequenz aufgezeichnet.</string>
+    <string name="sessions_locked_heart_rate">Gib Herzfrequenz frei, um den Verlauf jeder Sitzung zu sehen.</string>
     <string name="source_all">Alle Quellen</string>
     <string name="source_all_explained">Von Health Connect zusammengeführt und entdoppelt. Nicht identisch mit dem Wert einer einzelnen App.</string>
     <string name="source_showing_one">Es wird nur %1$s angezeigt. Das ist der Wert dieser App, nicht deine entdoppelte Summe.</string>
