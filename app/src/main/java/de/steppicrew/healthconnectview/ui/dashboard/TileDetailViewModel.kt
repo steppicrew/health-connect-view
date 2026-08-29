@@ -197,6 +197,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private var selectedSource: String? = null
 
     /**
+     * The type being shown, known from the moment it is asked for.
+     *
+     * Separate from the loaded data so the screen can title itself while loading, and -- more
+     * to the point -- while empty: a day with nothing recorded was showing a blank title bar,
+     * which left no way to tell which type had nothing in it.
+     */
+    private val _spec = MutableStateFlow<RecordTypeSpec<*>?>(null)
+    val spec: StateFlow<RecordTypeSpec<*>?> = _spec.asStateFlow()
+
+    /**
      * Filters every read and aggregate to one app.
      *
      * All sources stay the default: Health Connect's deduplicated total is the correct answer
@@ -219,6 +229,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      */
     fun load(typeName: String, date: String = "") {
         this.typeName = typeName
+        _spec.update { RecordRegistry.specOrNull(typeName) }
         _offset.update { offsetForDate(date) }
         viewModelScope.launch {
             selectedSource = sourceStore.selections.first()[typeName]
