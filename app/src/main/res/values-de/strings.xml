@@ -70,6 +70,8 @@
         <item quantity="other">%1$d von %2$d Typen freigegeben</item>
     </plurals>
     <string name="permission_already_granted">Freigegeben</string>
+    <string name="permission_history_title">Daten älter als 30 Tage</string>
+    <string name="permission_history_body">Ohne diese Freigabe liefert Health Connect nur die letzten 30 Tage – egal, wie weit deine Daten zurückreichen.</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="action_privacy">Datenschutz</string>
     <string name="action_continue">Überspringen</string>
@@ -97,6 +99,7 @@
     <string name="detail_empty_title">Nichts aufgezeichnet</string>
     <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
+    <string name="detail_history_capped">Es werden nur die letzten 30 Tage angezeigt. Gib auf dem Berechtigungs-Bildschirm ältere Daten frei, um den ganzen Zeitraum zu sehen.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d Datensatz</item>
         <item quantity="other">%1$d Datensätze</item>

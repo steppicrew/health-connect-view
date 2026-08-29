@@ -24,8 +24,12 @@ data class PermissionsUiState(
     fun isGranted(spec: RecordTypeSpec<*>): Boolean = spec.permission in granted
     fun isSelected(spec: RecordTypeSpec<*>): Boolean = spec.permission in selected
 
+    /** Counts record types only; history is depth, not a type, and is reported separately. */
     val grantedCount: Int get() = granted.count { it in RecordRegistry.allReadPermissions }
     val totalCount: Int get() = RecordRegistry.allReadPermissions.size
+
+    val historyGranted: Boolean get() = RecordRegistry.HISTORY_PERMISSION in granted
+    val historySelected: Boolean get() = RecordRegistry.HISTORY_PERMISSION in selected
 }
 
 class PermissionsViewModel(application: Application) : AndroidViewModel(application) {
@@ -70,10 +74,29 @@ class PermissionsViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    /** Selects every type not already granted. Opt-in only — never the default. */
+    /** Selects every type not already granted, plus history. Opt-in only — never the default. */
     fun selectAll() {
         _state.update { current ->
-            current.copy(selected = RecordRegistry.allReadPermissions - current.granted)
+            val everything = RecordRegistry.allReadPermissions + RecordRegistry.HISTORY_PERMISSION
+            current.copy(selected = everything - current.granted)
+        }
+    }
+
+    /**
+     * History is not a record type, so it has no spec and cannot go through [toggle].
+     *
+     * Without it Health Connect caps every read at the last 30 days and reports no error, so
+     * long ranges silently return a month of data and look like missing history.
+     */
+    fun toggleHistory() {
+        _state.update { current ->
+            val permission = RecordRegistry.HISTORY_PERMISSION
+            val selected = if (permission in current.selected) {
+                current.selected - permission
+            } else {
+                current.selected + permission
+            }
+            current.copy(selected = selected)
         }
     }
 
