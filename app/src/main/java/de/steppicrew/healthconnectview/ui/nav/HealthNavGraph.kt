@@ -13,6 +13,8 @@ import de.steppicrew.healthconnectview.ui.catalog.CatalogScreen
 import de.steppicrew.healthconnectview.ui.catalog.CatalogViewModel
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardScreen
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardViewModel
+import de.steppicrew.healthconnectview.ui.dashboard.TileDetailScreen
+import de.steppicrew.healthconnectview.ui.dashboard.TileDetailViewModel
 import de.steppicrew.healthconnectview.ui.detail.TypeDetailScreen
 import de.steppicrew.healthconnectview.ui.detail.TypeDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
@@ -24,9 +26,11 @@ object Routes {
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
+    const val TILE_DETAIL = "tile/{typeName}"
     const val PRIVACY = "privacy"
 
     fun typeDetail(typeName: String) = "type/$typeName"
+    fun tileDetail(typeName: String) = "tile/$typeName"
 }
 
 @Composable
@@ -40,7 +44,7 @@ fun HealthNavGraph(
             val viewModel: DashboardViewModel = viewModel()
             DashboardScreen(
                 viewModel = viewModel,
-                onOpenType = { navController.navigate(Routes.typeDetail(it)) },
+                onOpenType = { navController.navigate(Routes.tileDetail(it)) },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
             )
@@ -68,6 +72,19 @@ fun HealthNavGraph(
 
         composable(Routes.PRIVACY) {
             PrivacyScreen()
+        }
+
+        composable(
+            route = Routes.TILE_DETAIL,
+            arguments = listOf(navArgument("typeName") { type = NavType.StringType }),
+        ) { entry ->
+            val typeName = entry.arguments?.getString("typeName").orEmpty()
+            val viewModel: TileDetailViewModel = viewModel()
+            LaunchedEffect(typeName) { viewModel.load(typeName) }
+            TileDetailScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+            )
         }
 
         composable(

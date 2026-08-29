@@ -73,6 +73,13 @@
     <string name="range_month">30 Tage</string>
     <string name="range_quarter">90 Tage</string>
     <string name="range_year">1 Jahr</string>
+    <string name="span_day">Tag</string>
+    <string name="span_week">Woche</string>
+    <string name="span_month">4 Wochen</string>
+    <string name="span_year">Jahr</string>
+    <string name="span_previous">Früher</string>
+    <string name="span_next">Später</string>
+    <string name="span_total">Gesamt</string>
 
     <!-- Berechtigungen -->
     <string name="permissions_title">Auswählen, was angezeigt wird</string>
@@ -125,6 +132,7 @@
         <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
     </plurals>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
+    <string name="chart_source_aggregated_weekly">Wochensummen, von Health Connect entdoppelt</string>
     <string name="chart_source_raw">Einzelmessungen</string>
     <string name="chart_source_sampled">Einzelmessungen, über den Zeitraum verteilt</string>
 
