@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.metadata.DataOrigin
+import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
@@ -14,6 +16,7 @@ import de.steppicrew.healthconnectview.ui.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -30,6 +33,8 @@ data class TileDetailData(
     val historyCapped: Boolean,
     /** Apps that wrote into this window, so every number on screen names its source. */
     val contributingApps: Set<String>,
+    /** The single source being shown, or null for the deduplicated all-sources view. */
+    val selectedSource: String?,
     val start: LocalDate,
     val end: LocalDate,
     /**
@@ -51,6 +56,7 @@ data class TileDetailData(
 class TileDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = HealthRepository(application)
+    private val sourceStore = SourceStore(application)
 
     private val _state = MutableStateFlow<UiState<TileDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<TileDetailData>> = _state.asStateFlow()
@@ -63,10 +69,30 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     val offset: StateFlow<Int> = _offset.asStateFlow()
 
     private var typeName: String? = null
+    private var selectedSource: String? = null
+
+    /**
+     * Filters every read and aggregate to one app.
+     *
+     * All sources stay the default: Health Connect's deduplicated total is the correct answer
+     * for the metric, and is deliberately not the same as any single app's figure. Selecting a
+     * source answers the different question of what one app recorded.
+     */
+    fun selectSource(packageName: String?) {
+        selectedSource = packageName
+        val type = typeName ?: return
+        viewModelScope.launch {
+            sourceStore.select(type, packageName)
+            reload()
+        }
+    }
 
     fun load(typeName: String) {
         this.typeName = typeName
-        reload()
+        viewModelScope.launch {
+            selectedSource = sourceStore.selections.first()[typeName]
+            reload()
+        }
     }
 
     /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
@@ -110,7 +136,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             val capped = span.needsHistoryPermission(offset) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
-            val result = runCatching { loadData(spec, span, offset, capped) }
+            val result = runCatching { loadData(spec, span, offset, capped, selectedSource) }
             result.fold(
                 onSuccess = { data ->
                     _state.update {
@@ -133,13 +159,15 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         span: Span,
         offset: Int,
         historyCapped: Boolean,
+        source: String?,
     ): TileDetailData {
         val metric = spec.aggregate
+        val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
         val points = if (metric != null) {
-            repository.bucketedTotals(metric, span.localFilter(offset), span.bucket)
+            repository.bucketedTotals(metric, span.localFilter(offset), span.bucket, origins)
                 .mapNotNull { bucket ->
                     val value = bucket.result[metric]?.let(::numericAggregate)
                         ?: return@mapNotNull null
@@ -151,19 +179,20 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         } else {
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
-            repository.readForChart(spec.type, span.instantFilter(offset))
+            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
                 .flatMap { spec.pointsOf(it) }
                 .sortedBy { it.time }
         }
 
         val total = if (metric != null) {
-            runCatching { repository.total(metric, span.localFilter(offset)) }.getOrNull()
+            runCatching { repository.total(metric, span.localFilter(offset), origins) }.getOrNull()
         } else {
             null
         }
 
-        // Aggregation reports its origins directly; for the raw-record path the writers have
-        // to be collected from the records themselves.
+        // Deliberately unfiltered: this drives the source picker, so it must list every app
+        // that wrote into the window. Scoping it to the current selection would collapse the
+        // picker to that one app and strand the user there with no way back.
         val contributors = if (metric != null) {
             runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
                 .getOrDefault(emptySet())
@@ -177,7 +206,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         // Newest first, matching how the other list reads.
         val records = runCatching {
-            repository.read(spec.type, span.instantFilter(offset))
+            repository.read(spec.type, span.instantFilter(offset), origins = origins)
         }.getOrDefault(emptyList())
 
         return TileDetailData(
@@ -186,6 +215,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             total = total,
             aggregated = metric != null,
             contributingApps = contributors,
+            selectedSource = source,
             weeklyBuckets = span.bucket.days > 1,
             historyCapped = historyCapped,
             start = span.startDate(offset),

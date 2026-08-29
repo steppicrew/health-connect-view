@@ -152,6 +152,10 @@
     <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
     <string name="detail_error_title">Could not read data</string>
     <string name="detail_written_by">Written by %1$s</string>
+    <string name="source_all">All sources</string>
+    <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
+    <string name="source_showing_one">Showing only %1$s. This is what that app recorded, not your deduplicated total.</string>
+    <string name="source_priority_hint">Which app wins where records overlap is set in Health Connect, under app priority.</string>
     <string name="detail_history_capped">Showing only the last 30 days. Allow access to older data on the permissions screen to see the full period.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d record</item>
