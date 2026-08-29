@@ -46,6 +46,12 @@ data class TileDetailData(
     val goal: Double?,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
+    /**
+     * Bucket starts that held no data at all. Distinct from a bucket whose value is zero:
+     * "nothing was recorded" and "you did none" are different claims, and a line drawn
+     * straight through the first states the second.
+     */
+    val emptyBuckets: List<Instant>,
     /** When the series first reached the goal, interpolated; null if it never did. */
     val goalCrossing: Instant?,
     /**
@@ -312,6 +318,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
+        // Filled in by the bucketed branch below; empty for every other shape of series.
+        var emptyBuckets: List<Instant> = emptyList()
+
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
         val points = if (metric != null) {
@@ -336,9 +345,19 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                         Point(time = bucket.startTime, value = value)
                     }
 
-                period != null -> repository
-                    .bucketedTotals(metric, span.localFilter(offset), period, origins)
-                    .mapNotNull { bucket ->
+                period != null -> {
+                    val buckets = repository
+                        .bucketedTotals(metric, span.localFilter(offset), period, origins)
+
+                    // A bucket with no value is a day nothing was recorded, which is not the
+                    // same as a day with a value of zero. Both the empty times and the points
+                    // are carried forward so the chart can break the line rather than draw
+                    // through the gap and imply a reading that never existed.
+                    emptyBuckets = buckets
+                        .filter { it.result[metric] == null }
+                        .map { it.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant() }
+
+                    buckets.mapNotNull { bucket ->
                         val value = bucket.result[metric]?.let(::numericAggregate)
                             ?: return@mapNotNull null
                         Point(
@@ -347,6 +366,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                             value = value,
                         )
                     }
+                }
 
                 else -> emptyList()
             }
@@ -445,6 +465,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             goal = goal,
             cumulative = cumulative,
             goalCrossing = goalCrossing(scaledPoints, goal),
+            emptyBuckets = emptyBuckets,
             approximated = approximated,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
