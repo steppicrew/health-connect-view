@@ -177,7 +177,69 @@ Each of these was a real defect found on a device, not a hypothetical:
   Computing them twice invites drift, and a highlight beside the line it names is worse than
   none.
 
-## 5. Aggregation: verified working, with one caveat
+## 5. Sessions: what the data supports — partly built
+
+### The association is by time, not by identity
+
+Health Connect stores **no link between a session and the readings taken during it**. There is
+no session id on a heart rate sample. `ExerciseSessionRecord` carries only its type, title,
+notes, segments, laps and route — no distance, power or calories. Those are separate record
+types written over the same window.
+
+So a session's statistics exist but must be *assembled* by overlapping time ranges. Measured on
+a real device, one 53-minute indoor bike session ("Heimtrainer", Life Fitness) yielded:
+
+| Metric | Value |
+|--------|-------|
+| ActiveCaloriesBurned | 647 kcal |
+| TotalCaloriesBurned | 710 kcal |
+| Distance | 25.5 km |
+| HeartRate | 138 bpm mean, 54 records (~1500 samples) |
+| RespiratoryRate | 51 records |
+| Power, Speed | present as series |
+
+Every surface that shows this must say the matching is by time. "These readings were taken
+during this session" is true; "these readings belong to this session" is not.
+
+### Writers disagree about what the activity was
+
+The same workout arrives from several apps with different types: the 06:03 session above is
+`EXERCISE_TYPE_BIKING` from a Garmin watch and `EXERCISE_TYPE_BIKING_STATIONARY` from the
+machine's own app. The machine is right. Overlapping sessions are collapsed preferring the
+writer that **set a title**, because only the specific apps name their sessions — Garmin writes
+`title=null` throughout, while Life Fitness and Health Sync supply "Heimtrainer", "Berlin
+Mountainbiken", "Stärke deinen Rücken".
+
+### Sleep spans midnight
+
+A night's sleep is credited to the morning it ends on but starts the previous evening —
+measured, 22:48 to 05:15. A day-bounded read is therefore the wrong query, and sleep never
+appeared. Sessions are searched over a window widened by half a day either side, then clipped
+to the visible range.
+
+### Built
+
+- Session bands shaded behind intraday charts, declared per type via `TileSpec.overlaySessions`
+  (sleep and exercise behind heart rate, exercise behind steps).
+- Sleep bands are a **fixed blue**, not a theme colour: under dynamic colour a themed hue drifts
+  with the wallpaper until it stops reading as night.
+- An icon per activity, falling back to a generic sports mark rather than to nothing.
+- Tapping a session opens its assembled statistics.
+
+### Next: an Activities tile
+
+Agreed with the user, not yet built.
+
+- A tile whose face is the **count of activities** for the day, with total duration beneath.
+- Its detail lists the day's sessions, each opening the statistics sheet, and each showing the
+  **heart-rate curve for its own window** — the samples are already there.
+- **Sleep gets the same treatment** as a separate tile.
+- Implementation: a new `TileSpec.Form.SESSIONS` on the existing `ExerciseSessionRecord` and
+  `SleepSessionRecord` specs, rather than a tile concept outside the registry. A session tile is
+  a count and a list rather than one metric charted, so it is a genuinely second shape of tile —
+  but keeping it in the registry keeps the dashboard free of branching on record type.
+
+## 6. Aggregation: verified working, with one caveat
 
 **Verified on a real device, across every aggregatable type.** Aggregation returned values for
 all 16 types that hold data, and **12 of those 16 have more than one writing app** -- Garmin
@@ -252,7 +314,7 @@ listed thirty records as em-dashes with an empty chart. Now fixed — found only
 shape measurement reported zero extractable values against thirty records, which is the kind
 of contradiction worth looking at.
 
-## 6. History reach: measured, and two bugs found
+## 7. History reach: measured, and two bugs found
 
 **Measured on a real device on 2026-08-29**, by asking for a 1000-day window per type and
 logging the oldest record returned (`HistoryReachActivity`, debug-only, logs dates and counts
@@ -326,7 +388,7 @@ calling activity backgrounds. The debug activities `finish()` early and continue
 as granted. It reads convincingly as permissions being progressively revoked. It is not; it is
 the foreground window closing. Keep adb-driven probes short.
 
-## 7. Considered and rejected: a React/Vite UI in a WebView
+## 8. Considered and rejected: a React/Vite UI in a WebView
 
 Asked whether the UI would be easier as TypeScript/React talking to Kotlin, and whether that
 is possible without the INTERNET permission.
@@ -348,7 +410,7 @@ less than a bridge plus a JS toolchain.
 Worth revisiting if the UI grows into something genuinely interactive that a JS charting
 library would do far better, or if the same UI is ever wanted on the web.
 
-## 8. Testing note: adb input injection on Xiaomi/HyperOS
+## 9. Testing note: adb input injection on Xiaomi/HyperOS
 
 `adb shell input tap` fails on HyperOS with:
 
@@ -365,7 +427,7 @@ So on such a device, drive the UI by hand and read the result from screenshots a
 debug-only `AggregationCheckActivity` exists for exactly this: it is startable with `am start`
 and reports raw-versus-aggregated counts per type without needing a single tap.
 
-## 9. Deferred
+## 10. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
