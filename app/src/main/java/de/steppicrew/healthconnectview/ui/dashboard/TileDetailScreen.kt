@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,6 +54,8 @@ import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.iconFor
+import de.steppicrew.healthconnectview.ui.components.AppIcon
+import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.ui.components.SparkCurve
@@ -205,6 +209,7 @@ private fun SpanContent(
                     session = session,
                     curve = data.sessionCurves[session.start],
                     scale = data.sessionCurveScale,
+                    heartRateUnitRes = data.sessionCurveUnitRes,
                     heartRateLocked = data.heartRateLocked,
                     onClick = { onOpenSession(session) },
                 )
@@ -444,13 +449,16 @@ private fun SessionRow(
     session: Session,
     curve: List<Point>?,
     scale: ClosedFloatingPointRange<Double>?,
+    @StringRes heartRateUnitRes: Int?,
     heartRateLocked: Boolean,
     onClick: () -> Unit,
 ) {
+    // Deliberately not clickable as a whole any more: the chart below needs the touches for
+    // its own readout, and a row that both scrubs a curve and opens a dialog would do the
+    // wrong one about half the time. The statistics moved onto the info button instead.
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
         Row(
@@ -483,16 +491,25 @@ private fun SessionRow(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            IconButton(onClick = onClick) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = stringResource(R.string.session_statistics),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
 
         when {
-            curve != null && scale != null -> SparkCurve(
+            // The full chart rather than a spark line: at this size the samples are dense
+            // enough to be worth reading individually, and the readout answers "what was my
+            // rate at that dip" -- which a curve you cannot touch only poses.
+            curve != null -> LineChart(
                 points = curve,
-                scale = scale,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(SESSION_CURVE_HEIGHT.dp)
-                    .padding(top = 8.dp),
+                smooth = false,
+                unitRes = heartRateUnitRes,
+                colorScale = scale,
+                extent = session.start..session.end,
             )
 
             // Distinct explanations for the same blank space: nothing was recorded, versus
@@ -546,7 +563,23 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                     FilterChip(
                         selected = data.selectedSource == packageName,
                         onClick = { onSelectSource(packageName) },
-                        label = { Text(context.appLabelFor(packageName)) },
+                        // The app's own icon where it has one, which fits several sources on
+                        // screen at once where "Garmin Connect" and "Health Sync" already
+                        // ran off the edge. The label stays as the icon's content
+                        // description, and as the visible text wherever no icon can be had.
+                        label = {
+                            val icon = rememberAppIcon(packageName)
+                            if (icon != null) {
+                                AppIcon(
+                                    icon = icon,
+                                    packageName = packageName,
+                                    sizePx = SOURCE_ICON_PX,
+                                    modifier = Modifier.size(SOURCE_ICON.dp),
+                                )
+                            } else {
+                                Text(context.appLabelFor(packageName))
+                            }
+                        },
                     )
                 }
             }
@@ -628,6 +661,10 @@ private fun WindowStepper(
 
 private const val SESSION_ICON = 16
 private const val SESSION_CURVE_HEIGHT = 40
+
+/** Big enough to recognise a brand mark, small enough that several chips fit a phone width. */
+private const val SOURCE_ICON = 20
+private const val SOURCE_ICON_PX = 64
 
 /** The aggregate for a session type comes back in hours; durations format from minutes. */
 private const val MINUTES_PER_HOUR = 60

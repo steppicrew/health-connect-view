@@ -186,6 +186,7 @@
     <string name="session_no_stats">Nothing else was recorded during this session.</string>
     <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
+    <string name="session_statistics">What was recorded during this session</string>
     <string name="sessions_none">None</string>
     <string name="sessions_count" translatable="false">%1$d</string>
     <plurals name="sessions_detail_header">
