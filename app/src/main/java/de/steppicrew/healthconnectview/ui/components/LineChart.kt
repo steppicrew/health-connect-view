@@ -238,7 +238,17 @@ fun LineChart(
                     strokeWidth = 1f,
                 )
 
-                val label = textMeasurer.measure(Formatting.number(guide), labelStyle)
+                // Measured on a single unwrapped line. Without this the measurer inherits the
+                // canvas width as its constraint and a label can come back wrapped or
+                // clipped -- on a session chart the guides read "138, 12, 14, 101" where the
+                // middle two were 127 and 114 with their last digit cut off. An axis that
+                // silently drops digits is worse than no axis.
+                val label = textMeasurer.measure(
+                    text = Formatting.number(guide),
+                    style = labelStyle,
+                    maxLines = 1,
+                    softWrap = false,
+                )
                 // Centred on its line, except the bottom one: clamping that inside the plot
                 // puts it on top of the line and whatever the series does there, which on a
                 // rising chart is exactly where the data starts. Below the axis it is clear
