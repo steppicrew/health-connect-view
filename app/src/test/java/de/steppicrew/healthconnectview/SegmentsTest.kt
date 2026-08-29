@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
@@ -71,5 +72,42 @@ class SegmentsTest {
     @Test
     fun `an empty series yields no segments`() {
         assertEquals(emptyList<List<Point>>(), segmentAtGaps(emptyList(), listOf(day(1))))
+    }
+
+    /**
+     * The whole pipeline the chart runs: segment, then slice the shared offset list per
+     * segment. The slicing is what turns segments into separately-stroked paths, and an
+     * off-by-one there would draw the gap closed again while every segmentation test still
+     * passed.
+     */
+    @Test
+    fun `each segment maps onto its own slice of the shared offsets`() {
+        val series = points(0, 1, 2, 4, 5)
+        val segments = segmentAtGaps(series, listOf(day(3)))
+
+        val first = series.first().time.toEpochMilli()
+        val span = series.last().time.toEpochMilli() - first
+        val offsets = series.map { (it.time.toEpochMilli() - first).toDouble() / span }
+
+        assertEquals(2, segments.size)
+
+        var drawn = 0
+        val slices = segments.map { segment ->
+            val slice = offsets.subList(drawn, drawn + segment.size)
+            drawn += segment.size
+            slice
+        }
+
+        // Every offset is consumed exactly once, and each slice matches its segment's points.
+        assertEquals(offsets.size, drawn)
+        assertEquals(3, slices[0].size)
+        assertEquals(2, slices[1].size)
+
+        // The break leaves real horizontal distance between the two strokes; without it the
+        // second segment would begin where the first ended and the gap would be invisible.
+        assertTrue(
+            "no visible gap between segments",
+            slices[1].first() > slices[0].last() + 0.1,
+        )
     }
 }

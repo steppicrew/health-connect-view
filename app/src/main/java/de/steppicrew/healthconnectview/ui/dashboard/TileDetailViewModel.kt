@@ -353,9 +353,21 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     // same as a day with a value of zero. Both the empty times and the points
                     // are carried forward so the chart can break the line rather than draw
                     // through the gap and imply a reading that never existed.
-                    emptyBuckets = buckets
-                        .filter { it.result[metric] == null }
-                        .map { it.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant() }
+                    // Only gaps *between* recorded days matter. A window commonly begins or
+                    // ends on days with nothing yet recorded -- today, most obviously -- and
+                    // those break no line, so counting them would claim a hole that is not
+                    // there.
+                    val withValue = buckets.filter { it.result[metric] != null }
+                    val firstRecorded = withValue.firstOrNull()?.startTime
+                    val lastRecorded = withValue.lastOrNull()?.startTime
+                    emptyBuckets = if (firstRecorded == null || lastRecorded == null) {
+                        emptyList()
+                    } else {
+                        buckets
+                            .filter { it.result[metric] == null }
+                            .filter { it.startTime > firstRecorded && it.startTime < lastRecorded }
+                            .map { it.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant() }
+                    }
 
                     buckets.mapNotNull { bucket ->
                         val value = bucket.result[metric]?.let(::numericAggregate)
