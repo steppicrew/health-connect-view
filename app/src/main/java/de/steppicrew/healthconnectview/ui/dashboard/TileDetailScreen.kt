@@ -348,6 +348,7 @@ private fun SpanSummary(
                 emptyBuckets = data.emptyBuckets,
                 sessions = data.sessions,
                 zones = data.lineZones,
+                markReadings = data.spec.tile.markReadings,
                 extent = data.extent,
                 modifier = Modifier.padding(top = 16.dp),
             )
@@ -510,6 +511,9 @@ private fun SessionRow(
                 smooth = false,
                 unitRes = heartRateUnitRes,
                 zones = zones,
+                // Never on a session curve: it is heart rate at full resolution by
+                // definition, so every sample would carry a dot.
+                markReadings = false,
                 extent = session.start..session.end,
             )
 
