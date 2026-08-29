@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.UiState
@@ -225,6 +226,7 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 goalCrossing = data.goalCrossing,
                 unitRes = data.spec.unitRes,
                 emptyBuckets = data.emptyBuckets,
+                sessions = data.sessions,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(
@@ -241,6 +243,24 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            // The bands are context; naming them is what turns a shaded region into
+            // "that peak was the bike ride".
+            data.sessions.forEach { session ->
+                Text(
+                    text = listOfNotNull(
+                        session.title ?: stringResource(R.string.session_sleep)
+                            .takeIf { session.kind == Session.Kind.SLEEP },
+                        stringResource(
+                            R.string.session_span,
+                            Formatting.time(session.start),
+                            Formatting.time(session.end),
+                        ),
+                    ).joinToString("  "),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
 
             // Naming the writer the shape came from: the total is everyone's, the path is
             // one device's, and leaving that unsaid would be a silent substitution.

@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.registry
 
 import androidx.health.connect.client.permission.HealthPermission
+import de.steppicrew.healthconnectview.health.Session
 import androidx.health.connect.client.records.*
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec.Shape
@@ -165,7 +166,12 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.count.toDouble())) },
             summary = { Formatting.integer(it.count) },
             aggregate = StepsRecord.COUNT_TOTAL,
-            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 10_000.0, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.RING,
+                defaultGoal = 10_000.0,
+                cumulativeIntraday = true,
+                overlaySessions = setOf(Session.Kind.EXERCISE),
+            ),
         ),
         RecordTypeSpec(
             type = StepsCadenceRecord::class,
@@ -328,7 +334,11 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.beatsPerMinute.toDouble()) } },
             summary = { r -> seriesSummary(r.samples.map { it.beatsPerMinute.toDouble() }, "bpm") },
             aggregate = HeartRateRecord.BPM_AVG,
-            tile = TileSpec(TileSpec.Form.CURVE, colorScale = 50.0..160.0),
+            tile = TileSpec(
+                TileSpec.Form.CURVE,
+                colorScale = 50.0..160.0,
+                overlaySessions = setOf(Session.Kind.SLEEP, Session.Kind.EXERCISE),
+            ),
         ),
         RecordTypeSpec(
             type = HeartRateVariabilityRmssdRecord::class,

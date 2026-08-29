@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.Layout
 import java.time.Duration
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import java.time.Instant
@@ -59,6 +60,13 @@ fun LineChart(
      * through, so a day nothing was recorded does not read as a measured value.
      */
     emptyBuckets: List<Instant> = emptyList(),
+    /**
+     * Spans the user was asleep or exercising, shaded behind the line. The association is by
+     * time overlap only -- Health Connect stores no link between a session and the readings
+     * taken during it -- so a band means "a session covered this time", not "these readings
+     * belong to it".
+     */
+    sessions: List<Session> = emptyList(),
 ) {
     if (points.isEmpty()) return
 
@@ -75,6 +83,10 @@ fun LineChart(
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val goalColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.surface
+    // Faint enough to read as background. Distinct hues rather than one, so sleep and
+    // exercise can be told apart without a legend on a phone-width chart.
+    val sleepColor = MaterialTheme.colorScheme.secondary.copy(alpha = BAND_ALPHA)
+    val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = MaterialTheme.typography.labelSmall
     val textMeasurer = rememberTextMeasurer()
@@ -153,6 +165,26 @@ fun LineChart(
                         floatArrayOf(GOAL_DASH_ON.dp.toPx(), GOAL_DASH_OFF.dp.toPx()),
                     ),
                 )
+            }
+
+            // Behind everything: a band is context for the line, not a thing to read on its
+            // own, so it must never compete with the data drawn over it.
+            if (timeSpan != null) {
+                sessions.forEach { session ->
+                    val from = ((session.start.toEpochMilli() - firstTime).toDouble() /
+                        timeSpan).toFloat().coerceIn(0f, 1f) * size.width
+                    val to = ((session.end.toEpochMilli() - firstTime).toDouble() /
+                        timeSpan).toFloat().coerceIn(0f, 1f) * size.width
+                    if (to <= from) return@forEach
+                    drawRect(
+                        color = when (session.kind) {
+                            Session.Kind.SLEEP -> sleepColor
+                            Session.Kind.EXERCISE -> exerciseColor
+                        },
+                        topLeft = Offset(from, 0f),
+                        size = androidx.compose.ui.geometry.Size(to - from, size.height),
+                    )
+                }
             }
 
             // Guides labelled at their own line, so a value can be read off the chart
@@ -510,6 +542,9 @@ private const val AXIS_TICKS = 4
 
 /** Space between the plot and its tick labels. */
 private const val AXIS_GAP = 14f
+
+/** Bands sit behind the data and must not compete with it. */
+private const val BAND_ALPHA = 0.14f
 
 private const val HOURS_IN_DAY = 24L
 
