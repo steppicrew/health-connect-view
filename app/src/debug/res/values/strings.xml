@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug-only overrides. The launcher label is prefixed so the debug build and the Play
+    build are distinguishable in the launcher and the task switcher: they have different
+    application ids and can be installed side by side, which is exactly when telling them
+    apart matters.
+-->
+<resources>
+    <string name="app_name" translatable="false">✻ Health Connect View</string>
+</resources>
