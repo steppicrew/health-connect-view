@@ -83,6 +83,14 @@ data class TileDetailData(
      */
     val sessionCurveScale: ClosedFloatingPointRange<Double>? = null,
     /**
+     * Value range to colour the chart's line across, or null for a plain line.
+     *
+     * Only within a day, and only where the type declares a scale on its tile. Across days
+     * each point is a daily average rather than a reading, so colouring one red would claim
+     * an alarming measurement where the data says an unremarkable mean.
+     */
+    val lineColorScale: ClosedFloatingPointRange<Double>? = null,
+    /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
      */
@@ -684,6 +692,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessions = sessions,
             sessionCurves = sessionCurves,
             sessionCurveScale = heartRateSpec()?.tile?.colorScale,
+            lineColorScale = spec.tile.colorScale.takeIf { span.intradayBucket != null },
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             shapeSource = shapeSource,

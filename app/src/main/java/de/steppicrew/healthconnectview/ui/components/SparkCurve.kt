@@ -52,7 +52,7 @@ fun SparkCurve(
                 y = size.height - ((to.value - low) / span).toFloat() * size.height,
             )
             drawLine(
-                color = colorFor(to.value, scale),
+                color = colorForValue(to.value, scale),
                 start = startOffset,
                 end = endOffset,
                 strokeWidth = stroke,
@@ -67,8 +67,12 @@ fun SparkCurve(
  *
  * Values outside the scale clamp rather than wrapping, so an extreme reading stays at the end
  * of the colour range instead of cycling back to looking calm.
+ *
+ * Shared with the full-size chart, so a reading is the same colour on the tile and on the
+ * detail screen it opens. Two colours for the same number would read as two different
+ * measurements.
  */
-private fun colorFor(value: Double, scale: ClosedFloatingPointRange<Double>): Color {
+fun colorForValue(value: Double, scale: ClosedFloatingPointRange<Double>): Color {
     val span = (scale.endInclusive - scale.start).takeIf { it > 0.0 } ?: return COOL
     val fraction = ((value - scale.start) / span).toFloat().coerceIn(0f, 1f)
     return lerp(COOL, WARM, fraction)
