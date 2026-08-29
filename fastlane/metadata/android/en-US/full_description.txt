@@ -1,0 +1,27 @@
+Health Connect View shows you the health data already stored on your phone by Health Connect. It is a viewer: it reads, it displays, and it does nothing else.
+
+NO NETWORK ACCESS, BY CONSTRUCTION
+
+The app does not request the internet permission. Not for analytics, not for crash reporting, not for anything. This is not a promise about how the data is handled — there is no code path that could send it anywhere, and the build fails if a dependency tries to add one.
+
+Your health data is never written to disk by this app, never backed up, and never included in a device transfer. It lives in memory only while you are looking at it.
+
+READ-ONLY
+
+The app asks only for read permissions, and only for the data types you choose to grant. It cannot add, change or delete anything in Health Connect.
+
+WHAT IT SHOWS
+
+• A dashboard of the figures you care about, one day at a time
+• Charts by day, week, four weeks or year
+• Steps, heart rate, sleep, exercise, weight, calories, distance and more
+• Sleep and workout sessions shaded behind the day's charts, so a peak or a trough has an explanation
+• The raw records behind every number, including which app wrote each one
+
+HONEST ABOUT THE DATA
+
+Several apps often write the same metric, and they disagree. Totals come from Health Connect's own deduplication rather than from adding records up, and the app tells you when a figure is one app's rather than the combined total.
+
+Health Connect stores no link between a workout and the readings taken during it, so where the app shows a session's statistics it says plainly that they are matched by time.
+
+You need Health Connect installed, with data in it from the apps and devices you already use.

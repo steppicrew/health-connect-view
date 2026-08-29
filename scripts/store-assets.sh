@@ -16,6 +16,9 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$ROOT_DIR"
 
 OUT_DIR="build/store"
+# A screen is settled once two consecutive frames match; generous enough for a cold start.
+SETTLE_TRIES=12
+SETTLE_INTERVAL=2
 ICON_SVG="assets/icon.svg"
 PACKAGE="de.steppicrew.healthconnectview.debug"
 ACTIVITY="$PACKAGE/de.steppicrew.healthconnectview.MainActivity"
@@ -64,24 +67,77 @@ normalise() {
     magick "$file" -alpha remove -alpha off "$file"
 }
 
+# Screens worth showing, as nav routes. The debug build reads `route` from its launch
+# intent, so the whole set is captured without a single tap -- which matters because the
+# test phone refuses adb input injection, and because a screenshot set that needs manual
+# navigation drifts out of date the moment the UI changes.
+#
+# {name}:{route}; an empty route means the dashboard.
+SHOT_ROUTES=(
+    "1-dashboard:"
+    "2-steps:tile/StepsRecord?date=DATE"
+    "3-activities:tile/ExerciseSessionRecord?date=DATE"
+    "4-sleep:tile/SleepSessionRecord?date=DATE"
+    "5-heart-rate:tile/HeartRateRecord?date=DATE"
+    "6-catalog:catalog"
+)
+
 take_shots() {
     need magick
-    local device
-    device="$(adb devices | awk '/\tdevice$/ {print $1}' | head -1)"
+    local device lang
+    device="${SHOT_DEVICE:-$(adb devices | awk '/\tdevice$/ {print $1}' | head -1)}"
     [ -n "$device" ] || die "no device connected"
+    lang="${SHOT_LANG:-en-US}"
 
-    mkdir -p "$OUT_DIR/screenshots"
-    adb -s "$device" shell am force-stop "$PACKAGE" || true
-    adb -s "$device" shell am start -n "$ACTIVITY" >/dev/null
-    sleep 4
+    # Screenshots come from SEEDED SYNTHETIC DATA. Seeding writes to the real Health Connect
+    # store, so this refuses to run against a physical device: nobody's actual records should
+    # be polluted with fixtures, and no real reading should end up in a store listing.
+    case "$device" in
+        emulator-*) ;;
+        *) die "refusing to seed a physical device ($device); run screenshots on an emulator" ;;
+    esac
 
-    local shot="$OUT_DIR/screenshots/1-catalog.png"
-    adb -s "$device" exec-out screencap -p > "$shot"
-    normalise "$shot"
-    echo "$shot"
+    # The seeder starts from yesterday, because Health Connect rejects future-dated records
+    # and a day's fixture spans the full 24 hours. Today is therefore empty by design.
+    local day
+    day="$(date -d yesterday +%Y-%m-%d)"
 
-    echo "Further screens depend on which data types are granted;"
-    echo "navigate manually and re-run to capture them."
+    adb -s "$device" shell cmd locale set-app-locales "$PACKAGE" --locales "$lang" >/dev/null 2>&1 || true
+
+    local out="$OUT_DIR/screenshots/$lang"
+    mkdir -p "$out"
+
+    local entry name route
+    for entry in "${SHOT_ROUTES[@]}"; do
+        name="${entry%%:*}"
+        route="${entry#*:}"
+        route="${route//DATE/$day}"
+
+        adb -s "$device" shell am force-stop "$PACKAGE"
+        sleep 1
+        if [ -n "$route" ]; then
+            adb -s "$device" shell "am start -n $ACTIVITY --es route '$route'" >/dev/null
+        else
+            adb -s "$device" shell "am start -n $ACTIVITY" >/dev/null
+        fi
+        # Wait for the screen to settle rather than guessing a delay. A cold start with a
+        # dense session took longer than a fixed sleep allowed, and the set silently captured
+        # a loading spinner -- which is exactly the sort of thing that reaches a store listing
+        # unnoticed. Two identical frames in a row means the screen has stopped changing.
+        local shot="$out/$name.png"
+        local previous="" current="" settled=0
+        for _ in $(seq 1 "$SETTLE_TRIES"); do
+            sleep "$SETTLE_INTERVAL"
+            adb -s "$device" exec-out screencap -p > "$shot"
+            current="$(md5sum < "$shot")"
+            if [ -n "$previous" ] && [ "$current" = "$previous" ]; then settled=1; break; fi
+            previous="$current"
+        done
+        [ "$settled" -eq 1 ] || echo "warning: $name did not settle; check it" >&2
+
+        normalise "$shot"
+        echo "$shot"
+    done
 }
 
 case "$COMMAND" in
