@@ -19,6 +19,18 @@ data class TileSpec(
     val defaultGoal: Double? = null,
     /** Value range for [Form.CURVE] colouring, low to high. */
     val colorScale: ClosedFloatingPointRange<Double>? = null,
+    /**
+     * Whether a chart of this type is drawn as a smooth curve rather than straight segments.
+     *
+     * On by default: a curve reads as a trend, which is what a chart is usually being asked
+     * for. The curve is clamped so it cannot leave the range between the two values it joins,
+     * so it never invents a reading below zero or above a peak.
+     *
+     * It is still an interpolation. For counted totals -- steps, floors -- the line between
+     * two buckets is drawn rather than measured, which is why the individual points stay
+     * marked wherever few enough of them fit.
+     */
+    val smoothChart: Boolean = true,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

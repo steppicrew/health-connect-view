@@ -30,6 +30,7 @@ import de.steppicrew.healthconnectview.registry.Point
 fun LineChart(
     points: List<Point>,
     modifier: Modifier = Modifier,
+    smooth: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -73,11 +74,18 @@ fun LineChart(
                 )
             }
 
-            val path = Path().apply {
-                points.forEachIndexed { index, point ->
-                    val x = index * stepX
-                    val y = yFor(point.value)
-                    if (index == 0) moveTo(x, y) else lineTo(x, y)
+            val offsets = points.mapIndexed { index, point ->
+                Offset(index * stepX, yFor(point.value))
+            }
+            val path = if (smooth && offsets.size > 2) {
+                smoothPath(offsets)
+            } else {
+                Path().apply {
+                    points.forEachIndexed { index, point ->
+                        val x = index * stepX
+                        val y = yFor(point.value)
+                        if (index == 0) moveTo(x, y) else lineTo(x, y)
+                    }
                 }
             }
             drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
@@ -120,4 +128,40 @@ fun LineChart(
 }
 
 private const val CHART_HEIGHT = 200
+/**
+ * A cubic curve through every point, for series where the underlying quantity varies
+ * continuously rather than in steps.
+ *
+ * Control points are placed from each neighbour pair (a Catmull-Rom spline converted to
+ * Bezier), then clamped so a segment can never leave the range of the two values it joins.
+ * Without that clamp an overshoot invents readings that were never recorded -- dipping below
+ * zero between two step counts, for instance -- which for health data is not a cosmetic
+ * problem but a false statement.
+ */
+private fun smoothPath(offsets: List<Offset>): Path = Path().apply {
+    moveTo(offsets.first().x, offsets.first().y)
+
+    offsets.zipWithNext().forEachIndexed { index, (current, next) ->
+        val previous = offsets.getOrElse(index - 1) { current }
+        val following = offsets.getOrElse(index + 2) { next }
+
+        val lowY = minOf(current.y, next.y)
+        val highY = maxOf(current.y, next.y)
+
+        val control1 = Offset(
+            x = current.x + (next.x - previous.x) / CATMULL_ROM_TENSION,
+            y = (current.y + (next.y - previous.y) / CATMULL_ROM_TENSION).coerceIn(lowY, highY),
+        )
+        val control2 = Offset(
+            x = next.x - (following.x - current.x) / CATMULL_ROM_TENSION,
+            y = (next.y - (following.y - current.y) / CATMULL_ROM_TENSION).coerceIn(lowY, highY),
+        )
+
+        cubicTo(control1.x, control1.y, control2.x, control2.y, next.x, next.y)
+    }
+}
+
+/** Standard Catmull-Rom conversion factor; larger values give a tighter curve. */
+private const val CATMULL_ROM_TENSION = 6f
+
 private const val MAX_DOTS = 60

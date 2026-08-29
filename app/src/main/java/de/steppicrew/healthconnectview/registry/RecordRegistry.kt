@@ -93,6 +93,7 @@ object RecordRegistry {
         ),
         RecordTypeSpec(
             type = ExerciseSessionRecord::class,
+            tile = TileSpec(TileSpec.Form.NUMBER, smoothChart = false),
             displayNameRes = R.string.type_exercise_session,
             category = Category.ACTIVITY,
             unitRes = null,
@@ -414,6 +415,7 @@ object RecordRegistry {
         ),
         RecordTypeSpec(
             type = SleepSessionRecord::class,
+            tile = TileSpec(TileSpec.Form.NUMBER, smoothChart = false),
             displayNameRes = R.string.type_sleep_session,
             category = Category.SLEEP,
             unitRes = R.string.unit_h,
@@ -456,6 +458,7 @@ object RecordRegistry {
         ),
         RecordTypeSpec(
             type = MenstruationPeriodRecord::class,
+            tile = TileSpec(TileSpec.Form.NUMBER, smoothChart = false),
             displayNameRes = R.string.type_menstruation_period,
             category = Category.CYCLE,
             unitRes = null,
