@@ -64,6 +64,61 @@ class HealthRepository(private val context: Context) {
     }
 
     /**
+     * Every record in the range, thinned to at most [limit] evenly spaced samples.
+     *
+     * [read] deliberately returns the *newest* records and stops at [MAX_RECORDS], which is
+     * right for the record list but wrong for a chart: on a high-frequency type — heart rate
+     * writes thousands of readings a week — the cap is reached within days, so a chart drawn
+     * from it silently covers the last few days of a year-long range and looks like missing
+     * history rather than a truncated read.
+     *
+     * Types with an aggregate metric never come here; their charts are built from
+     * deduplicated daily buckets. This is for the instantaneous types that have no aggregate
+     * (blood glucose, SpO2, respiratory rate and similar), where each record is a discrete
+     * reading and thinning the series changes its resolution but not its shape or extent.
+     *
+     * Records are counted but not retained while paging, so memory stays bounded by [limit]
+     * rather than by however much the range holds.
+     */
+    suspend fun <T : Record> readForChart(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        limit: Int = CHART_POINTS,
+    ): List<T> = withContext(Dispatchers.IO) {
+        val kept = ArrayDeque<T>()
+        var seen = 0
+        // Keep every stride-th record, doubling the stride whenever the buffer fills. That
+        // holds the sample evenly spread across the whole range in a single pass, without
+        // knowing the total count up front.
+        var stride = 1
+        var pageToken: String? = null
+        do {
+            val response = client.readRecords(
+                ReadRecordsRequest(
+                    recordType = type,
+                    timeRangeFilter = range,
+                    ascendingOrder = true,
+                    pageSize = PAGE_SIZE,
+                    pageToken = pageToken,
+                ),
+            )
+            response.records.forEach { record ->
+                if (seen % stride == 0) kept.addLast(record)
+                seen++
+                if (kept.size > limit) {
+                    // Drop every second kept record and sample half as often from here on,
+                    // so the retained set stays evenly spaced over what has been read.
+                    var index = 0
+                    kept.retainAll { (index++) % 2 == 0 }
+                    stride *= 2
+                }
+            }
+            pageToken = response.pageToken
+        } while (pageToken != null)
+        kept.toList()
+    }
+
+    /**
      * True if this type has anything to show — a cheap catalog probe.
      *
      * Checks aggregation as well as raw records, because some types derive a value without
@@ -117,6 +172,9 @@ class HealthRepository(private val context: Context) {
     companion object {
         const val PAGE_SIZE = 1000
         const val MAX_RECORDS = 5000
+
+        /** Chart sample size. Far beyond the pixel width of any phone chart. */
+        const val CHART_POINTS = 2000
         val DEFAULT_ZONE: ZoneId get() = ZoneId.systemDefault()
     }
 }

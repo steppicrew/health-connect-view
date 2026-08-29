@@ -130,9 +130,10 @@
         <item quantity="other">%1$d records</item>
     </plurals>
     <plurals name="detail_truncated">
-        <item quantity="one">Showing the most recent record only. Charts still cover the whole period.</item>
-        <item quantity="other">Showing the most recent %1$d records only. Charts still cover the whole period.</item>
+        <item quantity="one">The list shows the most recent record only. The chart still covers the whole period.</item>
+        <item quantity="other">The list shows the most recent %1$d records only. The chart still covers the whole period.</item>
     </plurals>
+    <string name="chart_source_sampled">Individual readings, sampled across the period</string>
     <plurals name="detail_multiple_writers">
         <item quantity="one">%1$d app wrote this data.</item>
         <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>

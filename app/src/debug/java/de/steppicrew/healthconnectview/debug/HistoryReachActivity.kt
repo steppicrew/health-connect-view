@@ -56,13 +56,27 @@ class HistoryReachActivity : ComponentActivity() {
                             return@forEach
                         } ?: return@forEach
 
+                    // What the chart path reaches, which pages the whole range and thins the
+                    // result rather than stopping at the newest MAX_RECORDS. On a
+                    // high-frequency type this should reach substantially further back.
+                    val chart = runCatching {
+                        val sampled = repository.readForChart(spec.type, filter)
+                        sampled.minOfOrNull { spec.timeOf(it) } to sampled.size
+                    }.getOrElse { error ->
+                        Log.w(TAG, "$name: chart read threw: $error")
+                        null to 0
+                    }
+
                     // A floor at ~30 days is the fingerprint of the missing permission; older
                     // than that proves history is actually being served.
                     val beyondCap = oldest.isBefore(cutoff)
+                    val chartOldest = chart.first
                     Log.i(
                         TAG,
-                        "$name: oldest=${date(oldest)} daysBack=${daysBack(oldest, now)} " +
-                            "beyond30d=$beyondCap",
+                        "$name: listOldest=${date(oldest)} listDaysBack=${daysBack(oldest, now)} " +
+                            "chartOldest=${chartOldest?.let { date(it) }} " +
+                            "chartDaysBack=${chartOldest?.let { daysBack(it, now) }} " +
+                            "chartPoints=${chart.second} beyond30d=$beyondCap",
                     )
                 }
             Log.i(TAG, "done")
