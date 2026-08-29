@@ -122,7 +122,7 @@ settings while backgrounded.
 
 The Xiaomi test phone (HyperOS) blocks `adb install` **and** `adb shell input tap`
 (`SecurityException: INJECT_EVENTS`). Both need a signed-in Mi account, deliberately not
-created — see `docs/ROADMAP.md` §7. So:
+created — see `docs/ROADMAP.md` §8. So:
 
 - **Install:** `adb push` the APK to `/sdcard/Download/` and ask the user to tap it.
 - **Drive the UI:** ask the user to tap; read the result from `screencap` and `logcat`.

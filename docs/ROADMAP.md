@@ -5,50 +5,77 @@ discussed in.
 
 ## 1. Dashboard start screen (next major feature)
 
-Replace the catalog as the launch destination with a **configurable dashboard of tiles**
-showing the selected stats for a single day.
+Replace the catalog as the launch destination with a **configurable grid of tiles**, each
+showing one data type in a form that suits it. The catalog stays as the complete index of all
+40 types and as the tile picker, but moves behind a nav entry.
 
-### Behaviour
+### Tiles
 
-- **One day at a time.** Opens on today; `←` / `→` step to the previous/next day. Never step
-  past today into empty future dates.
-- **Tiles.** One per stat the user has chosen to pin — steps, sleep duration, resting heart
-  rate, weight, and so on. Each shows the day's headline value, its unit, and ideally a small
-  sparkline or delta against the previous day.
-- **Configurable.** The user picks which tiles appear and in what order. Anything granted is
-  eligible; nothing is pinned by default beyond a sensible starter set.
-- **Tap a tile** to open the existing type-detail screen (chart plus raw record list) for
-  that type, pre-scoped to the selected day.
-- The catalog stays reachable — it is still the complete index of all 40 types — but moves
-  behind a nav entry rather than being the front door.
+- **A grid of resizable tiles.** 1x1 only to begin with, but tiles carry their span in the
+  stored config from the start -- retrofitting spans later would mean rewriting both the
+  config schema and the drag geometry.
+- **The form is per type, and lives in the registry.** Steps and floors show a ring against a
+  goal; heart rate shows a short curve coloured from blue to red across a fixed 50-160 bpm
+  scale. This is per-type presentation knowledge, so it belongs in `RecordTypeSpec` as a
+  `TileSpec`, not in the dashboard. A `when (type)` in the UI would reintroduce exactly the 40
+  branches the registry exists to prevent.
+- **Fixed colour scales, not per-window normalisation.** A window-relative scale makes every
+  day look dramatic and makes two days incomparable.
+- **Tap** opens the tile full screen. **Long-press** enters edit mode: move, delete, add.
+
+### Full-screen view
+
+Opens from a tile and shows that type over a selectable span: **today so far, last 7 days,
+last 4 weeks, last year**, with `<` / `>` stepping one span back and forth. Never steps past
+today.
+
+This is a different concept from the existing `TimeRange` enum, which means "the last N days
+from now" and has no offset -- it needs a sibling type, not extra entries. It is also what
+finally makes data older than a year reachable (section 6).
 
 ### Implementation notes
 
-- **Values must come from `aggregate()`**, never from summing raw records. A day tile is
-  exactly the case where several apps writing the same metric would double-count. Types with
-  no aggregate metric (`spec.aggregate == null`) cannot show a daily total at all: show the
-  latest reading or a record count instead, never a computed sum.
-- Use `aggregate()` for a single day rather than `aggregateGroupByPeriod`, unless the tile
-  shows a sparkline, in which case one grouped call over the trailing week serves both.
-- Day boundaries are **local midnight**, via the same alignment fix already in
-  `TimeRange.localFilter()` — an unaligned window silently returns nothing.
-- Tile configuration is non-health UI state, so it belongs in the existing DataStore. Health
-  values themselves are still never persisted.
+- **Values come from `aggregate()`**, never from summing raw records -- a day tile is exactly
+  where multiple writers would double-count. Types with no aggregate metric cannot show a
+  total at all: show the latest reading or a record count.
+- **Intraday tiles need a new repository entry point.** `dailyTotals()` buckets by day; an
+  hourly curve needs `aggregateGroupByDuration`. Instantaneous types (heart rate) can chart
+  raw points safely, but any *interval* type shown intraday must aggregate. Verify on the
+  phone: the emulator's duplicate-interval problem (section 5) makes its results untrustworthy
+  for interval types.
+- **Charts for types with no aggregate metric must use `readForChart()`**, not `read()`, or
+  they will be cut off within days (section 6).
+- Day boundaries are **local midnight**, via `TimeRange.localFilter()`'s alignment.
 - Fetch tiles concurrently with a `Semaphore` cap, as the catalog probe already does.
-- Empty vs. not-granted must stay distinct per tile, the same distinction `UiState` already
-  encodes.
+- **Goals** are non-health UI state: DataStore, keyed by type, and only meaningful for types
+  with an aggregate metric. A ring without a total has nothing to fill.
+- Tile configuration is likewise DataStore. Health values are still never persisted.
+- Empty vs. not-granted stays distinct per tile, as `UiState` already encodes.
+
+### Build order
+
+Each step leaves a working app.
+
+1. `TileSpec` in the registry + `DashboardConfig` in DataStore; no UI yet.
+2. Dashboard screen with a fixed starter set and the number renderer only; becomes the start
+   destination, catalog demoted.
+3. Ring renderer + goals; curve renderer + the intraday aggregation entry point.
+4. Full-screen view with span + offset stepping (reuses the existing chart).
+5. Edit mode: long-press to move, delete, add. Resize deferred -- it needs the span geometry
+   and a second gesture, and move/delete/add is most of the value.
+6. Settings screen (section 2), which is where goals and tile order need a home anyway.
 
 ### Open questions
 
-- **Check which types actually arrive before designing tiles around them.** Not everything a
-  wearable tracks internally (Body Battery, Training Status, and similar proprietary metrics)
-  is exposed as a Health Connect record type, so a tile can be designed for data that never
-  appears. The measured shape in section 5 shows what one real device actually receives.
-- Which stats form the default tile set for a first run?
+- Which stats form the default tile set on first run?
 - Should a tile show a comparison (vs. yesterday, vs. 7-day average)? Useful, but it is a
   second aggregation per tile.
-- Does "advanced dashboard" (custom tiles beyond a free allowance) become a premium feature?
-  `Feature.CUSTOM_DASHBOARD` is already reserved in the entitlement enum.
+- Does "advanced dashboard" (custom tiles beyond a free allowance) become the premium feature?
+  `Feature.CUSTOM_DASHBOARD` is reserved for it. Free would keep a fixed starter dashboard;
+  paid unlocks arbitrary tiles.
+- **Check which types actually arrive before designing tiles around them.** Proprietary
+  wearable metrics (Body Battery, Training Status) are often not Health Connect record types
+  at all. Section 5 shows what one real device receives.
 
 ## 2. Settings screen
 
@@ -190,7 +217,81 @@ listed thirty records as em-dashes with an empty chart. Now fixed — found only
 shape measurement reported zero extractable values against thirty records, which is the kind
 of contradiction worth looking at.
 
-## 6. Considered and rejected: a React/Vite UI in a WebView
+## 6. History reach: measured, and two bugs found
+
+**Measured on a real device on 2026-08-29**, by asking for a 1000-day window per type and
+logging the oldest record returned (`HistoryReachActivity`, debug-only, logs dates and counts
+only). The trigger was a simple observation: Health Connect's own app showed data from April
+2025, while this app's charts began in July 2026.
+
+**The first hypothesis was wrong.** `READ_HEALTH_DATA_HISTORY` was missing from every
+requested permission set, and a 30-day cap fit the observed July start almost exactly. It was
+already granted -- the user had granted it in Health Connect's own UI -- so it was never the
+cause. It was still a real bug (see below), just not this one. The lesson is the cheap one:
+measure the floor before explaining it, because two different mechanisms produce the same
+symptom.
+
+### Bug A: the history permission could not be granted from inside the app
+
+Declared in the manifest, never requested. Every permission set was built from
+`RecordRegistry.allReadPermissions`, which holds only per-type read permissions; the history
+permission belongs to no record type, so `selectAll()` could not select it and it never
+reached the launcher. A declared-but-unrequested Health Connect permission is simply never
+granted.
+
+Anyone who had not granted it by hand in Health Connect was capped at 30 days, with the 90-day
+and 1-year ranges silently returning a month of data. Fixed by tracking it separately from the
+type permissions -- the granted/total counter counts *types*, and folding history in would
+report 41 of 41 where 40 exist.
+
+`TimeRange.needsHistoryPermission` existed but had no callers; it is now the gate, and a
+capped range says so instead of just drawing a short chart.
+
+### Bug B: charts were cut off by the record cap, not by the date range
+
+This was the actual cause of the July start. `read()` returns records **newest-first** and
+stops at `MAX_RECORDS`, so on a high-frequency type the cap lands within days:
+
+| Type | Oldest reachable via `read()` | Via `readForChart()` |
+|------|------------------------------|----------------------|
+| RespiratoryRate | 3 days | — |
+| HeartRate | 6 days | **412 days** |
+| OxygenSaturation | 10 days | — |
+| Distance | 13 days | **421 days** |
+| Steps | 19 days | **472 days** |
+| HeartRateVariabilityRmssd | 57 days | **401 days** |
+| ActiveCaloriesBurned | 161 days | **472 days** |
+
+Right for the record list, wrong for a chart: a year-long request drew the last six days of
+heart rate and looked like missing history. Only the twelve chartable types with **no**
+aggregate metric were affected -- everything else charts from `dailyTotals()` and was never at
+risk. `readForChart()` pages the whole range and thins as it goes, keeping an evenly spaced
+sample bounded by `CHART_POINTS`, so the series spans the full period at reduced resolution.
+
+The truncation notice claimed "Charts still cover the whole period", which was false for
+exactly these types. It now describes the list.
+
+### Still open: the range ceiling
+
+`TimeRange.YEAR` is 365 days with no offset, so nothing older is reachable at all. The measured
+data shows the wall directly -- BodyFat, BodyWaterMass, BoneMass and Height all report their
+oldest record as **exactly** `daysBack=365`, which is the request boundary rather than the end
+of the data. Types with genuinely older data reach 472 days (FloorsClimbed, RestingHeartRate,
+May 2025).
+
+Reaching April 2025 needs range + offset stepping, which is part of the dashboard's
+full-screen view (section 1) rather than a fifth entry in the `TimeRange` enum.
+
+### Trap: probes must stay in the foreground
+
+Without `READ_HEALTH_DATA_IN_BACKGROUND`, Health Connect refuses reads and aggregates once the
+calling activity backgrounds. The debug activities `finish()` early and continue in
+`lifecycleScope`, so a long sweep succeeds at first and then fails partway through -- and fails
+*further up the list* on each rerun, while `getGrantedPermissions()` keeps reporting every type
+as granted. It reads convincingly as permissions being progressively revoked. It is not; it is
+the foreground window closing. Keep adb-driven probes short.
+
+## 7. Considered and rejected: a React/Vite UI in a WebView
 
 Asked whether the UI would be easier as TypeScript/React talking to Kotlin, and whether that
 is possible without the INTERNET permission.
@@ -212,7 +313,7 @@ less than a bridge plus a JS toolchain.
 Worth revisiting if the UI grows into something genuinely interactive that a JS charting
 library would do far better, or if the same UI is ever wanted on the web.
 
-## 7. Testing note: adb input injection on Xiaomi/HyperOS
+## 8. Testing note: adb input injection on Xiaomi/HyperOS
 
 `adb shell input tap` fails on HyperOS with:
 
@@ -229,7 +330,7 @@ So on such a device, drive the UI by hand and read the result from screenshots a
 debug-only `AggregationCheckActivity` exists for exactly this: it is startable with `am start`
 and reports raw-versus-aggregated counts per type without needing a single tap.
 
-## 8. Deferred
+## 9. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
