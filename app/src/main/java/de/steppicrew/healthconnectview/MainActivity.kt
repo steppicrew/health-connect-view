@@ -10,6 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.health.connect.client.PermissionController
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.steppicrew.healthconnectview.settings.Settings
+import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.ui.nav.HealthNavGraph
 import de.steppicrew.healthconnectview.ui.theme.HealthConnectViewTheme
 
@@ -18,7 +22,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HealthConnectViewTheme {
+            // Read here rather than inside the theme so a change repaints the whole app at
+            // once; the default matches SettingsStore's so the first frame is not a flash of
+            // the wrong palette.
+            val settings by remember { SettingsStore(this).settings }
+                .collectAsStateWithLifecycle(initialValue = Settings())
+
+            HealthConnectViewTheme(
+                theme = settings.theme,
+                dynamicColor = settings.dynamicColor,
+            ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val contract: ActivityResultContract<Set<String>, Set<String>> =
                         remember { PermissionController.createRequestPermissionResultContract() }

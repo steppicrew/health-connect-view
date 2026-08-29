@@ -10,6 +10,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import de.steppicrew.healthconnectview.settings.ThemeChoice
 
 private val LightColors = lightColorScheme(
     primary = Color(0xFF00696D),
@@ -31,10 +32,15 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun HealthConnectViewTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    theme: ThemeChoice = ThemeChoice.SYSTEM,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
+    val darkTheme = when (theme) {
+        ThemeChoice.SYSTEM -> isSystemInDarkTheme()
+        ThemeChoice.LIGHT -> false
+        ThemeChoice.DARK -> true
+    }
     val context = LocalContext.current
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
