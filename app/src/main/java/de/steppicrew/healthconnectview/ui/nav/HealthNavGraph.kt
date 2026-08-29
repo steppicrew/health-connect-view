@@ -20,6 +20,8 @@ import de.steppicrew.healthconnectview.ui.detail.TypeDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsViewModel
 import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
+import de.steppicrew.healthconnectview.ui.settings.SettingsScreen
+import de.steppicrew.healthconnectview.ui.settings.SettingsViewModel
 
 object Routes {
     const val DASHBOARD = "dashboard"
@@ -27,6 +29,7 @@ object Routes {
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
     const val TILE_DETAIL = "tile/{typeName}"
+    const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
 
     fun typeDetail(typeName: String) = "type/$typeName"
@@ -46,7 +49,7 @@ fun HealthNavGraph(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.tileDetail(it)) },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
-                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+                onOpenPermissions = { navController.navigate(Routes.SETTINGS) },
             )
         }
 
@@ -67,6 +70,16 @@ fun HealthNavGraph(
                 onRequestPermissions = onRequestPermissions,
                 onContinue = { navController.popBackStack() },
                 onOpenPrivacy = { navController.navigate(Routes.PRIVACY) },
+            )
+        }
+
+        composable(Routes.SETTINGS) {
+            val viewModel: SettingsViewModel = viewModel()
+            SettingsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenPrivacy = { navController.navigate(Routes.PRIVACY) },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
             )
         }
 

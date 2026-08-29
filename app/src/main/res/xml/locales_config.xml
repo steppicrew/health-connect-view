@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Declares the languages this app ships, so Android lists it in the system's own per-app
+    language settings. Without this the platform has no way to know the app is translated and
+    the per-app language entry does not appear at all.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="de" />
+</locale-config>
