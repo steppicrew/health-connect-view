@@ -40,7 +40,19 @@ object Routes {
 fun HealthNavGraph(
     onRequestPermissions: (Set<String>) -> Unit,
     navController: NavHostController = rememberNavController(),
+    /**
+     * Screen to open directly, from the debug launch intent. Null in release builds, where
+     * DebugNav has no implementation that can produce one.
+     */
+    startRoute: String? = null,
 ) {
+    // Navigated to rather than used as the start destination, so Back still reaches the
+    // dashboard: landing with an empty back stack would trap the screen with no way out, and
+    // the point of the backdoor is to inspect the app, not to replace it.
+    LaunchedEffect(startRoute) {
+        startRoute?.let(navController::navigate)
+    }
+
     NavHost(navController = navController, startDestination = Routes.DASHBOARD) {
 
         composable(Routes.DASHBOARD) {

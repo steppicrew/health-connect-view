@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,13 +15,32 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.settings.Settings
 import de.steppicrew.healthconnectview.settings.SettingsStore
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import de.steppicrew.healthconnectview.nav.DebugNav
 import de.steppicrew.healthconnectview.ui.nav.HealthNavGraph
 import de.steppicrew.healthconnectview.ui.theme.HealthConnectViewTheme
 
 class MainActivity : ComponentActivity() {
 
+    /**
+     * Screen to open on instead of the dashboard, in debug builds only.
+     *
+     * State rather than a plain field because the activity is singleTop: a second `am start`
+     * while it is already running delivers onNewIntent rather than recreating it, and without
+     * recomposition the new route would be silently ignored -- which reads as the backdoor
+     * not working.
+     */
+    private var startRoute by mutableStateOf<String?>(null)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        startRoute = DebugNav.startRoute(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startRoute = DebugNav.startRoute(intent)
         setContent {
             // Read here rather than inside the theme so a change repaints the whole app at
             // once; the default matches SettingsStore's so the first frame is not a flash of
@@ -43,6 +63,8 @@ class MainActivity : ComponentActivity() {
                         onRequestPermissions = { permissions ->
                             if (permissions.isNotEmpty()) launcher.launch(permissions)
                         },
+                        // Null in release, where DebugNav has no implementation to read it.
+                        startRoute = startRoute,
                     )
                 }
             }
