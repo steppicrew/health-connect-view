@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.debug
 
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.health.connect.client.records.Record
@@ -32,6 +33,23 @@ import kotlin.random.Random
 object SampleDataSeeder {
 
     private const val DAYS = 30
+
+    /** Varied so the activity icons and titles differ between days in the session list. */
+    private val EXERCISE_TYPES = listOf(
+        ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+        ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING,
+        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL,
+        ExerciseSessionRecord.EXERCISE_TYPE_YOGA,
+    )
+
+    private val EXERCISE_TITLES = listOf(
+        "Morning run",
+        "Ride home",
+        "Strength",
+        "Pool session",
+        "Evening yoga",
+    )
 
     suspend fun seed(context: Context) {
         val client = HealthConnectClient.getOrCreate(context)
@@ -123,6 +141,62 @@ object SampleDataSeeder {
                         metadata = metadata(),
                     ),
                 )
+
+                // Exercise on most days, varying the activity so the icons and the session
+                // list have something to distinguish. Not every day: a tile that always
+                // reads the same never shows its empty state during development.
+                if (dayOffset % 3 != 2) {
+                    val exerciseStart = dayStart.plus(18, ChronoUnit.HOURS)
+                    val minutes = (25 + random.nextInt(40)).toLong()
+                    add(
+                        ExerciseSessionRecord(
+                            startTime = exerciseStart,
+                            startZoneOffset = offset,
+                            endTime = exerciseStart.plus(minutes, ChronoUnit.MINUTES),
+                            endZoneOffset = offset,
+                            exerciseType = EXERCISE_TYPES[dayOffset % EXERCISE_TYPES.size],
+                            title = EXERCISE_TITLES[dayOffset % EXERCISE_TITLES.size],
+                            metadata = metadata(),
+                        ),
+                    )
+                    // Heart rate through the session, denser than the resting samples, so a
+                    // session curve has the resolution a real workout would give it.
+                    //
+                    // A wandering value rather than a clean wave: heart rate drifts and is
+                    // pushed around by effort, it does not oscillate on a period. A sine
+                    // looked obviously synthetic the moment the chart was tall enough to
+                    // read, which matters when these frames end up in a store listing.
+                    var bpm = 96
+                    repeat(minutes.toInt()) { minute ->
+                        val at = exerciseStart.plus(minute.toLong(), ChronoUnit.MINUTES)
+                        // Effort builds over the first third and eases near the end, with the
+                        // drift doing the rest.
+                        val target = when {
+                            minute < minutes / 3 -> 118 + minute
+                            minute > minutes - 6 -> 104
+                            else -> 138
+                        }
+                        add(
+                            HeartRateRecord(
+                                startTime = at,
+                                startZoneOffset = offset,
+                                endTime = at.plus(59, ChronoUnit.SECONDS),
+                                endZoneOffset = offset,
+                                samples = (0 until 4).map { sample ->
+                                    // Pulled gently towards the target, plus beat-to-beat
+                                    // noise; the result never repeats and stays plausible.
+                                    bpm += ((target - bpm) / 8) + random.nextInt(-3, 4)
+                                    bpm = bpm.coerceIn(70, 178)
+                                    HeartRateRecord.Sample(
+                                        time = at.plus((sample * 15).toLong(), ChronoUnit.SECONDS),
+                                        beatsPerMinute = bpm.toLong(),
+                                    )
+                                },
+                                metadata = metadata(),
+                            ),
+                        )
+                    }
+                }
 
                 // Weight only every few days, so the sparse-series path is exercised too.
                 if (dayOffset % 7 == 0) {
