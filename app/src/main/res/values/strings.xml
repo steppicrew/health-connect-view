@@ -95,6 +95,8 @@
         <item quantity="other">%1$d of %2$d types allowed</item>
     </plurals>
     <string name="permission_already_granted">Allowed</string>
+    <string name="permission_history_title">Data older than 30 days</string>
+    <string name="permission_history_body">Without this, Health Connect only returns the last 30 days, however far back your data goes.</string>
     <string name="action_select_all">Select all</string>
     <string name="action_privacy">Privacy</string>
     <string name="action_continue">Skip</string>
@@ -122,6 +124,7 @@
     <string name="detail_empty_title">Nothing recorded</string>
     <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
     <string name="detail_error_title">Could not read data</string>
+    <string name="detail_history_capped">Showing only the last 30 days. Allow access to older data on the permissions screen to see the full period.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d record</item>
         <item quantity="other">%1$d records</item>

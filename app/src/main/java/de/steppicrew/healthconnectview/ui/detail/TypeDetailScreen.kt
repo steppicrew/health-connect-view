@@ -125,6 +125,19 @@ private fun DetailContent(
     onOpenRecord: (String) -> Unit,
 ) {
     LazyColumn {
+        // First, because it changes how everything below it should be read: the chart is not
+        // short of older data, the app is not allowed to see it.
+        if (data.historyCapped) {
+            item(key = "history_capped") {
+                Text(
+                    text = stringResource(R.string.detail_history_capped),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
+        }
+
         if (data.points.isNotEmpty()) {
             item(key = "chart") {
                 Column(Modifier.padding(16.dp)) {

@@ -84,6 +84,7 @@ fun PermissionsScreen(
             else -> PermissionList(
                 state = state,
                 onToggle = viewModel::toggle,
+                onToggleHistory = viewModel::toggleHistory,
                 onSelectAll = viewModel::selectAll,
                 onRequest = { onRequestPermissions(viewModel.permissionsToRequest()) },
                 onContinue = onContinue,
@@ -98,6 +99,7 @@ fun PermissionsScreen(
 private fun PermissionList(
     state: PermissionsUiState,
     onToggle: (RecordTypeSpec<*>) -> Unit,
+    onToggleHistory: () -> Unit,
     onSelectAll: () -> Unit,
     onRequest: () -> Unit,
     onContinue: () -> Unit,
@@ -135,6 +137,15 @@ private fun PermissionList(
                         }
                     }
                 }
+            }
+
+            item(key = "history") {
+                HistoryRow(
+                    granted = state.historyGranted,
+                    selected = state.historySelected,
+                    onToggle = onToggleHistory,
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
 
             RecordRegistry.byCategory.forEach { (category, specs) ->
@@ -189,6 +200,51 @@ private fun CategoryHeader(category: Category) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
     )
+}
+
+/**
+ * History is a depth permission, not a record type, so it sits above the type list rather
+ * than inside a category. Health Connect caps reads at 30 days without it and reports no
+ * error, which reads as "there is no older data" instead of "the app may not see it".
+ */
+@Composable
+private fun HistoryRow(
+    granted: Boolean,
+    selected: Boolean,
+    onToggle: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = !granted, onClick = onToggle)
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = granted || selected,
+            onCheckedChange = { onToggle() },
+            enabled = !granted,
+        )
+        Column(Modifier.padding(start = 8.dp)) {
+            Text(
+                text = stringResource(R.string.permission_history_title),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = if (granted) {
+                    stringResource(R.string.permission_already_granted)
+                } else {
+                    stringResource(R.string.permission_history_body)
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = if (granted) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+            )
+        }
+    }
 }
 
 @Composable

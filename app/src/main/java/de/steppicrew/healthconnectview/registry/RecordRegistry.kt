@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.registry
 
+import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec.Shape
@@ -472,6 +473,17 @@ object RecordRegistry {
 
     /** Distinct read permissions; several types share one, so this is smaller than [all]. */
     val allReadPermissions: Set<String> = all.map { it.permission }.toSet()
+
+    /**
+     * Unlocks reading further back than the platform's default 30-day window.
+     *
+     * Deliberately not part of [allReadPermissions]: it belongs to no record type, and the
+     * granted/total counter shown to the user counts types. Folding it in would report 41 of
+     * 41 types while only 40 exist. It has to be requested explicitly alongside the type
+     * permissions -- declaring it in the manifest grants nothing on its own, and without it
+     * every range longer than 30 days silently returns 30 days of data.
+     */
+    val HISTORY_PERMISSION: String = HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
 
     val byCategory: Map<Category, List<RecordTypeSpec<*>>> =
         all.groupBy { it.category }.toSortedMap(compareBy { it.ordinal })

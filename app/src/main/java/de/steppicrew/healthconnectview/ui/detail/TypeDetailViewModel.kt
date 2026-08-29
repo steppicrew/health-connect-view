@@ -37,6 +37,12 @@ data class TypeDetailData(
     /** Apps that wrote into this range; more than one means totals differ from any single app. */
     val contributingApps: Set<String>,
     val truncated: Boolean,
+    /**
+     * True when the range asks for more than 30 days but READ_HEALTH_DATA_HISTORY is not
+     * granted. Health Connect silently returns only the last 30 days in that case, which is
+     * indistinguishable from simply having no older data -- so the UI has to say so.
+     */
+    val historyCapped: Boolean,
 )
 
 class TypeDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -77,7 +83,9 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             val range = _range.value
-            val result = runCatching { loadData(spec, range) }
+            val capped = range.needsHistoryPermission &&
+                RecordRegistry.HISTORY_PERMISSION !in granted
+            val result = runCatching { loadData(spec, range, capped) }
             result.fold(
                 onSuccess = { data ->
                     // Some types have no stored records but still aggregate to a value:
@@ -95,7 +103,11 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    private suspend fun loadData(spec: RecordTypeSpec<*>, range: TimeRange): TypeDetailData {
+    private suspend fun loadData(
+        spec: RecordTypeSpec<*>,
+        range: TimeRange,
+        historyCapped: Boolean,
+    ): TypeDetailData {
         val records = repository.read(spec.type, range.filter())
 
         // Totals must never be computed by summing raw records: several apps can write the
@@ -132,6 +144,7 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             pointsAreAggregated = aggregated.isNotEmpty(),
             contributingApps = contributors,
             truncated = records.size >= HealthRepository.MAX_RECORDS,
+            historyCapped = historyCapped,
         )
     }
 
