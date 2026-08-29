@@ -1,154 +1,161 @@
 # Roadmap
 
-Planned work, not yet built. Recorded here so the intent survives beyond the session it was
-discussed in.
+What exists, why it works the way it does, and what is still planned. Sections marked **built**
+describe shipped behaviour and the decisions behind it; the rest is intent recorded so it
+survives beyond the session it was discussed in.
 
-## 1. Dashboard start screen (next major feature)
+## 1. Dashboard start screen — built
 
-Replace the catalog as the launch destination with a **configurable grid of tiles**, each
-showing one data type in a form that suits it. The catalog stays as the complete index of all
-40 types and as the tile picker, but moves behind a nav entry.
+The launch destination is a configurable grid of tiles, each showing one data type in a form
+that suits it. The catalog remains the complete index of all 40 types and the tile picker, and
+sits behind a nav entry.
 
 ### Tiles
 
-- **A grid of resizable tiles.** 1x1 only to begin with, but tiles carry their span in the
-  stored config from the start -- retrofitting spans later would mean rewriting both the
-  config schema and the drag geometry.
-- **The form is per type, and lives in the registry.** Steps and floors show a ring against a
-  goal; heart rate shows a short curve coloured from blue to red across a fixed 50-160 bpm
-  scale. This is per-type presentation knowledge, so it belongs in `RecordTypeSpec` as a
-  `TileSpec`, not in the dashboard. A `when (type)` in the UI would reintroduce exactly the 40
-  branches the registry exists to prevent.
-- **Fixed colour scales, not per-window normalisation.** A window-relative scale makes every
-  day look dramatic and makes two days incomparable.
-- **Tap** opens the tile full screen. **Long-press** enters edit mode: move, delete, add.
+- **A grid of tiles**, 1x1 today. Tiles carry their span in the stored config from the start,
+  so adding 2x1 and 2x2 later does not mean migrating every stored config and rewriting the
+  layout geometry at the same time.
+- **The form is per type and lives in the registry**, as `TileSpec`: a ring against a goal, a
+  curve coloured across a fixed value range, or a plain number. One renderer per form serves
+  every type that declares it; a `when (type)` in the dashboard would have reintroduced exactly
+  the 40-way branch the registry exists to prevent. `NUMBER` is the default, so adding a type
+  still needs no tile decision.
+- **Colour scales are fixed, not window-relative.** Heart rate runs blue to red across
+  50-160 bpm. A scale normalised to each window paints every day in the full sweep, so a calm
+  day looks like an alarming one and two days cannot be compared.
+- **Tap** opens the tile full screen. **Long-press or the toolbar button** enters edit mode:
+  move, remove, add, and set a goal on ring tiles. Both a gesture and a button, because a
+  gesture alone is undiscoverable and unreachable with accessibility services.
+- Reordering is by single steps rather than drag-and-drop: nothing to discover, and a tile
+  cannot land in an unintended slot.
 
 ### Full-screen view
 
-Opens from a tile and shows that type over a selectable span: **today so far, last 7 days,
-last 4 weeks, last year**, with `<` / `>` stepping one span back and forth. Never steps past
-today.
+Opens from a tile: day, week, four weeks, or year, with `<` `>` stepping one window back and
+forth. Never steps past the current window.
 
-This is a different concept from the existing `TimeRange` enum, which means "the last N days
-from now" and has no offset -- it needs a sibling type, not extra entries. It is also what
-finally makes data older than a year reachable (section 6).
+`Span` is a separate concept from `TimeRange`, which means "the last N days from now" and
+cannot be moved. Anchoring to calendar boundaries with an offset is what makes data older than
+a year reachable at all — `TimeRange` topped out at 365 days, so nothing before that could be
+requested no matter which range was chosen.
 
-### Implementation notes
+Windows tile exactly: each window's start is the previous one's end, asserted across every span
+and six offsets. Steps use calendar periods, so a year step lands on the same date and survives
+a leap day.
 
-- **Values come from `aggregate()`**, never from summing raw records -- a day tile is exactly
-  where multiple writers would double-count. Types with no aggregate metric cannot show a
-  total at all: show the latest reading or a record count.
-- **Intraday tiles need a new repository entry point.** `dailyTotals()` buckets by day; an
-  hourly curve needs `aggregateGroupByDuration`. Instantaneous types (heart rate) can chart
-  raw points safely, but any *interval* type shown intraday must aggregate. Verify on the
-  phone: the emulator's duplicate-interval problem (section 5) makes its results untrustworthy
-  for interval types.
-- **Charts for types with no aggregate metric must use `readForChart()`**, not `read()`, or
-  they will be cut off within days (section 6).
-- Day boundaries are **local midnight**, via `TimeRange.localFilter()`'s alignment.
-- Fetch tiles concurrently with a `Semaphore` cap, as the catalog probe already does.
-- **Goals** are non-health UI state: DataStore, keyed by type, and only meaningful for types
-  with an aggregate metric. A ring without a total has nothing to fill.
-- Tile configuration is likewise DataStore. Health values are still never persisted.
-- Empty vs. not-granted stays distinct per tile, as `UiState` already encodes.
+### Values
 
-### Build order
+- **Totals come from `aggregate*()`, never from summing raw records.** A day tile is exactly
+  where several apps writing the same metric would double-count.
+- **A missing value renders as a dash, never as 0.** "Nothing was recorded" and "you took no
+  steps" are different claims, and rendering the first as zero states the second.
+- **Types with no aggregate metric show the day's latest reading**, which is a different
+  statement — a weight, not a sum — and the only honest number available for them.
+- Tiles load concurrently under a `Semaphore` cap, as the catalog probe already does.
+- Tile configuration and goals are non-health UI state in DataStore. Health values are never
+  persisted.
 
-Each step leaves a working app.
+### Still open
 
-1. `TileSpec` in the registry + `DashboardConfig` in DataStore; no UI yet.
-2. Dashboard screen with a fixed starter set and the number renderer only; becomes the start
-   destination, catalog demoted.
-3. Ring renderer + goals; curve renderer + the intraday aggregation entry point.
-4. Full-screen view with span + offset stepping (reuses the existing chart).
-5. Edit mode: long-press to move, delete, add. Resize deferred -- it needs the span geometry
-   and a second gesture, and move/delete/add is most of the value.
-6. Settings screen (section 2), which is where goals and tile order need a home anyway.
-
-### Open questions
-
-- Which stats form the default tile set on first run?
-- Should a tile show a comparison (vs. yesterday, vs. 7-day average)? Useful, but it is a
+- Tile resize (2x1, 2x2). The config already stores spans; what is missing is the layout
+  geometry and a second gesture.
+- Which stats form the default tile set on first run. Currently steps, heart rate, sleep,
+  weight, total calories, floors.
+- Whether a tile shows a comparison (vs. yesterday, vs. 7-day average). Useful, but it is a
   second aggregation per tile.
-- Does "advanced dashboard" (custom tiles beyond a free allowance) become the premium feature?
-  `Feature.CUSTOM_DASHBOARD` is reserved for it. Free would keep a fixed starter dashboard;
-  paid unlocks arbitrary tiles.
-- **Check which types actually arrive before designing tiles around them.** Proprietary
-  wearable metrics (Body Battery, Training Status) are often not Health Connect record types
-  at all. Section 5 shows what one real device receives.
+- Whether "advanced dashboard" becomes the premium feature. `Feature.CUSTOM_DASHBOARD` is
+  reserved; free would keep a fixed starter dashboard, paid unlocks arbitrary tiles.
 
-## 2. Settings screen
+## 2. Settings screen — built
 
-A single place for the preferences that currently have no UI at all.
+- **Theme** — Light / Dark / System, plus a toggle for wallpaper (dynamic) colours. Read at the
+  top of the activity so a change repaints everything at once and the first frame is not a
+  flash of the wrong palette.
+- **Language** — a *link* into Android's own per-app language screen, not a control.
+  `res/xml/locales_config.xml` declares the shipped locales, which is what makes the app appear
+  there at all. A private override would drift from what the system's own settings show.
+- **Choose data types** — this app's own permission picker. Listed first, because on a first
+  run it is the only route to granting anything.
+- **Manage access** and **App priority** — links into Health Connect. Priority is a link for
+  the same reason as language: Health Connect owns that ordering and does not expose it to
+  apps.
+- **Withdraw all access** — calls `revokeAllPermissions()`, and says plainly that nothing is
+  deleted. This app keeps no copy, so revoking only removes the ability to read; the phrase
+  otherwise invites the fear that it erases the records too.
+- Privacy policy, source link, version.
 
-- **Language** — default "System", plus an explicit list of the shipped translations. On
-  Android 13+ this should drive the platform's own per-app language API
-  (`AppCompatDelegate.setApplicationLocales` / `LocaleManager`), so the choice also shows up
-  in Android's own per-app language settings rather than being a private override. A
-  `res/xml/locales_config.xml` declaring the supported locales is required for that.
-- **Theme** — Light / Dark / System (default System). Dynamic colour is on by default on
-  Android 12+; worth a toggle for people who prefer the app's own palette.
-- **Shown stats** — which types appear on the dashboard (see section 1) and in what order.
-  This is the same configuration the dashboard tiles read, so build it alongside them.
-- **Manage access** — a shortcut into Health Connect's own permission screen, and a
-  "revoke all" that calls `PermissionController.revokeAllPermissions()`.
-- Link to the privacy policy and the source repository.
+Every external intent has a fallback and cannot crash the app: each target belongs to another
+app that may be absent, disabled, or renamed by an OEM.
 
-All of this is non-health UI state and belongs in the existing DataStore. Health values
-themselves are still never persisted.
+All of this is non-health UI state in DataStore.
 
-## 3. Source selection
+## 3. Source selection — built
 
-When several apps write the same metric, let the user see the combined view by default but
-switch to a single source.
+Where several apps wrote a type, the full-screen view offers "All sources" plus one chip per
+contributing app, filtering chart, total and record list through `dataOriginFilter`. Dashboard
+tiles read the same per-type selection, so the two views agree.
 
-### Behaviour
+**All sources stays the default.** Health Connect's deduplicated total is the correct answer
+for the metric and is deliberately not the same as any single app's figure. The caption states
+which question is being answered, because a changed number with no explanation is how this gets
+misread.
 
-- Default stays the **combined, deduplicated** view. That is what Health Connect's own
-  aggregation produces, and it is the correct answer for "how many steps did I take" — it is
-  not the same as any one app's figure, which is the point.
-- Where more than one app contributed, offer a source picker: "All sources (deduplicated)"
-  plus one entry per contributing app, resolved to its display name.
-- Selecting one source filters both the raw list and the chart to that app alone.
+**Every printed value names its source** — each record row, and the writers behind a chart and
+total. With two apps describing the same activity, the source is what makes a legitimate
+duplicate legible instead of looking like an error. Resolving those names needs `<queries>` to
+match Health Connect clients; matching only the rationale intent left writers that do not
+handle it showing as raw package names.
 
-### Implementation notes
+**There is no "primary source" setting, deliberately.** Health Connect keeps a user-ordered app
+priority list that decides which record wins on overlap, and it is not readable or writable
+through the Jetpack client. Inventing a ranking here — picking the app with the most records,
+say — would disagree with the platform and produce totals matching nothing. The settings screen
+points at where the real setting lives.
 
-- Verified as directly supported: `ReadRecordsRequest`, `AggregateRequest` and the grouped
-  aggregate requests all take a `dataOriginFilter: Set<DataOrigin>`. Passing a single origin
-  scopes everything to that app; passing an empty set is the current all-sources behaviour.
-- Contributing apps are already known — `AggregationResult.dataOrigins` is what the existing
-  "N apps wrote this data" note reads, so the picker needs no extra query.
-- **"Primary source" is not ours to define.** Health Connect keeps a user-configured app
-  priority list, used to decide which record wins when two overlap, and it is not exposed to
-  apps through the Jetpack client. So the honest options are the deduplicated view (which
-  already respects that priority) or an explicit per-app view. Do not invent a "primary" by
-  picking the app with the most records — that would silently disagree with the platform.
-- A per-app view must never be presented as a total for the day. It is "what this app
-  recorded", and the label should say so.
+### Two traps this surfaced
 
-## 4. Chart refinement
+- **A bucket-wide interval aggregates to nothing.** An app posting one 00:00-23:59 summary per
+  day yields null buckets while `readRecords` returns the record, so filtering to that app alone
+  produced an empty chart with a visible record beneath it. Where a *single* source is selected
+  its own records may be summed directly, since one writer cannot overlap itself; never for the
+  combined view.
+- **The contributor list is read unfiltered.** Scoping it to the current selection collapses the
+  picker to one app and strands the user with no way back.
 
-The current chart is a deliberately plain Compose Canvas line: axis min/max, date endpoints,
-guide lines. Known gaps, in rough priority order:
+## 4. Chart refinement — partly built
 
-- **A badge where a cumulative curve crosses its goal line**, marking the moment the goal was
-  reached. The crossing is already visible but unlabelled; the interesting fact is the *time*,
-  which the chart knows and does not say. Interpolate the crossing between the two points that
-  straddle the goal rather than snapping to the later one, or a goal met mid-climb would be
-  reported minutes late.
-- Y-axis gridline labels at intermediate values, not just min/max.
+One hand-drawn Compose Canvas line, no charting dependency. Everything renders through a single
+`LineChart` signature, so swapping the implementation stays a single-file change.
+
+### Built
+
+- **Points placed by timestamp**, not by list position.
+- **Smoothing**, clamped so a segment cannot leave the range of the two values it joins.
+  Discrete types (sleep, exercise, menstruation) stay angular.
+- **Cumulative day charts** for additive types, stepping at each record's own interval and
+  rescaled to finish on the deduplicated daily total.
+- **A dashed goal line**, participating in the vertical scale, with a **badge at the crossing**
+  and the interpolated time stated in words.
+- **Y-axis gridline labels** at five levels, drawn on their own lines and backed so they stay
+  readable where the grid or goal line crosses them.
+- **Touch or drag to read** the nearest point's value and time. The readout occupies a fixed
+  row whether or not anything is selected, so touching does not shift the layout out from under
+  the finger.
+
+### Still open
+
 - X-axis tick labels between the endpoints.
-- Touch a point to read its exact value and timestamp.
-- Empty-day gaps shown as gaps rather than interpolated straight through.
+- Empty-day gaps shown as gaps rather than interpolated straight through. Relevant to the
+  "unexplained 0" problem in `FEATURE-IDEAS.md`: a line drawn through a day with no data claims
+  a value that was never recorded.
 
 Bar rendering for count-like types was on this list and is no longer needed: an intraday
 cumulative chart steps at each record's own interval, so the line no longer implies continuity
 between counted events.
 
 Vico was the original choice and was dropped because Vico 3.x's Compose Multiplatform rewrite
-changed the axis API surface. Revisit if the chart requirements grow beyond what is
-comfortable to hand-draw; everything renders through one `LineChart(points, modifier)`
-signature, so it stays a single-file swap.
+changed the axis API surface. Revisit if the chart requirements grow beyond what is comfortable
+to hand-draw.
 
 ### Chart invariants worth not breaking
 
@@ -156,14 +163,19 @@ Each of these was a real defect found on a device, not a hypothetical:
 
 - **Points are placed by timestamp, never by list position.** Even spacing put a 12:45 event
   at seven eighths of the width because it was the seventh of eight points.
-- **A cumulative series ends on the deduplicated daily total.** Hourly buckets do not
+- **A cumulative series ends on the deduplicated daily total.** Sub-day buckets do not
   deduplicate, so a whole-day summary record from a second writer inflated a running total to
   24.6 against an authoritative 12.
+- **A cumulative series never moves backwards in either axis.** Records commonly overlap, so a
+  naive ramp per record sends the line back in time and draws a zigzag.
 - **Smoothing is clamped inside each segment, horizontally and vertically.** Otherwise a curve
   overshoots below zero between two counts, or doubles back on itself where neighbours are far
   apart in time.
 - **A goal takes part in the vertical scale.** Clipped off the top, "not reached" looks
   identical to "reached".
+- **Point positions are computed once** and shared by the drawing and the touch handler.
+  Computing them twice invites drift, and a highlight beside the line it names is worse than
+  none.
 
 ## 5. Aggregation: verified working, with one caveat
 
