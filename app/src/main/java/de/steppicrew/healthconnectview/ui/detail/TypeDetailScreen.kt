@@ -144,10 +144,10 @@ private fun DetailContent(
                     LineChart(points = data.points)
                     Text(
                         text = stringResource(
-                            if (data.pointsAreAggregated) {
-                                R.string.chart_source_aggregated
-                            } else {
-                                R.string.chart_source_raw
+                            when {
+                                data.pointsAreAggregated -> R.string.chart_source_aggregated
+                                data.pointsAreSampled -> R.string.chart_source_sampled
+                                else -> R.string.chart_source_raw
                             },
                         ),
                         style = MaterialTheme.typography.labelSmall,

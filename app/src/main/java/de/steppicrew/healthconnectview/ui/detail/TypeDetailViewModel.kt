@@ -34,6 +34,11 @@ data class TypeDetailData(
     val points: List<Point>,
     /** True when [points] came from Health Connect's deduplicating aggregation. */
     val pointsAreAggregated: Boolean,
+    /**
+     * True when the charted series was thinned to keep it spanning the whole range. The
+     * chart's extent is right; its resolution is reduced.
+     */
+    val pointsAreSampled: Boolean,
     /** Apps that wrote into this range; more than one means totals differ from any single app. */
     val contributingApps: Set<String>,
     val truncated: Boolean,
@@ -116,6 +121,18 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         // charted only for types with no aggregate metric, where each record is a discrete
         // reading rather than an accumulating quantity.
         val metric = spec.aggregate
+
+        // The record list shows the newest records and stops at MAX_RECORDS. A chart must not
+        // be built from that same slice: on a high-frequency type the cap is hit within days,
+        // so the chart would cover the last few days of the range and read as missing history.
+        // Types with an aggregate metric chart from daily buckets and never need this.
+        val chartRecords = if (metric == null) {
+            runCatching { repository.readForChart(spec.type, range.filter()) }
+                .onFailure { Log.w(TAG, "chart read failed for ${spec.type.simpleName}", it) }
+                .getOrDefault(records)
+        } else {
+            emptyList()
+        }
         val aggregated = if (metric != null) {
             runCatching { aggregatePoints(spec, range) }
                 .onFailure { Log.w(TAG, "aggregation failed for ${spec.type.simpleName}", it) }
@@ -139,9 +156,11 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             records = records,
             // Records arrive newest-first for the list; a chart has to read left to right.
             points = aggregated.ifEmpty {
-                records.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
+                chartRecords.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
             },
             pointsAreAggregated = aggregated.isNotEmpty(),
+            pointsAreSampled = aggregated.isEmpty() &&
+                chartRecords.size >= HealthRepository.CHART_POINTS,
             contributingApps = contributors,
             truncated = records.size >= HealthRepository.MAX_RECORDS,
             historyCapped = historyCapped,
