@@ -177,7 +177,7 @@ Each of these was a real defect found on a device, not a hypothetical:
   Computing them twice invites drift, and a highlight beside the line it names is worse than
   none.
 
-## 5. Sessions: what the data supports — partly built
+## 5. Sessions: what the data supports — built, two refinements open
 
 ### The association is by time, not by identity
 
@@ -226,7 +226,49 @@ to the visible range.
 - An icon per activity, falling back to a generic sports mark rather than to nothing.
 - Tapping a session opens its assembled statistics.
 
-### Next: two chart refinements, then an Activities tile
+### Built: the Activities tile
+
+`TileSpec.Form.SESSIONS` on the existing `ExerciseSessionRecord` and `SleepSessionRecord`
+specs, rather than a tile concept outside the registry. The dashboard still never branches on
+record type; it branches on form, as it already did for rings and curves.
+
+- The tile's face is the **count** of the day's sessions, with their total duration beneath and
+  an icon per activity as far as they fit. Zero is shown as "None" rather than as the
+  missing-data dash: a day with no activities is a fact about the day, not a gap in what was
+  recorded. That is the opposite of the reasoning for a measured type, where a null total does
+  mean nothing was written.
+- Its detail lists the sessions, each opening the statistics sheet, and each showing the
+  **heart-rate curve for its own window** — read raw, which is safe here in a way it would not
+  be for a total, because heart rate is instantaneous: two apps writing the same beat duplicate
+  a point rather than inflating a sum.
+- Sleep gets the same treatment as a separate tile, from the same form.
+
+`isChartable` had been doing two jobs — gating what can be pinned and gating what can
+contribute a number. `ExerciseSessionRecord` has no unit, because an activity is not measured
+in anything, so pinning now asks `isPinnable` while `isChartable` keeps its narrower meaning
+for the session statistics.
+
+### Built: bands behind every movement chart
+
+A band answers "why does the line do that", and the answer is the same for steps, floors,
+distance, calories, elevation and wheelchair pushes. The set is named once as
+`TileSpec.ACTIVITY_CONTEXT` rather than repeated per spec. Hydration stays without: a drink
+during a ride is real, but a sleep band explains nothing about a hydration chart's shape.
+
+### Built: the intraday line coloured by value
+
+Heart rate was a coloured curve on its tile and a plain themed line on the screen that tile
+opened — the same reading in two colours, which reads as two different measurements. The chart
+now takes the colour scale from the type's own `TileSpec`, so it is the fixed clinical range
+and never the window's extent.
+
+Only within a day. Across days each point is a daily average rather than a reading, and
+colouring one red would claim an alarming measurement where the data says an unremarkable mean.
+A coloured line is stroked span by span, since a path takes one colour, which costs the
+smoothing for those types — the right trade, as the colour says whether a reading was high and
+rounded corners do not.
+
+### Still open: two chart refinements
 
 Requested, not yet built:
 
@@ -239,19 +281,6 @@ Requested, not yet built:
   different at 09:00 than it will at 21:00. Fix the horizontal extent to midnight-to-midnight
   for the day span, while the *line* still ends at the last real point — the empty remainder is
   the honest picture of a day in progress, and it keeps 12:00 in the middle.
-
-### Then: an Activities tile
-
-Agreed with the user, not yet built.
-
-- A tile whose face is the **count of activities** for the day, with total duration beneath.
-- Its detail lists the day's sessions, each opening the statistics sheet, and each showing the
-  **heart-rate curve for its own window** — the samples are already there.
-- **Sleep gets the same treatment** as a separate tile.
-- Implementation: a new `TileSpec.Form.SESSIONS` on the existing `ExerciseSessionRecord` and
-  `SleepSessionRecord` specs, rather than a tile concept outside the registry. A session tile is
-  a count and a list rather than one metric charted, so it is a genuinely second shape of tile —
-  but keeping it in the registry keeps the dashboard free of branching on record type.
 
 ## 6. Aggregation: verified working, with one caveat
 
