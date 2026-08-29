@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
@@ -68,6 +69,15 @@ fun LineChart(
      * belong to it".
      */
     sessions: List<Session> = emptyList(),
+    /**
+     * Value range to colour the line across, blue to red, or null for a single-colour line.
+     *
+     * Set for the types that declare one on their tile, so the same reading is the same
+     * colour on the dashboard and on the chart it opens. The scale is the type's own fixed
+     * clinical range and never the window's extent: a window-relative scale would paint every
+     * day in the full sweep, making a calm day look identical to an alarming one.
+     */
+    colorScale: ClosedFloatingPointRange<Double>? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -249,27 +259,45 @@ fun LineChart(
                 drawn += segment.size
                 if (segmentOffsets.isEmpty()) return@forEach
 
-                val path = if (smooth && segmentOffsets.size > 2) {
-                    smoothPath(segmentOffsets)
-                } else {
-                    Path().apply {
-                        segmentOffsets.forEachIndexed { index, offset ->
-                            if (index == 0) moveTo(offset.x, offset.y)
-                            else lineTo(offset.x, offset.y)
-                        }
-                    }
-                }
-
-                if (segmentOffsets.size == 1) {
+                when {
                     // A lone point between two gaps has no line to draw, so it is marked
                     // instead -- otherwise a day surrounded by empty days vanishes entirely.
-                    drawCircle(
-                        color = lineColor,
+                    segmentOffsets.size == 1 -> drawCircle(
+                        color = colorScale
+                            ?.let { colorForValue(segment.first().value, it) }
+                            ?: lineColor,
                         radius = 3.dp.toPx(),
                         center = segmentOffsets.first(),
                     )
-                } else {
-                    drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
+
+                    // A coloured line is stroked span by span, because a path can only take
+                    // one colour. That costs the smoothing -- a curve is a single path by
+                    // definition -- and the colour is worth more here: it says whether a
+                    // reading was high, which no amount of rounded corners conveys.
+                    colorScale != null -> segmentOffsets.zipWithNext()
+                        .forEachIndexed { index, (from, to) ->
+                            drawLine(
+                                color = colorForValue(segment[index + 1].value, colorScale),
+                                start = from,
+                                end = to,
+                                strokeWidth = 3.dp.toPx(),
+                                cap = StrokeCap.Round,
+                            )
+                        }
+
+                    else -> {
+                        val path = if (smooth && segmentOffsets.size > 2) {
+                            smoothPath(segmentOffsets)
+                        } else {
+                            Path().apply {
+                                segmentOffsets.forEachIndexed { index, offset ->
+                                    if (index == 0) moveTo(offset.x, offset.y)
+                                    else lineTo(offset.x, offset.y)
+                                }
+                            }
+                        }
+                        drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
+                    }
                 }
             }
 
