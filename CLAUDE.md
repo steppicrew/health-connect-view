@@ -44,6 +44,14 @@ locked.
 **MindfulnessSession is excluded.** The library emits `READ_MINDFULNESS_SESSION`; the platform
 defines only `READ_MINDFULNESS`. Revisit when they converge.
 
+**`read()` is capped and newest-first.** It stops at `MAX_RECORDS`, so on a high-frequency
+type the cap lands within days: on a real device the oldest reachable `HeartRateRecord` was 6
+days back and `RespiratoryRateRecord` 3, inside a one-year request. That is right for the
+record list and wrong for a chart, where it looks like missing history rather than a truncated
+read. Charts for the twelve chartable types with no aggregate metric go through
+`readForChart()`, which pages the whole range and thins as it goes. Everything else charts
+from `dailyTotals()` and is unaffected.
+
 **Never sum raw records.** Several apps write the same metric — on a real device 12 of 16
 populated types had 2-3 writers — so records overlap and adding them double-counts. All
 totals come from `aggregate*()`, which applies the platform's data-origin priority. `read()`
@@ -62,6 +70,16 @@ two calendar days and return null values.
 entries for the same slot produce null buckets while `readRecords` still returns both.
 Instantaneous types are immune. Normal multi-writer data does not trigger it — repeated
 seeding does, and it looks exactly like broken aggregation.
+
+**Reads and aggregates require the foreground.** Without
+`READ_HEALTH_DATA_IN_BACKGROUND`, Health Connect refuses both once the calling activity
+backgrounds: reads throw `SecurityException: Caller does not have permission ... from other
+applications`, aggregates throw `must be in foreground to call aggregate method`. The debug
+activities `finish()` early and keep working in `lifecycleScope`, so a long sweep starts
+succeeding and then fails partway through — and fails *further up the list* on each rerun,
+which reads as data being progressively revoked. `getGrantedPermissions()` keeps reporting
+every type as granted throughout. Keep adb-driven probes short, or expect the tail of the run
+to be meaningless.
 
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*
