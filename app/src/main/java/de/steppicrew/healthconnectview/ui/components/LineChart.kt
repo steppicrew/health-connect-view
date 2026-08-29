@@ -529,8 +529,12 @@ private fun TimeAxis(
     // happening not to be.
     val first = extent?.start ?: points.firstOrNull()?.time ?: return
     val last = extent?.endInclusive ?: points.lastOrNull()?.time ?: return
-    val spanHours = Duration.between(first, last).toHours()
-    val intraday = spanHours in 1..HOURS_IN_DAY
+    // Anything up to a day reads as clock times, including a span shorter than an hour: a
+    // 31-minute workout was labelled "28 Aug" five times over, because toHours() floored to
+    // zero and the axis fell through to the multi-day format. A date repeated across a chart
+    // that fits inside one afternoon tells the reader nothing.
+    val span = Duration.between(first, last)
+    val intraday = !span.isNegative && span <= Duration.ofHours(HOURS_IN_DAY)
 
     // Within a day, ticks are placed at round hours rather than snapped to samples: a
     // record-built series has points at whatever minute activity happened, so snapping gave
@@ -583,6 +587,13 @@ private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
     val spanMillis = (end.toEpochMilli() - start.toEpochMilli()).takeIf { it > 0L }
         ?: return emptyList()
 
+    // A span shorter than a couple of hours has too few whole hours to mark -- a 31-minute
+    // workout may contain none at all -- so it is ticked at round minutes instead. Without
+    // this such a chart got no ticks and fell back to showing its date over and over.
+    if (Duration.between(start, end) < Duration.ofHours(MINUTE_TICK_BELOW_HOURS)) {
+        return minuteTicks(start, end, spanMillis)
+    }
+
     val spanHours = Duration.between(start, end).toHours().coerceAtLeast(1L)
     val stepHours = TICK_HOUR_STEPS.firstOrNull { spanHours / it <= AXIS_TICKS } ?: spanHours
 
@@ -602,6 +613,38 @@ private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
     }
     return ticks
 }
+
+/**
+ * Ticks at round minutes, for a window too short to contain enough whole hours.
+ *
+ * The step is chosen so the labels stay legible rather than crowding: a half-hour session
+ * gets five-minute marks, a two-hour one gets fifteen.
+ */
+private fun minuteTicks(start: Instant, end: Instant, spanMillis: Long): List<AxisTick> {
+    val spanMinutes = Duration.between(start, end).toMinutes().coerceAtLeast(1L)
+    val step = TICK_MINUTE_STEPS.firstOrNull { spanMinutes / it <= AXIS_TICKS } ?: spanMinutes
+
+    val zone = java.time.ZoneId.systemDefault()
+    var tick = start.atZone(zone).truncatedTo(java.time.temporal.ChronoUnit.MINUTES)
+    if (tick.toInstant() < start) tick = tick.plusMinutes(1)
+
+    val ticks = mutableListOf<AxisTick>()
+    while (!tick.toInstant().isAfter(end)) {
+        if (tick.minute.toLong() % step == 0L) {
+            val fraction =
+                (tick.toInstant().toEpochMilli() - start.toEpochMilli()).toDouble() / spanMillis
+            ticks += AxisTick(fraction = fraction.toFloat(), time = tick.toInstant())
+        }
+        tick = tick.plusMinutes(1)
+    }
+    return ticks
+}
+
+/** Minute intervals tried in turn, mirroring TICK_HOUR_STEPS. */
+private val TICK_MINUTE_STEPS = listOf(1L, 2L, 5L, 10L, 15L, 30L)
+
+/** Below this a window is ticked by minutes rather than by hours. */
+private const val MINUTE_TICK_BELOW_HOURS = 3L
 
 /** Hour intervals tried in turn until the whole span fits within AXIS_TICKS labels. */
 private val TICK_HOUR_STEPS = listOf(1L, 2L, 3L, 4L, 6L, 8L, 12L)
