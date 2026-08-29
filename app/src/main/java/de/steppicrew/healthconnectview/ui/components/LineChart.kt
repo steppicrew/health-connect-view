@@ -128,6 +128,22 @@ fun LineChart(
             fun yFor(value: Double): Float =
                 (size.height * (1.0 - (value - minValue) / span)).toFloat()
 
+            val offsets = points.mapIndexed { index, point ->
+                Offset(xFor(index), yFor(point.value))
+            }
+            goal?.let { target ->
+                val y = yFor(target)
+                drawLine(
+                    color = goalColor,
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(
+                        floatArrayOf(GOAL_DASH_ON.dp.toPx(), GOAL_DASH_OFF.dp.toPx()),
+                    ),
+                )
+            }
+
             // Guides labelled at their own line, so a value can be read off the chart
             // rather than inferred from the endpoints. Four intervals gives five labels,
             // which stays legible at the height this chart is drawn.
@@ -148,26 +164,20 @@ fun LineChart(
                 // half-clipped by the canvas edge.
                 val labelY = (y - label.size.height / 2f)
                     .coerceIn(0f, size.height - label.size.height)
+                // The label sits on top of the grid and goal lines, so it is backed out to
+                // stay readable where they cross it.
+                drawRect(
+                    color = surfaceColor,
+                    topLeft = Offset(0f, labelY),
+                    size = androidx.compose.ui.geometry.Size(
+                        width = label.size.width.toFloat() + LABEL_PAD.dp.toPx(),
+                        height = label.size.height.toFloat(),
+                    ),
+                )
                 drawText(
                     textLayoutResult = label,
                     color = labelColor,
                     topLeft = Offset(0f, labelY),
-                )
-            }
-
-            val offsets = points.mapIndexed { index, point ->
-                Offset(xFor(index), yFor(point.value))
-            }
-            goal?.let { target ->
-                val y = yFor(target)
-                drawLine(
-                    color = goalColor,
-                    start = Offset(0f, y),
-                    end = Offset(size.width, y),
-                    strokeWidth = 2.dp.toPx(),
-                    pathEffect = PathEffect.dashPathEffect(
-                        floatArrayOf(GOAL_DASH_ON.dp.toPx(), GOAL_DASH_OFF.dp.toPx()),
-                    ),
                 )
             }
 
@@ -358,5 +368,8 @@ private const val GOAL_MARKER_RING = 2.5f
 
 /** Four intervals gives five labelled gridlines, legible at this chart's height. */
 private const val GUIDE_INTERVALS = 4
+
+/** Breathing room right of a gridline label, so the line does not touch the glyphs. */
+private const val LABEL_PAD = 4f
 
 private const val MAX_DOTS = 60
