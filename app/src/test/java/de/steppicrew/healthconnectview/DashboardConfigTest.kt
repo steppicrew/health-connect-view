@@ -126,4 +126,25 @@ class DashboardConfigTest {
             }
         }
     }
+
+    /**
+     * Cumulative charts must only be declared for quantities that add up. A running total of
+     * weight or heart rate is meaningless, and the chart would state it confidently.
+     */
+    @Test
+    fun `only additive types accumulate through the day`() {
+        de.steppicrew.healthconnectview.registry.RecordRegistry.all
+            .filter { it.tile.cumulativeIntraday }
+            .forEach { spec ->
+                assertTrue(
+                    "${spec.type.simpleName} accumulates but has no total to accumulate",
+                    spec.aggregate != null,
+                )
+                assertEquals(
+                    "${spec.type.simpleName} accumulates but is not an interval quantity",
+                    de.steppicrew.healthconnectview.registry.RecordTypeSpec.Shape.INTERVAL,
+                    spec.shape,
+                )
+            }
+    }
 }

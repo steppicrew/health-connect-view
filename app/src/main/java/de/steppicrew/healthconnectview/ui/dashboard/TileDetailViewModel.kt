@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
+import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
@@ -19,6 +20,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 
 data class TileDetailData(
@@ -35,6 +38,18 @@ data class TileDetailData(
     val contributingApps: Set<String>,
     /** The single source being shown, or null for the deduplicated all-sources view. */
     val selectedSource: String?,
+    /**
+     * Goal to draw as a reference line, when the chart is a cumulative day and the type has
+     * one. Meaningless on a multi-day chart, where each point is a separate day's total.
+     */
+    val goal: Double?,
+    /** True when the series accumulates through the day rather than showing each bucket. */
+    val cumulative: Boolean,
+    /**
+     * True when the curve's intermediate values were rescaled to match the deduplicated
+     * total. The end value and the timing are right; the points between are apportioned.
+     */
+    val approximated: Boolean,
     val start: LocalDate,
     val end: LocalDate,
     /**
@@ -53,10 +68,52 @@ data class TileDetailData(
  * list. This is the chart-first view reached from a dashboard tile, and it is the only place
  * that can reach data older than a year.
  */
+/**
+ * Turns per-bucket values into a running total, so a day reads as progress rather than as
+ * disconnected bars.
+ */
+/** Whether this type and span would produce a cumulative chart. */
+private fun cumulativeCandidate(spec: RecordTypeSpec<*>, span: Span): Boolean =
+    span.intradayBucket != null && spec.tile.cumulativeIntraday
+
+/**
+ * Rescales a running total so it finishes on [target], preserving the shape.
+ *
+ * Needed because hourly buckets do not deduplicate overlapping writers the way the daily
+ * aggregate does: a whole-day summary record from one app lands in every hourly bucket, and
+ * the running total then ends at the sum of every writer rather than the deduplicated figure.
+ *
+ * The buckets still carry the timing, so scaling keeps *when* activity happened while taking
+ * *how much* from the platform's authoritative total. Returns the input unchanged when there
+ * is nothing to correct, so the caller can tell whether the values are exact.
+ */
+private fun scaleToTotal(points: List<Point>, target: Double?): List<Point> {
+    if (target == null || points.isEmpty()) return points
+    val last = points.last().value
+    if (last <= 0.0) return points
+    // Only correct a real discrepancy; floating point noise is not worth relabelling the
+    // chart as approximate over.
+    if (kotlin.math.abs(last - target) < TOTAL_TOLERANCE) return points
+    val factor = target / last
+    return points.map { Point(time = it.time, value = it.value * factor) }
+}
+
+/** Below this the aggregate and the bucket sum agree, allowing for floating point. */
+private const val TOTAL_TOLERANCE = 0.01
+
+private fun List<Point>.runningTotal(): List<Point> {
+    var sum = 0.0
+    return map { point ->
+        sum += point.value
+        Point(time = point.time, value = sum)
+    }
+}
+
 class TileDetailViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = HealthRepository(application)
     private val sourceStore = SourceStore(application)
+    private val dashboardStore = DashboardStore(application)
 
     private val _state = MutableStateFlow<UiState<TileDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<TileDetailData>> = _state.asStateFlow()
@@ -154,6 +211,81 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /**
+     * A step-shaped running total built from the individual records.
+     *
+     * Each record contributes a step at the moment it ended, so the line is flat while
+     * nothing was happening and rises exactly when it was. Anchored at zero at the start of
+     * the day so the first step is visible as a step rather than as the chart's baseline.
+     *
+     * Records whose interval covers most of the day are dropped: an app that posts one
+     * whole-day summary says nothing about *when*, and including it would either add a single
+     * huge step at midnight or, if spread, reintroduce the smearing this avoids. Their
+     * contribution is still reflected, because the series is rescaled to the deduplicated
+     * daily total afterwards.
+     */
+    private suspend fun cumulativeFromRecords(
+        spec: RecordTypeSpec<*>,
+        span: Span,
+        offset: Int,
+        origins: Set<DataOrigin>,
+    ): List<Point> {
+        val windowStart = span.startDate(offset)
+            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+        val records = runCatching {
+            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+        }.getOrDefault(emptyList())
+
+        val steps = records
+            .mapNotNull { record ->
+                val start = spec.timeOf(record)
+                val end = spec.endTimeOf(record) ?: start
+                val value = spec.pointsOf(record).sumOf { it.value }
+                if (Duration.between(start, end) >= WHOLE_DAY_THRESHOLD) {
+                    null
+                } else {
+                    Interval(start = start, end = end, value = value)
+                }
+            }
+            .sortedBy { it.start }
+
+        if (steps.isEmpty()) return emptyList()
+
+        // The rise spans the interval the activity actually occupied, rather than jumping at
+        // a single instant: the record says the climb took from 05:30 to 05:45, so the line
+        // rises across those fifteen minutes. Holding the previous level until the interval
+        // opens keeps the plateaus flat.
+        var sum = 0.0
+        return buildList {
+            add(Point(time = windowStart, value = 0.0))
+            steps.forEach { step ->
+                add(Point(time = step.start, value = sum))
+                sum += step.value
+                add(Point(time = step.end, value = sum))
+            }
+            // Carry the final level to the end of the window so the day does not appear to
+            // stop at the last recorded activity.
+            val windowEnd = minOf(
+                span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+                Instant.now(),
+            )
+            if (windowEnd.isAfter(steps.last().end)) {
+                add(Point(time = windowEnd, value = sum))
+            }
+        }
+    }
+
+    /** One record reduced to the span it covered and the amount it contributed. */
+    private data class Interval(val start: Instant, val end: Instant, val value: Double)
+
+    /** The user's goal for this type if they set one, else the type's default. */
+    private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
+        val typeName = spec.type.simpleName ?: return spec.tile.defaultGoal
+        val stored = runCatching { dashboardStore.config.first() }.getOrNull()
+        return stored?.tiles?.firstOrNull { it.typeName == typeName }?.effectiveGoal
+            ?: spec.tile.defaultGoal
+    }
+
     private suspend fun loadData(
         spec: RecordTypeSpec<*>,
         span: Span,
@@ -172,6 +304,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             when {
                 // A single day sliced by a day-wide bucket would be one point, so the day span
                 // aggregates by duration instead and shows the shape within the day.
+                // A cumulative day is built from the records themselves rather than from
+                // time buckets. Buckets smear a whole-day summary record evenly across the
+                // day, which produces a steady climb through hours when nothing happened;
+                // records carry the actual moment and amount, so the line steps exactly where
+                // the activity was and stays flat in between -- which is what the data says.
+                duration != null && spec.tile.cumulativeIntraday ->
+                    cumulativeFromRecords(spec, span, offset, origins)
+
                 duration != null -> repository
                     .intradayTotals(metric, span.instantFilter(offset), duration, origins)
                     .mapNotNull { bucket ->
@@ -231,10 +371,34 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // cannot overlap itself. Never do this for the combined view, where overlapping
         // writers are exactly what aggregation exists to resolve.
         val total = aggregatedTotal ?: if (metric != null && source != null) {
-            chartPoints.takeIf { it.isNotEmpty() }?.sumOf { it.value }
+            chartPoints.takeIf { it.isNotEmpty() }?.let { pts ->
+                // Already a running total when cumulative, so the last point is the sum.
+                if (cumulativeCandidate(spec, span)) pts.last().value else pts.sumOf { it.value }
+            }
         } else {
             null
         }
+
+        // A goal line only means something against a running total for one day; across days
+        // each point is its own day's total and the goal would be a different comparison.
+        val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
+        val goal = if (cumulative) goalFor(spec) else null
+
+        // Hourly buckets do not deduplicate the way the daily total does. Where one app posts
+        // a whole-day summary record and another itemises, the day-long record contributes to
+        // every hourly bucket and the running total ends at the sum of both writers -- 24.6
+        // where the day's deduplicated total is 12, measured on a real device.
+        //
+        // The buckets still say *when* activity happened, which is what gives the curve its
+        // shape, so they are kept for timing and rescaled to finish exactly on the
+        // authoritative aggregate. Magnitude comes from the platform; only the distribution
+        // comes from the buckets.
+        val scaledPoints = if (cumulative) {
+            scaleToTotal(chartPoints, aggregatedTotal)
+        } else {
+            chartPoints
+        }
+        val approximated = cumulative && scaledPoints !== chartPoints
 
         // Deliberately unfiltered: this drives the source picker, so it must list every app
         // that wrote into the window. Scoping it to the current selection would collapse the
@@ -257,11 +421,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         return TileDetailData(
             spec = spec,
-            points = chartPoints,
+            points = scaledPoints,
             total = total,
             aggregated = metric != null,
             contributingApps = contributors,
             selectedSource = source,
+            goal = goal,
+            cumulative = cumulative,
+            approximated = approximated,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
             start = span.startDate(offset),
@@ -270,4 +437,13 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             truncated = records.size >= HealthRepository.MAX_RECORDS,
         )
     }
+
+    private companion object {
+        /**
+         * A record at least this long is a whole-day summary rather than an event, and says
+         * nothing about when within the day it happened.
+         */
+        val WHOLE_DAY_THRESHOLD: Duration = Duration.ofHours(12)
+    }
+
 }

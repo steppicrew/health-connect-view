@@ -30,8 +30,13 @@ object Formatting {
     fun integer(value: Long, locale: Locale = Locale.getDefault()): String =
         NumberFormat.getInstance(locale).format(value)
 
+    /**
+     * Date and time to the minute. MEDIUM would add seconds, which are noise for a health
+     * reading and made a record's start and end read inconsistently -- the start showed
+     * seconds while the end, formatted SHORT, did not.
+     */
     fun dateTime(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
-        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
             .withLocale(Locale.getDefault())
             .withZone(zone)
             .format(instant)

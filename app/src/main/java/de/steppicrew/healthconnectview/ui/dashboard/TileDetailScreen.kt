@@ -178,6 +178,29 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
             )
         }
 
+        // Reading a dashed line against a curve is fiddly; say the answer in words too.
+        data.goal?.let { goal ->
+            val reached = (data.total ?: 0.0) >= goal
+            Text(
+                text = if (reached) {
+                    stringResource(R.string.chart_goal_reached, Formatting.number(goal))
+                } else {
+                    stringResource(
+                        R.string.chart_goal_remaining,
+                        Formatting.number(data.total ?: 0.0),
+                        Formatting.number(goal),
+                    )
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = if (reached) {
+                    MaterialTheme.colorScheme.tertiary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+
         if (data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)
         }
@@ -185,12 +208,19 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
         if (data.points.isNotEmpty()) {
             LineChart(
                 points = data.points,
+                // Safe to smooth now that each rise spans the interval the record actually
+                // covered: the curve rounds the corners of a real ramp rather than inventing
+                // a slope where the data says a vertical jump. The clamp keeps every segment
+                // within the two values it joins, so a plateau cannot bulge.
                 smooth = data.spec.tile.smoothChart,
+                goal = data.goal,
                 modifier = Modifier.padding(top = 16.dp),
             )
             Text(
                 text = stringResource(
                     when {
+                        data.approximated -> R.string.chart_source_cumulative_scaled
+                        data.cumulative -> R.string.chart_source_cumulative
                         data.aggregated && data.weeklyBuckets ->
                             R.string.chart_source_aggregated_weekly
                         data.aggregated -> R.string.chart_source_aggregated
