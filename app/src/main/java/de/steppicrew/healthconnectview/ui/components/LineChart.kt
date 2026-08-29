@@ -1,6 +1,10 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,12 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
@@ -37,6 +49,8 @@ fun LineChart(
     goal: Double? = null,
     /** Marked with a dot where the series first reaches [goal]. */
     goalCrossing: Instant? = null,
+    /** Unit shown beside a touched point's value; omitted when the type has none. */
+    @StringRes unitRes: Int? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -53,52 +67,91 @@ fun LineChart(
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val goalColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.surface
+    val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val labelStyle = MaterialTheme.typography.labelSmall
+    val textMeasurer = rememberTextMeasurer()
+
+    var selected by remember(points) { mutableStateOf<Int?>(null) }
+
+    // Each point's horizontal position as a fraction of the width. Computed once here so the
+    // touch handler and the drawing agree exactly on where a point sits.
+    val fractions = remember(points) { horizontalFractions(points) }
+
+    fun nearestIndex(x: Float, width: Int): Int? {
+        if (fractions.isEmpty() || width <= 0) return null
+        val target = (x / width).coerceIn(0f, 1f)
+        return fractions.indices.minByOrNull { kotlin.math.abs(fractions[it] - target) }
+    }
 
     Column(modifier = modifier.fillMaxWidth()) {
-        // Max sits at the top of the plot and min at the bottom, matching where the line
-        // actually reaches; putting them side by side would read as start/end instead.
-        Text(
-            text = Formatting.number(maxValue),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // The readout occupies a fixed row whether or not anything is selected, so touching
+        // the chart does not shift the layout under the finger.
+        SelectionReadout(
+            point = selected?.let(points::getOrNull),
+            unitRes = unitRes,
         )
 
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(CHART_HEIGHT.dp)
-                .padding(vertical = 8.dp),
+                .padding(vertical = 8.dp)
+                .pointerInput(points) {
+                    // Drag as well as tap: reading a series means sweeping along it, and
+                    // lifting clears so the chart does not keep a stale highlight.
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { offset -> selected = nearestIndex(offset.x, size.width) },
+                        onDrag = { change, _ ->
+                            selected = nearestIndex(change.position.x, size.width)
+                        },
+                        onDragEnd = { selected = null },
+                        onDragCancel = { selected = null },
+                    )
+                }
+                .pointerInput(points) {
+                    detectTapGestures(
+                        onPress = { offset ->
+                            selected = nearestIndex(offset.x, size.width)
+                            // Held highlight while the finger is down, cleared on release.
+                            tryAwaitRelease()
+                            selected = null
+                        },
+                    )
+                },
         ) {
-            // Points are placed by their timestamp, not by their position in the list. Even
-            // spacing would put an event at noon near the right edge simply because few
-            // points follow it, which misreads the time of day -- and on any irregular series
-            // it silently distorts when things happened.
             val firstTime = points.first().time.toEpochMilli()
             val lastTime = points.last().time.toEpochMilli()
             val timeSpan = (lastTime - firstTime).takeIf { it > 0L }
 
-            fun xFor(index: Int): Float = if (timeSpan == null) {
-                if (points.size > 1) {
-                    index * size.width / (points.size - 1)
-                } else {
-                    size.width / 2f
-                }
-            } else {
-                val offsetMillis = points[index].time.toEpochMilli() - firstTime
-                (size.width * offsetMillis.toDouble() / timeSpan.toDouble()).toFloat()
-            }
+            fun xFor(index: Int): Float = fractions[index] * size.width
 
             fun yFor(value: Double): Float =
                 (size.height * (1.0 - (value - minValue) / span)).toFloat()
 
-            // Horizontal guides at min, middle and max.
-            listOf(minValue, (minValue + maxValue) / 2.0, maxValue).forEach { guide ->
+            // Guides labelled at their own line, so a value can be read off the chart
+            // rather than inferred from the endpoints. Four intervals gives five labels,
+            // which stays legible at the height this chart is drawn.
+            val guides = (0..GUIDE_INTERVALS).map { step ->
+                minValue + (maxValue - minValue) * step / GUIDE_INTERVALS
+            }
+            guides.forEach { guide ->
                 val y = yFor(guide)
                 drawLine(
                     color = gridColor,
                     start = Offset(0f, y),
                     end = Offset(size.width, y),
                     strokeWidth = 1f,
+                )
+
+                val label = textMeasurer.measure(Formatting.number(guide), labelStyle)
+                // Nudged inside the plot at the extremes so the top and bottom labels are not
+                // half-clipped by the canvas edge.
+                val labelY = (y - label.size.height / 2f)
+                    .coerceIn(0f, size.height - label.size.height)
+                drawText(
+                    textLayoutResult = label,
+                    color = labelColor,
+                    topLeft = Offset(0f, labelY),
                 )
             }
 
@@ -158,6 +211,21 @@ fun LineChart(
                 )
             }
 
+            // The selected point: a full-height rule plus a marker, so the position is
+            // readable even where the line is flat and a dot alone would be ambiguous.
+            selected?.let { index ->
+                val x = xFor(index)
+                val y = yFor(points[index].value)
+                drawLine(
+                    color = gridColor,
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
+                    strokeWidth = 1.dp.toPx(),
+                )
+                drawCircle(color = surfaceColor, radius = 7.dp.toPx(), center = Offset(x, y))
+                drawCircle(color = lineColor, radius = 5.dp.toPx(), center = Offset(x, y))
+            }
+
             // Mark individual readings when there are few enough for dots to stay legible.
             if (points.size <= MAX_DOTS) {
                 points.forEachIndexed { index, point ->
@@ -169,12 +237,6 @@ fun LineChart(
                 }
             }
         }
-
-        Text(
-            text = Formatting.number(minValue),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -196,6 +258,56 @@ fun LineChart(
 }
 
 private const val CHART_HEIGHT = 200
+/**
+ * Each point's horizontal position as a fraction of the plot width, from its timestamp.
+ *
+ * Shared by the drawing and the touch handler so both agree on where a point is: computing it
+ * twice invites them to drift, and a highlight that lands beside the line it names is worse
+ * than no highlight.
+ */
+private fun horizontalFractions(points: List<Point>): List<Float> {
+    if (points.isEmpty()) return emptyList()
+    val first = points.first().time.toEpochMilli()
+    val span = points.last().time.toEpochMilli() - first
+
+    // A series with no elapsed time (one point, or several sharing an instant) has no
+    // meaningful time axis, so fall back to even spacing.
+    if (span <= 0L) {
+        if (points.size == 1) return listOf(0.5f)
+        return points.indices.map { it / (points.size - 1).toFloat() }
+    }
+    return points.map { (it.time.toEpochMilli() - first).toDouble().div(span).toFloat() }
+}
+
+/**
+ * The touched point's value and time, in a row that is always present.
+ *
+ * Reserving the space keeps the chart from jumping when a touch begins, which on a chart is
+ * disorienting: the thing being pointed at moves out from under the finger.
+ */
+@Composable
+private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?) {
+    val unit = unitRes?.let { stringResource(it) }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        Text(
+            text = point?.let { selected ->
+                Formatting.number(selected.value) + (unit?.let { " $it" } ?: "")
+            }.orEmpty(),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = point?.let { Formatting.dateTime(it.time) }.orEmpty(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
 /**
  * A cubic curve through every point, for series where the underlying quantity varies
  * continuously rather than in steps.
@@ -243,5 +355,8 @@ private const val GOAL_DASH_OFF = 4f
 
 private const val GOAL_MARKER_RADIUS = 6f
 private const val GOAL_MARKER_RING = 2.5f
+
+/** Four intervals gives five labelled gridlines, legible at this chart's height. */
+private const val GUIDE_INTERVALS = 4
 
 private const val MAX_DOTS = 60
