@@ -144,7 +144,61 @@ val verifyNoNetworkPermission by tasks.registering {
     }
 }
 
-tasks.named("check") { dependsOn(verifyNoNetworkPermission) }
+/**
+ * Privacy gate: the debug navigation backdoor must never reach a shipped build.
+ *
+ * DebugNav exists twice, in src/debug and src/release, so release *should* compile the
+ * inert variant that returns null. "Should" is the problem: a source-set mistake, a stray
+ * import, or a future refactor that collapses the two would ship an app whose launch intent
+ * can drive its UI -- and nothing would say so. Checked rather than trusted.
+ *
+ * The debug activities are caught by the manifest scan above; this catches the code path,
+ * which has no manifest entry to scan.
+ */
+val verifyNoDebugBackdoor by tasks.registering {
+    // Must run *after* the release classes exist, or it inspects an empty directory and
+    // passes vacuously -- a gate that always succeeds is worse than none, because it is
+    // believed.
+    dependsOn("compileReleaseKotlin")
+
+    val classes = layout.buildDirectory.dir("intermediates/built_in_kotlinc/release")
+    doLast {
+        val dir = classes.get().asFile
+        // Deliberately not a silent pass: if the classes are missing, the check could not be
+        // performed, and saying so is the only honest outcome.
+        check(dir.exists()) { "Release classes not found; cannot verify the backdoor is absent" }
+
+        // The debug variant reads an intent extra by name; the release variant is a bare
+        // `return null` with no such constant. Finding the extra's name together with the
+        // call that reads it therefore means the debug implementation has been compiled in.
+        val offenders = dir.walkTopDown()
+            .filter { it.name.endsWith(".class") }
+            .filter { file ->
+                val bytes = file.readText(Charsets.ISO_8859_1)
+                "EXTRA_ROUTE" in bytes || ("getStringExtra" in bytes && "route" in bytes)
+            }
+            .toList()
+        check(offenders.isEmpty()) {
+            "Debug navigation backdoor compiled into release: $offenders"
+        }
+
+        val debugOnly = dir.walkTopDown()
+            .filter { it.name.endsWith(".class") && it.path.contains("healthconnectview/debug/") }
+            .toList()
+        check(debugOnly.isEmpty()) {
+            "Debug-only classes compiled into release: $debugOnly"
+        }
+    }
+}
+
+tasks.named("check") { dependsOn(verifyNoNetworkPermission, verifyNoDebugBackdoor) }
+
+// Wired into the release build itself, not only into `check`: a gate that protects a shipped
+// artefact has to run when that artefact is produced, or it protects nothing on the day
+// someone runs assembleRelease or bundleRelease directly.
+tasks.matching { it.name == "assembleRelease" || it.name == "bundleRelease" }.configureEach {
+    dependsOn(verifyNoNetworkPermission, verifyNoDebugBackdoor)
+}
 
 dependencies {
     implementation(platform(libs.compose.bom))
