@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.health
 import androidx.annotation.StringRes
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.R
+import java.time.Duration
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
@@ -34,13 +35,29 @@ enum class Span(@param:StringRes val labelRes: Int) {
             YEAR -> Period.ofYears(1)
         }
 
-    /** Bucket width for aggregation: a day for short spans, longer ones for a year. */
-    val bucket: Period
+    /**
+     * Bucket width for aggregation: a day for the multi-day spans, a week for a year.
+     *
+     * Null for [DAY], which needs a sub-day bucket that Period cannot express -- see
+     * [intradayBucket]. Slicing a single day by Period.ofDays(1) yields exactly one point,
+     * which is not a chart.
+     */
+    val bucket: Period?
         get() = when (this) {
-            DAY -> Period.ofDays(1)
+            DAY -> null
             WEEK -> Period.ofDays(1)
             MONTH -> Period.ofDays(1)
             YEAR -> Period.ofDays(7)
+        }
+
+    /**
+     * Sub-day bucket width, for spans that chart within a day. Hourly gives 24 points across
+     * a day: enough shape to see when activity happened, without turning noise into detail.
+     */
+    val intradayBucket: Duration?
+        get() = when (this) {
+            DAY -> Duration.ofHours(1)
+            else -> null
         }
 
     /**

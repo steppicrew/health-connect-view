@@ -51,6 +51,51 @@ class RecordShapeActivity : ComponentActivity() {
                 )
             }
 
+            // Does a record sit just outside the local-midnight window? A climb logged late
+            // in the evening but stamped after midnight, or one whose interval straddles the
+            // boundary, would be excluded from the day while the source app still counts it.
+            val wide = runCatching {
+                repository.read(
+                    FloorsClimbedRecord::class,
+                    androidx.health.connect.client.time.TimeRangeFilter.between(
+                        day.minusDays(1).atStartOfDay(zone).toInstant(),
+                        day.plusDays(2).atStartOfDay(zone).toInstant(),
+                    ),
+                )
+            }.getOrDefault(emptyList())
+
+            wide.sortedBy { it.startTime }.forEach { record ->
+                val startDay = record.startTime.atZone(zone).toLocalDate()
+                val endDay = record.endTime.atZone(zone).toLocalDate()
+                val straddles = startDay != endDay
+                Log.i(
+                    TAG,
+                    "WIDE startDay=$startDay endDay=$endDay straddles=$straddles " +
+                        "start=${record.startTime.atZone(zone).toLocalTime()} " +
+                        "floors=${record.floors} " +
+                        "origin=${record.metadata.dataOrigin.packageName}",
+                )
+            }
+
+            // Per-origin totals over the same day, to see where the difference sits.
+            listOf(
+                "com.garmin.android.apps.connectmobile",
+                "nl.appyhapps.healthsync",
+            ).forEach { pkg ->
+                val scoped = runCatching {
+                    repository.total(
+                        FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,
+                        de.steppicrew.healthconnectview.health.dayFilter(day),
+                        setOf(androidx.health.connect.client.records.metadata.DataOrigin(pkg)),
+                    )
+                }.getOrNull()
+                val scopedRaw = wide
+                    .filter { it.metadata.dataOrigin.packageName == pkg }
+                    .filter { it.startTime.atZone(zone).toLocalDate() == day }
+                    .sumOf { it.floors }
+                Log.i(TAG, "ORIGIN $pkg aggregate=$scoped rawSumStartingThatDay=$scopedRaw")
+            }
+
             val total = runCatching {
                 repository.total(
                     FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,

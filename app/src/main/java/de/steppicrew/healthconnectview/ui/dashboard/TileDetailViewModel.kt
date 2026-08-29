@@ -167,15 +167,33 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
         val points = if (metric != null) {
-            repository.bucketedTotals(metric, span.localFilter(offset), span.bucket, origins)
-                .mapNotNull { bucket ->
-                    val value = bucket.result[metric]?.let(::numericAggregate)
-                        ?: return@mapNotNull null
-                    Point(
-                        time = bucket.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
-                        value = value,
-                    )
-                }
+            val period = span.bucket
+            val duration = span.intradayBucket
+            when {
+                // A single day sliced by a day-wide bucket would be one point, so the day span
+                // aggregates by duration instead and shows the shape within the day.
+                duration != null -> repository
+                    .intradayTotals(metric, span.instantFilter(offset), duration, origins)
+                    .mapNotNull { bucket ->
+                        val value = bucket.result[metric]?.let(::numericAggregate)
+                            ?: return@mapNotNull null
+                        Point(time = bucket.startTime, value = value)
+                    }
+
+                period != null -> repository
+                    .bucketedTotals(metric, span.localFilter(offset), period, origins)
+                    .mapNotNull { bucket ->
+                        val value = bucket.result[metric]?.let(::numericAggregate)
+                            ?: return@mapNotNull null
+                        Point(
+                            time = bucket.startTime
+                                .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                            value = value,
+                        )
+                    }
+
+                else -> emptyList()
+            }
         } else {
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
@@ -184,8 +202,36 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 .sortedBy { it.time }
         }
 
-        val total = if (metric != null) {
+        // Aggregation returns nothing for an interval as wide as its own bucket: an app that
+        // posts one record per day produces null buckets while readRecords still returns the
+        // record. Measured on a real device -- a whole-day summary from one writer aggregated
+        // to null while its raw value was plainly there. Charting the records themselves is
+        // correct here precisely because a single source cannot overlap itself, so there is
+        // nothing to deduplicate.
+        val chartPoints = points.ifEmpty {
+            if (metric != null && source != null) {
+                runCatching {
+                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+                        .flatMap { spec.pointsOf(it) }
+                        .sortedBy { it.time }
+                }.getOrDefault(emptyList())
+            } else {
+                emptyList()
+            }
+        }
+
+        val aggregatedTotal = if (metric != null) {
             runCatching { repository.total(metric, span.localFilter(offset), origins) }.getOrNull()
+        } else {
+            null
+        }
+
+        // Same bucket-wide-interval case as above: when a single source is selected and its
+        // aggregate comes back null, summing that one app's records is safe -- one writer
+        // cannot overlap itself. Never do this for the combined view, where overlapping
+        // writers are exactly what aggregation exists to resolve.
+        val total = aggregatedTotal ?: if (metric != null && source != null) {
+            chartPoints.takeIf { it.isNotEmpty() }?.sumOf { it.value }
         } else {
             null
         }
@@ -211,12 +257,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         return TileDetailData(
             spec = spec,
-            points = points,
+            points = chartPoints,
             total = total,
             aggregated = metric != null,
             contributingApps = contributors,
             selectedSource = source,
-            weeklyBuckets = span.bucket.days > 1,
+            weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
             start = span.startDate(offset),
             end = span.endDate(offset).minusDays(1),

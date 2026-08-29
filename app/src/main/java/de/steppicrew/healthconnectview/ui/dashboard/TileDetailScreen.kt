@@ -183,7 +183,11 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
         }
 
         if (data.points.isNotEmpty()) {
-            LineChart(points = data.points, modifier = Modifier.padding(top = 16.dp))
+            LineChart(
+                points = data.points,
+                smooth = data.spec.tile.smoothChart,
+                modifier = Modifier.padding(top = 16.dp),
+            )
             Text(
                 text = stringResource(
                     when {

@@ -3,15 +3,18 @@ package de.steppicrew.healthconnectview.health
 import android.content.Context
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.aggregate.AggregateMetric
+import androidx.health.connect.client.aggregate.AggregationResultGroupedByDuration
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.request.AggregateGroupByDurationRequest
 import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
 import kotlin.reflect.KClass
@@ -193,6 +196,32 @@ class HealthRepository(private val context: Context) {
     ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
         client.aggregateGroupByPeriod(
             AggregateGroupByPeriodRequest(
+                metrics = setOf(metric),
+                timeRangeFilter = range,
+                timeRangeSlicer = bucket,
+                dataOriginFilter = origins,
+            ),
+        )
+    }
+
+    /**
+     * Deduplicated buckets narrower than a day, for an intraday chart.
+     *
+     * Separate from [bucketedTotals] because Period cannot express a sub-day width, so a
+     * single-day view sliced by Period.ofDays(1) collapses to one point no matter how many
+     * records the day holds. This uses the duration-sliced request instead.
+     *
+     * Note this one takes an *instant* filter, unlike the period-sliced calls which require
+     * LocalDateTime.
+     */
+    suspend fun intradayTotals(
+        metric: AggregateMetric<*>,
+        range: TimeRangeFilter,
+        bucket: Duration,
+        origins: Set<DataOrigin> = emptySet(),
+    ): List<AggregationResultGroupedByDuration> = withContext(Dispatchers.IO) {
+        client.aggregateGroupByDuration(
+            AggregateGroupByDurationRequest(
                 metrics = setOf(metric),
                 timeRangeFilter = range,
                 timeRangeSlicer = bucket,

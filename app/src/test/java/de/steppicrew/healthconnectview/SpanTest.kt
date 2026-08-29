@@ -5,6 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Duration
 import java.time.LocalDate
 
 /**
@@ -86,13 +87,37 @@ class SpanTest {
     @Test
     fun `every span has a bucket no wider than the span itself`() {
         Span.entries.forEach { span ->
+            val bucket = span.bucket ?: return@forEach
             val start = span.startDate(0, today)
             val end = span.endDate(0, today)
-            val bucketEnd = start.plus(span.bucket)
             assertTrue(
                 "${span.name} bucket is wider than the span",
-                !bucketEnd.isAfter(end),
+                !start.plus(bucket).isAfter(end),
             )
         }
+    }
+
+    /**
+     * A day sliced by a day-wide bucket yields a single point, which is not a chart. Every
+     * span must therefore offer exactly one of the two bucket kinds.
+     */
+    @Test
+    fun `each span buckets either by period or by duration, never neither nor both`() {
+        Span.entries.forEach { span ->
+            val hasPeriod = span.bucket != null
+            val hasDuration = span.intradayBucket != null
+            assertTrue(
+                "${span.name} has ${if (hasPeriod && hasDuration) "both" else "no"} bucket",
+                hasPeriod != hasDuration,
+            )
+        }
+    }
+
+    @Test
+    fun `the day span buckets finely enough to show a shape`() {
+        val bucket = Span.DAY.intradayBucket
+        assertTrue("day span has no intraday bucket", bucket != null)
+        val points = Duration.ofDays(1).dividedBy(bucket)
+        assertTrue("day span would draw only $points points", points >= 12)
     }
 }
