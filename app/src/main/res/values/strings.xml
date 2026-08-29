@@ -187,6 +187,13 @@
     <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="session_statistics">What was recorded during this session</string>
+    <string name="zones_title">Colour zones</string>
+    <string name="zones_explained">The curve is coloured by which band a reading falls into. Set the boundary between each pair of bands.</string>
+    <string name="zones_upper_bound">Up to (from %1$s)</string>
+    <string name="zones_above">Above %1$s</string>
+    <string name="zones_invalid">Boundaries must be numbers, each larger than the one before.</string>
+    <string name="zones_reset">Use defaults</string>
+    <string name="tile_set_zones">Set colour zones</string>
     <string name="sessions_none">None</string>
     <string name="sessions_count" translatable="false">%1$d</string>
     <plurals name="sessions_detail_header">

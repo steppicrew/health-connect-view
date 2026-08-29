@@ -19,8 +19,14 @@ data class TileSpec(
      * point, since the user can change it. Null means the type has no sensible default.
      */
     val defaultGoal: Double? = null,
-    /** Value range for [Form.CURVE] colouring, low to high. */
-    val colorScale: ClosedFloatingPointRange<Double>? = null,
+    /**
+     * Default value bands for colouring this type's curve, low to high.
+     *
+     * A default only: the boundaries that matter are the user's, since a resting heart rate
+     * of 48 and one of 70 do not share a scale. The override lives on the tile beside the
+     * goal, which is the other per-type number the user sets.
+     */
+    val defaultZones: ValueZones? = null,
     /**
      * Whether a chart of this type is drawn as a smooth curve rather than straight segments.
      *
@@ -75,7 +81,7 @@ data class TileSpec(
         /** A ring filled to the day's total as a fraction of the goal. Needs an aggregate. */
         RING,
 
-        /** A short curve of recent readings, coloured across [colorScale]. */
+        /** A short curve of recent readings, coloured by its value bands. */
         CURVE,
 
         /**

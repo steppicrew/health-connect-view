@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.dashboard
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
+import de.steppicrew.healthconnectview.registry.ValueZones
 
 /**
  * One tile on the dashboard.
@@ -21,11 +22,22 @@ data class Tile(
     val height: Int = 1,
     /** Overrides the type's [TileSpec.defaultGoal]; null means use the default. */
     val goal: Double? = null,
+    /**
+     * Overrides the type's [TileSpec.defaultZones]; null means use the default.
+     *
+     * Beside the goal because it is the same kind of thing: a per-type number the user sets
+     * because only they know what it should be. A resting rate of 48 and one of 70 do not
+     * share a scale, and maximum heart rate falls with age.
+     */
+    val zones: ValueZones? = null,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
     /** The goal actually in force: the user's override, else the type's default. */
     val effectiveGoal: Double? get() = goal ?: spec?.tile?.defaultGoal
+
+    /** The value bands actually in force: the user's override, else the type's default. */
+    val effectiveZones: ValueZones? get() = zones ?: spec?.tile?.defaultZones
 }
 
 /**
@@ -48,6 +60,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     /** Sets one tile's goal; null clears the override back to the type's default. */
     fun withGoal(typeName: String, goal: Double?): DashboardConfig = DashboardConfig(
         tiles.map { if (it.typeName == typeName) it.copy(goal = goal) else it },
+    )
+
+    /** Sets one tile's value bands; null clears the override back to the type's default. */
+    fun withZones(typeName: String, zones: ValueZones?): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.typeName == typeName) it.copy(zones = zones) else it },
     )
 
     /** Moves the tile at [from] to [to], for drag-to-reorder in edit mode. */
