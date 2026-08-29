@@ -56,6 +56,8 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
+import de.steppicrew.healthconnectview.ui.components.AppIcon
+import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
@@ -297,14 +299,29 @@ private fun TileCard(
                 // total the same tile shows unfiltered. Naming the source is what keeps that
                 // difference explicable rather than looking like a wrong number.
                 data.source?.let { packageName ->
-                    Text(
-                        text = LocalContext.current.appLabelFor(packageName),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(start = 4.dp),
-                    )
+                    // The app's icon rather than its name: on a tile this narrow "Garmin
+                    // Connect" crowded out the unit beside it, and the point of the marker is
+                    // only to say the figure is one app's rather than the combined total.
+                    val icon = rememberAppIcon(packageName)
+                    if (icon != null) {
+                        AppIcon(
+                            icon = icon,
+                            packageName = packageName,
+                            sizePx = TILE_SOURCE_ICON_PX,
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .size(TILE_SOURCE_ICON.dp),
+                        )
+                    } else {
+                        Text(
+                            text = LocalContext.current.appLabelFor(packageName),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
                 }
             }
         }
@@ -511,5 +528,9 @@ private const val TILE_COLUMNS = 2
 private const val CURVE_HEIGHT = 28
 
 /** How many activity icons fit on a tile face beside the count without crowding it. */
+/** Just enough to recognise the app; the tile has little room to spare. */
+private const val TILE_SOURCE_ICON = 16
+private const val TILE_SOURCE_ICON_PX = 48
+
 private const val TILE_ICONS = 3
 private const val TILE_ICON_SIZE = 14
