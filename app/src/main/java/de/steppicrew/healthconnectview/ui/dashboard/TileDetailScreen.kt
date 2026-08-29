@@ -242,6 +242,19 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
+            // Naming the writer the shape came from: the total is everyone's, the path is
+            // one device's, and leaving that unsaid would be a silent substitution.
+            data.shapeSource?.let { writer ->
+                Text(
+                    text = stringResource(
+                        R.string.chart_shape_from,
+                        LocalContext.current.appLabelFor(writer),
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             // A break in the line is only unambiguous once it is named; without this it reads
             // as a rendering artefact rather than as an absence of data.
             if (data.emptyBuckets.isNotEmpty()) {

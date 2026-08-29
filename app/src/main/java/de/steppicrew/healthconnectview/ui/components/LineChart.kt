@@ -303,7 +303,12 @@ private fun TimeAxis(points: List<Point>, fractions: List<Float>) {
     val spanHours = Duration.between(first, last).toHours()
     val intraday = spanHours in 1..HOURS_IN_DAY
 
-    val ticks = remember(points) { axisTicks(points, fractions) }
+    // Within a day, ticks are placed at round hours rather than snapped to samples: a
+    // record-built series has points at whatever minute activity happened, so snapping gave
+    // labels like 06:02 and 16:51, which read as arbitrary rather than as an axis.
+    val ticks = remember(points, intraday) {
+        if (intraday) hourlyTicks(points) else axisTicks(points, fractions)
+    }
 
     Layout(
         content = {
@@ -337,6 +342,43 @@ private fun TimeAxis(points: List<Point>, fractions: List<Float>) {
         }
     }
 }
+
+/**
+ * Ticks at round hours across the window, positioned by time.
+ *
+ * Unlike [axisTicks] these are not snapped to samples: an axis is a ruler, and a ruler marked
+ * at 06:02 and 16:51 reads as arbitrary. The interval is chosen so the labels stay legible on
+ * a phone-width chart.
+ */
+private fun hourlyTicks(points: List<Point>): List<AxisTick> {
+    if (points.size < 2) return emptyList()
+    val start = points.first().time
+    val end = points.last().time
+    val spanMillis = (end.toEpochMilli() - start.toEpochMilli()).takeIf { it > 0L }
+        ?: return emptyList()
+
+    val spanHours = Duration.between(start, end).toHours().coerceAtLeast(1L)
+    val stepHours = TICK_HOUR_STEPS.firstOrNull { spanHours / it <= AXIS_TICKS } ?: spanHours
+
+    val zone = java.time.ZoneId.systemDefault()
+    var tick = start.atZone(zone)
+        .truncatedTo(java.time.temporal.ChronoUnit.HOURS)
+        .let { if (it.toInstant() < start) it.plusHours(1) else it }
+
+    val ticks = mutableListOf<AxisTick>()
+    while (!tick.toInstant().isAfter(end)) {
+        if (tick.hour.toLong() % stepHours == 0L) {
+            val fraction =
+                (tick.toInstant().toEpochMilli() - start.toEpochMilli()).toDouble() / spanMillis
+            ticks += AxisTick(fraction = fraction.toFloat(), time = tick.toInstant())
+        }
+        tick = tick.plusHours(1)
+    }
+    return ticks
+}
+
+/** Hour intervals tried in turn until the whole span fits within AXIS_TICKS labels. */
+private val TICK_HOUR_STEPS = listOf(1L, 2L, 3L, 4L, 6L, 8L, 12L)
 
 /** One tick: where it sits across the width, and the moment it names. */
 private data class AxisTick(val fraction: Float, val time: Instant)

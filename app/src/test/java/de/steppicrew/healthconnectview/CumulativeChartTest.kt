@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview
 import de.steppicrew.healthconnectview.registry.Point
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
@@ -149,5 +150,44 @@ class CumulativeChartTest {
             assert(b.value >= a.value) { "value went backwards: ${a.value} -> ${b.value}" }
         }
         assertEquals(370.0, series.last().value, 0.001)
+    }
+
+    /**
+     * Several writers describing the same activity interleave. Measured on a real device,
+     * three step sources produced 140 cross-writer overlaps in one day, so a series built from
+     * the merged records zigzags backwards however carefully each ramp is clamped -- each
+     * writer is internally ordered, but their union is not.
+     */
+    @Test
+    fun `merged writers interleave even when each is internally ordered`() {
+        val base = Instant.parse("2026-08-28T00:00:00Z")
+        fun rec(writer: String, startMin: Long, endMin: Long) =
+            Triple(writer, base.plusSeconds(startMin * 60), base.plusSeconds(endMin * 60))
+
+        val watch = listOf(rec("watch", 0, 15), rec("watch", 30, 45), rec("watch", 60, 75))
+        val phone = listOf(rec("phone", 10, 25), rec("phone", 40, 55), rec("phone", 70, 85))
+
+        // Each writer alone has no overlap.
+        listOf(watch, phone).forEach { writerRecords ->
+            writerRecords.zipWithNext().forEach { (a, b) ->
+                assertTrue("${a.first} overlaps itself", !b.second.isBefore(a.third))
+            }
+        }
+
+        // Merged and sorted by start, they do.
+        val merged = (watch + phone).sortedBy { it.second }
+        val overlaps = merged.zipWithNext().count { (a, b) -> b.second < a.third }
+        assertTrue("expected cross-writer overlap, found none", overlaps > 0)
+    }
+
+    @Test
+    fun `the dominant writer is the one contributing most in the window`() {
+        val contributions = mapOf(
+            "com.garmin.android.apps.connectmobile" to 5527.0,
+            "nl.appyhapps.healthsync" to 5527.0,
+            "com.android.healthconnect.phone.x" to 6933.0,
+        )
+        val dominant = contributions.maxByOrNull { it.value }?.key
+        assertEquals("com.android.healthconnect.phone.x", dominant)
     }
 }

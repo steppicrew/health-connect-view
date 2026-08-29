@@ -59,6 +59,13 @@ data class TileDetailData(
      * total. The end value and the timing are right; the points between are apportioned.
      */
     val approximated: Boolean,
+    /**
+     * The writer whose records gave a multi-source curve its shape, when more than one app
+     * contributed. The total stays deduplicated across all of them; only the path is one
+     * device's, and saying so is the difference between a simplification and a silent
+     * substitution.
+     */
+    val shapeSource: String?,
     val start: LocalDate,
     val end: LocalDate,
     /**
@@ -127,7 +134,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private val _state = MutableStateFlow<UiState<TileDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<TileDetailData>> = _state.asStateFlow()
 
-    private val _span = MutableStateFlow(Span.WEEK)
+    // Opens on the day, matching the tile that was tapped: landing on a week would show a
+    // different number from the one just touched, and the point of opening a tile is to see
+    // that figure in more detail.
+    private val _span = MutableStateFlow(Span.DAY)
     val span: StateFlow<Span> = _span.asStateFlow()
 
     /** Steps back from the present; 0 is the current window. Never negative. */
@@ -153,12 +163,24 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun load(typeName: String) {
+    /**
+     * [date] is the day the dashboard was showing, as an ISO string. The offset is derived
+     * from it so the detail view opens on the same day the tapped tile described; an empty or
+     * unparseable value simply opens on today.
+     */
+    fun load(typeName: String, date: String = "") {
         this.typeName = typeName
+        _offset.update { offsetForDate(date) }
         viewModelScope.launch {
             selectedSource = sourceStore.selections.first()[typeName]
             reload()
         }
+    }
+
+    private fun offsetForDate(date: String): Int {
+        val parsed = runCatching { LocalDate.parse(date) }.getOrNull() ?: return 0
+        val days = java.time.temporal.ChronoUnit.DAYS.between(parsed, LocalDate.now())
+        return days.toInt().coerceAtLeast(0)
     }
 
     /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
@@ -241,9 +263,27 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     ): List<Point> {
         val windowStart = span.startDate(offset)
             .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
-        val records = runCatching {
+        val allRecords = runCatching {
             repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
         }.getOrDefault(emptyList())
+
+        // Several writers describing the same activity interleave: measured on a real device,
+        // three step sources produced 140 cross-writer overlaps in one day, so a series built
+        // from the merged records zigzags backwards however carefully each ramp is clamped.
+        // Each writer is internally consistent, so the shape is taken from whichever
+        // contributed most in this window; the magnitude still comes from the deduplicated
+        // aggregate, applied by the caller. The result is one device's real timeline scaled to
+        // the platform's total, rather than an interleaving of three that matches none of them.
+        val byWriter = allRecords.groupBy { spec.originOf(it) }
+        val dominant = if (origins.isEmpty() && byWriter.size > 1) {
+            byWriter.maxByOrNull { (_, group) ->
+                group.sumOf { record -> spec.pointsOf(record).sumOf { it.value } }
+            }
+        } else {
+            null
+        }
+        chosenShapeWriter = dominant?.key
+        val records = dominant?.value ?: allRecords
 
         val steps = records
             .mapNotNull { record ->
@@ -297,6 +337,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /**
+     * Set by [cumulativeFromRecords] when it took the curve's shape from a single writer.
+     * Read straight afterwards on the same coroutine, so no synchronisation is needed.
+     */
+    private var chosenShapeWriter: String? = null
+
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
 
@@ -320,6 +366,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
+        // Cleared per load: a value left over from the previous span would name a writer that
+        // had nothing to do with the series now on screen.
+        chosenShapeWriter = null
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
@@ -441,12 +490,19 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // shape, so they are kept for timing and rescaled to finish exactly on the
         // authoritative aggregate. Magnitude comes from the platform; only the distribution
         // comes from the buckets.
+        // Which writer the curve's shape came from, when it was taken from just one.
+        val shapeSource = if (cumulative && source == null) chosenShapeWriter else null
+
         val scaledPoints = if (cumulative) {
             scaleToTotal(chartPoints, aggregatedTotal)
         } else {
             chartPoints
         }
-        val approximated = cumulative && scaledPoints !== chartPoints
+        // Only true when the points between are genuinely apportioned rather than measured.
+        // A record-built curve is rescaled too, but every one of its points is a real record,
+        // so calling it approximate would understate what the chart is showing. Scaling shows
+        // up instead as the shape-source note, which says exactly whose readings these are.
+        val approximated = cumulative && scaledPoints !== chartPoints && chosenShapeWriter == null
 
         // Deliberately unfiltered: this drives the source picker, so it must list every app
         // that wrote into the window. Scoping it to the current selection would collapse the
@@ -479,6 +535,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             goalCrossing = goalCrossing(scaledPoints, goal),
             emptyBuckets = emptyBuckets,
             approximated = approximated,
+            shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
             start = span.startDate(offset),

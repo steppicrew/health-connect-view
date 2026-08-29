@@ -179,6 +179,7 @@
     <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
     <string name="detail_error_title">Could not read data</string>
     <string name="detail_written_by">Written by %1$s</string>
+    <string name="source_phone_sensors">This phone</string>
     <string name="source_all">All sources</string>
     <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
     <string name="source_showing_one">Showing only %1$s. This is what that app recorded, not your deduplicated total.</string>
@@ -204,6 +205,7 @@
     </plurals>
     <string name="chart_source_aggregated_weekly">Weekly totals, deduplicated by Health Connect</string>
     <string name="chart_source_cumulative">Running total through the day, deduplicated by Health Connect</string>
+    <string name="chart_shape_from">Course: %1$s · Total: all sources</string>
     <string name="chart_source_cumulative_scaled">Running total through the day. The final value is the deduplicated total; points in between are apportioned, because one app reports a whole-day figure rather than individual entries.</string>
     <string name="chart_goal_reached_at">Goal of %1$s reached at %2$s</string>
     <string name="chart_goal_reached">Goal of %1$s reached</string>
