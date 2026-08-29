@@ -49,11 +49,14 @@ data class TileSpec(
     /**
      * Session kinds shaded behind this type's intraday chart.
      *
-     * Sleep behind heart rate explains an overnight trough; an exercise band explains a spike
-     * that would otherwise look like stress. Only meaningful within a day: across weeks the
-     * bands would be thinner than the line and say nothing.
+     * Sleep behind heart rate explains an overnight trough; an exercise band explains a climb
+     * in steps or floors that would otherwise look like an ordinary afternoon. The band is the
+     * answer to "why does the line do that", so it belongs on any type whose day has a shape
+     * worth explaining. Only meaningful within a day: across weeks the bands would be thinner
+     * than the line and say nothing.
      *
-     * Empty by default -- a band is context, and context that is not wanted is clutter.
+     * Empty by default, because a type with no intraday shape gains nothing from a band --
+     * see [ACTIVITY_CONTEXT] for the set the movement types share.
      */
     val overlaySessions: Set<Session.Kind> = emptySet(),
     /**
@@ -83,5 +86,16 @@ data class TileSpec(
          * where a summed duration alone loses that it was three separate things.
          */
         SESSIONS,
+    }
+
+    companion object {
+        /**
+         * Both kinds of session, for the types whose day is shaped by what the user was doing.
+         *
+         * Named once rather than repeated per type: the reasoning is the same for steps,
+         * floors, distance and calories -- a rise in any of them is explained by the activity
+         * it happened during, and a flat stretch by the night it happened in.
+         */
+        val ACTIVITY_CONTEXT: Set<Session.Kind> = setOf(Session.Kind.SLEEP, Session.Kind.EXERCISE)
     }
 }

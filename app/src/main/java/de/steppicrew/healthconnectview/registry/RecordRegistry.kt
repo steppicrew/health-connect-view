@@ -44,7 +44,11 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
             summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
             aggregate = ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
-            tile = TileSpec(TileSpec.Form.NUMBER, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = BasalMetabolicRateRecord::class,
@@ -79,7 +83,12 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.distance.inKilometers)) },
             summary = { Formatting.number(it.distance.inKilometers) + " km" },
             aggregate = DistanceRecord.DISTANCE_TOTAL,
-            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 5.0, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.RING,
+                defaultGoal = 5.0,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = ElevationGainedRecord::class,
@@ -92,7 +101,11 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.elevation.inMeters)) },
             summary = { Formatting.number(it.elevation.inMeters) + " m" },
             aggregate = ElevationGainedRecord.ELEVATION_GAINED_TOTAL,
-            tile = TileSpec(TileSpec.Form.NUMBER, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = ExerciseSessionRecord::class,
@@ -123,7 +136,12 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.floors)) },
             summary = { Formatting.number(it.floors) },
             aggregate = FloorsClimbedRecord.FLOORS_CLIMBED_TOTAL,
-            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 10.0, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.RING,
+                defaultGoal = 10.0,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = PlannedExerciseSessionRecord::class,
@@ -174,7 +192,7 @@ object RecordRegistry {
                 TileSpec.Form.RING,
                 defaultGoal = 10_000.0,
                 cumulativeIntraday = true,
-                overlaySessions = setOf(Session.Kind.EXERCISE),
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
         RecordTypeSpec(
@@ -199,7 +217,12 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
             summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
             aggregate = TotalCaloriesBurnedRecord.ENERGY_TOTAL,
-            tile = TileSpec(TileSpec.Form.RING, defaultGoal = 2_200.0, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.RING,
+                defaultGoal = 2_200.0,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = Vo2MaxRecord::class,
@@ -223,7 +246,11 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.count.toDouble())) },
             summary = { Formatting.integer(it.count) },
             aggregate = WheelchairPushesRecord.COUNT_TOTAL,
-            tile = TileSpec(TileSpec.Form.NUMBER, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                cumulativeIntraday = true,
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+            ),
         ),
         RecordTypeSpec(
             type = BodyFatRecord::class,
@@ -341,7 +368,7 @@ object RecordRegistry {
             tile = TileSpec(
                 TileSpec.Form.CURVE,
                 colorScale = 50.0..160.0,
-                overlaySessions = setOf(Session.Kind.SLEEP, Session.Kind.EXERCISE),
+                overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
         RecordTypeSpec(
@@ -417,7 +444,10 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.volume.inLiters)) },
             summary = { Formatting.number(it.volume.inLiters) + " L" },
             aggregate = HydrationRecord.VOLUME_TOTAL,
-            tile = TileSpec(TileSpec.Form.NUMBER, cumulativeIntraday = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                cumulativeIntraday = true,
+            ),
         ),
         RecordTypeSpec(
             type = NutritionRecord::class,
