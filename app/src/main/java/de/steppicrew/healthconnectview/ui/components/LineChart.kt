@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -130,6 +131,18 @@ fun LineChart(
 
     var selected by remember(points) { mutableStateOf<Int?>(null) }
 
+    // The visible slice of the time axis, as a zoom factor and a left edge in fraction units.
+    //
+    // A whole day at once buries the busy parts: a workout is twenty pixels wide on a
+    // 24-hour chart, and the detail that makes it worth looking at is not resolvable. Zoom
+    // is a viewport over the fractions rather than a re-query, so everything positioned by
+    // fraction -- the line, the bands, the axis icons, the tick labels and the touch
+    // handler -- follows from one pair of numbers and cannot disagree.
+    var zoom by remember(points, extent) { mutableStateOf(1f) }
+    var pan by remember(points, extent) { mutableStateOf(0f) }
+
+    fun visible(fraction: Float): Float = visibleFraction(fraction, zoom, pan)
+
     // Each point's horizontal position as a fraction of the width. Computed once here so the
     // touch handler and the drawing agree exactly on where a point sits.
     val fractions = remember(points, extent) { horizontalFractions(points, extent) }
@@ -145,7 +158,9 @@ fun LineChart(
 
     fun nearestIndex(x: Float, width: Int): Int? {
         if (fractions.isEmpty() || width <= 0) return null
-        val target = (x / width).coerceIn(0f, 1f)
+        // Back through the viewport, so a touch lands on the point under the finger at
+        // whatever zoom the chart is currently showing.
+        val target = ((x / width).coerceIn(0f, 1f) / zoom + pan).coerceIn(0f, 1f)
         return fractions.indices.minByOrNull { kotlin.math.abs(fractions[it] - target) }
     }
 
@@ -164,6 +179,25 @@ fun LineChart(
                 // Room below the plot for the bottom gridline label, which is drawn under
                 // its own line rather than clamped up on top of the series.
                 .padding(top = 8.dp, bottom = AXIS_GAP.dp)
+                .pointerInput(points, extent) {
+                    // Pinch to zoom the time axis, drag to pan. Only the horizontal axis
+                    // scales: the vertical one already fits the values on screen, and
+                    // stretching it would make two charts of the same type incomparable.
+                    detectTransformGestures { centroid, panChange, zoomChange, _ ->
+                        val newZoom = (zoom * zoomChange).coerceIn(1f, MAX_ZOOM)
+                        // Zoom about the pinch centroid, so the stretch of chart under the
+                        // fingers stays under them rather than sliding away.
+                        val focus = pan + (centroid.x / size.width).coerceIn(0f, 1f) / zoom
+                        val afterZoom = focus - (centroid.x / size.width) / newZoom
+                        // Panning is in screen pixels, so it has to be divided by the zoom to
+                        // become a fraction of the whole series.
+                        zoom = newZoom
+                        pan = clampPan(
+                            afterZoom - panChange.x / size.width / newZoom,
+                            newZoom,
+                        )
+                    }
+                }
                 .pointerInput(points) {
                     // Drag as well as tap: reading a series means sweeping along it, and
                     // lifting clears so the chart does not keep a stale highlight.
@@ -194,7 +228,18 @@ fun LineChart(
             val lastTime = (extent?.endInclusive ?: points.last().time).toEpochMilli()
             val timeSpan = (lastTime - firstTime).takeIf { it > 0L }
 
-            fun xFor(index: Int): Float = fractions[index] * size.width
+            // The single conversion from "where in the series" to "where on screen". Zoom and
+            // pan live here alone, so the line, the bands, the markers and the axis cannot
+            // drift apart at any magnification.
+            fun xForFraction(fraction: Float): Float = visible(fraction) * size.width
+
+            fun xFor(index: Int): Float = xForFraction(fractions[index])
+
+            /** A moment's position, for anything placed by time rather than by sample. */
+            fun xForTime(millis: Long): Float? {
+                val span = timeSpan ?: return null
+                return xForFraction(((millis - firstTime).toDouble() / span).toFloat())
+            }
 
             fun yFor(value: Double): Float =
                 (size.height * (1.0 - (value - minValue) / span)).toFloat()
@@ -219,10 +264,12 @@ fun LineChart(
             // own, so it must never compete with the data drawn over it.
             if (timeSpan != null) {
                 sessions.forEach { session ->
-                    val from = ((session.start.toEpochMilli() - firstTime).toDouble() /
-                        timeSpan).toFloat().coerceIn(0f, 1f) * size.width
-                    val to = ((session.end.toEpochMilli() - firstTime).toDouble() /
-                        timeSpan).toFloat().coerceIn(0f, 1f) * size.width
+                    // Clamped to the viewport rather than to the whole series, so a band
+                    // running off the visible edge is cut at the edge instead of vanishing.
+                    val from = (xForTime(session.start.toEpochMilli()) ?: return@forEach)
+                        .coerceIn(0f, size.width)
+                    val to = (xForTime(session.end.toEpochMilli()) ?: return@forEach)
+                        .coerceIn(0f, size.width)
                     if (to <= from) return@forEach
                     drawRect(
                         color = when (session.kind) {
@@ -290,11 +337,7 @@ fun LineChart(
             // Placed by time like every other point, so the marker sits exactly where the
             // line meets the goal rather than at the nearest sample.
             val crossingX = goalCrossing?.let { crossing ->
-                if (timeSpan == null) null
-                else {
-                    val offsetMillis = crossing.toEpochMilli() - firstTime
-                    (size.width * offsetMillis.toDouble() / timeSpan.toDouble()).toFloat()
-                }
+                xForTime(crossing.toEpochMilli())?.takeIf { it in 0f..size.width }
             }
 
             // Each run of consecutive points is stroked on its own, so a gap stays a gap.
@@ -414,10 +457,10 @@ fun LineChart(
         // happened but not *what*, and the list below the chart names the sessions without
         // saying which band is which. With two or three bands that is guesswork.
         if (sessions.isNotEmpty() && timeExtent != null) {
-            SessionAxisIcons(sessions = sessions, extent = timeExtent)
+            SessionAxisIcons(sessions = sessions, extent = timeExtent, zoom = zoom, pan = pan)
         }
 
-        TimeAxis(points = points, fractions = fractions, extent = extent)
+        TimeAxis(points = points, fractions = fractions, extent = extent, zoom = zoom, pan = pan)
     }
 }
 
@@ -503,14 +546,22 @@ fun SessionTimeline(
  * window, so an icon pinned to the edge would name a band that is barely there.
  */
 @Composable
-private fun SessionAxisIcons(sessions: List<Session>, extent: ClosedRange<Instant>) {
+private fun SessionAxisIcons(
+    sessions: List<Session>,
+    extent: ClosedRange<Instant>,
+    zoom: Float = 1f,
+    pan: Float = 0f,
+) {
     val start = extent.start.toEpochMilli()
     val span = (extent.endInclusive.toEpochMilli() - start).toDouble()
 
-    val placed = remember(sessions, extent) {
+    val placed = remember(sessions, extent, zoom, pan) {
         sessions.mapNotNull { session ->
             val middle = (session.start.toEpochMilli() + session.end.toEpochMilli()) / 2
-            val fraction = ((middle - start) / span).toFloat()
+            // Through the same viewport the plot uses, so an icon stays under its band at
+            // every magnification; a session zoomed out of view drops its icon rather than
+            // piling up against the edge.
+            val fraction = (((middle - start) / span).toFloat() - pan) * zoom
             if (fraction in 0f..1f) session to fraction else null
         }
     }
@@ -552,6 +603,8 @@ private fun TimeAxis(
     points: List<Point>,
     fractions: List<Float>,
     extent: ClosedRange<Instant>? = null,
+    zoom: Float = 1f,
+    pan: Float = 0f,
 ) {
     // The axis measures the plot, so it follows the extent wherever one is fixed. Reading it
     // off the points instead would label a 24-hour plot with the hours the data happened to
@@ -565,14 +618,30 @@ private fun TimeAxis(
     // 31-minute workout was labelled "28 Aug" five times over, because toHours() floored to
     // zero and the axis fell through to the multi-day format. A date repeated across a chart
     // that fits inside one afternoon tells the reader nothing.
-    val span = Duration.between(first, last)
+    // Ticked over the *visible* window, not the whole series. Zooming into an hour otherwise
+    // left a single label on screen -- or none -- because the ticks were still spaced for a
+    // day. Re-ticking makes the axis get finer as the chart does, which is the point of
+    // zooming in the first place.
+    val whole = Duration.between(first, last)
+    val visibleStart = first.plusMillis((whole.toMillis() * pan).toLong())
+    val visibleEnd = visibleStart.plusMillis((whole.toMillis() / zoom).toLong())
+
+    val span = Duration.between(visibleStart, visibleEnd)
     val intraday = !span.isNegative && span <= Duration.ofHours(HOURS_IN_DAY)
 
     // Within a day, ticks are placed at round hours rather than snapped to samples: a
     // record-built series has points at whatever minute activity happened, so snapping gave
     // labels like 06:02 and 16:51, which read as arbitrary rather than as an axis.
-    val ticks = remember(points, intraday, first, last) {
-        if (intraday) hourlyTicks(first, last) else axisTicks(points, fractions)
+    val ticks = remember(points, intraday, visibleStart, visibleEnd, zoom, pan) {
+        if (intraday) {
+            hourlyTicks(visibleStart, visibleEnd)
+        } else {
+            // Snapped ticks are positions in the whole series, so they need the same
+            // viewport mapping everything else gets.
+            axisTicks(points, fractions).map {
+                it.copy(fraction = (it.fraction - pan) * zoom)
+            }
+        }.filter { it.fraction in 0f..1f }
     }
 
     Layout(
@@ -701,6 +770,24 @@ private fun axisTicks(points: List<Point>, fractions: List<Float>): List<AxisTic
         AxisTick(fraction = fractions[index], time = points[index].time)
     }.distinctBy { it.time }
 }
+
+/**
+ * Maps a fraction of the whole series onto a fraction of the visible viewport.
+ *
+ * The single place zoom and pan are applied, so the line, the bands, the markers, the axis
+ * and the touch handler cannot drift apart at any magnification.
+ */
+internal fun visibleFraction(fraction: Float, zoom: Float, pan: Float): Float =
+    (fraction - pan) * zoom
+
+/**
+ * Keeps the viewport inside the data.
+ *
+ * Panning past either end would show empty space and leave the reader unsure whether the day
+ * really stopped there. At zoom 1 the only valid pan is zero: the whole series is on screen.
+ */
+internal fun clampPan(value: Float, scale: Float): Float =
+    value.coerceIn(0f, (1f - 1f / scale).coerceAtLeast(0f))
 
 /**
  * Each point's horizontal position as a fraction of the plot width, from its timestamp.
@@ -843,3 +930,10 @@ private const val MAX_DOTS = 60
  * a solid block.
  */
 private const val LINE_WIDTH = 2f
+
+/**
+ * How far the time axis can be stretched. Twenty-four is a whole day down to about an hour,
+ * which is as fine as the data usefully resolves; beyond that the chart is showing the gaps
+ * between samples rather than the shape.
+ */
+private const val MAX_ZOOM = 24f
