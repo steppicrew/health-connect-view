@@ -73,6 +73,13 @@ object Formatting {
         return dateTime(start, zone) + " – " + endText
     }
 
+    /** Clock time alone, for a moment already known to fall on the day being shown. */
+    fun time(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+            .withLocale(Locale.getDefault())
+            .withZone(zone)
+            .format(instant)
+
     /** Compact duration such as "7h 32m"; the unit letters come from resources at call sites. */
     fun duration(duration: Duration): String {
         val hours = duration.toHours()

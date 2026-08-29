@@ -201,6 +201,7 @@
     <string name="chart_source_aggregated_weekly">Weekly totals, deduplicated by Health Connect</string>
     <string name="chart_source_cumulative">Running total through the day, deduplicated by Health Connect</string>
     <string name="chart_source_cumulative_scaled">Running total through the day. The final value is the deduplicated total; points in between are apportioned, because one app reports a whole-day figure rather than individual entries.</string>
+    <string name="chart_goal_reached_at">Goal of %1$s reached at %2$s</string>
     <string name="chart_goal_reached">Goal of %1$s reached</string>
     <string name="chart_goal_remaining">%1$s of %2$s</string>
     <string name="chart_source_raw">Individual readings</string>

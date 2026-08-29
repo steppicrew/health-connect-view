@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -45,6 +46,8 @@ data class TileDetailData(
     val goal: Double?,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
+    /** When the series first reached the goal, interpolated; null if it never did. */
+    val goalCrossing: Instant?,
     /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
@@ -428,6 +431,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             selectedSource = source,
             goal = goal,
             cumulative = cumulative,
+            goalCrossing = goalCrossing(scaledPoints, goal),
             approximated = approximated,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,

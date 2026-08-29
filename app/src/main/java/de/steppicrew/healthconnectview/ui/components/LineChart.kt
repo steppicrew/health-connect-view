@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
+import java.time.Instant
 
 /**
  * The app's only chart.
@@ -34,6 +35,8 @@ fun LineChart(
     smooth: Boolean = false,
     /** Drawn as a dashed reference line, and kept within the vertical range so it is visible. */
     goal: Double? = null,
+    /** Marked with a dot where the series first reaches [goal]. */
+    goalCrossing: Instant? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -49,6 +52,7 @@ fun LineChart(
     val lineColor = MaterialTheme.colorScheme.primary
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val goalColor = MaterialTheme.colorScheme.tertiary
+    val surfaceColor = MaterialTheme.colorScheme.surface
 
     Column(modifier = modifier.fillMaxWidth()) {
         // Max sits at the top of the plot and min at the bottom, matching where the line
@@ -114,6 +118,16 @@ fun LineChart(
                 )
             }
 
+            // Placed by time like every other point, so the marker sits exactly where the
+            // line meets the goal rather than at the nearest sample.
+            val crossingX = goalCrossing?.let { crossing ->
+                if (timeSpan == null) null
+                else {
+                    val offsetMillis = crossing.toEpochMilli() - firstTime
+                    (size.width * offsetMillis.toDouble() / timeSpan.toDouble()).toFloat()
+                }
+            }
+
             val path = if (smooth && offsets.size > 2) {
                 smoothPath(offsets)
             } else {
@@ -126,6 +140,23 @@ fun LineChart(
                 }
             }
             drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
+
+            // Drawn after the line so the marker is not overdrawn by it.
+            if (crossingX != null && goal != null) {
+                val y = yFor(goal)
+                drawCircle(
+                    color = goalColor,
+                    radius = GOAL_MARKER_RADIUS.dp.toPx(),
+                    center = Offset(crossingX, y),
+                )
+                // A ring of background colour separates the marker from the line beneath it,
+                // which shares its position by definition.
+                drawCircle(
+                    color = surfaceColor,
+                    radius = (GOAL_MARKER_RADIUS - GOAL_MARKER_RING).dp.toPx(),
+                    center = Offset(crossingX, y),
+                )
+            }
 
             // Mark individual readings when there are few enough for dots to stay legible.
             if (points.size <= MAX_DOTS) {
@@ -209,5 +240,8 @@ private const val CATMULL_ROM_TENSION = 6f
 
 private const val GOAL_DASH_ON = 6f
 private const val GOAL_DASH_OFF = 4f
+
+private const val GOAL_MARKER_RADIUS = 6f
+private const val GOAL_MARKER_RING = 2.5f
 
 private const val MAX_DOTS = 60
