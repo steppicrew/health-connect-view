@@ -157,6 +157,20 @@ created — see `docs/ROADMAP.md` §9. So:
 - **Drive the UI:** ask the user to tap; read the result from `screencap` and `logcat`.
 - **Avoid tapping entirely** where possible — the debug activities are startable with
   `am start`: `SeedActivity`, `AggregationCheckActivity`, `DataShapeActivity`.
+- **Open any screen directly** with the debug nav backdoor, so checking a rendering change is
+  a command rather than a conversation:
+
+      adb shell am start -n de.steppicrew.healthconnectview.debug/de.steppicrew.healthconnectview.MainActivity \
+          -e route "tile/SleepSessionRecord?date=2026-08-29"
+
+  The value is a `Routes` string, so anything the nav graph can express is reachable. It is
+  navigated *onto* the dashboard, so Back still works. `MainActivity` is `singleTop`, so the
+  route is read in `onNewIntent` as well as `onCreate` — without that a second `am start`
+  while the app is running is silently ignored.
+
+  `DebugNav` exists twice, in `src/debug` and `src/release`, rather than behind a boolean: the
+  release variant compiles to `return null` with no intent-reading code at all. Verify with
+  `javap` on `built_in_kotlinc/release/.../DebugNav.class` if it ever needs re-checking.
 
 `./scripts/make-avd.sh` creates the emulator: 1080×2160 (exactly Play's 2:1 screenshot
 maximum) with a 16 GB data partition. A full partition makes installs fail while the old build
