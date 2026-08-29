@@ -173,6 +173,26 @@ class HealthRepository(private val context: Context) {
         result[metric]?.let(::numericAggregate)
     }
 
+    /**
+     * Deduplicated buckets of an arbitrary width, for a span chart.
+     *
+     * [dailyTotals] is the day-width special case. A year of daily buckets would be 365
+     * points on a phone-width chart, so wider spans group more coarsely.
+     */
+    suspend fun bucketedTotals(
+        metric: AggregateMetric<*>,
+        range: TimeRangeFilter,
+        bucket: Period,
+    ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
+        client.aggregateGroupByPeriod(
+            AggregateGroupByPeriodRequest(
+                metrics = setOf(metric),
+                timeRangeFilter = range,
+                timeRangeSlicer = bucket,
+            ),
+        )
+    }
+
     /** Which apps contributed to a range, so a total can be explained to the user. */
     suspend fun contributingApps(
         metric: AggregateMetric<*>,

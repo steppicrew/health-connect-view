@@ -99,6 +99,13 @@
     <string name="range_month">30 days</string>
     <string name="range_quarter">90 days</string>
     <string name="range_year">1 year</string>
+    <string name="span_day">Day</string>
+    <string name="span_week">Week</string>
+    <string name="span_month">4 weeks</string>
+    <string name="span_year">Year</string>
+    <string name="span_previous">Earlier</string>
+    <string name="span_next">Later</string>
+    <string name="span_total">Total</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Choose what to show</string>
@@ -152,6 +159,7 @@
         <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>
     </plurals>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
+    <string name="chart_source_aggregated_weekly">Weekly totals, deduplicated by Health Connect</string>
     <string name="chart_source_raw">Individual readings</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
