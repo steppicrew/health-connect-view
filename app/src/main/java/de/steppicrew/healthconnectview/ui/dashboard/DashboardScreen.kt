@@ -1,12 +1,14 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,9 +43,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.ui.components.ProgressRing
+import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -61,6 +69,17 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
+
+    editingGoalFor?.let { editing ->
+        GoalDialog(
+            typeName = editing.tile.typeName,
+            displayName = stringResource(editing.spec.displayNameRes),
+            currentGoal = editing.tile.effectiveGoal,
+            onDismiss = { editingGoalFor = null },
+            onSave = viewModel::setGoal,
+        )
+    }
 
     // Permissions can be changed in system settings while backgrounded, so the day is
     // reloaded on every return rather than trusted from when the screen was built.
@@ -141,7 +160,17 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(state.tiles, key = { it.tile.typeName }) { tile ->
-                    TileCard(data = tile, onClick = { onOpenType(tile.tile.typeName) })
+                    TileCard(
+                        data = tile,
+                        onClick = { onOpenType(tile.tile.typeName) },
+                        // Long-press sets the goal for now; it becomes the full edit mode
+                        // (move, delete, add) in the next step.
+                        onLongClick = {
+                            if (tile.spec.tile.form == TileSpec.Form.RING) {
+                                editingGoalFor = tile
+                            }
+                        },
+                    )
                 }
             }
         }
@@ -152,13 +181,14 @@ fun DashboardScreen(
  * One tile. Only the number form is drawn today; ring and curve fall back to it, so a type
  * that declares them is already correct on screen and simply gains its shape later.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TileCard(data: TileData, onClick: () -> Unit) {
+private fun TileCard(data: TileData, onClick: () -> Unit, onLongClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clickable(onClick = onClick),
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ),
@@ -180,7 +210,7 @@ private fun TileCard(data: TileData, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                TileValue(data)
+                TileBody(data)
             }
 
             data.spec.unitRes?.let { unit ->
@@ -191,6 +221,45 @@ private fun TileCard(data: TileData, onClick: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+/**
+ * Picks the renderer from the type's declared form. Each form falls back to the plain number
+ * when its own requirements are not met -- a ring with no goal, a curve with too few readings
+ * -- so a tile always shows something rather than an empty box.
+ */
+@Composable
+private fun TileBody(data: TileData) {
+    val progress = data.progress
+    val scale = data.spec.tile.colorScale
+
+    when {
+        !data.granted || data.loading || data.value == null -> TileValue(data)
+
+        data.spec.tile.form == TileSpec.Form.RING && progress != null ->
+            ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
+                TileValue(data)
+            }
+
+        data.spec.tile.form == TileSpec.Form.CURVE && scale != null && data.curve.size > 1 ->
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                TileValue(data)
+                SparkCurve(
+                    points = data.curve,
+                    scale = scale,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(CURVE_HEIGHT.dp)
+                        .padding(top = 6.dp),
+                )
+            }
+
+        else -> TileValue(data)
     }
 }
 
@@ -237,3 +306,4 @@ private fun dayLabel(date: LocalDate): String =
     }
 
 private const val TILE_COLUMNS = 2
+private const val CURVE_HEIGHT = 28

@@ -45,6 +45,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     fun plus(tile: Tile): DashboardConfig =
         if (tiles.any { it.typeName == tile.typeName }) this else DashboardConfig(tiles + tile)
 
+    /** Sets one tile's goal; null clears the override back to the type's default. */
+    fun withGoal(typeName: String, goal: Double?): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.typeName == typeName) it.copy(goal = goal) else it },
+    )
+
     /** Moves the tile at [from] to [to], for drag-to-reorder in edit mode. */
     fun moved(from: Int, to: Int): DashboardConfig {
         if (from !in tiles.indices || to !in tiles.indices || from == to) return this
