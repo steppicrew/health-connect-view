@@ -258,13 +258,26 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // a single instant: the record says the climb took from 05:30 to 05:45, so the line
         // rises across those fifteen minutes. Holding the previous level until the interval
         // opens keeps the plateaus flat.
+        // Records can overlap -- a device writing every few minutes commonly emits intervals
+        // that abut or overlap -- so the next record's start may precede the previous one's
+        // end. Emitting both unchanged sends the series backwards in time, which a running
+        // total cannot do and which draws as a zigzag. Each point is therefore clamped to be
+        // no earlier than the one before it.
         var sum = 0.0
+        var lastTime = windowStart
         return buildList {
             add(Point(time = windowStart, value = 0.0))
             steps.forEach { step ->
-                add(Point(time = step.start, value = sum))
+                val rampStart = maxOf(step.start, lastTime)
+                val rampEnd = maxOf(step.end, rampStart)
+                // Hold the level up to the moment the rise begins, unless a previous record
+                // already carried the line past that point.
+                if (rampStart.isAfter(lastTime)) {
+                    add(Point(time = rampStart, value = sum))
+                }
                 sum += step.value
-                add(Point(time = step.end, value = sum))
+                add(Point(time = rampEnd, value = sum))
+                lastTime = rampEnd
             }
             // Carry the final level to the end of the window so the day does not appear to
             // stop at the last recorded activity.
@@ -272,7 +285,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
                 Instant.now(),
             )
-            if (windowEnd.isAfter(steps.last().end)) {
+            if (windowEnd.isAfter(lastTime)) {
                 add(Point(time = windowEnd, value = sum))
             }
         }
