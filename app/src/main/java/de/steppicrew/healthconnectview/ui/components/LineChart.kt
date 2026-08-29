@@ -84,6 +84,15 @@ fun LineChart(
      */
     zones: ValueZones? = null,
     /**
+     * Whether each reading is marked with a dot.
+     *
+     * Declared per type rather than inferred from how many points there are: it is about what
+     * a reading *is*. A weight is an event someone performed, so the dot says "measured here"
+     * and the line between merely connects two of them; a heart-rate sample is one of
+     * thousands, where the shape is the message and a dot per sample buries it.
+     */
+    markReadings: Boolean = false,
+    /**
      * Horizontal extent of the plot, or null to span exactly the readings.
      *
      * Set for a single day, where the axis should mean the same thing all day: without it a
@@ -329,7 +338,7 @@ fun LineChart(
                                 },
                                 start = from,
                                 end = to,
-                                strokeWidth = 3.dp.toPx(),
+                                strokeWidth = LINE_WIDTH.dp.toPx(),
                                 cap = StrokeCap.Round,
                             )
                         }
@@ -345,7 +354,11 @@ fun LineChart(
                                 }
                             }
                         }
-                        drawPath(path, color = lineColor, style = Stroke(width = 3.dp.toPx()))
+                        drawPath(
+                            path,
+                            color = lineColor,
+                            style = Stroke(width = LINE_WIDTH.dp.toPx()),
+                        )
                     }
                 }
             }
@@ -382,11 +395,14 @@ fun LineChart(
                 drawCircle(color = lineColor, radius = 5.dp.toPx(), center = Offset(x, y))
             }
 
-            // Mark individual readings when there are few enough for dots to stay legible.
-            if (points.size <= MAX_DOTS) {
+            // Coloured like the line they sit on: in the theme colour they read as black
+            // specks scattered over a coloured curve, which looks like a defect rather than
+            // like the measurements the line is made of. The count cap still applies, since
+            // even discrete readings crowd once a long span holds enough of them.
+            if (markReadings && points.size <= MAX_DOTS) {
                 points.forEachIndexed { index, point ->
                     drawCircle(
-                        color = lineColor,
+                        color = zones?.colorFor(point.value) ?: lineColor,
                         radius = 3.dp.toPx(),
                         center = Offset(xFor(index), yFor(point.value)),
                     )
@@ -820,3 +836,10 @@ private const val AXIS_ICON = 14
 private const val TIMELINE_HEIGHT = 40
 
 private const val MAX_DOTS = 60
+
+/**
+ * Thin enough that a dense day reads as a trace rather than a ribbon. At full resolution a
+ * heart-rate day holds thousands of points, and a heavy stroke merges neighbouring peaks into
+ * a solid block.
+ */
+private const val LINE_WIDTH = 2f

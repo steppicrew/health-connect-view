@@ -40,6 +40,19 @@ data class TileSpec(
      */
     val smoothChart: Boolean = true,
     /**
+     * Whether individual readings are marked with a dot on the chart.
+     *
+     * On for the types you take a reading of -- weight, blood pressure, body temperature --
+     * where each point is a discrete event someone performed, and the gap between two of them
+     * is a fact about the data rather than a line to be followed. The dot says "this was
+     * measured here", and the line between merely connects them.
+     *
+     * Off for continuously sampled quantities -- heart rate, steps, floors -- where a reading
+     * is one of thousands and the shape is the whole message. Marking those adds a speck per
+     * sample and buries the curve it is meant to annotate.
+     */
+    val markReadings: Boolean = false,
+    /**
      * Whether an intraday chart accumulates through the day rather than showing each bucket
      * on its own.
      *

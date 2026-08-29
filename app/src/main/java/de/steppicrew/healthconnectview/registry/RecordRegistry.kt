@@ -60,6 +60,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.basalMetabolicRate.inKilocaloriesPerDay)) },
             summary = { Formatting.number(it.basalMetabolicRate.inKilocaloriesPerDay) + " kcal/day" },
             aggregate = BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = CyclingPedalingCadenceRecord::class,
@@ -233,6 +234,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.vo2MillilitersPerMinuteKilogram)) },
             summary = { Formatting.number(it.vo2MillilitersPerMinuteKilogram) + " mL/kg/min" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = WheelchairPushesRecord::class,
@@ -261,6 +263,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.percentage.value)) },
             summary = { Formatting.number(it.percentage.value) + " %" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BodyWaterMassRecord::class,
@@ -271,6 +274,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BoneMassRecord::class,
@@ -281,6 +285,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = HeightRecord::class,
@@ -292,6 +297,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.height.inMeters * 100.0)) },
             summary = { Formatting.number(it.height.inMeters * 100.0) + " cm" },
             aggregate = HeightRecord.HEIGHT_AVG,
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = LeanBodyMassRecord::class,
@@ -302,6 +308,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = WeightRecord::class,
@@ -313,6 +320,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.weight.inKilograms)) },
             summary = { Formatting.number(it.weight.inKilograms) + " kg" },
             aggregate = WeightRecord.WEIGHT_AVG,
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BasalBodyTemperatureRecord::class,
@@ -323,6 +331,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.temperature.inCelsius)) },
             summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BloodGlucoseRecord::class,
@@ -333,6 +342,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.level.inMillimolesPerLiter)) },
             summary = { Formatting.number(it.level.inMillimolesPerLiter) + " mmol/L" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BloodPressureRecord::class,
@@ -344,6 +354,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.systolic.inMillimetersOfMercury)) },
             summary = { Formatting.number(it.systolic.inMillimetersOfMercury) + "/" + Formatting.number(it.diastolic.inMillimetersOfMercury) + " mmHg" },
             aggregate = BloodPressureRecord.SYSTOLIC_AVG,
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = BodyTemperatureRecord::class,
@@ -354,6 +365,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.temperature.inCelsius)) },
             summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = HeartRateRecord::class,
@@ -380,6 +392,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.heartRateVariabilityMillis)) },
             summary = { Formatting.number(it.heartRateVariabilityMillis) + " ms" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = OxygenSaturationRecord::class,
@@ -390,6 +403,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.percentage.value)) },
             summary = { Formatting.number(it.percentage.value) + " %" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = RespiratoryRateRecord::class,
@@ -401,6 +415,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.rate)) },
             summary = { Formatting.number(it.rate) },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = RestingHeartRateRecord::class,
@@ -412,6 +427,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.beatsPerMinute.toDouble())) },
             summary = { Formatting.integer(it.beatsPerMinute) + " bpm" },
             aggregate = RestingHeartRateRecord.BPM_AVG,
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = SkinTemperatureRecord::class,
