@@ -46,6 +46,11 @@ data class RecordTypeSpec<T : Record>(
     val startTime: (T) -> Instant,
     /** Deduplicating metric for totals; null means no total may be shown for this type. */
     val aggregate: AggregateMetric<*>? = null,
+    /**
+     * How this type is drawn on the dashboard. Defaults to a plain number, which every
+     * chartable type can render, so a new type needs no tile decision to be usable.
+     */
+    val tile: TileSpec = TileSpec(TileSpec.Form.NUMBER),
 ) {
     enum class Shape { INSTANT, INTERVAL, SERIES }
 
@@ -56,6 +61,10 @@ data class RecordTypeSpec<T : Record>(
      */
     val permission: String get() = HealthPermission.getReadPermission(type)
 
+    /**
+     * Also decides dashboard eligibility: a tile with no number to show is an empty box, so
+     * the non-numeric types (cycle events, sexual activity) cannot be pinned.
+     */
     val isChartable: Boolean get() = unitRes != null
 
     // The three casts below are safe by construction: a spec is only ever applied to records
