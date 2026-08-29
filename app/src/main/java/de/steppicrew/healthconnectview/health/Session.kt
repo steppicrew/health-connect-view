@@ -20,6 +20,11 @@ data class Session(
     val title: String?,
     val kind: Kind,
     val origin: String,
+    /**
+     * The exercise type code, kept so the UI can pick an icon. Null for sleep, which needs no
+     * further discrimination.
+     */
+    val exerciseType: Int? = null,
 ) {
     enum class Kind { SLEEP, EXERCISE }
 }
@@ -77,6 +82,7 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     title = title ?: exerciseTypeName(exerciseType),
     kind = Session.Kind.EXERCISE,
     origin = metadata.dataOrigin.packageName,
+    exerciseType = exerciseType,
 )
 
 fun SleepSessionRecord.toSession(): Session = Session(
