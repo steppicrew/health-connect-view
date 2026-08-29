@@ -159,6 +159,7 @@
     <string name="session_loading">Wird zusammengestellt …</string>
     <string name="session_no_stats">Während dieser Sitzung wurde sonst nichts aufgezeichnet.</string>
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
+    <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
     <string name="sessions_none">Keine</string>
     <plurals name="sessions_detail_header">
         <item quantity="one">%1$d Sitzung</item>

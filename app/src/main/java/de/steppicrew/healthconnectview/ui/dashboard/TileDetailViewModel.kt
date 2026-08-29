@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import android.app.Application
+import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.health.connect.client.records.Record
@@ -82,6 +83,8 @@ data class TileDetailData(
      * full sweep and make two sessions incomparable.
      */
     val sessionCurveScale: ClosedFloatingPointRange<Double>? = null,
+    /** Unit for the readout on a session's curve, from the heart-rate type's own spec. */
+    @param:StringRes val sessionCurveUnitRes: Int? = null,
     /**
      * Value range to colour the chart's line across, or null for a plain line.
      *
@@ -458,12 +461,28 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessions.map { session ->
                 async {
                     gate.withPermit {
-                        val points = runCatching {
+                        val records = runCatching {
                             repository.readForChart(
                                 spec.type,
                                 TimeRangeFilter.between(session.start, session.end),
-                            ).flatMap { spec.pointsOf(it) }.sortedBy { it.time }
+                            )
                         }.getOrDefault(emptyList())
+
+                        // One writer's samples rather than everyone's merged. Heart rate is
+                        // instantaneous, so aggregation cannot deduplicate it: two apps
+                        // mirroring the same session sample at slightly different instants
+                        // and values would interleave into a zigzag between two accounts of
+                        // one heart rate. Measured on this phone the Pilates session had a
+                        // single writer, so this changes nothing there -- it is the guard for
+                        // the sessions that do have two, which most types here already do.
+                        val points = records
+                            .groupBy { spec.originOf(it) }
+                            .values
+                            .map { group -> group.flatMap { spec.pointsOf(it) } }
+                            .maxByOrNull { it.size }
+                            ?.sortedBy { it.time }
+                            .orEmpty()
+
                         points.takeIf { it.size > 1 }?.let { session.start to it }
                     }
                 }
@@ -734,6 +753,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessions = sessions,
             sessionCurves = sessionCurves,
             sessionCurveScale = heartRateSpec()?.tile?.colorScale,
+            sessionCurveUnitRes = heartRateSpec()?.unitRes,
             lineColorScale = spec.tile.colorScale.takeIf { span.intradayBucket != null },
             extent = dayExtent(span, offset),
             heartRateLocked = sessionKind != null && !heartRateGranted,
