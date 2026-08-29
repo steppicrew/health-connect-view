@@ -181,6 +181,10 @@
     <string name="detail_written_by">Written by %1$s</string>
     <string name="source_phone_sensors">This phone</string>
     <string name="session_sleep">Sleep</string>
+    <string name="session_untitled">Activity</string>
+    <string name="session_loading">Gathering…</string>
+    <string name="session_no_stats">Nothing else was recorded during this session.</string>
+    <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="source_all">All sources</string>
     <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>

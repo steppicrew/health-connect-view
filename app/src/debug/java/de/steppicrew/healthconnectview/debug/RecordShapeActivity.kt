@@ -232,6 +232,83 @@ class RecordShapeActivity : ComponentActivity() {
                 )
             }
 
+            // Sleep spans midnight, so a session belonging to "last night" starts on the
+            // previous calendar day and a day-bounded read can miss it entirely.
+            val sleepWide = runCatching {
+                repository.read(
+                    androidx.health.connect.client.records.SleepSessionRecord::class,
+                    androidx.health.connect.client.time.TimeRangeFilter.between(
+                        day.minusDays(2).atStartOfDay(zone).toInstant(),
+                        day.plusDays(2).atStartOfDay(zone).toInstant(),
+                    ),
+                )
+            }.getOrDefault(emptyList())
+
+            val dayStart = day.atStartOfDay(zone).toInstant()
+            val dayEnd = day.plusDays(1).atStartOfDay(zone).toInstant()
+            Log.i(TAG, "SLEEP wideCount=${sleepWide.size}")
+            sleepWide.sortedBy { it.startTime }.forEach { rec ->
+                val overlapsDay = rec.startTime < dayEnd && rec.endTime > dayStart
+                val startsInDay = rec.startTime >= dayStart && rec.startTime < dayEnd
+                Log.i(
+                    TAG,
+                    "SLEEP start=${rec.startTime.atZone(zone).toLocalDateTime()} " +
+                        "end=${rec.endTime.atZone(zone).toLocalDateTime()} " +
+                        "overlapsDay=$overlapsDay startsInDay=$startsInDay " +
+                        "origin=${rec.metadata.dataOrigin.packageName}",
+                )
+            }
+
+            // ExerciseSessionRecord carries no distance, power or calories -- only type,
+            // title, notes, segments, laps and route. Those metrics are separate record types
+            // written over the same window, so a session's statistics have to be assembled by
+            // overlapping them. This measures what is actually there for one session.
+            val bikeSession = sessions
+                .filter { it.metadata.dataOrigin.packageName == "com.lifefitness.connect" }
+                .maxByOrNull { it.startTime }
+            if (bikeSession != null) {
+                val from = bikeSession.startTime
+                val to = bikeSession.endTime
+                val window = androidx.health.connect.client.time.TimeRangeFilter.between(from, to)
+                Log.i(
+                    TAG,
+                    "SESSION-STATS for ${bikeSession.title} " +
+                        "${from.atZone(zone).toLocalDateTime()} .. ${to.atZone(zone).toLocalTime()} " +
+                        "segments=${bikeSession.segments.size} laps=${bikeSession.laps.size} " +
+                        "notes=${bikeSession.notes}",
+                )
+
+                val grantedNow = runCatching { repository.grantedPermissions() }
+                    .getOrDefault(emptySet())
+                de.steppicrew.healthconnectview.registry.RecordRegistry.all
+                    .filter { it.permission in grantedNow }
+                    .forEach { spec ->
+                        val n = runCatching { repository.read(spec.type, window).size }
+                            .getOrDefault(0)
+                        if (n > 0) {
+                            val agg = spec.aggregate?.let { metric ->
+                                runCatching { repository.total(metric, window) }.getOrNull()
+                            }
+                            Log.i(TAG, "SESSION-STATS   ${spec.type.simpleName}: records=$n total=$agg")
+                        }
+                    }
+            }
+
+            // Does a day-bounded read return a session that started the previous evening?
+            // Sleep always straddles midnight, so if the filter only returns records fully
+            // inside the window, a night's sleep is invisible on the day it ended.
+            val sleepDayFiltered = runCatching {
+                repository.read(
+                    androidx.health.connect.client.records.SleepSessionRecord::class,
+                    dayInstants(day, zone),
+                )
+            }.getOrDefault(emptyList())
+            Log.i(
+                TAG,
+                "SLEEP-DAYFILTER returned=${sleepDayFiltered.size} " +
+                    "starts=${sleepDayFiltered.map { it.startTime.atZone(zone).toLocalDateTime().toString() }}",
+            )
+
             Log.i(TAG, "done")
             finish()
         }

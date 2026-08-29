@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +65,15 @@ fun TileDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
+    var openSession by remember { mutableStateOf<Session?>(null) }
+
+    openSession?.let { session ->
+        SessionSheet(
+            session = session,
+            loadStats = { viewModel.statisticsFor(it) },
+            onDismiss = { openSession = null },
+        )
+    }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -109,16 +122,24 @@ fun TileDetailScreen(
                     body = current.message,
                 )
 
-                is UiState.Data -> SpanContent(current.value, viewModel::selectSource)
+                is UiState.Data -> SpanContent(
+                    data = current.value,
+                    onSelectSource = viewModel::selectSource,
+                    onOpenSession = { openSession = it },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun SpanContent(data: TileDetailData, onSelectSource: (String?) -> Unit) {
+private fun SpanContent(
+    data: TileDetailData,
+    onSelectSource: (String?) -> Unit,
+    onOpenSession: (Session) -> Unit,
+) {
     LazyColumn {
-        item(key = "summary") { SpanSummary(data, onSelectSource) }
+        item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession) }
 
         if (data.truncated) {
             item(key = "truncated") {
@@ -154,7 +175,11 @@ private fun SpanContent(data: TileDetailData, onSelectSource: (String?) -> Unit)
 }
 
 @Composable
-private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit) {
+private fun SpanSummary(
+    data: TileDetailData,
+    onSelectSource: (String?) -> Unit,
+    onOpenSession: (Session) -> Unit,
+) {
     Column(Modifier.padding(16.dp)) {
         // First: it changes how a short chart should be read -- not missing data, but data
         // the app is not allowed to see.
@@ -248,6 +273,10 @@ private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit)
             // "that peak was the bike ride".
             data.sessions.forEach { session ->
                 Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenSession(session) }
+                        .padding(vertical = 4.dp),
                     text = listOfNotNull(
                         session.title ?: stringResource(R.string.session_sleep)
                             .takeIf { session.kind == Session.Kind.SLEEP },

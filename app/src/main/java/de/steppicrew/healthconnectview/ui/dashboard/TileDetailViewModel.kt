@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import androidx.health.connect.client.records.ExerciseSessionRecord
@@ -20,6 +21,11 @@ import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -131,6 +137,9 @@ private fun List<Point>.runningTotal(): List<Point> {
         Point(time = point.time, value = sum)
     }
 }
+
+/** One metric measured over a session's window, for the session detail sheet. */
+data class SessionStat(val spec: RecordTypeSpec<*>, val value: Double)
 
 class TileDetailViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -354,6 +363,35 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
 
     /**
+     * Everything recorded during one session, assembled by time overlap.
+     *
+     * ExerciseSessionRecord itself carries no distance, power or calories -- only its type,
+     * title, notes, segments, laps and route. Those metrics are separate record types written
+     * over the same window, so a session's statistics exist but have to be gathered rather
+     * than read. On a real indoor bike session this found 647 kcal active, 25.5 km and a mean
+     * of 138 bpm across 54 heart-rate records.
+     */
+    suspend fun statisticsFor(session: Session): List<SessionStat> = coroutineScope {
+        val window = TimeRangeFilter.between(session.start, session.end)
+        val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+        val gate = Semaphore(MAX_CONCURRENT_STATS)
+
+        RecordRegistry.all
+            .filter { it.permission in granted && it.aggregate != null && it.isChartable }
+            .map { spec ->
+                async {
+                    gate.withPermit {
+                        val metric = spec.aggregate ?: return@withPermit null
+                        val value = runCatching { repository.total(metric, window) }.getOrNull()
+                        value?.let { SessionStat(spec = spec, value = it) }
+                    }
+                }
+            }
+            .awaitAll()
+            .filterNotNull()
+    }
+
+    /**
      * Sleep and exercise spans overlapping the window.
      *
      * Read unfiltered by source: a session written by any app is still a fact about what the
@@ -365,7 +403,18 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         offset: Int,
         kinds: Set<Session.Kind>,
     ): List<Session> {
-        val range = span.instantFilter(offset)
+        // Widened by a night either side. A sleep session belongs to the morning it ends on
+        // but starts the previous evening -- measured on a real device, 22:48 to 05:15 -- so a
+        // day-bounded read is the wrong query for it whatever the filter's overlap semantics.
+        // Bands are clipped to the visible range when drawn, so the margin costs nothing.
+        val visibleStart = span.startDate(offset)
+            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+        val visibleEnd = span.endDate(offset)
+            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+        val range = TimeRangeFilter.between(
+            visibleStart.minus(SESSION_MARGIN),
+            visibleEnd.plus(SESSION_MARGIN),
+        )
 
         val exercise = if (Session.Kind.EXERCISE in kinds) {
             runCatching {
@@ -383,7 +432,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             emptyList()
         }
 
+        // Only sessions that actually touch the window are worth drawing; the margin was for
+        // catching one that started outside it, not for showing the neighbouring night.
         return dedupeSessions(exercise + sleep)
+            .filter { it.start < visibleEnd && it.end > visibleStart }
     }
 
     /** The user's goal for this type if they set one, else the type's default. */
@@ -599,7 +651,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
          * A record at least this long is a whole-day summary rather than an event, and says
          * nothing about when within the day it happened.
          */
+        const val MAX_CONCURRENT_STATS = 4
+
         val WHOLE_DAY_THRESHOLD: Duration = Duration.ofHours(12)
+
+        /**
+         * How far outside the visible window sessions are searched. A night's sleep begins
+         * well before the midnight it is credited to -- measured on a device, 22:48 to 05:15
+         * -- so half a day either side catches it without dragging in the night before.
+         */
+        val SESSION_MARGIN: Duration = Duration.ofHours(12)
     }
 
 }
