@@ -108,16 +108,16 @@ fun TileDetailScreen(
                     body = current.message,
                 )
 
-                is UiState.Data -> SpanContent(current.value)
+                is UiState.Data -> SpanContent(current.value, viewModel::selectSource)
             }
         }
     }
 }
 
 @Composable
-private fun SpanContent(data: TileDetailData) {
+private fun SpanContent(data: TileDetailData, onSelectSource: (String?) -> Unit) {
     LazyColumn {
-        item(key = "summary") { SpanSummary(data) }
+        item(key = "summary") { SpanSummary(data, onSelectSource) }
 
         if (data.truncated) {
             item(key = "truncated") {
@@ -153,7 +153,7 @@ private fun SpanContent(data: TileDetailData) {
 }
 
 @Composable
-private fun SpanSummary(data: TileDetailData) {
+private fun SpanSummary(data: TileDetailData, onSelectSource: (String?) -> Unit) {
     Column(Modifier.padding(16.dp)) {
         // First: it changes how a short chart should be read -- not missing data, but data
         // the app is not allowed to see.
@@ -179,17 +179,7 @@ private fun SpanSummary(data: TileDetailData) {
         }
 
         if (data.contributingApps.isNotEmpty()) {
-            val context = LocalContext.current
-            Text(
-                text = stringResource(
-                    R.string.detail_written_by,
-                    data.contributingApps.map { context.appLabelFor(it) }.sorted()
-                        .joinToString(", "),
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp),
-            )
+            SourceSection(data = data, onSelectSource = onSelectSource)
         }
 
         if (data.points.isNotEmpty()) {
@@ -205,6 +195,69 @@ private fun SpanSummary(data: TileDetailData) {
                 ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * Source picker plus a plain statement of what the number above actually is.
+ *
+ * "All sources" stays first and is the default: it is Health Connect's deduplicated total,
+ * which is the right answer for the metric and is deliberately not any single app's figure.
+ * Selecting one app answers a different question, so the caption says which question is being
+ * answered rather than leaving the user to infer it from a changed number.
+ *
+ * Only shown where more than one app wrote; with a single writer there is nothing to choose.
+ */
+@Composable
+private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Unit) {
+    val context = LocalContext.current
+    val sources = data.contributingApps.sortedBy { context.appLabelFor(it) }
+
+    Column(Modifier.padding(top = 8.dp)) {
+        if (sources.size > 1) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FilterChip(
+                    selected = data.selectedSource == null,
+                    onClick = { onSelectSource(null) },
+                    label = { Text(stringResource(R.string.source_all)) },
+                )
+                sources.forEach { packageName ->
+                    FilterChip(
+                        selected = data.selectedSource == packageName,
+                        onClick = { onSelectSource(packageName) },
+                        label = { Text(context.appLabelFor(packageName)) },
+                    )
+                }
+            }
+        }
+
+        Text(
+            text = data.selectedSource?.let {
+                stringResource(R.string.source_showing_one, context.appLabelFor(it))
+            } ?: if (sources.size > 1) {
+                stringResource(R.string.source_all_explained)
+            } else {
+                stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+
+        // The overlap winner is Health Connect's own priority setting, not ours to define.
+        if (sources.size > 1) {
+            Text(
+                text = stringResource(R.string.source_priority_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
             )
         }
     }

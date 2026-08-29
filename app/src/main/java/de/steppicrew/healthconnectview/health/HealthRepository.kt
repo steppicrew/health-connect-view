@@ -5,6 +5,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -44,6 +45,7 @@ class HealthRepository(private val context: Context) {
         type: KClass<T>,
         range: TimeRangeFilter,
         maxRecords: Int = MAX_RECORDS,
+        origins: Set<DataOrigin> = emptySet(),
     ): List<T> = withContext(Dispatchers.IO) {
         val collected = mutableListOf<T>()
         var pageToken: String? = null
@@ -52,6 +54,7 @@ class HealthRepository(private val context: Context) {
                 ReadRecordsRequest(
                     recordType = type,
                     timeRangeFilter = range,
+                    dataOriginFilter = origins,
                     ascendingOrder = false,
                     pageSize = PAGE_SIZE,
                     pageToken = pageToken,
@@ -84,6 +87,7 @@ class HealthRepository(private val context: Context) {
         type: KClass<T>,
         range: TimeRangeFilter,
         limit: Int = CHART_POINTS,
+        origins: Set<DataOrigin> = emptySet(),
     ): List<T> = withContext(Dispatchers.IO) {
         val kept = ArrayDeque<T>()
         var seen = 0
@@ -97,6 +101,7 @@ class HealthRepository(private val context: Context) {
                 ReadRecordsRequest(
                     recordType = type,
                     timeRangeFilter = range,
+                    dataOriginFilter = origins,
                     ascendingOrder = true,
                     pageSize = PAGE_SIZE,
                     pageToken = pageToken,
@@ -168,8 +173,9 @@ class HealthRepository(private val context: Context) {
     suspend fun total(
         metric: AggregateMetric<*>,
         range: TimeRangeFilter,
+        origins: Set<DataOrigin> = emptySet(),
     ): Double? = withContext(Dispatchers.IO) {
-        val result = client.aggregate(AggregateRequest(setOf(metric), range))
+        val result = client.aggregate(AggregateRequest(setOf(metric), range, origins))
         result[metric]?.let(::numericAggregate)
     }
 
@@ -183,12 +189,14 @@ class HealthRepository(private val context: Context) {
         metric: AggregateMetric<*>,
         range: TimeRangeFilter,
         bucket: Period,
+        origins: Set<DataOrigin> = emptySet(),
     ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
         client.aggregateGroupByPeriod(
             AggregateGroupByPeriodRequest(
                 metrics = setOf(metric),
                 timeRangeFilter = range,
                 timeRangeSlicer = bucket,
+                dataOriginFilter = origins,
             ),
         )
     }

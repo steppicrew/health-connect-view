@@ -126,6 +126,10 @@
     <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
     <string name="detail_written_by">Geschrieben von %1$s</string>
+    <string name="source_all">Alle Quellen</string>
+    <string name="source_all_explained">Von Health Connect zusammengeführt und entdoppelt. Nicht identisch mit dem Wert einer einzelnen App.</string>
+    <string name="source_showing_one">Es wird nur %1$s angezeigt. Das ist der Wert dieser App, nicht deine entdoppelte Summe.</string>
+    <string name="source_priority_hint">Welche App bei überlappenden Daten Vorrang hat, wird in Health Connect unter App-Priorität festgelegt.</string>
     <string name="detail_history_capped">Es werden nur die letzten 30 Tage angezeigt. Gib auf dem Berechtigungs-Bildschirm ältere Daten frei, um den ganzen Zeitraum zu sehen.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d Datensatz</item>
