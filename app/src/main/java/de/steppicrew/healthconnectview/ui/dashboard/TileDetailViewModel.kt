@@ -378,6 +378,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // interval it actually covers. The caption already tells the reader the shape is
         // apportioned rather than measured.
         val steps = itemised.ifEmpty { intervals }.sortedBy { it.start }
+        // Recorded for the caption: a curve built only from whole-day summaries is a straight
+        // ramp whose intermediate points are apportioned, not measured, and the chart has to
+        // say so rather than presenting it as a timeline.
+        shapeFromWholeDayOnly = itemised.isEmpty() && intervals.isNotEmpty()
 
         if (steps.isEmpty()) return emptyList()
 
@@ -423,6 +427,15 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * Read straight afterwards on the same coroutine, so no synchronisation is needed.
      */
     private var chosenShapeWriter: String? = null
+
+    /**
+     * Set when the curve could only be built from whole-day summary records.
+     *
+     * Read straight afterwards on the same coroutine, like [chosenShapeWriter]. The resulting
+     * line is a single rise across the day: honest about the total, and saying nothing real
+     * about when within the day anything happened.
+     */
+    private var shapeFromWholeDayOnly: Boolean = false
 
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
@@ -575,9 +588,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
+        // Whether the points on screen actually came from aggregation. A type can have an
+        // aggregate metric and still be charted from its raw readings within a day, and the
+        // caption must describe the series that was drawn rather than the metric that exists.
+        var seriesAggregated = metric != null
         // Cleared per load: a value left over from the previous span would name a writer that
         // had nothing to do with the series now on screen.
         chosenShapeWriter = null
+        shapeFromWholeDayOnly = false
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
@@ -594,6 +612,24 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 // the activity was and stays flat in between -- which is what the data says.
                 duration != null && spec.tile.cumulativeIntraday ->
                     cumulativeFromRecords(spec, span, offset, origins)
+
+                // A day of an instantaneous type is charted from the readings themselves.
+                //
+                // Hourly averages threw away almost everything: one day held 7,323 heart-rate
+                // samples at a median 15-second cadence, and the chart drew 24 points -- a
+                // blocky line that hid every peak and trough the day actually had. Aggregation
+                // is there to deduplicate *overlapping intervals*; a heart rate sample is a
+                // moment, so two apps recording the same beat duplicate a point rather than
+                // inflating a total, and there is nothing for aggregation to resolve.
+                //
+                // Interval types keep the bucketed path, where overlap is real and summing
+                // raw records would double-count.
+                duration != null && spec.shape != RecordTypeSpec.Shape.INTERVAL -> {
+                    seriesAggregated = false
+                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+                        .flatMap { spec.pointsOf(it) }
+                        .sortedBy { it.time }
+                }
 
                 duration != null -> repository
                     .intradayTotals(metric, span.instantFilter(offset), duration, origins)
@@ -718,7 +754,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // A record-built curve is rescaled too, but every one of its points is a real record,
         // so calling it approximate would understate what the chart is showing. Scaling shows
         // up instead as the shape-source note, which says exactly whose readings these are.
-        val approximated = cumulative && scaledPoints !== chartPoints && chosenShapeWriter == null
+        // Also when the only records available were whole-day summaries: every point between
+        // the ends is then apportioned by construction, whichever writer supplied it.
+        val approximated = cumulative &&
+            (shapeFromWholeDayOnly || (scaledPoints !== chartPoints && chosenShapeWriter == null))
 
         // Two different reasons to load sessions, and they need different windows.
         //
@@ -770,12 +809,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             spec = spec,
             points = scaledPoints,
             total = total,
-            aggregated = metric != null,
+            aggregated = seriesAggregated,
             contributingApps = contributors,
             selectedSource = source,
             goal = goal,
             cumulative = cumulative,
-            goalCrossing = goalCrossing(scaledPoints, goal),
+            // Suppressed on an apportioned curve: "reached at 19:59" on a straight ramp is
+            // reading a time off a line that was drawn, not measured.
+            goalCrossing = if (shapeFromWholeDayOnly) null else goalCrossing(scaledPoints, goal),
             emptyBuckets = emptyBuckets,
             sessions = sessions,
             sessionCurves = sessionCurves,
