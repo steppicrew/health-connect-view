@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.StrokeCap
@@ -29,7 +30,11 @@ fun ProgressRing(
     content: @Composable () -> Unit = {},
 ) {
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
-    val fillColor = MaterialTheme.colorScheme.primary
+    // Green once the goal is met, so a finished day is legible at a glance without reading
+    // the number. Fixed rather than themed, for the same reason the sleep band is: it encodes
+    // a state -- done -- and under dynamic colour a themed hue drifts with the wallpaper until
+    // "reached" and "not reached" are no longer distinguishable at a glance.
+    val fillColor = if (progress >= 1f) GOAL_MET else MaterialTheme.colorScheme.primary
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -70,6 +75,9 @@ fun ProgressRing(
         content()
     }
 }
+
+/** Reads as "done" across both themes; deliberately not the theme's own accent. */
+private val GOAL_MET = Color(0xFF16A34A)
 
 private const val STROKE_WIDTH = 8f
 private const val FULL_CIRCLE = 360f
