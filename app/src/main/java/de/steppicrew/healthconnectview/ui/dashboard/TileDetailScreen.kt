@@ -16,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ErrorOutline
+import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -44,6 +46,7 @@ import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -55,6 +58,7 @@ import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.util.appLabelFor
+import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -74,6 +78,7 @@ fun TileDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
+    val spec by viewModel.spec.collectAsStateWithLifecycle()
     var openSession by remember { mutableStateOf<Session?>(null) }
 
     openSession?.let { session ->
@@ -89,7 +94,7 @@ fun TileDetailScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(titleFor(state)) },
+                title = { Text(titleFor(spec)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -104,7 +109,7 @@ fun TileDetailScreen(
         Column(modifier = Modifier.padding(padding)) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan)
             WindowStepper(
-                label = windowLabel(state),
+                label = windowLabel(span, offset),
                 canStepForward = offset > 0,
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
@@ -119,14 +124,17 @@ fun TileDetailScreen(
                     body = stringResource(R.string.detail_no_permission_body),
                 )
 
+                // Deliberately not the padlock: "nothing was recorded" and "not allowed to
+                // look" are the distinction UiState draws, and sharing an icon collapses it
+                // on the one screen where the difference is actionable.
                 is UiState.Empty -> MessageView(
-                    icon = Icons.Default.Lock,
+                    icon = Icons.Default.EventBusy,
                     title = stringResource(R.string.detail_empty_title),
                     body = stringResource(R.string.detail_empty_body),
                 )
 
                 is UiState.Error -> MessageView(
-                    icon = Icons.Default.Lock,
+                    icon = Icons.Default.ErrorOutline,
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
@@ -261,7 +269,16 @@ private fun SpanSummary(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = Formatting.number(total),
+                // A session type's total is a duration in hours, and a quarter-hour session
+                // read as a bare "0,25" -- a fraction of nothing. Everything else keeps the
+                // number, with its unit appended: "1.792" alone was equally unlabelled, just
+                // less obviously so.
+                text = if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
+                    Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
+                } else {
+                    Formatting.number(total) +
+                        (data.spec.unitRes?.let { " " + stringResource(it) } ?: "")
+                },
                 style = MaterialTheme.typography.headlineMedium,
             )
         }
@@ -612,18 +629,28 @@ private fun WindowStepper(
 private const val SESSION_ICON = 16
 private const val SESSION_CURVE_HEIGHT = 40
 
-@Composable
-private fun titleFor(state: UiState<TileDetailData>): String =
-    if (state is UiState.Data) stringResource(state.value.spec.displayNameRes) else ""
+/** The aggregate for a session type comes back in hours; durations format from minutes. */
+private const val MINUTES_PER_HOUR = 60
 
 @Composable
-private fun windowLabel(state: UiState<TileDetailData>): String {
-    if (state !is UiState.Data) return ""
-    val data = state.value
-    return if (data.start == data.end) {
-        formatDate(data.start)
+private fun titleFor(spec: RecordTypeSpec<*>?): String =
+    spec?.let { stringResource(it.displayNameRes) } ?: ""
+
+/**
+ * The window being shown, derived from the span rather than from the loaded data.
+ *
+ * A day with nothing recorded still *is* a day, and naming it is what lets the user step to
+ * another one: taking the label from the data left an empty screen with no date at all, and
+ * therefore no clue which day had nothing in it.
+ */
+@Composable
+private fun windowLabel(span: Span, offset: Int): String {
+    val start = span.startDate(offset)
+    val end = span.endDate(offset).minusDays(1)
+    return if (start == end) {
+        formatDate(start)
     } else {
-        formatDate(data.start) + " – " + formatDate(data.end)
+        formatDate(start) + " – " + formatDate(end)
     }
 }
 
