@@ -645,10 +645,17 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // Which writer the curve's shape came from, when it was taken from just one.
         val shapeSource = if (cumulative && source == null) chosenShapeWriter else null
 
-        val scaledPoints = if (cumulative) {
-            scaleToTotal(chartPoints, aggregatedTotal)
-        } else {
-            chartPoints
+        val scaledPoints = when {
+            // A session type has no series worth drawing. Its aggregate is a duration, and
+            // slicing that into hourly buckets smears one 7h33m night across the day: the
+            // line then climbs to 1 and falls to 0.2, which reads as a measurement and is
+            // not one. The sessions themselves say everything the chart was trying to, and
+            // say it correctly -- so the screen shows the timeline and the list instead.
+            spec.tile.form == TileSpec.Form.SESSIONS -> emptyList()
+
+            cumulative -> scaleToTotal(chartPoints, aggregatedTotal)
+
+            else -> chartPoints
         }
         // Only true when the points between are genuinely apportioned rather than measured.
         // A record-built curve is rescaled too, but every one of its points is a real record,

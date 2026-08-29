@@ -390,6 +390,66 @@ private const val CHART_HEIGHT = 200
  * and a date on an intraday chart would repeat itself at every tick.
  */
 /**
+ * The day's sessions as bands on a bare timeline, with no series drawn over them.
+ *
+ * For the types whose detail *is* the sessions. Their aggregate is a duration, and slicing a
+ * duration into hourly buckets smears one night across the whole day -- a line that climbs to
+ * 1 and falls to 0.2, which reads as a measurement and is not one. What the chart was actually
+ * conveying is when the sessions were and how long they ran, and bands say that exactly.
+ */
+@Composable
+fun SessionTimeline(
+    sessions: List<Session>,
+    extent: ClosedRange<Instant>,
+    modifier: Modifier = Modifier,
+) {
+    val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
+    val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
+    val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
+
+    val start = extent.start.toEpochMilli()
+    val span = (extent.endInclusive.toEpochMilli() - start).toDouble().takeIf { it > 0.0 }
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(TIMELINE_HEIGHT.dp),
+        ) {
+            // The empty track is drawn first, so the hours with nothing in them read as part
+            // of the same day rather than as blank page.
+            drawRect(
+                color = trackColor,
+                topLeft = Offset(0f, 0f),
+                size = androidx.compose.ui.geometry.Size(size.width, size.height),
+            )
+            if (span == null) return@Canvas
+
+            sessions.forEach { session ->
+                val from = ((session.start.toEpochMilli() - start) / span)
+                    .toFloat().coerceIn(0f, 1f) * size.width
+                val to = ((session.end.toEpochMilli() - start) / span)
+                    .toFloat().coerceIn(0f, 1f) * size.width
+                if (to <= from) return@forEach
+                drawRect(
+                    color = when (session.kind) {
+                        Session.Kind.SLEEP -> sleepColor
+                        Session.Kind.EXERCISE -> exerciseColor
+                    },
+                    topLeft = Offset(from, 0f),
+                    size = androidx.compose.ui.geometry.Size(to - from, size.height),
+                )
+            }
+        }
+
+        if (sessions.isNotEmpty()) {
+            SessionAxisIcons(sessions = sessions, extent = extent)
+        }
+        TimeAxis(points = emptyList(), fractions = emptyList(), extent = extent)
+    }
+}
+
+/**
  * An icon on the axis at each session's midpoint, matching the band behind the chart.
  *
  * Positioned by the same extent the plot uses, so an icon sits under the stretch of line its
@@ -454,8 +514,11 @@ private fun TimeAxis(
     // The axis measures the plot, so it follows the extent wherever one is fixed. Reading it
     // off the points instead would label a 24-hour plot with the hours the data happened to
     // cover, which is the mismatch the extent exists to remove.
-    val first = extent?.start ?: points.first().time
-    val last = extent?.endInclusive ?: points.last().time
+    // Points may be empty when an extent is given -- a session timeline has bands but no
+    // series -- so the fallbacks must never be reached in that case rather than merely
+    // happening not to be.
+    val first = extent?.start ?: points.firstOrNull()?.time ?: return
+    val last = extent?.endInclusive ?: points.lastOrNull()?.time ?: return
     val spanHours = Duration.between(first, last).toHours()
     val intraday = spanHours in 1..HOURS_IN_DAY
 
@@ -683,5 +746,8 @@ private const val HOURS_IN_DAY = 24L
 
 /** Small enough to read as an axis mark rather than as a control. */
 private const val AXIS_ICON = 14
+
+/** Tall enough for a band to be a band rather than a rule. */
+private const val TIMELINE_HEIGHT = 40
 
 private const val MAX_DOTS = 60

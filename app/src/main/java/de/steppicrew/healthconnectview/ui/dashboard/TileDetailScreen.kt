@@ -50,6 +50,7 @@ import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
@@ -298,6 +299,16 @@ private fun SpanSummary(
 
         if (data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)
+        }
+
+        // A session type draws its sessions rather than a series: see SessionTimeline for why
+        // the aggregate makes no chart worth showing.
+        if (data.spec.tile.form == TileSpec.Form.SESSIONS && data.extent != null) {
+            SessionTimeline(
+                sessions = data.sessions,
+                extent = data.extent,
+                modifier = Modifier.padding(top = 16.dp),
+            )
         }
 
         if (data.points.isNotEmpty()) {
