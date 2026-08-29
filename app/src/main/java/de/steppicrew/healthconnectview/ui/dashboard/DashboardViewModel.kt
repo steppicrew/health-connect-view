@@ -5,7 +5,9 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
+import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
+import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -46,6 +48,12 @@ data class TileData(
     val curve: List<Point> = emptyList(),
     val granted: Boolean = true,
     val loading: Boolean = true,
+    /**
+     * The single app this tile is filtered to, or null for the combined deduplicated view.
+     * Shown on the tile, because a filtered number differs from the one the same tile shows
+     * unfiltered and the difference would otherwise be unexplained.
+     */
+    val source: String? = null,
 ) {
     /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
     val progress: Float?
@@ -71,11 +79,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val repository = HealthRepository(application)
     private val store = DashboardStore(application)
+    private val sourceStore = SourceStore(application)
 
     private val _state = MutableStateFlow(DashboardUiState())
     val state: StateFlow<DashboardUiState> = _state.asStateFlow()
 
     private var config: DashboardConfig = DashboardConfig.DEFAULT
+
+    /** Per-type source filter, shared with the full-screen view so the two agree. */
+    private var sources: Map<String, String> = emptyMap()
 
     init {
         refresh()
@@ -90,6 +102,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }
 
             config = store.config.first()
+            sources = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
             loadTiles()
         }
     }
@@ -174,7 +187,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
-            TileData(tile = tile, spec = spec, granted = spec.permission in granted)
+            TileData(
+                tile = tile,
+                spec = spec,
+                granted = spec.permission in granted,
+                source = sources[tile.typeName],
+            )
         }
         _state.update { it.copy(tiles = placeholders, loading = false) }
 
@@ -204,25 +222,48 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private suspend fun load(placeholder: TileData, date: LocalDate): TileData {
         val spec = placeholder.spec
         val metric = spec.aggregate
+        val origins = placeholder.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
         val value = if (metric != null) {
-            runCatching { repository.total(metric, dayFilter(date)) }.getOrNull()
+            runCatching { repository.total(metric, dayFilter(date), origins) }.getOrNull()
+                // Aggregation returns nothing for an interval as wide as its own bucket -- an
+                // app posting one whole-day summary record. Summing that one app's records is
+                // safe because a single writer cannot overlap itself; never for the combined
+                // view, where resolving overlap is the whole point.
+                ?: placeholder.source?.let { sumOwnRecords(spec, date, origins) }
         } else {
             runCatching {
-                repository.read(spec.type, dayInstants(date), maxRecords = LATEST_ONLY)
+                repository.read(
+                    spec.type,
+                    dayInstants(date),
+                    maxRecords = LATEST_ONLY,
+                    origins = origins,
+                )
                     .firstOrNull()
                     ?.let { spec.pointsOf(it).lastOrNull()?.value }
             }.getOrNull()
         }
 
         val curve = if (spec.tile.form == TileSpec.Form.CURVE) {
-            runCatching { recentPoints(spec, date) }.getOrDefault(emptyList())
+            runCatching { recentPoints(spec, date, origins) }.getOrDefault(emptyList())
         } else {
             emptyList()
         }
 
         return placeholder.copy(value = value, curve = curve, loading = false)
     }
+
+    /** One app's own records for the day, summed. Only valid for a single-source filter. */
+    private suspend fun sumOwnRecords(
+        spec: RecordTypeSpec<*>,
+        date: LocalDate,
+        origins: Set<DataOrigin>,
+    ): Double? = runCatching {
+        repository.read(spec.type, dayInstants(date), origins = origins)
+            .flatMap { spec.pointsOf(it) }
+            .takeIf { it.isNotEmpty() }
+            ?.sumOf { it.value }
+    }.getOrNull()
 
     /**
      * The trailing few hours of readings, for a curve tile.
@@ -235,14 +276,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * On the current day the window ends now; on an earlier day it ends at that day's close,
      * so stepping back shows the same span rather than an empty slice.
      */
-    private suspend fun recentPoints(spec: RecordTypeSpec<*>, date: LocalDate): List<Point> {
+    private suspend fun recentPoints(
+        spec: RecordTypeSpec<*>,
+        date: LocalDate,
+        origins: Set<DataOrigin>,
+    ): List<Point> {
         val zone = HealthRepository.DEFAULT_ZONE
         val today = LocalDate.now()
         val end = if (date == today) Instant.now() else date.plusDays(1).atStartOfDay(zone).toInstant()
         val start = end.minus(CURVE_HOURS, ChronoUnit.HOURS)
             .coerceAtLeast(date.atStartOfDay(zone).toInstant())
 
-        return repository.read(spec.type, TimeRangeFilter.between(start, end))
+        return repository.read(spec.type, TimeRangeFilter.between(start, end), origins = origins)
             .flatMap { spec.pointsOf(it) }
             .sortedBy { it.time }
     }
