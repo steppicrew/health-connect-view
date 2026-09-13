@@ -8,6 +8,7 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.lifecycle.lifecycleScope
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.dayInstants
+import de.steppicrew.healthconnectview.registry.RecordRegistry
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDate
@@ -28,10 +29,44 @@ class RecordShapeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val repository = HealthRepository(this)
 
+        // Both overridable from the launch intent, so a suspect day or type can be probed
+        // without an edit-build-install cycle:
+        //   -e day 2026-09-11 -e type TotalCaloriesBurnedRecord
+        val dayExtra = intent?.getStringExtra("day")
+        val typeExtra = intent?.getStringExtra("type")
+
         lifecycleScope.launch {
             val zone = ZoneId.systemDefault()
-            val day = LocalDate.now().minusDays(1)
-            Log.i(TAG, "day=$day zone=$zone")
+            val day = dayExtra?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+                ?: LocalDate.now().minusDays(1)
+            Log.i(TAG, "day=$day zone=$zone type=${typeExtra ?: "FloorsClimbedRecord"}")
+
+            // Any registry type, dumped with the same interval shape the floors probe below
+            // uses: start, end, duration and writer are what tell a whole-day summary apart
+            // from an itemised entry.
+            typeExtra?.let { wanted ->
+                val spec = RecordRegistry.all.firstOrNull { it.type.simpleName == wanted }
+                if (spec == null) {
+                    Log.w(TAG, "no registry spec named $wanted")
+                } else {
+                    val records = runCatching {
+                        repository.read(spec.type, dayInstants(day, zone))
+                    }.getOrDefault(emptyList())
+                    records.sortedBy { spec.timeOf(it) }.forEach { record ->
+                        val start = spec.timeOf(record)
+                        val end = spec.endTimeOf(record) ?: start
+                        Log.i(
+                            TAG,
+                            "TYPED start=${start.atZone(zone).toLocalTime()} " +
+                                "end=${end.atZone(zone).toLocalTime()} " +
+                                "durationMin=${Duration.between(start, end).toMinutes()} " +
+                                "value=${spec.pointsOf(record).sumOf { it.value }} " +
+                                "origin=${record.metadata.dataOrigin.packageName}",
+                        )
+                    }
+                    Log.i(TAG, "TYPED done records=${records.size}")
+                }
+            }
 
             val floors = runCatching {
                 repository.read(FloorsClimbedRecord::class, dayInstants(day, zone))

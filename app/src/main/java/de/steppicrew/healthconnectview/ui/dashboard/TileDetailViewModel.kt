@@ -347,6 +347,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // climbs (05:30 and 07:15) and Health Sync's single 00:00-24:00 summary both totalled
         // 8 floors, and the tie on value alone handed the shape to the summary and drew a
         // straight line through a day whose steps were known.
+        // One definition of "summary", shared with the itemised filter below: a record judged
+        // itemised when ranking writers must not then be dropped when building the shape.
+        val windowSpan = Duration.between(
+            windowStart,
+            span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+        )
+        val summaryThreshold = windowSpan.multipliedBy(SUMMARY_PERCENT).dividedBy(100)
+
         val byWriter = allRecords.groupBy { spec.originOf(it) }
         val dominant = if (origins.isEmpty() && byWriter.size > 1) {
             byWriter.entries.maxWithOrNull(
@@ -355,7 +363,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                         entry.value.any { record ->
                             val start = spec.timeOf(record)
                             val end = spec.endTimeOf(record) ?: start
-                            Duration.between(start, end) < WHOLE_DAY_THRESHOLD
+                            Duration.between(start, end) < summaryThreshold
                         }
                     },
                     { entry ->
@@ -385,8 +393,17 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // it would either add one huge step at midnight or, if spread, reintroduce the
         // smearing this path exists to avoid. Its contribution still reaches the chart,
         // because the series is rescaled to the deduplicated daily total afterwards.
+        //
+        // "Whole-day" means covering essentially the entire window, not merely being long. A
+        // 12-hour cutoff also caught legitimate measured intervals: on the phone, Garmin's
+        // total-calories day was six contiguous records of which the last ran 06:56-23:59 and
+        // held 51% of the day's kcal. Dropping that as a summary built the shape from the
+        // morning alone and then rescaled it to the full total, which inflated the hours
+        // before 07:00 and left the remaining seventeen flat -- the opposite of what the
+        // records said. A real summary spans the window itself, so the test is against the
+        // window rather than an absolute duration.
         val itemised = intervals.filter {
-            Duration.between(it.start, it.end) < WHOLE_DAY_THRESHOLD
+            Duration.between(it.start, it.end) < summaryThreshold
         }
 
         // Unless the summary is all there is. On a real device one app wrote a single
@@ -881,7 +898,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         /** The type whose readings describe a session from the inside. */
         const val HEART_RATE = "HeartRateRecord"
 
-        val WHOLE_DAY_THRESHOLD: Duration = Duration.ofHours(12)
+        /**
+         * How much of the window a record must cover to count as a summary of it rather than
+         * a measurement within it, as a percentage.
+         *
+         * Set high on purpose. The case this exists for is a record spanning the window
+         * exactly -- 00:00 to 24:00 -- while a writer legitimately filling a long quiet
+         * stretch (measured: Garmin's 06:56-23:59 calories block, 71% of the day) must stay
+         * in the shape, because dropping it moves half the day's total into the morning.
+         */
+        const val SUMMARY_PERCENT: Long = 95
     }
 
 }
