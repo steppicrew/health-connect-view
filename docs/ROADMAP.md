@@ -149,9 +149,36 @@ One hand-drawn Compose Canvas line, no charting dependency. Everything renders t
   "unexplained 0" problem in `FEATURE-IDEAS.md`: a line drawn through a day with no data claims
   a value that was never recorded.
 
-Bar rendering for count-like types was on this list and is no longer needed: an intraday
-cumulative chart steps at each record's own interval, so the line no longer implies continuity
-between counted events.
+### Still open: a multi-day span needs a different mark than a day
+
+Week, month and year charts currently reuse the day's single line over daily buckets. That
+mark answers "how did this value move today", which is the wrong question once a point is a
+whole day: the reader wants the daily figure and its spread, not a line through 28 means.
+Each of these is one type asking for its own mark.
+
+- **Heart rate: keep the mean line, add a min/max band behind it.** A day's worth of heart
+  rate collapsed to one mean throws away exactly what makes the day readable -- a resting
+  morning and a hard afternoon average out to an unremarkable number. Bands already exist
+  behind the movement charts (§5), so this is reusing that mark, not inventing one.
+- **Exercise: bars counting sessions per bucket**, not each session's heart rate. Over a month
+  the per-session traces overlap into noise; the honest multi-day question is "how often did I
+  train", one bar per day, and per month on the year span.
+- **Sleep: hours per day as bars**, and the mean hours per day on the year span. Note this
+  needs the "ends on this day" rule below to be settled first, or the bars attribute nights to
+  the wrong date.
+- **Calories: stacked bars of basal and active.** The two answer different questions and their
+  sum hides both; stacking keeps the total readable while showing the split. Basal comes from
+  `BasalMetabolicRate`, which aggregates without storing records -- see the emptiness note in
+  `CLAUDE.md` -- so an empty-looking record list is not evidence the bar is wrong.
+
+This is the point where hand-drawn Canvas starts carrying real weight: bars, stacked bars and
+a band are three new marks on top of the line. Worth re-reading the Vico note above before
+adding the third.
+
+Bar rendering was dropped from this list once the intraday cumulative chart stepped at each
+record's own interval -- within a day the line no longer implies continuity between counted
+events. The multi-day marks above put it back on the list for a different reason: not to fix
+the day view, but because a bucket that is a whole day is a count, not a moment.
 
 Vico was the original choice and was dropped because Vico 3.x's Compose Multiplatform rewrite
 changed the axis API surface. Revisit if the chart requirements grow beyond what is comfortable
@@ -216,6 +243,20 @@ A night's sleep is credited to the morning it ends on but starts the previous ev
 measured, 22:48 to 05:15. A day-bounded read is therefore the wrong query, and sleep never
 appeared. Sessions are searched over a window widened by half a day either side, then clipped
 to the visible range.
+
+**Still open: which day a night belongs to, and where its bar starts.** Widening the window
+made sleep appear; it did not settle attribution. Two defects reported from the test build:
+
+- A night should be shown on the day it **ends**, and only then. Widening by half a day either
+  side catches both the night that ended this morning and the one starting this evening, so a
+  day can show two nights and the following day shows the same one again.
+- The bar is drawn from **00:00 rather than from the real start time**. Clipping to the visible
+  range is right for keeping the bar inside the axis, but the clip is being used as the start
+  value, so every night reads as beginning at midnight. The true start is on the record; the
+  chart should keep it and let the bar run off the left edge instead.
+
+Settle this before the multi-day sleep bars in §4, which cannot attribute hours to a day until
+"which day" has one answer.
 
 ### Built
 
@@ -480,8 +521,9 @@ and reports raw-versus-aggregated counts per type without needing a single tap.
 
 ## 10. Known issues, not yet fixed
 
-Reported after using the internal-testing build. None is a data-correctness problem; all three
-are navigation or refresh behaviour.
+Reported after using the internal-testing build. Mostly navigation and refresh behaviour; the
+source picker and the Floors chart under it are the one cluster that misrepresents data, and
+they share a cause.
 
 - **The dashboard still flickers on return.** A short-TTL cache was added so returning from a
   tile does not re-read everything, but a flicker remains. Check whether the cache is actually
@@ -508,10 +550,31 @@ are navigation or refresh behaviour.
   rather than every app the aggregate happened to use. Note the same call is not source
   filtered on purpose -- scoping it to the current selection would strand the user on one app.
 
+  **Floors now shows the same thing from the other side, which is good evidence.** Reported:
+  its day chart draws a straight line from zero at 00:00 to the day's total at 24:00 instead
+  of a staircase, *and* the picker is missing although Garmin and Health Sync both write it.
+  Floors has `cumulativeIntraday = true`, so a staircase is what the existing code draws when
+  it has per-climb records; a straight line between two points is what it draws when the only
+  thing reaching the chart is one whole-day summary. That is the bucket-wide-interval trap
+  from `CLAUDE.md` -- the summary aggregates to nothing, so its writer is absent from the
+  origins and the picker hides itself at `sources.size > 1`.
+
+  So both symptoms follow from one cause, and the union fix above should restore the picker
+  here too. The straight line needs its own answer though: with a source selected, that
+  writer's own records can be stepped directly (one writer cannot overlap itself), which is
+  what turns the line back into a staircase. Verify on the phone, not the emulator -- its
+  health database accumulates duplicate intervals across runs and is not trustworthy for
+  INTERVAL types.
+
 - **Seeded sleep looks too hectic.** The fixture's overnight heart rate wanders more than a
   real night does, so the sleep stretch of a seeded chart reads as restless rather than as
   sleep. Only affects synthetic data -- the seeder, not the app -- but these frames become
   store screenshots, so it is worth a calmer overnight drift.
+- **The source link in About points at the wrong repository.** `SOURCE_URL` in
+  `SettingsScreen.kt` reads `https://github.com/steppicrew/healthData` -- the local working
+  directory's name -- while the remote is `steppicrew/health-connect-view`. A one-line fix,
+  but worth a check that nothing else published (store listing, privacy policy) repeats the
+  same wrong name.
 - **Date stepping stays live in tile edit mode.** While a tile's settings are open the day
   arrows still work, and Back changes the date rather than closing the settings. Both are the
   same underlying problem: the settings are a mode on the screen rather than a destination
