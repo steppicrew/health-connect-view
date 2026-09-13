@@ -37,6 +37,9 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 
+/** One bucket's total split into the components that make it up, drawn bottom-up. */
+data class StackedBucket(val time: Instant, val parts: List<Double>)
+
 /** A bucket's low and high, for the spread drawn behind a multi-day mean. */
 data class ValueBand(val time: Instant, val low: Double, val high: Double)
 
@@ -63,6 +66,12 @@ data class TileDetailData(
      * band around it would repeat the same data as a wider version of itself.
      */
     val rangeBand: List<ValueBand> = emptyList(),
+    /** Per-bucket components of a stacked bar, empty where the type declares none. */
+    val stack: List<StackedBucket> = emptyList(),
+    /** Labels for [stack]'s components, bottom-up. */
+    val stackLabels: List<Int> = emptyList(),
+    /** True where the bars count sessions per day rather than summing a metric. */
+    val sessionCounts: Boolean = false,
     /** True when the window reaches past 30 days without the history permission. */
     val historyCapped: Boolean,
     /** Apps that wrote into this window, so every number on screen names its source. */
@@ -536,6 +545,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     /** Set while building the points, read straight afterwards on the same coroutine. */
     private var rangeBand: List<ValueBand> = emptyList()
 
+    /** Set while building the points, read straight afterwards on the same coroutine. */
+    private var stack: List<StackedBucket> = emptyList()
+
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
 
@@ -696,6 +708,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         chosenShapeWriter = null
         shapeFromWholeDayOnly = false
         rangeBand = emptyList()
+        stack = emptyList()
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
@@ -741,13 +754,35 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
                 period != null -> {
                     val bandMetrics = spec.rangeAggregates
+                    val stackMetrics = spec.stackComponents
                     val buckets = repository.bucketedTotals(
                         metric,
                         span.localFilter(offset),
                         period,
                         origins,
-                        also = bandMetrics?.toList()?.toSet() ?: emptySet(),
+                        also = (bandMetrics?.toList().orEmpty() + stackMetrics.map { it.second })
+                            .toSet(),
                     )
+
+                    // The day's total split into its parts, from the same buckets as the
+                    // total itself so the segments cannot sum to something other than the bar.
+                    // A bucket missing any component is left out rather than drawn short,
+                    // which would read as a day of less rather than a day not fully known.
+                    stack = if (stackMetrics.isEmpty()) {
+                        emptyList()
+                    } else {
+                        buckets.mapNotNull { bucket ->
+                            val parts = stackMetrics.map { (_, partMetric) ->
+                                bucket.result[partMetric]?.let(::numericAggregate)
+                                    ?: return@mapNotNull null
+                            }
+                            StackedBucket(
+                                time = bucket.startTime
+                                    .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                parts = parts,
+                            )
+                        }
+                    }
 
                     // The spread behind the mean, where the type defines one. Built from the
                     // same buckets so a band cannot drift from the point it belongs to; a
@@ -987,8 +1022,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         return TileDetailData(
             spec = spec,
             points = perDayPoints.ifEmpty { scaledPoints },
-            bars = perDayPoints.isNotEmpty(),
+            // Bars wherever a point is a whole day rather than a moment: a sessions window
+            // counted per day, or a total split into components that only read as parts when
+            // drawn stacked.
+            bars = perDayPoints.isNotEmpty() || stack.isNotEmpty(),
             rangeBand = rangeBand,
+            stack = stack,
+            stackLabels = spec.stackComponents.map { it.first },
+            sessionCounts = perDayPoints.isNotEmpty() && sessionKind != Session.Kind.SLEEP,
             total = headlineTotal,
             aggregated = seriesAggregated,
             contributingApps = contributors,

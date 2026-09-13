@@ -39,6 +39,7 @@ import java.time.Duration
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.ui.dashboard.StackedBucket
 import de.steppicrew.healthconnectview.ui.dashboard.ValueBand
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.ValueZones
@@ -92,6 +93,13 @@ fun LineChart(
      * to say when within it anything happened.
      */
     rangeBand: List<ValueBand> = emptyList(),
+    /**
+     * Per-bucket components of a stacked bar, bottom-up, empty where the type declares none.
+     *
+     * Where a bucket has a stack, its bar is drawn as those segments instead of one block:
+     * the parts answer different questions and their sum hides both.
+     */
+    stack: List<StackedBucket> = emptyList(),
     /**
      * Value bands to colour the line by, or null for a single-colour line.
      *
@@ -328,14 +336,44 @@ fun LineChart(
                     size.width / BAR_LONE_DIVISOR
                 }
                 val barWidth = (slot * BAR_WIDTH_FRACTION).coerceAtLeast(1f)
+                val byTime = stack.associateBy { it.time.toEpochMilli() }
                 offsets.forEachIndexed { index, offset ->
-                    val top = offset.y.coerceAtMost(baseline)
-                    val height = (baseline - top).coerceAtLeast(1f)
-                    drawRect(
-                        color = zones?.colorFor(points[index].value) ?: lineColor,
-                        topLeft = Offset(offset.x - barWidth / 2f, top),
-                        size = androidx.compose.ui.geometry.Size(barWidth, height),
-                    )
+                    val left = offset.x - barWidth / 2f
+                    val parts = byTime[points[index].time.toEpochMilli()]?.parts
+
+                    if (parts == null) {
+                        val top = offset.y.coerceAtMost(baseline)
+                        drawRect(
+                            color = zones?.colorFor(points[index].value) ?: lineColor,
+                            topLeft = Offset(left, top),
+                            size = androidx.compose.ui.geometry.Size(
+                                barWidth,
+                                (baseline - top).coerceAtLeast(1f),
+                            ),
+                        )
+                        return@forEachIndexed
+                    }
+
+                    // Stacked from the baseline up, each segment measured on the same scale
+                    // as the whole bar, so the parts end exactly where the total does rather
+                    // than being drawn as fractions of a height computed separately.
+                    var cumulative = 0.0
+                    var runningTop = baseline
+                    parts.forEachIndexed { partIndex, part ->
+                        cumulative += part
+                        val segmentTop = yFor(cumulative).coerceIn(0f, baseline)
+                        val height = (runningTop - segmentTop).coerceAtLeast(0f)
+                        if (height > 0f) {
+                            drawRect(
+                                color = lineColor.copy(
+                                    alpha = stackAlpha(partIndex, parts.size),
+                                ),
+                                topLeft = Offset(left, segmentTop),
+                                size = androidx.compose.ui.geometry.Size(barWidth, height),
+                            )
+                        }
+                        runningTop = segmentTop
+                    }
                 }
             }
 
@@ -1018,6 +1056,18 @@ private const val BAR_WIDTH_FRACTION = 0.7f
 
 /** Opacity of the min/max ribbon. Faint: it is context for the line, not a second line. */
 private const val RANGE_BAND_ALPHA = 0.18f
+
+/**
+ * Opacity of one stacked segment, darkening upwards.
+ *
+ * One hue at different weights rather than separate colours: the segments are parts of one
+ * quantity, and giving each its own colour would read as unrelated series sharing a bar. The
+ * bottom segment is the lightest because it is the floor the day is built on.
+ */
+private fun stackAlpha(index: Int, count: Int): Float =
+    STACK_ALPHA_MIN + (1f - STACK_ALPHA_MIN) * (index + 1).toFloat() / count.toFloat()
+
+private const val STACK_ALPHA_MIN = 0.35f
 
 
 /** Width of a lone bar, as a fraction of the plot. A single day should not fill the chart. */

@@ -4,8 +4,11 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -344,6 +347,7 @@ private fun SpanSummary(
                 smooth = data.spec.tile.smoothChart && !data.bars,
                 bars = data.bars,
                 rangeBand = data.rangeBand,
+                stack = data.stack,
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
                 unitRes = data.spec.unitRes,
@@ -357,6 +361,9 @@ private fun SpanSummary(
             Text(
                 text = stringResource(
                     when {
+                        // Counting sessions is not summing a metric, so "daily totals" would
+                        // name the wrong operation.
+                        data.sessionCounts -> R.string.chart_source_sessions_per_day
                         data.approximated -> R.string.chart_source_cumulative_scaled
                         data.cumulative -> R.string.chart_source_cumulative
                         data.aggregated && data.weeklyBuckets ->
@@ -365,6 +372,8 @@ private fun SpanSummary(
                         // behind it: the line is the day's average, not its sum.
                         data.aggregated && data.rangeBand.isNotEmpty() ->
                             R.string.chart_source_aggregated_range
+                        data.aggregated && data.stack.isNotEmpty() ->
+                            R.string.chart_source_aggregated_split
                         data.aggregated -> R.string.chart_source_aggregated
                         else -> R.string.chart_source_raw
                     },
@@ -372,6 +381,13 @@ private fun SpanSummary(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+
+            // A stack of one hue at different weights is unreadable without saying which
+            // weight is which: the segments are deliberately not separate colours, so the
+            // legend is what makes them nameable rather than merely visible.
+            if (data.stack.isNotEmpty() && data.stackLabels.isNotEmpty()) {
+                StackLegend(labels = data.stackLabels)
+            }
 
             // The bands are context; naming them is what turns a shaded region into
             // "that peak was the bike ride". Only where the sessions sit *behind* a chart --
@@ -413,6 +429,44 @@ private fun SpanSummary(
 }
 
 /** One session named on a single line, under the chart it explains. */
+/** Names each segment of a stacked bar, in the same order and weight as the bars. */
+@Composable
+private fun StackLegend(labels: List<Int>) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(top = 4.dp),
+    ) {
+        labels.forEachIndexed { index, label ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primary.copy(
+                                alpha = LEGEND_ALPHA_MIN +
+                                    (1f - LEGEND_ALPHA_MIN) *
+                                    (index + 1).toFloat() / labels.size.toFloat(),
+                            ),
+                            RoundedCornerShape(2.dp),
+                        ),
+                )
+                Text(
+                    text = stringResource(label),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+/** Matches the chart's own stack weighting, so the swatch reads as the segment it names. */
+private const val LEGEND_ALPHA_MIN = 0.35f
+
 @Composable
 private fun SessionCaption(session: Session, onClick: () -> Unit) {
     Row(

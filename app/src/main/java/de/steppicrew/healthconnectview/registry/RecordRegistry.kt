@@ -218,6 +218,14 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
             summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
             aggregate = TotalCaloriesBurnedRecord.ENERGY_TOTAL,
+            // Basal first: it is the floor the day is built on, so it belongs at the bottom
+            // of the bar. Note BasalMetabolicRate stores no records at all on a real device
+            // -- it is derived from height and weight -- so this can only come from the
+            // aggregate, never from a record read.
+            stackComponents = listOf(
+                R.string.calories_basal to BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
+                R.string.calories_active to ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
+            ),
             tile = TileSpec(
                 TileSpec.Form.RING,
                 defaultGoal = 2_200.0,
