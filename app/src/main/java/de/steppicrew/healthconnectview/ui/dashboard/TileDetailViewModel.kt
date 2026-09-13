@@ -786,12 +786,26 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             emptyMap()
         }
 
+        // Newest first, matching how the other list reads.
+        val records = runCatching {
+            repository.read(spec.type, span.instantFilter(offset), origins = origins)
+        }.getOrDefault(emptyList())
+
         // Deliberately unfiltered: this drives the source picker, so it must list every app
         // that wrote into the window. Scoping it to the current selection would collapse the
-        // picker to that one app and strand the user there with no way back.
-        val contributors = if (metric != null) {
-            runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
-                .getOrDefault(emptySet())
+        // picker to that one app and strand the user there with no way back. So the records
+        // above are reused only when nothing is filtered, which is the common case.
+        //
+        // The writers are taken from the records and unioned with the aggregate's origins,
+        // never from the origins alone. The two legitimately disagree: a writer whose records
+        // do not reach the aggregate is absent from the origins while still plainly present
+        // in the list below. The whole-day-summary case is exactly that -- a record as wide
+        // as its bucket aggregates to nothing (see CLAUDE.md) -- and with one contributor
+        // left the picker hid itself, so the user saw two writers listed and no way to choose
+        // between them. Origins still contribute because some types aggregate without storing
+        // records at all, where the records alone would name nobody.
+        val writers = if (origins.isEmpty()) {
+            records.map { spec.originOf(it) }.toSet()
         } else {
             runCatching {
                 repository.read(spec.type, span.instantFilter(offset))
@@ -799,11 +813,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     .toSet()
             }.getOrDefault(emptySet())
         }
-
-        // Newest first, matching how the other list reads.
-        val records = runCatching {
-            repository.read(spec.type, span.instantFilter(offset), origins = origins)
-        }.getOrDefault(emptyList())
+        val contributors = if (metric != null) {
+            writers + runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
+                .getOrDefault(emptySet())
+        } else {
+            writers
+        }
 
         return TileDetailData(
             spec = spec,
