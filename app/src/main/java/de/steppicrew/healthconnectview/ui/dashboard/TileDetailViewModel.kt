@@ -236,9 +236,31 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         _spec.update { RecordRegistry.specOrNull(typeName) }
         _offset.update { offsetForDate(date) }
         viewModelScope.launch {
-            selectedSource = sourceStore.selections.first()[typeName]
+            selectedSource = resolveSource(typeName)
             reload()
         }
+    }
+
+    /**
+     * The source this screen opens on: the per-type choice, else the preferred app.
+     *
+     * The preference is honoured only where that app actually wrote this type, so a type it
+     * never writes opens on all sources rather than on an empty chart. Establishing that
+     * costs one unfiltered read of the current window -- the same read the picker below is
+     * built from, before any filter narrows it.
+     */
+    private suspend fun resolveSource(typeName: String): String? {
+        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+        selections[typeName]?.let { return it }
+
+        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull() ?: return null
+        val spec = RecordRegistry.specOrNull(typeName) ?: return null
+        val writers = runCatching {
+            repository.read(spec.type, _span.value.instantFilter(_offset.value))
+                .map { spec.originOf(it) }
+                .toSet()
+        }.getOrDefault(emptySet())
+        return sourceStore.effective(typeName, selections, preferred, writers)
     }
 
     private fun offsetForDate(date: String): Int {

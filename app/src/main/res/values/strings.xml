@@ -25,6 +25,9 @@
     <string name="settings_manage_access">Manage access</string>
     <string name="settings_manage_access_body">Change which data this app may read, in Health Connect.</string>
     <string name="settings_app_priority">App priority</string>
+    <string name="settings_preferred_source">Preferred app</string>
+    <string name="settings_preferred_source_body">Shown where you have not picked an app for a tile itself. Tiles that app does not write stay on all sources.</string>
+    <string name="settings_preferred_source_all">All sources</string>
     <string name="settings_app_priority_body">When several apps write the same data, Health Connect decides which one wins. That order is set there, not here.</string>
     <string name="settings_revoke">Withdraw all access</string>
     <string name="settings_revoke_body">This app keeps no copy of your data, so nothing is deleted — it simply stops being able to read anything.</string>
