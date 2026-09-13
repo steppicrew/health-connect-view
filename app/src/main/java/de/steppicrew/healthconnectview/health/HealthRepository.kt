@@ -193,10 +193,17 @@ class HealthRepository(private val context: Context) {
         range: TimeRangeFilter,
         bucket: Period,
         origins: Set<DataOrigin> = emptySet(),
+        /**
+         * Extra metrics to fetch for the same buckets, such as a min and max to draw a
+         * spread behind the mean. One request rather than three: the platform returns every
+         * requested metric per bucket, and three passes over the same range would cost three
+         * times the IPC to produce numbers that must line up bucket for bucket anyway.
+         */
+        also: Set<AggregateMetric<*>> = emptySet(),
     ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
         client.aggregateGroupByPeriod(
             AggregateGroupByPeriodRequest(
-                metrics = setOf(metric),
+                metrics = setOf(metric) + also,
                 timeRangeFilter = range,
                 timeRangeSlicer = bucket,
                 dataOriginFilter = origins,

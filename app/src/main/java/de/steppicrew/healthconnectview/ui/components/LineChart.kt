@@ -39,6 +39,7 @@ import java.time.Duration
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.ui.dashboard.ValueBand
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
@@ -84,6 +85,14 @@ fun LineChart(
      */
     bars: Boolean = false,
     /**
+     * Per-bucket low/high drawn as a shaded ribbon behind the line.
+     *
+     * Each point of a multi-day line is a whole day's mean, and a mean is the one number that
+     * hides how the day actually went. The ribbon puts the day's range back without pretending
+     * to say when within it anything happened.
+     */
+    rangeBand: List<ValueBand> = emptyList(),
+    /**
      * Value bands to colour the line by, or null for a single-colour line.
      *
      * Set for the types that declare zones, so the same reading is the same colour on the
@@ -122,12 +131,16 @@ fun LineChart(
     // a 7-hour night beside a 9-hour one looks like a third of the sleep rather than a fifth
     // less. A line has no such claim to make and keeps its tight scale, which is what lets a
     // small movement in a resting heart rate stay visible.
+    // The band takes part in the scale, for the same reason the goal does: a ribbon clipped
+    // at the top would show a day's peak as equal to the highest that happened to fit.
+    val bandLow = rangeBand.minOfOrNull { it.low }
+    val bandHigh = rangeBand.maxOfOrNull { it.high }
     val minValue = if (bars) {
         minOf(0.0, values.min(), goal ?: 0.0)
     } else {
-        minOf(values.min(), goal ?: values.min())
+        minOf(values.min(), goal ?: values.min(), bandLow ?: values.min())
     }
-    val maxValue = maxOf(values.max(), goal ?: values.max())
+    val maxValue = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max())
     // A flat series would divide by zero; give it a nominal span so it draws as a centre line.
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
 
@@ -323,6 +336,27 @@ fun LineChart(
                         topLeft = Offset(offset.x - barWidth / 2f, top),
                         size = androidx.compose.ui.geometry.Size(barWidth, height),
                     )
+                }
+            }
+
+            // The spread behind the line: one filled shape across the low edge and back along
+            // the high edge. Drawn before the guides so the axis stays readable over it, and
+            // before the line so the mean it explains is never obscured by it.
+            if (rangeBand.size > 1 && timeSpan != null) {
+                val lows = rangeBand.mapNotNull { band ->
+                    xForTime(band.time.toEpochMilli())?.let { Offset(it, yFor(band.low)) }
+                }
+                val highs = rangeBand.mapNotNull { band ->
+                    xForTime(band.time.toEpochMilli())?.let { Offset(it, yFor(band.high)) }
+                }
+                if (lows.size == highs.size && lows.size > 1) {
+                    val ribbon = Path().apply {
+                        moveTo(lows.first().x, lows.first().y)
+                        lows.drop(1).forEach { lineTo(it.x, it.y) }
+                        highs.reversed().forEach { lineTo(it.x, it.y) }
+                        close()
+                    }
+                    drawPath(ribbon, color = lineColor.copy(alpha = RANGE_BAND_ALPHA))
                 }
             }
 
@@ -981,6 +1015,10 @@ private const val LINE_WIDTH = 2f
 
 /** Bar width as a fraction of the gap to its neighbour, leaving a gutter between bars. */
 private const val BAR_WIDTH_FRACTION = 0.7f
+
+/** Opacity of the min/max ribbon. Faint: it is context for the line, not a second line. */
+private const val RANGE_BAND_ALPHA = 0.18f
+
 
 /** Width of a lone bar, as a fraction of the plot. A single day should not fill the chart. */
 private const val BAR_LONE_DIVISOR = 8f

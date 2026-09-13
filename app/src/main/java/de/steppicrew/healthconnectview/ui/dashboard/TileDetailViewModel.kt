@@ -37,6 +37,9 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 
+/** A bucket's low and high, for the spread drawn behind a multi-day mean. */
+data class ValueBand(val time: Instant, val low: Double, val high: Double)
+
 data class TileDetailData(
     val spec: RecordTypeSpec<*>,
     val points: List<Point>,
@@ -53,6 +56,13 @@ data class TileDetailData(
      * between that nothing measured.
      */
     val bars: Boolean = false,
+    /**
+     * Per-bucket spread drawn behind the line, empty where the type defines none.
+     *
+     * Only on a multi-day window: within a day the line already *is* every reading, and a
+     * band around it would repeat the same data as a wider version of itself.
+     */
+    val rangeBand: List<ValueBand> = emptyList(),
     /** True when the window reaches past 30 days without the history permission. */
     val historyCapped: Boolean,
     /** Apps that wrote into this window, so every number on screen names its source. */
@@ -523,6 +533,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      */
     private var shapeFromWholeDayOnly: Boolean = false
 
+    /** Set while building the points, read straight afterwards on the same coroutine. */
+    private var rangeBand: List<ValueBand> = emptyList()
+
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)
 
@@ -682,6 +695,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // had nothing to do with the series now on screen.
         chosenShapeWriter = null
         shapeFromWholeDayOnly = false
+        rangeBand = emptyList()
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
@@ -726,8 +740,32 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     }
 
                 period != null -> {
-                    val buckets = repository
-                        .bucketedTotals(metric, span.localFilter(offset), period, origins)
+                    val bandMetrics = spec.rangeAggregates
+                    val buckets = repository.bucketedTotals(
+                        metric,
+                        span.localFilter(offset),
+                        period,
+                        origins,
+                        also = bandMetrics?.toList()?.toSet() ?: emptySet(),
+                    )
+
+                    // The spread behind the mean, where the type defines one. Built from the
+                    // same buckets so a band cannot drift from the point it belongs to; a
+                    // bucket missing either end contributes no band rather than a half-open
+                    // one, which would read as a range reaching to zero.
+                    rangeBand = bandMetrics?.let { (lowMetric, highMetric) ->
+                        buckets.mapNotNull { bucket ->
+                            val low = bucket.result[lowMetric]?.let(::numericAggregate)
+                            val high = bucket.result[highMetric]?.let(::numericAggregate)
+                            if (low == null || high == null) return@mapNotNull null
+                            ValueBand(
+                                time = bucket.startTime
+                                    .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                low = low,
+                                high = high,
+                            )
+                        }
+                    }.orEmpty()
 
                     // A bucket with no value is a day nothing was recorded, which is not the
                     // same as a day with a value of zero. Both the empty times and the points
@@ -950,6 +988,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             spec = spec,
             points = perDayPoints.ifEmpty { scaledPoints },
             bars = perDayPoints.isNotEmpty(),
+            rangeBand = rangeBand,
             total = headlineTotal,
             aggregated = seriesAggregated,
             contributingApps = contributors,
