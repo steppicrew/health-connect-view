@@ -557,13 +557,13 @@ Measured on the phone, 13.09.2026, against Garmin Connect and Health Sync.
   to be unnecessary. The combined view is correct once the shape comes from a writer that has
   timing; no source selection is required.
 
-### Fixed, not separately confirmed
+### Fixed and confirmed by the reporter
 
 - **Back in tile edit mode** left the dashboard instead of leaving the mode, and the day arrows
   kept stepping underneath the edit controls. Edit mode was a boolean with nothing bound to
-  Back; it now has a `BackHandler` and the arrows are disabled while it is open. Still needs a
-  hand to confirm: the Xiaomi blocks `input keyevent` as well as `input tap`, so Back cannot be
-  sent from the host.
+  Back; it now has a `BackHandler` and the arrows are disabled while it is open. Confirmed by
+  the reporter on 13.09.2026, which needed a person: the Xiaomi blocks `input keyevent` as
+  well as `input tap`, so Back cannot be sent from the host at all.
 - **The dashboard blanked on return.** Confirmed fixed by the reporter on 13.09.2026 --
   "returning to the tiles' page is smooth now". The tiles were replaced with empty
   placeholders before the reads began; the previous values are now carried into them. The
