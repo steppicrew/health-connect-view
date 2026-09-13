@@ -165,11 +165,20 @@ private val SEEDED_WORKOUTS = listOf(
                     // spark curve, where a day should read as a shape. Awake readings still
                     // wander further than asleep ones, which is most of what makes a night
                     // look like a night.
-                    val spread = if (hour < 7 || hour >= 23) 2 else 7
+                    val asleep = hour < 7 || hour >= 23
+                    val spread = if (asleep) 2 else 7
+                    // How far one sample may move, and how far the walk may stray from the
+                    // level. Asleep both are tighter than `spread` alone made them: a step of
+                    // +-2 against a ceiling of resting + 3 * spread let the night cross an 8
+                    // bpm range and swing 4 bpm inside a single 50-second record, which drew
+                    // as a restless night rather than a sleeping one. A real night drifts
+                    // slowly, so the step is halved and the band kept close to the level.
+                    val step = if (asleep) 1 else spread
+                    val ceiling = if (asleep) resting + spread else resting + spread * 3
                     var bpm = resting + random.nextInt(spread + 1)
                     val samples = (0 until 11).map { sample ->
-                        bpm = (bpm + random.nextInt(-spread, spread + 1))
-                            .coerceIn(resting - spread, resting + spread * 3)
+                        bpm = (bpm + random.nextInt(-step, step + 1))
+                            .coerceIn(resting - spread, ceiling)
                         HeartRateRecord.Sample(
                             time = start.plus((sample * 5).toLong(), ChronoUnit.SECONDS),
                             beatsPerMinute = bpm.toLong(),
