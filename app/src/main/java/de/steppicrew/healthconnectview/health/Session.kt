@@ -127,6 +127,7 @@ suspend fun HealthRepository.sessionsIn(
 ): List<Session> {
     val range = TimeRangeFilter.between(start.minus(SESSION_MARGIN), end.plus(SESSION_MARGIN))
 
+
     val exercise = if (Session.Kind.EXERCISE in kinds) {
         runCatching {
             read(ExerciseSessionRecord::class, range).map { it.toSession() }
@@ -143,9 +144,24 @@ suspend fun HealthRepository.sessionsIn(
         emptyList()
     }
 
-    return dedupeSessions(exercise + sleep)
-        .filter { it.start < end && it.end > start }
-        .sortedBy { it.start }
+    // Exercise belongs to the window it happened in; sleep belongs to the day it *ended* on.
+    //
+    // Overlap is the right test for a workout, and the wrong one for a night. A night is
+    // named by the morning it ends on -- "how did I sleep last night" is asked the next day --
+    // so overlap credited a single night to two days at once: the night ending this morning
+    // and the one starting this evening both appeared, and the same night appeared again
+    // tomorrow. Measured on the phone for 11.09: 00:27-05:15 and 21:30-08:56 were both shown,
+    // the second of which is the 12th's night.
+    //
+    // The end is tested against the window rather than the start, so a night beginning at
+    // 22:48 the previous evening still counts here, which is the whole reason for the margin.
+    val (sleepSessions, otherSessions) = dedupeSessions(exercise + sleep)
+        .partition { it.kind == Session.Kind.SLEEP }
+
+    val kept = otherSessions.filter { it.start < end && it.end > start } +
+        sleepSessions.filter { it.end > start && it.end <= end }
+
+    return kept.sortedBy { it.start }
 }
 
 /**
