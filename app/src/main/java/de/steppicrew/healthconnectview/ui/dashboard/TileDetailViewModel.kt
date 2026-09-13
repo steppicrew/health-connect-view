@@ -45,6 +45,14 @@ data class TileDetailData(
     val aggregated: Boolean,
     /** True when a bucket is wider than a day, so the caption must not say "daily". */
     val weeklyBuckets: Boolean,
+    /**
+     * Draw [points] as one bar per bucket rather than as a line.
+     *
+     * A multi-day window buckets by day, and a day is a count rather than a moment: sleep
+     * hours, or how many sessions there were. A line between such points implies a value in
+     * between that nothing measured.
+     */
+    val bars: Boolean = false,
     /** True when the window reaches past 30 days without the history permission. */
     val historyCapped: Boolean,
     /** Apps that wrote into this window, so every number on screen names its source. */
@@ -853,6 +861,32 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             else -> emptyList()
         }
 
+        // A multi-day window asks a different question of a sessions type than a day does.
+        //
+        // Within a day the per-session heart-rate traces answer "what was this activity
+        // like". Across four weeks they overlap into noise, and the honest question becomes
+        // how much there was per day: hours slept, or how many sessions. One bar per day,
+        // attributed by the same rule the list uses -- a night belongs to the day it ended on.
+        val perDayPoints = if (sessionKind != null && span.intradayBucket == null) {
+            val zone = HealthRepository.DEFAULT_ZONE
+            sessions
+                .groupBy { it.end.atZone(zone).toLocalDate() }
+                .toSortedMap()
+                .map { (day, ofDay) ->
+                    Point(
+                        time = day.atStartOfDay(zone).toInstant(),
+                        value = when (sessionKind) {
+                            // Sleep is asked in hours; an exercise day is asked as a count,
+                            // since two rides of unequal length are still two rides.
+                            Session.Kind.SLEEP -> numericAggregate(ofDay.totalDuration()) ?: 0.0
+                            else -> ofDay.size.toDouble()
+                        },
+                    )
+                }
+        } else {
+            emptyList()
+        }
+
         // The samples are already there, taken during the session; drawing them per session
         // is the only place they answer "what was this activity like" rather than "what did
         // the day look like". Only for a session type's own screen -- elsewhere the sessions
@@ -914,7 +948,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         return TileDetailData(
             spec = spec,
-            points = scaledPoints,
+            points = perDayPoints.ifEmpty { scaledPoints },
+            bars = perDayPoints.isNotEmpty(),
             total = headlineTotal,
             aggregated = seriesAggregated,
             contributingApps = contributors,

@@ -341,7 +341,8 @@ private fun SpanSummary(
                 // covered: the curve rounds the corners of a real ramp rather than inventing
                 // a slope where the data says a vertical jump. The clamp keeps every segment
                 // within the two values it joins, so a plateau cannot bulge.
-                smooth = data.spec.tile.smoothChart,
+                smooth = data.spec.tile.smoothChart && !data.bars,
+                bars = data.bars,
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
                 unitRes = data.spec.unitRes,
