@@ -524,11 +524,7 @@ and reports raw-versus-aggregated counts per type without needing a single tap.
 Everything reported from the internal-testing build has now been fixed and, except where
 noted, confirmed on the phone against real two-writer data.
 
-- **The dashboard's return-from-tile flicker is fixed but not observed.** The blanking cause
-  was found and removed (see below), and the first-load path was watched on the device
-  behaving correctly -- placeholders only where nothing preceded them. The actual gesture
-  could not be driven: the Xiaomi blocks `input tap` *and* `input keyevent`, so Back cannot be
-  sent from the host. Worth one look by hand.
+Nothing from that build is still open.
 
 ### Fixed and confirmed on the device
 
@@ -557,12 +553,14 @@ Measured on the phone, 13.09.2026, against Garmin Connect and Health Sync.
 
 - **Back in tile edit mode** left the dashboard instead of leaving the mode, and the day arrows
   kept stepping underneath the edit controls. Edit mode was a boolean with nothing bound to
-  Back; it now has a `BackHandler` and the arrows are disabled while it is open. Needs a hand
-  to confirm, for the same input-injection reason as the flicker.
-- **The dashboard blanked on return.** The tiles were replaced with empty placeholders before
-  the reads began; the previous values are now carried into them. The roadmap's earlier guess
-  -- a cache key invalidating itself -- was wrong: `loadedAt` is compared as a TTL, not for
-  equality.
+  Back; it now has a `BackHandler` and the arrows are disabled while it is open. Still needs a
+  hand to confirm: the Xiaomi blocks `input keyevent` as well as `input tap`, so Back cannot be
+  sent from the host.
+- **The dashboard blanked on return.** Confirmed fixed by the reporter on 13.09.2026 --
+  "returning to the tiles' page is smooth now". The tiles were replaced with empty
+  placeholders before the reads began; the previous values are now carried into them. The
+  roadmap's earlier guess -- a cache key invalidating itself -- was wrong: `loadedAt` is
+  compared as a TTL, not for equality.
 - **Back from a tile detail walking back through the days** is not reproducible from the code:
   the offset lives in `TileDetailViewModel` and the arrows mutate it without navigating, so one
   back-stack entry exists per tile. Most likely it was really the edit-mode bug above.
