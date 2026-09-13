@@ -343,6 +343,7 @@ private fun SpanSummary(
                 // within the two values it joins, so a plateau cannot bulge.
                 smooth = data.spec.tile.smoothChart && !data.bars,
                 bars = data.bars,
+                rangeBand = data.rangeBand,
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
                 unitRes = data.spec.unitRes,
@@ -360,6 +361,10 @@ private fun SpanSummary(
                         data.cumulative -> R.string.chart_source_cumulative
                         data.aggregated && data.weeklyBuckets ->
                             R.string.chart_source_aggregated_weekly
+                        // "Totals" is wrong for a mean, and doubly so with a spread drawn
+                        // behind it: the line is the day's average, not its sum.
+                        data.aggregated && data.rangeBand.isNotEmpty() ->
+                            R.string.chart_source_aggregated_range
                         data.aggregated -> R.string.chart_source_aggregated
                         else -> R.string.chart_source_raw
                     },

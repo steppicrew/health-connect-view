@@ -377,6 +377,7 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.beatsPerMinute.toDouble()) } },
             summary = { r -> seriesSummary(r.samples.map { it.beatsPerMinute.toDouble() }, "bpm") },
             aggregate = HeartRateRecord.BPM_AVG,
+            rangeAggregates = HeartRateRecord.BPM_MIN to HeartRateRecord.BPM_MAX,
             tile = TileSpec(
                 TileSpec.Form.CURVE,
                 defaultZones = ValueZones.DEFAULT_HEART_RATE,

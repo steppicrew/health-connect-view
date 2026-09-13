@@ -56,6 +56,16 @@ data class RecordTypeSpec<T : Record>(
     /** Deduplicating metric for totals; null means no total may be shown for this type. */
     val aggregate: AggregateMetric<*>? = null,
     /**
+     * Metrics for a spread behind a multi-day line, or null where a spread says nothing.
+     *
+     * A day bucketed from a measured series collapses to one number, and for a value that
+     * moves through the day -- heart rate above all -- that number hides the day: a resting
+     * morning and a hard afternoon average to an unremarkable middle. Given these, the chart
+     * draws the day's range behind its mean. Meaningless for a counted total, where the day's
+     * sum already is the whole answer.
+     */
+    val rangeAggregates: Pair<AggregateMetric<*>, AggregateMetric<*>>? = null,
+    /**
      * How this type is drawn on the dashboard. Defaults to a plain number, which every
      * chartable type can render, so a new type needs no tile decision to be usable.
      */
