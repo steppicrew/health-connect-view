@@ -106,6 +106,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     private var sources: Map<String, String> = emptyMap()
 
     /**
+     * The app to show where a tile has no per-type choice, or null for all sources.
+     *
+     * Applied per tile in [load], which falls back to all sources when the preferred app
+     * wrote nothing for that type -- so preferring one app cannot empty a tile that has data.
+     */
+    private var preferred: String? = null
+
+    /**
      * What the tiles currently on screen were loaded for, and when.
      *
      * Returning from a tile re-ran every read, so the dashboard blanked to placeholders and
@@ -126,6 +134,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val date: LocalDate,
         val tiles: List<Tile>,
         val sources: Map<String, String>,
+        val preferred: String?,
         val granted: Set<String>,
         val loadedAt: Long,
     ) {
@@ -133,6 +142,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             date == other.date &&
                 tiles == other.tiles &&
                 sources == other.sources &&
+                preferred == other.preferred &&
                 granted == other.granted &&
                 now - loadedAt < CACHE_TTL_MS
     }
@@ -151,6 +161,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
             config = store.config.first()
             sources = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+            preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
             loadTiles()
         }
     }
@@ -247,7 +258,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
 
         val now = System.currentTimeMillis()
-        val key = CacheKey(date, config.tiles, sources, granted, now)
+        val key = CacheKey(date, config.tiles, sources, preferred, granted, now)
         val loadedTiles = _state.value.tiles.takeIf { it.none(TileData::loading) }
         if (loadedTiles != null && cache?.isFresh(now, key) == true) {
             // Nothing the values depend on has changed and they are still fresh, so the reads
@@ -263,7 +274,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 tile = tile,
                 spec = spec,
                 granted = spec.permission in granted,
-                source = sources[tile.typeName],
+                // The preference is provisional here: load() drops it for a type the
+                // preferred app never wrote, and reports back what it actually used.
+                source = sources[tile.typeName] ?: preferred,
             )
         }
 
@@ -274,7 +287,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         // better answer than no number, since it is what the tile showed a second ago.
         val shown = placeholders.map { placeholder ->
             val carried = previous[placeholder.tile.typeName] ?: return@map placeholder
-            if (carried.loading || carried.granted != placeholder.granted) {
+            // Source included: a value read under one filter must not be shown against
+            // another, or changing the preferred app leaves the old app's number on screen
+            // under the new app's name until the read returns.
+            if (carried.loading ||
+                carried.granted != placeholder.granted ||
+                carried.source != placeholder.source
+            ) {
                 placeholder
             } else {
                 placeholder.copy(
@@ -322,7 +341,24 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
 
         val metric = spec.aggregate
-        val origins = placeholder.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+
+        // A per-type choice stands even when it comes up empty -- it was made deliberately
+        // for this type. A global preference is only a default, so a type the preferred app
+        // never writes falls back to all sources rather than showing an empty tile, which
+        // would read as missing data instead of as a filter matching nothing.
+        val chosen = sources[spec.type.simpleName]
+        val effective = chosen ?: placeholder.source?.takeIf { pkg ->
+            runCatching {
+                repository.read(
+                    spec.type,
+                    dayInstants(date),
+                    maxRecords = LATEST_ONLY,
+                    origins = setOf(DataOrigin(pkg)),
+                ).isNotEmpty()
+            }.getOrDefault(false)
+        }
+        val tile = placeholder.copy(source = effective)
+        val origins = effective?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
         val value = if (metric != null) {
             runCatching { repository.total(metric, dayFilter(date), origins) }.getOrNull()
@@ -330,7 +366,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 // app posting one whole-day summary record. Summing that one app's records is
                 // safe because a single writer cannot overlap itself; never for the combined
                 // view, where resolving overlap is the whole point.
-                ?: placeholder.source?.let { sumOwnRecords(spec, date, origins) }
+                ?: tile.source?.let { sumOwnRecords(spec, date, origins) }
         } else {
             runCatching {
                 repository.read(
@@ -350,7 +386,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             emptyList()
         }
 
-        return placeholder.copy(value = value, curve = curve, loading = false)
+        return tile.copy(value = value, curve = curve, loading = false)
     }
 
     /**

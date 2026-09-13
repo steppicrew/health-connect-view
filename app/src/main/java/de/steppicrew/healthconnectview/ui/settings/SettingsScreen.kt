@@ -20,6 +20,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +48,7 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.settings.ThemeChoice
 import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.util.appLabelFor
 
 /**
  * Preferences, and the doors into the settings that belong to Android or Health Connect
@@ -66,6 +69,8 @@ fun SettingsScreen(
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val granted by viewModel.grantedCount.collectAsStateWithLifecycle()
+    val writers by viewModel.writers.collectAsStateWithLifecycle()
+    val preferredSource by viewModel.preferredSource.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmRevoke by remember { mutableStateOf(false) }
 
@@ -176,6 +181,16 @@ fun SettingsScreen(
                 onClick = { context.openHealthConnectSettings() },
             )
 
+            // Offered only once there is a choice to make: with a single writer the preference
+            // has no effect, and an empty menu would be a dead end.
+            if (writers.size > 1) {
+                PreferredSourceRow(
+                    writers = writers,
+                    preferred = preferredSource,
+                    onSelect = viewModel::preferSource,
+                )
+            }
+
             // The overlap winner is Health Connect's own priority list, which is not readable
             // or writable through the Jetpack client -- so this points at it rather than
             // inventing a ranking that would disagree with the platform.
@@ -253,6 +268,67 @@ private fun SwitchRow(
             }
         }
         Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
+/**
+ * Picks the app shown where a tile has no per-type choice of its own.
+ *
+ * Deliberately not called a priority: it cannot change which record wins where two overlap --
+ * that is Health Connect's own list, which this app cannot write. It selects whose data is
+ * displayed, so the number shown becomes that app's figure rather than the deduplicated one,
+ * and the row says so.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PreferredSourceRow(
+    writers: List<String>,
+    preferred: String?,
+    onSelect: (String?) -> Unit,
+) {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    val allSources = stringResource(R.string.settings_preferred_source_all)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = true }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.settings_preferred_source),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Text(
+            text = preferred?.let { context.appLabelFor(it) } ?: allSources,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Text(
+            text = stringResource(R.string.settings_preferred_source_body),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text(allSources) },
+                onClick = {
+                    onSelect(null)
+                    expanded = false
+                },
+            )
+            writers.forEach { writer ->
+                DropdownMenuItem(
+                    text = { Text(context.appLabelFor(writer)) },
+                    onClick = {
+                        onSelect(writer)
+                        expanded = false
+                    },
+                )
+            }
+        }
     }
 }
 
