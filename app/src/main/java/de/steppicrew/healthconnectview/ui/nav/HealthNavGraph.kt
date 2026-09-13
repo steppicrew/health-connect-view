@@ -28,7 +28,7 @@ object Routes {
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
-    const val TILE_DETAIL = "tile/{typeName}?date={date}"
+    const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
 
@@ -109,12 +109,20 @@ fun HealthNavGraph(
                     type = NavType.StringType
                     defaultValue = ""
                 },
+                // Opening straight onto a week or year view, so a multi-day rendering can be
+                // checked with one command rather than a tap the test phone cannot accept.
+                // Empty means the screen's own default, which is what navigation itself uses.
+                navArgument("span") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
             ),
         ) { entry ->
             val typeName = entry.arguments?.getString("typeName").orEmpty()
             val date = entry.arguments?.getString("date").orEmpty()
+            val span = entry.arguments?.getString("span").orEmpty()
             val viewModel: TileDetailViewModel = viewModel()
-            LaunchedEffect(typeName, date) { viewModel.load(typeName, date) }
+            LaunchedEffect(typeName, date, span) { viewModel.load(typeName, date, span) }
             TileDetailScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
