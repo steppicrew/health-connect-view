@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -88,6 +89,11 @@ fun DashboardScreen(
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editing by remember { mutableStateOf(false) }
+
+    // Edit mode is a mode on this screen rather than a destination, so the system Back
+    // gesture would otherwise pass straight through it and leave the dashboard while the
+    // tiles were still being arranged. Leaving the mode is what Back means here.
+    BackHandler(enabled = editing) { editing = false }
     var addingTile by remember { mutableStateOf(false) }
 
     if (addingTile) {
@@ -129,7 +135,13 @@ fun DashboardScreen(
             TopAppBar(
                 title = { Text(dayLabel(state.date)) },
                 navigationIcon = {
-                    IconButton(onClick = viewModel::showPreviousDay) {
+                    // Stepping the day while arranging tiles reloads the grid under the
+                    // drag in progress, so the arrows are inert in edit mode rather than
+                    // hidden: a top bar whose buttons move as the mode changes is worse.
+                    IconButton(
+                        onClick = viewModel::showPreviousDay,
+                        enabled = !editing,
+                    ) {
                         Icon(
                             imageVector = Icons.Default.ChevronLeft,
                             contentDescription = stringResource(R.string.dashboard_previous_day),
@@ -139,7 +151,7 @@ fun DashboardScreen(
                 actions = {
                     IconButton(
                         onClick = viewModel::showNextDay,
-                        enabled = state.canStepForward,
+                        enabled = state.canStepForward && !editing,
                     ) {
                         Icon(
                             imageVector = Icons.Default.ChevronRight,
