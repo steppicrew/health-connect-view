@@ -232,10 +232,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * from it so the detail view opens on the same day the tapped tile described; an empty or
      * unparseable value simply opens on today.
      */
-    fun load(typeName: String, date: String = "") {
+    fun load(typeName: String, date: String = "", span: String = "") {
         this.typeName = typeName
         _spec.update { RecordRegistry.specOrNull(typeName) }
-        _offset.update { offsetForDate(date) }
+        // Span first: the offset is counted in the span's own periods, so it cannot be
+        // derived before the span is known.
+        val chosenSpan = Span.entries.firstOrNull { it.name.equals(span, ignoreCase = true) }
+        chosenSpan?.let { _span.value = it }
+        _offset.update { offsetForDate(date, chosenSpan ?: _span.value) }
         viewModelScope.launch {
             selectedSource = resolveSource(typeName)
             reload()
@@ -264,10 +268,24 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         return sourceStore.effective(typeName, selections, preferred, writers)
     }
 
-    private fun offsetForDate(date: String): Int {
+    /**
+     * How many [span]-sized steps back the window holding [date] sits.
+     *
+     * Counted in the span's own periods, not in days: an offset is fed to [Span.endDate],
+     * which steps by a week, four weeks or a year as well as by a day, so a day count used
+     * directly sent a month view 28 times too far back. Stepping until the window contains
+     * the date keeps one definition of "which window is this", whatever the period.
+     */
+    private fun offsetForDate(date: String, span: Span = _span.value): Int {
         val parsed = runCatching { LocalDate.parse(date) }.getOrNull() ?: return 0
-        val days = java.time.temporal.ChronoUnit.DAYS.between(parsed, LocalDate.now())
-        return days.toInt().coerceAtLeast(0)
+        val today = LocalDate.now()
+        if (!parsed.isBefore(today)) return 0
+
+        var offset = 0
+        while (offset < MAX_OFFSET_STEPS && parsed.isBefore(span.startDate(offset, today))) {
+            offset++
+        }
+        return offset
     }
 
     /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
@@ -945,6 +963,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
          * in the shape, because dropping it moves half the day's total into the morning.
          */
         const val SUMMARY_PERCENT: Long = 95
+
+        /** Ceiling on the offset search, so an absurd date cannot spin. Years at a day each. */
+        const val MAX_OFFSET_STEPS = 4000
     }
 
 }
