@@ -256,6 +256,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             return
         }
 
+        val previous = _state.value.tiles.associateBy { it.tile.typeName }
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
             TileData(
@@ -265,7 +266,26 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 source = sources[tile.typeName],
             )
         }
-        _state.update { it.copy(tiles = placeholders, loading = false) }
+
+        // Only the first load has nothing to show. Afterwards the previous values stay on
+        // screen while the re-read runs: replacing them with empty placeholders is what made
+        // the dashboard blank and refill on the way back from a tile, and the cache above
+        // only hides that for as long as its TTL lasts. A stale number for a moment is a
+        // better answer than no number, since it is what the tile showed a second ago.
+        val shown = placeholders.map { placeholder ->
+            val carried = previous[placeholder.tile.typeName] ?: return@map placeholder
+            if (carried.loading || carried.granted != placeholder.granted) {
+                placeholder
+            } else {
+                placeholder.copy(
+                    value = carried.value,
+                    curve = carried.curve,
+                    sessions = carried.sessions,
+                    loading = false,
+                )
+            }
+        }
+        _state.update { it.copy(tiles = shown, loading = false) }
 
         val gate = Semaphore(MAX_CONCURRENT_TILES)
         val loaded = coroutineScope {
