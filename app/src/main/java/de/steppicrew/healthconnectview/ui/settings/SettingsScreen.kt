@@ -340,4 +340,4 @@ private fun Context.startActivitySafely(vararg intents: Intent) {
 
 private const val ACTION_APP_LOCALE_SETTINGS = "android.settings.APP_LOCALE_SETTINGS"
 
-private const val SOURCE_URL = "https://github.com/steppicrew/healthData"
+private const val SOURCE_URL = "https://github.com/steppicrew/health-connect-view"
