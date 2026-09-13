@@ -340,11 +340,31 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // contributed most in this window; the magnitude still comes from the deduplicated
         // aggregate, applied by the caller. The result is one device's real timeline scaled to
         // the platform's total, rather than an interleaving of three that matches none of them.
+        //
+        // Ranked by itemised records first, then by contribution. A writer posting one
+        // whole-day summary can only draw a ramp, so choosing it for the *shape* throws away
+        // a timeline that another writer actually has: measured on the phone, Garmin's two
+        // climbs (05:30 and 07:15) and Health Sync's single 00:00-24:00 summary both totalled
+        // 8 floors, and the tie on value alone handed the shape to the summary and drew a
+        // straight line through a day whose steps were known.
         val byWriter = allRecords.groupBy { spec.originOf(it) }
         val dominant = if (origins.isEmpty() && byWriter.size > 1) {
-            byWriter.maxByOrNull { (_, group) ->
-                group.sumOf { record -> spec.pointsOf(record).sumOf { it.value } }
-            }
+            byWriter.entries.maxWithOrNull(
+                compareBy(
+                    { entry ->
+                        entry.value.any { record ->
+                            val start = spec.timeOf(record)
+                            val end = spec.endTimeOf(record) ?: start
+                            Duration.between(start, end) < WHOLE_DAY_THRESHOLD
+                        }
+                    },
+                    { entry ->
+                        entry.value.sumOf { record ->
+                            spec.pointsOf(record).sumOf { point -> point.value }
+                        }
+                    },
+                ),
+            )
         } else {
             null
         }
