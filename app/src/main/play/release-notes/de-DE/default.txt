@@ -1,3 +1,1 @@
-0.2 — Training und Schlaf als eigene Kacheln, jede Sitzung mit der dabei aufgezeichneten Herzfrequenz. Herzfrequenz wird in voller Auflösung dargestellt und nach Zonen eingefärbt; die Zeitachse lässt sich zoomen. Sitzungen liegen jetzt hinter allen Aktivitätsdiagrammen. Behoben: Ein Tag mit nur einem Tagessummen-Datensatz zeigte keine Kurve.
-
-Erste Version. Alle Health-Connect-Datentypen durchsuchen und grafisch darstellen — ganz ohne Netzwerkzugriff.
+0.3 — Wochen-, Monats- und Jahresansicht zeigen jetzt die passende Darstellung: Schlaf als Stunden pro Nacht, Training als Sitzungen pro Tag, Kalorien nach Grund- und Aktivumsatz getrennt, Herzfrequenz mit der Spanne des Tages hinter dem Mittel. In den Einstellungen lässt sich eine bevorzugte App wählen. Behoben: Eine Nacht zählt zu dem Tag, an dem sie endet; die Quellenauswahl listet alle schreibenden Apps; mehrere Diagramme zeigten eine Gerade statt der Stufen.

@@ -1,3 +1,1 @@
-0.2 — Workouts and sleep as their own tiles, each session showing the heart rate recorded during it. Heart rate is charted at full resolution and coloured by zone; pinch to zoom the time axis. Session bands now sit behind every activity chart. Fixed: a day whose only record was a whole-day summary showed no curve.
-
-First release. Browse and chart every Health Connect data type, with no network access at all.
+0.3 — Week, month and year views now draw the mark the data supports: sleep as hours per night, workouts as sessions per day, calories split into basal and active, and heart rate with each day's range behind the average. Pick a preferred app in Settings to use where a tile has no source of its own. Fixed: a night is credited to the day it ended on; the source picker lists every app that wrote, not only those the total used; several charts drew a straight line where the data had steps.
