@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
@@ -879,10 +880,24 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             writers
         }
 
+        // A sessions tile answers "how much did these sessions cover", so its own list is the
+        // authority: already deduplicated across writers, and already attributed by the rule
+        // that a night belongs to the day it ended on.
+        //
+        // The aggregate answers a different question -- how much sleep fell inside this
+        // calendar day -- and on 11.09 the two disagreed openly on screen: a headline of
+        // 2h 28m (the 21:30 tail before midnight) above a list whose sessions summed to
+        // 16h 13m. One screen must not give two answers to the same question.
+        val headlineTotal = if (spec.tile.form == TileSpec.Form.SESSIONS && sessions.isNotEmpty()) {
+            numericAggregate(sessions.totalDuration())
+        } else {
+            total
+        }
+
         return TileDetailData(
             spec = spec,
             points = scaledPoints,
-            total = total,
+            total = headlineTotal,
             aggregated = seriesAggregated,
             contributingApps = contributors,
             selectedSource = source,
