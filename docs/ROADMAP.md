@@ -521,52 +521,64 @@ and reports raw-versus-aggregated counts per type without needing a single tap.
 
 ## 10. Known issues, not yet fixed
 
-Reported after using the internal-testing build. What remains here needs a device with two
-real writers to confirm; the navigation, refresh and fixture problems are fixed.
+Everything reported from the internal-testing build has now been fixed and, except where
+noted, confirmed on the phone against real two-writer data.
 
-- **The Floors day chart draws a straight line instead of a staircase.** Reported: zero at
-  00:00 rising to the day's total at 24:00. Floors has `cumulativeIntraday = true`, so a
-  staircase is what the existing code draws when it has per-climb records; a straight line
-  between two points is what it draws when the only thing reaching the chart is one whole-day
-  summary. That is the bucket-wide-interval trap from `CLAUDE.md`.
+- **The dashboard's return-from-tile flicker is fixed but not observed.** The blanking cause
+  was found and removed (see below), and the first-load path was watched on the device
+  behaving correctly -- placeholders only where nothing preceded them. The actual gesture
+  could not be driven: the Xiaomi blocks `input tap` *and* `input keyevent`, so Back cannot be
+  sent from the host. Worth one look by hand.
 
-  The source picker beside it was the same cause seen from the other side and is fixed: the
-  writers are now taken from the records and unioned with the aggregate's origins, so a
-  whole-day-summary writer no longer vanishes from the picker. That fix is expected to make
-  Garmin and Health Sync selectable here again, which is the precondition for the rest.
+### Fixed and confirmed on the device
 
-  The line itself still needs an answer: with a single source selected, that writer's own
-  records may be summed and stepped directly, since one writer cannot overlap itself. Verify
-  on the phone, not the emulator -- its health database accumulates duplicate intervals across
-  runs and is not trustworthy for INTERVAL types.
+Measured on the phone, 13.09.2026, against Garmin Connect and Health Sync.
 
-- **Back from a tile detail was reported as walking back through the days stepped through.**
-  Not reproducible from the code as it stands: the offset lives in `TileDetailViewModel` and
-  the day arrows mutate it without navigating, so only one back-stack entry is ever pushed per
-  tile and Back returns to the dashboard in one press. Either it was fixed incidentally when
-  the date moved into the view model, or the report is really about the dashboard's own edit
-  mode, which did swallow Back and is fixed below. Re-check on the next build, and if it
-  survives, capture what was tapped in order -- the code path does not admit the behaviour as
-  described.
+- **The source picker listed only writers that reached the aggregate.** Confirmed by building
+  the commit before the fix and opening the same day: it read "Geschrieben von Garmin Connect"
+  with no chips, while Health Sync had written that day's only floors record. After the fix
+  the same screen offers "Alle Quellen" plus both writers. Steps, with three writers, offers
+  four chips.
+- **The Floors day chart drew a straight line.** Two causes, not one. The picker fix above was
+  the first. The second was the choice of *shape* writer: it was picked by summed contribution
+  alone, and on 11.09 Garmin's two climbs (05:30, 07:15) and Health Sync's single 00:00-24:00
+  summary both totalled 8 floors, so the tie handed the shape to the summary, which can only
+  draw a ramp. Writers with itemised records now outrank whole-day summaries. The same day
+  draws its real staircase, the total is unchanged, and two captions corrected themselves: the
+  chart dropped "die Punkte dazwischen sind aufgeteilt" because the shape is measured again,
+  and on 10.09 the goal-crossing badge returned ("Ziel von 10 um 14:00 erreicht") because a
+  crossing time can now be read off real steps.
 
-### Fixed, pending confirmation on the device
+  Note the earlier plan here -- "select a single source and sum its own records" -- turned out
+  to be unnecessary. The combined view is correct once the shape comes from a writer that has
+  timing; no source selection is required.
 
-Each was reproduced by reading the code rather than the screen, so the diagnosis is certain
-but the felt result is not. Worth a look on the next build.
+### Fixed, not separately confirmed
 
-- **Back in tile edit mode** left the dashboard entirely instead of leaving the mode, and the
-  day arrows kept stepping underneath the edit controls. Edit mode was a boolean with nothing
-  bound to Back. It now has a `BackHandler`, and the arrows are disabled while it is open.
-- **The dashboard blanked on return.** The short-TTL cache hid this for 30 seconds rather than
-  fixing it: on any miss the tiles were replaced with empty placeholders before the reads
-  began. The previous values are now carried into the placeholders, so only the genuine first
-  load shows empty tiles. Note the roadmap's earlier guess -- a cache key invalidating itself
-  -- was wrong; `loadedAt` is compared as a TTL, not for equality.
+- **Back in tile edit mode** left the dashboard instead of leaving the mode, and the day arrows
+  kept stepping underneath the edit controls. Edit mode was a boolean with nothing bound to
+  Back; it now has a `BackHandler` and the arrows are disabled while it is open. Needs a hand
+  to confirm, for the same input-injection reason as the flicker.
+- **The dashboard blanked on return.** The tiles were replaced with empty placeholders before
+  the reads began; the previous values are now carried into them. The roadmap's earlier guess
+  -- a cache key invalidating itself -- was wrong: `loadedAt` is compared as a TTL, not for
+  equality.
+- **Back from a tile detail walking back through the days** is not reproducible from the code:
+  the offset lives in `TileDetailViewModel` and the arrows mutate it without navigating, so one
+  back-stack entry exists per tile. Most likely it was really the edit-mode bug above.
 - **Seeded sleep looked too hectic.** The asleep branch set `spread` to 2 but kept the shared
   ceiling of `resting + 3 * spread`, so a +-2 step crossed an 8 bpm band and swung a mean of
   4.4 bpm inside a single 50-second record. Asleep now steps by 1 within `resting +- spread`:
   the overnight range halves to 4 bpm and the per-record swing drops to 2.4, while the waking
-  series is untouched at 28.
+  series is untouched at 28. Synthetic data only.
+
+### What the device run also established
+
+- `FloorsClimbedRecord` on 12.09 genuinely has no records from either writer, so the app's
+  "0 Datensätze" there is correct rather than a read failure. Empty days are real.
+- The debug nav backdoor only re-reads the `date` extra on a cold start. A second `am start`
+  at a running instance switches the type but keeps the old date, which reads as the date
+  extra being ignored. Force-stop first when stepping through days from the host.
 
 ## 11. Deferred
 
