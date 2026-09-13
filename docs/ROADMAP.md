@@ -521,59 +521,52 @@ and reports raw-versus-aggregated counts per type without needing a single tap.
 
 ## 10. Known issues, not yet fixed
 
-Reported after using the internal-testing build. Mostly navigation and refresh behaviour; the
-source picker and the Floors chart under it are the one cluster that misrepresents data, and
-they share a cause.
+Reported after using the internal-testing build. What remains here needs a device with two
+real writers to confirm; the navigation, refresh and fixture problems are fixed.
 
-- **The dashboard still flickers on return.** A short-TTL cache was added so returning from a
-  tile does not re-read everything, but a flicker remains. Check whether the cache is actually
-  being hit on the way back -- a key that includes something which changes between the two
-  loads would invalidate it every time and make the cache a no-op.
-- **Back should walk the hierarchy, not the history.** From a tile's detail, Back returns to
-  wherever the user came from, so stepping to a previous day and then pressing Back walks the
-  days again instead of leaving the screen. It should go up a level -- to the dashboard --
-  regardless of how many days were stepped through.
-- **The source picker can be missing while the records below name two writers.** Reported on
-  the internal-testing build: the chips were absent although the record list plainly showed
-  Garmin Connect and Health Sync.
+- **The Floors day chart draws a straight line instead of a staircase.** Reported: zero at
+  00:00 rising to the day's total at 24:00. Floors has `cumulativeIntraday = true`, so a
+  staircase is what the existing code draws when it has per-climb records; a straight line
+  between two points is what it draws when the only thing reaching the chart is one whole-day
+  summary. That is the bucket-wide-interval trap from `CLAUDE.md`.
 
-  Likely cause, worth checking first: the picker is driven by `contributingApps()`, which
-  reads `dataOrigins` off the *aggregate*, while the list below comes from `readRecords`.
-  Those legitimately disagree -- a writer whose records do not contribute to the aggregate is
-  absent from the origins set but still present in the raw list. The whole-day-summary case
-  is exactly that: a record as wide as its bucket aggregates to nothing, so its writer never
-  appears among the origins, and with only one contributor left the picker hides itself
-  (`sources.size > 1`).
+  The source picker beside it was the same cause seen from the other side and is fixed: the
+  writers are now taken from the records and unioned with the aggregate's origins, so a
+  whole-day-summary writer no longer vanishes from the picker. That fix is expected to make
+  Garmin and Health Sync selectable here again, which is the precondition for the rest.
 
-  If that is confirmed, the fix is to union the aggregate's origins with the writers actually
-  seen in the records, since the picker's job is to list every app that wrote into the window
-  rather than every app the aggregate happened to use. Note the same call is not source
-  filtered on purpose -- scoping it to the current selection would strand the user on one app.
+  The line itself still needs an answer: with a single source selected, that writer's own
+  records may be summed and stepped directly, since one writer cannot overlap itself. Verify
+  on the phone, not the emulator -- its health database accumulates duplicate intervals across
+  runs and is not trustworthy for INTERVAL types.
 
-  **Floors now shows the same thing from the other side, which is good evidence.** Reported:
-  its day chart draws a straight line from zero at 00:00 to the day's total at 24:00 instead
-  of a staircase, *and* the picker is missing although Garmin and Health Sync both write it.
-  Floors has `cumulativeIntraday = true`, so a staircase is what the existing code draws when
-  it has per-climb records; a straight line between two points is what it draws when the only
-  thing reaching the chart is one whole-day summary. That is the bucket-wide-interval trap
-  from `CLAUDE.md` -- the summary aggregates to nothing, so its writer is absent from the
-  origins and the picker hides itself at `sources.size > 1`.
+- **Back from a tile detail was reported as walking back through the days stepped through.**
+  Not reproducible from the code as it stands: the offset lives in `TileDetailViewModel` and
+  the day arrows mutate it without navigating, so only one back-stack entry is ever pushed per
+  tile and Back returns to the dashboard in one press. Either it was fixed incidentally when
+  the date moved into the view model, or the report is really about the dashboard's own edit
+  mode, which did swallow Back and is fixed below. Re-check on the next build, and if it
+  survives, capture what was tapped in order -- the code path does not admit the behaviour as
+  described.
 
-  So both symptoms follow from one cause, and the union fix above should restore the picker
-  here too. The straight line needs its own answer though: with a source selected, that
-  writer's own records can be stepped directly (one writer cannot overlap itself), which is
-  what turns the line back into a staircase. Verify on the phone, not the emulator -- its
-  health database accumulates duplicate intervals across runs and is not trustworthy for
-  INTERVAL types.
+### Fixed, pending confirmation on the device
 
-- **Seeded sleep looks too hectic.** The fixture's overnight heart rate wanders more than a
-  real night does, so the sleep stretch of a seeded chart reads as restless rather than as
-  sleep. Only affects synthetic data -- the seeder, not the app -- but these frames become
-  store screenshots, so it is worth a calmer overnight drift.
-- **Date stepping stays live in tile edit mode.** While a tile's settings are open the day
-  arrows still work, and Back changes the date rather than closing the settings. Both are the
-  same underlying problem: the settings are a mode on the screen rather than a destination
-  with its own back behaviour.
+Each was reproduced by reading the code rather than the screen, so the diagnosis is certain
+but the felt result is not. Worth a look on the next build.
+
+- **Back in tile edit mode** left the dashboard entirely instead of leaving the mode, and the
+  day arrows kept stepping underneath the edit controls. Edit mode was a boolean with nothing
+  bound to Back. It now has a `BackHandler`, and the arrows are disabled while it is open.
+- **The dashboard blanked on return.** The short-TTL cache hid this for 30 seconds rather than
+  fixing it: on any miss the tiles were replaced with empty placeholders before the reads
+  began. The previous values are now carried into the placeholders, so only the genuine first
+  load shows empty tiles. Note the roadmap's earlier guess -- a cache key invalidating itself
+  -- was wrong; `loadedAt` is compared as a TTL, not for equality.
+- **Seeded sleep looked too hectic.** The asleep branch set `spread` to 2 but kept the shared
+  ceiling of `resting + 3 * spread`, so a +-2 step crossed an 8 bpm band and swung a mean of
+  4.4 bpm inside a single 50-second record. Asleep now steps by 1 within `resting +- spread`:
+  the overnight range halves to 4 bpm and the per-record swing drops to 2.4, while the waking
+  series is untouched at 28.
 
 ## 11. Deferred
 
