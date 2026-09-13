@@ -570,11 +570,6 @@ they share a cause.
   real night does, so the sleep stretch of a seeded chart reads as restless rather than as
   sleep. Only affects synthetic data -- the seeder, not the app -- but these frames become
   store screenshots, so it is worth a calmer overnight drift.
-- **The source link in About points at the wrong repository.** `SOURCE_URL` in
-  `SettingsScreen.kt` reads `https://github.com/steppicrew/healthData` -- the local working
-  directory's name -- while the remote is `steppicrew/health-connect-view`. A one-line fix,
-  but worth a check that nothing else published (store listing, privacy policy) repeats the
-  same wrong name.
 - **Date stepping stays live in tile edit mode.** While a tile's settings are open the day
   arrows still work, and Back changes the date rather than closing the settings. Both are the
   same underlying problem: the settings are a mode on the screen rather than a destination
