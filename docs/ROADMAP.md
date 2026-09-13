@@ -572,6 +572,27 @@ Measured on the phone, 13.09.2026, against Garmin Connect and Health Sync.
   the overnight range halves to 4 bpm and the per-record swing drops to 2.4, while the waking
   series is untouched at 28. Synthetic data only.
 
+### Built: a preferred app
+
+Choosing one app per tile meant repeating the choice for every type. A preference in
+Settings supplies the default; the per-type chips still override it.
+
+It is a **view filter, not a priority**. Health Connect's own app-priority list decides which
+record wins where two overlap, and is not writable through the Jetpack client -- so this
+selects whose data is displayed, and a filtered tile shows that app's figure rather than the
+deduplicated total. The row sits beside the existing App-Priorität link, which explains the
+difference and deep-links to the system screen.
+
+- A type the preferred app never wrote falls back to all sources. Filtering it to that app
+  would empty the tile, which reads as missing data rather than as a filter matching nothing.
+- A per-type choice is *not* filtered that way: it was made deliberately for that type, so it
+  stands even where it comes up empty.
+- The choices are the apps found writing any granted type in the last month. There is no way
+  to ask the platform "who writes health data", and listing installed packages would be both
+  useless and a needless breadth of query.
+- The cache key includes the preference, and a carried-forward tile value is dropped when its
+  source changes, so switching apps cannot leave one app's number under another's name.
+
 ### What the device run also established
 
 - `FloorsClimbedRecord` on 12.09 genuinely has no records from either writer, so the app's
