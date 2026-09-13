@@ -66,6 +66,18 @@ data class RecordTypeSpec<T : Record>(
      */
     val rangeAggregates: Pair<AggregateMetric<*>, AggregateMetric<*>>? = null,
     /**
+     * Components this type's daily total splits into, drawn as a stacked bar.
+     *
+     * Total calories is the sum of what the body spends at rest and what activity added, and
+     * the two answer different questions: one barely moves, the other is the day's effort.
+     * Summed into a single bar they hide each other -- a hard day and a lazy one differ by a
+     * fraction of a bar that is mostly basal either way.
+     *
+     * Each entry is a label and the metric supplying it, drawn bottom-up in order. The
+     * components must add to the type's own total, or the bar contradicts the headline.
+     */
+    val stackComponents: List<Pair<Int, AggregateMetric<*>>> = emptyList(),
+    /**
      * How this type is drawn on the dashboard. Defaults to a plain number, which every
      * chartable type can render, so a new type needs no tile decision to be usable.
      */

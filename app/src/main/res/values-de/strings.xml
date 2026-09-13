@@ -197,6 +197,10 @@
         <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
     </plurals>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
+    <string name="chart_source_sessions_per_day">Sitzungen pro Tag</string>
+    <string name="chart_source_aggregated_split">Tagessummen nach Anteilen, von Health Connect entdoppelt</string>
+    <string name="calories_basal">Grundumsatz</string>
+    <string name="calories_active">Aktiv</string>
     <string name="chart_source_aggregated_range">Tagesmittel mit Spanne des Tages, von Health Connect entdoppelt</string>
     <plurals name="chart_gaps">
         <item quantity="one">Die Lücke ist ein Tag ohne Aufzeichnung – das ist nicht dasselbe wie ein Tag mit dem Wert null.</item>

@@ -226,6 +226,10 @@
         <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>
     </plurals>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
+    <string name="chart_source_sessions_per_day">Sessions per day</string>
+    <string name="chart_source_aggregated_split">Daily totals split into their parts, deduplicated by Health Connect</string>
+    <string name="calories_basal">Basal</string>
+    <string name="calories_active">Active</string>
     <string name="chart_source_aggregated_range">Daily averages with each day\'s range, deduplicated by Health Connect</string>
     <plurals name="chart_gaps">
         <item quantity="one">The gap is a day with nothing recorded, which is not the same as a day of zero.</item>
