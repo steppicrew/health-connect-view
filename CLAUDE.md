@@ -168,6 +168,15 @@ created — see `docs/ROADMAP.md` §9. So:
   route is read in `onNewIntent` as well as `onCreate` — without that a second `am start`
   while the app is running is silently ignored.
 
+  **The `date` extra only takes effect on a cold start.** A second `am start` at a running
+  instance navigates to the new type but keeps the date already on screen, which looks exactly
+  like the extra being ignored — and quietly invalidates any comparison across days, since two
+  runs meant to show different dates show the same one. `am force-stop` first when stepping
+  through dates from the host.
+
+  `input keyevent` is blocked on the Xiaomi as well as `input tap`, so Back cannot be sent
+  from the host either: anything that needs a Back press needs a person.
+
   `DebugNav` exists twice, in `src/debug` and `src/release`, rather than behind a boolean: the
   release variant compiles to `return null` with no intent-reading code at all. Verify with
   `javap` on `built_in_kotlinc/release/.../DebugNav.class` if it ever needs re-checking.
