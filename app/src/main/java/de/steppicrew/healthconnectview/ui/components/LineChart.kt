@@ -76,6 +76,14 @@ fun LineChart(
      */
     sessions: List<Session> = emptyList(),
     /**
+     * Draw one bar per point instead of a line through them.
+     *
+     * For a window bucketed by day, where each point is a whole day's figure rather than a
+     * moment: a line between two such points draws a value for the hours in between that
+     * nothing measured, and reads as a trend where there is only a sequence.
+     */
+    bars: Boolean = false,
+    /**
      * Value bands to colour the line by, or null for a single-colour line.
      *
      * Set for the types that declare zones, so the same reading is the same colour on the
@@ -110,7 +118,15 @@ fun LineChart(
     // The goal takes part in the scale: a goal above the day's total must stay on the chart,
     // or "not reached yet" looks identical to "reached", which is the whole point of drawing
     // it. A goal already beaten simply sits below the peak.
-    val minValue = minOf(values.min(), goal ?: values.min())
+    // Bars are read by comparing heights, so they must start at zero: on a floating baseline
+    // a 7-hour night beside a 9-hour one looks like a third of the sleep rather than a fifth
+    // less. A line has no such claim to make and keeps its tight scale, which is what lets a
+    // small movement in a resting heart rate stay visible.
+    val minValue = if (bars) {
+        minOf(0.0, values.min(), goal ?: 0.0)
+    } else {
+        minOf(values.min(), goal ?: values.min())
+    }
     val maxValue = maxOf(values.max(), goal ?: values.max())
     // A flat series would divide by zero; give it a nominal span so it draws as a centre line.
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
@@ -282,6 +298,34 @@ fun LineChart(
                 }
             }
 
+            // One bar per bucket, from the baseline up to the day's figure. Drawn instead of
+            // the line, never alongside it: the two say the same thing and the line is the
+            // one that overstates it.
+            //
+            // The width comes from the gap between neighbouring points rather than from the
+            // point count, so a missing day leaves a space instead of widening its neighbours
+            // -- the same reason points are placed by timestamp everywhere else here.
+            if (bars && offsets.isNotEmpty()) {
+                val baseline = yFor(minValue.coerceAtMost(0.0).let { if (it < 0) it else 0.0 })
+                    .coerceAtMost(size.height)
+                val slot = if (offsets.size > 1) {
+                    offsets.zipWithNext { a, b -> b.x - a.x }.filter { it > 0f }.minOrNull()
+                        ?: size.width
+                } else {
+                    size.width / BAR_LONE_DIVISOR
+                }
+                val barWidth = (slot * BAR_WIDTH_FRACTION).coerceAtLeast(1f)
+                offsets.forEachIndexed { index, offset ->
+                    val top = offset.y.coerceAtMost(baseline)
+                    val height = (baseline - top).coerceAtLeast(1f)
+                    drawRect(
+                        color = zones?.colorFor(points[index].value) ?: lineColor,
+                        topLeft = Offset(offset.x - barWidth / 2f, top),
+                        size = androidx.compose.ui.geometry.Size(barWidth, height),
+                    )
+                }
+            }
+
             // Guides labelled at their own line, so a value can be read off the chart
             // rather than inferred from the endpoints. Four intervals gives five labels,
             // which stays legible at the height this chart is drawn.
@@ -342,7 +386,7 @@ fun LineChart(
 
             // Each run of consecutive points is stroked on its own, so a gap stays a gap.
             var drawn = 0
-            segments.forEach { segment ->
+            if (!bars) segments.forEach { segment ->
                 val segmentOffsets = offsets.subList(drawn, drawn + segment.size)
                 drawn += segment.size
                 if (segmentOffsets.isEmpty()) return@forEach
@@ -456,7 +500,11 @@ fun LineChart(
         // Above the hour labels rather than among them: a band says *when* something
         // happened but not *what*, and the list below the chart names the sessions without
         // saying which band is which. With two or three bands that is guesswork.
-        if (sessions.isNotEmpty() && timeExtent != null) {
+        //
+        // Suppressed under bars, where every bar already *is* a session: an icon per day then
+        // names what the chart is made of rather than pointing at anything, and four weeks of
+        // them run together into a band of their own.
+        if (sessions.isNotEmpty() && timeExtent != null && !bars) {
             SessionAxisIcons(sessions = sessions, extent = timeExtent, zoom = zoom, pan = pan)
         }
 
@@ -930,6 +978,12 @@ private const val MAX_DOTS = 60
  * a solid block.
  */
 private const val LINE_WIDTH = 2f
+
+/** Bar width as a fraction of the gap to its neighbour, leaving a gutter between bars. */
+private const val BAR_WIDTH_FRACTION = 0.7f
+
+/** Width of a lone bar, as a fraction of the plot. A single day should not fill the chart. */
+private const val BAR_LONE_DIVISOR = 8f
 
 /**
  * How far the time axis can be stretched. Twenty-four is a whole day down to about an hour,
