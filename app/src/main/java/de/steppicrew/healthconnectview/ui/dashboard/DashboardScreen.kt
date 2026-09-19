@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
@@ -222,7 +221,9 @@ fun DashboardScreen(
             )
 
             else -> LazyVerticalGrid(
-                columns = GridCells.Fixed(TILE_COLUMNS),
+                columns = remember {
+                    BoundedTileCells(TILE_MIN_WIDTH, TILE_COLUMNS_MIN, TILE_COLUMNS_MAX)
+                },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
@@ -573,7 +574,6 @@ private fun dayLabel(date: LocalDate): String =
         date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
     }
 
-private const val TILE_COLUMNS = 2
 private const val CURVE_HEIGHT = 28
 
 /** How many activity icons fit on a tile face beside the count without crowding it. */
