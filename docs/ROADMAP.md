@@ -834,6 +834,43 @@ A constraint rather than an `exclude`: excluding is closer to the truth, but `pl
 declares the dependency deliberately, and removing an API Billing might call at runtime trades a
 warning for a crash on a payment path this app cannot yet exercise.
 
+### Two edge-to-edge warnings that need no change
+
+Reported by the Console against 0.4.x. Both are answered, and the answer is to do nothing --
+recorded here so the next reader does not re-derive it, or worse, "fix" it.
+
+**"Edge-to-edge may not work for all users."** This asks for `enableEdgeToEdge()`, which the
+app has called since 0.4.0 -- it is the fix for the white-on-white system bars in section 2, and
+0.3.0 genuinely lacked it. The substantive half of the warning, that an app be inset-compatible,
+holds: all seven screens are `Scaffold`s that consume the padding they are handed, verified on
+the phone in both orientations. Expect the warning to clear on a rescan.
+
+**"Your app uses deprecated edge-to-edge APIs."** It names `setStatusBarColor`,
+`setNavigationBarColor` and `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` at three obfuscated
+sites. Resolved through `app/build/outputs/mapping/release/mapping.txt`:
+
+| Reported | Actually |
+|---|---|
+| `r40.b` | `androidx.activity.EdgeToEdgeApi29.setUp()` |
+| `t40.b` | `androidx.activity.EdgeToEdgeApi35.setUp()` |
+| `g1.k`  | `AccessibilityNodeInfoCompat$$ExternalSyntheticApiModelOutline0.m(WindowManager.LayoutParams)` |
+
+The first two are `EdgeToEdge.kt` -- the *implementation of `enableEdgeToEdge()` itself*. So one
+warning asks for the call and the other flags that call's own backward-compatibility path, which
+is how AndroidX supports Android 14 and below and is inert on 15+. This app calls none of those
+APIs; the only mentions of the colour setters in the tree are a comment in `Theme.kt` explaining
+why they are not used.
+
+Nothing to do, and two things not to do: removing `enableEdgeToEdge()` would bring back the
+white-on-white bars, trading a real accessibility defect for a cosmetic warning, and there is no
+newer `androidx.activity` to move to -- 1.13.0 is current. It clears when AndroidX drops the
+legacy path.
+
+**The general rule both of these teach:** a Console warning names what the *bundle* contains or
+declares, which is not the same as what this app *does*. Deobfuscate the reported sites against
+the release mapping before believing a finding is yours -- twice now the answer has been that it
+was not.
+
 ## 12. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
