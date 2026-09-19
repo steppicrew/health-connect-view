@@ -337,8 +337,29 @@ fun LineChart(
                 }
                 val barWidth = (slot * BAR_WIDTH_FRACTION).coerceAtLeast(1f)
                 val byTime = stack.associateBy { it.time.toEpochMilli() }
+
+                // Bars are laid out in a plot inset by half a bar at each end, rather than
+                // centred on the full width.
+                //
+                // A bar is centred on its bucket, and the first and last buckets sit at
+                // fraction 0 and 1 -- on the full width half of each falls outside the canvas.
+                // Clamping them back inside fixes the clipping but not the spacing: the end
+                // bar slides inward while its neighbour stays put, so that one gap closes to
+                // nothing and the two read as a single thick bar, while every other gap keeps
+                // its full width. Measured on a week of steps: -8px at the ends against 50px
+                // in the middle.
+                //
+                // Insetting the *whole* run by half a bar keeps every gap identical and still
+                // puts the outer edges flush against the plot, so nothing is clipped and
+                // nothing is crowded.
+                val inset = barWidth / 2f
+                val innerWidth = (size.width - barWidth).coerceAtLeast(0f)
+                val barCentre = { x: Float ->
+                    if (size.width > 0f) inset + x / size.width * innerWidth else x
+                }
+
                 offsets.forEachIndexed { index, offset ->
-                    val left = offset.x - barWidth / 2f
+                    val left = barCentre(offset.x) - barWidth / 2f
                     val parts = byTime[points[index].time.toEpochMilli()]?.parts
 
                     if (parts == null) {
