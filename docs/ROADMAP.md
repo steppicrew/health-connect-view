@@ -37,7 +37,9 @@ forth. Never steps past the current window.
 `Span` is a separate concept from `TimeRange`, which means "the last N days from now" and
 cannot be moved. Anchoring to calendar boundaries with an offset is what makes data older than
 a year reachable at all — `TimeRange` topped out at 365 days, so nothing before that could be
-requested no matter which range was chosen.
+requested no matter which range was chosen. Every user-facing window now uses `Span`; the
+catalog's type detail was the last screen to move across (section 7), and its controls are
+shared with this one rather than copied.
 
 Windows tile exactly: each window's start is the previous one's end, asserted across every span
 and six offsets. Steps use calendar periods, so a year step lands on the same date and survives
@@ -577,16 +579,39 @@ sample bounded by `CHART_POINTS`, so the series spans the full period at reduced
 The truncation notice claimed "Charts still cover the whole period", which was false for
 exactly these types. It now describes the list.
 
-### Still open: the range ceiling
+### Built: the range ceiling is gone
 
-`TimeRange.YEAR` is 365 days with no offset, so nothing older is reachable at all. The measured
-data shows the wall directly -- BodyFat, BodyWaterMass, BoneMass and Height all report their
-oldest record as **exactly** `daysBack=365`, which is the request boundary rather than the end
-of the data. Types with genuinely older data reach 472 days (FloorsClimbed, RestingHeartRate,
-May 2025).
+`TimeRange.YEAR` was 365 days with no offset, so nothing older was reachable at all. The
+measured data showed the wall directly -- BodyFat, BodyWaterMass, BoneMass and Height all
+reported their oldest record as **exactly** `daysBack=365`, which is the request boundary
+rather than the end of the data. Types with genuinely older data reach 472 days
+(FloorsClimbed, RestingHeartRate, May 2025).
 
-Reaching April 2025 needs range + offset stepping, which is part of the dashboard's
-full-screen view (section 1) rather than a fifth entry in the `TimeRange` enum.
+`Span` removed it for the dashboard's full-screen view first (section 1): a calendar-anchored
+window plus an offset, which is what makes "the week before last" -- and so April 2025 --
+expressible at all. The catalog's type detail kept `TimeRange` for a while longer and kept the
+ceiling with it; it now uses `Span` too, so every screen that lets the user pick a window can
+step past a year.
+
+Two things fell out of that move:
+
+- **The span decides the bucket, not the screen.** Type detail aggregated through
+  `dailyTotals()`, which fixes the slicer at a day. A year window that way is 365 points on a
+  phone-width chart, so it goes through `bucketedTotals()` with `Span.bucket` -- a week for the
+  year span. `Span.DAY` is not offered there at all: it has no Period-expressible bucket, and a
+  day sliced by a day-wide bucket is one point rather than a chart.
+- **The window controls are shared, not copied.** `SpanSelector`, `WindowStepper` and
+  `windowLabel` moved to `ui/components`. They were private to the tile screen while it was the
+  only one with an offset; a second copy would have been a second place for "which window is
+  this" to drift, which is precisely the arithmetic this section exists to protect.
+
+`TimeRange` survives as a fixed internal window for the catalog probe and the settings summary,
+where nothing is user-selectable. It lost `labelRes` -- nothing renders it as a chip any more --
+and the four `range_*` strings went with it.
+
+**Not yet seen on the device.** This is a reachability change, and the thing worth checking on
+hardware is that stepping back past the 365-day line actually returns the older records the
+measured data says are there.
 
 ### Trap: probes must stay in the foreground
 
