@@ -196,6 +196,18 @@
         <item quantity="one">%1$d App hat diese Daten geschrieben.</item>
         <item quantity="other">%1$d Apps haben diese Daten geschrieben. Summen werden von Health Connect entdoppelt und können daher von den Werten einzelner Apps abweichen.</item>
     </plurals>
+    <string name="legend_sleep">Schlaf</string>
+    <string name="legend_exercise">Aktivität</string>
+    <string name="legend_range">Spanne des Tages</string>
+    <string name="legend_goal">Ziel</string>
+    <string name="legend_readings">Messung</string>
+    <string name="legend_value_bars">Tagessumme</string>
+    <string name="legend_value_bars_weekly">Wochensumme</string>
+    <string name="legend_value_sessions">Sitzungen pro Tag</string>
+    <string name="legend_value_sleep_hours">Schlafdauer</string>
+    <string name="legend_value_line">Messwert</string>
+    <string name="legend_value_cumulative">Laufende Summe</string>
+    <string name="legend_value_mean">Tagesmittel</string>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
     <string name="chart_source_sessions_per_day">Sitzungen pro Tag</string>
     <string name="chart_source_aggregated_split">Tagessummen nach Anteilen, von Health Connect entdoppelt</string>

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -335,6 +337,11 @@ private fun SpanSummary(
                 extent = data.extent,
                 modifier = Modifier.padding(top = 16.dp),
             )
+            // The timeline is a chart with no series, so it falls outside the legend below --
+            // which is drawn from `points`, and a session type's day has none. This is the
+            // screen the shaded bands were actually reported on, so it is the last one that
+            // should go unlabelled.
+            ChartLegend(data = data)
         }
 
         if (data.points.isNotEmpty()) {
@@ -383,12 +390,11 @@ private fun SpanSummary(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            // A stack of one hue at different weights is unreadable without saying which
-            // weight is which: the segments are deliberately not separate colours, so the
-            // legend is what makes them nameable rather than merely visible.
-            if (data.stack.isNotEmpty() && data.stackLabels.isNotEmpty()) {
-                StackLegend(labels = data.stackLabels)
-            }
+            // Everything drawn on the chart, named. The caption above says which *operation*
+            // produced the series; this says which *mark* is which, which is a different
+            // question and the one a shaded band raises -- the sleep ribbon behind a heart
+            // rate was reported as simply unexplained.
+            ChartLegend(data = data)
 
             // The bands are context; naming them is what turns a shaded region into
             // "that peak was the bike ride". Only where the sessions sit *behind* a chart --
@@ -430,40 +436,147 @@ private fun SpanSummary(
 }
 
 /** One session named on a single line, under the chart it explains. */
-/** Names each segment of a stacked bar, in the same order and weight as the bars. */
+/**
+ * Names every mark on the chart: the series itself, and whatever is drawn behind or across it.
+ *
+ * The caption above the legend says which *operation* produced the numbers ("daily totals,
+ * deduplicated"); this says what each *shape* is. They answer different questions, and the
+ * second one went unanswered: the pale blue sleep ribbon behind a chart was reported as
+ * unexplained, since nothing on screen connected it to sleep.
+ *
+ * Only what is actually drawn is listed. A legend naming a mark the chart does not have is
+ * worse than none -- it sends the reader looking for something that is not there.
+ */
 @Composable
-private fun StackLegend(labels: List<Int>) {
-    Row(
+private fun ChartLegend(data: TileDetailData) {
+    val sleepShown = data.sessions.any { it.kind == Session.Kind.SLEEP }
+    val exerciseShown = data.sessions.any { it.kind == Session.Kind.EXERCISE }
+    val stacked = data.stack.isNotEmpty() && data.stackLabels.isNotEmpty()
+
+    // The series' own name depends on what a point means, which is exactly what the mark
+    // already encodes: a bar is a bucket's total, a line is a reading.
+    val seriesLabel = when {
+        // No series to name: a session type's day is the timeline alone, whose bands are
+        // named below like any other.
+        data.points.isEmpty() -> null
+        stacked -> null // The stack's own segments are named below; a total above them is noise.
+        data.sessionCounts -> R.string.legend_value_sessions
+        data.spec.tile.form == TileSpec.Form.SESSIONS && data.bars ->
+            R.string.legend_value_sleep_hours
+        data.bars && data.weeklyBuckets -> R.string.legend_value_bars_weekly
+        data.bars -> R.string.legend_value_bars
+        data.cumulative -> R.string.legend_value_cumulative
+        data.rangeBand.isNotEmpty() -> R.string.legend_value_mean
+        else -> R.string.legend_value_line
+    }
+
+    // Nothing worth naming: a plain line with no goal, no band and no sessions behind it is
+    // already self-explanatory, and a legend of one entry repeating the caption is clutter.
+    //
+    // A shaded band is the exception, and always names itself even when it is the only entry.
+    // It is the one mark with no other explanation on screen -- a line has an axis and a
+    // caption, a bar has both plus its own label, but a pale rectangle behind them has
+    // nothing. The sleep timeline is exactly that case: a single band, reported as
+    // unexplained, which the "more than one entry" rule would have gone on suppressing.
+    val bandShown = sleepShown || exerciseShown || data.rangeBand.isNotEmpty()
+    val entries = (if (seriesLabel != null) 1 else 0) +
+        (if (stacked) data.stackLabels.size else 0) +
+        listOf(
+            data.rangeBand.isNotEmpty(),
+            sleepShown,
+            exerciseShown,
+            data.goal != null,
+            data.spec.tile.markReadings,
+        ).count { it }
+    if (entries < 2 && !bandShown) return
+
+    FlowRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 6.dp),
     ) {
-        labels.forEachIndexed { index, label ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .background(
-                            MaterialTheme.colorScheme.primary.copy(
-                                alpha = LEGEND_ALPHA_MIN +
-                                    (1f - LEGEND_ALPHA_MIN) *
-                                    (index + 1).toFloat() / labels.size.toFloat(),
-                            ),
-                            RoundedCornerShape(2.dp),
-                        ),
-                )
-                Text(
-                    text = stringResource(label),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+        seriesLabel?.let { LegendEntry(color = MaterialTheme.colorScheme.primary, label = it) }
+
+        // Named in the same order and weight as the segments they stand for: a stack is one
+        // hue at rising weights, deliberately not separate colours, so nothing else on screen
+        // says which weight is which.
+        if (stacked) {
+            data.stackLabels.forEachIndexed { index, label ->
+                LegendEntry(
+                    color = MaterialTheme.colorScheme.primary.copy(
+                        alpha = LEGEND_ALPHA_MIN + (1f - LEGEND_ALPHA_MIN) *
+                            (index + 1).toFloat() / data.stackLabels.size.toFloat(),
+                    ),
+                    label = label,
                 )
             }
         }
+
+        if (data.rangeBand.isNotEmpty()) {
+            LegendEntry(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
+                label = R.string.legend_range,
+            )
+        }
+        if (sleepShown) {
+            LegendEntry(color = LEGEND_SLEEP, label = R.string.legend_sleep)
+        }
+        if (exerciseShown) {
+            LegendEntry(
+                color = MaterialTheme.colorScheme.tertiary.copy(alpha = LEGEND_BAND_ALPHA),
+                label = R.string.legend_exercise,
+            )
+        }
+        if (data.goal != null) {
+            LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
+        }
+        if (data.spec.tile.markReadings) {
+            LegendEntry(
+                color = MaterialTheme.colorScheme.primary,
+                label = R.string.legend_readings,
+            )
+        }
     }
 }
+
+/** One swatch and its name. */
+@Composable
+private fun LegendEntry(color: Color, @StringRes label: Int) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(10.dp)
+                .background(color, RoundedCornerShape(2.dp)),
+        )
+        Text(
+            text = stringResource(label),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * Alpha for a band's swatch.
+ *
+ * Deliberately stronger than the chart's own 0.16: a band covers a wide stretch of plot and
+ * reads clearly at that weight, while the same alpha in a 10dp square is a tint barely
+ * distinguishable from the surface -- (227,231,254) against (253,251,255). The swatch has to
+ * be identifiable as a colour first and an exact match second, so it is the same hue at a
+ * weight that survives being small.
+ */
+private const val LEGEND_BAND_ALPHA = 0.45f
+
+/**
+ * The chart's fixed sleep blue. Not a theme colour, for the same reason the band is not: it
+ * means night, and under dynamic colour a themed hue drifts with the wallpaper.
+ */
+private val LEGEND_SLEEP = Color(0xFF5C7CFA).copy(alpha = LEGEND_BAND_ALPHA)
 
 /** Matches the chart's own stack weighting, so the swatch reads as the segment it names. */
 private const val LEGEND_ALPHA_MIN = 0.35f
