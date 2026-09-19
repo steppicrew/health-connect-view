@@ -169,3 +169,28 @@ suspend fun HealthRepository.sessionsIn(
  * previous evening without dragging in the night before that.
  */
 val SESSION_MARGIN: Duration = Duration.ofHours(12)
+
+/**
+ * A day's plot range, widened backwards to contain any session that began before it.
+ *
+ * A night is credited to the day it *ends* on but starts the previous evening -- measured on
+ * the phone, 22:18 to 08:58. Pinned to midnight, the 1h 42m before it has nowhere to go: the
+ * chart clamps anything outside its extent onto the plot edge, so the band was drawn
+ * 00:00-08:58 while the headline above it read 10h 40m. One screen, two answers to "how long
+ * did I sleep".
+ *
+ * Widening only backwards is deliberate. A session running past the *end* of the window
+ * belongs to the next day -- sleep is selected by its end, so it cannot occur, and an exercise
+ * session crossing midnight is shown on the day it began. Widening forward would pull
+ * tomorrow's evening onto today's axis.
+ *
+ * A day whose sessions sit inside it is returned untouched, so the fixed midnight-to-midnight
+ * axis is kept everywhere it can be.
+ */
+fun widenToSessions(
+    range: ClosedRange<Instant>,
+    sessions: List<Session>,
+): ClosedRange<Instant> {
+    val earliest = sessions.minOfOrNull { it.start } ?: return range
+    return if (earliest < range.start) earliest..range.endInclusive else range
+}

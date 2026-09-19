@@ -2,8 +2,11 @@ package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.dedupeSessions
+import de.steppicrew.healthconnectview.health.widenToSessions
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.Instant
 
@@ -98,5 +101,70 @@ class SessionTest {
     @Test
     fun `an empty list yields no sessions`() {
         assertEquals(emptyList<Session>(), dedupeSessions(emptyList()))
+    }
+
+    /**
+     * The day's plot range grows backwards for a night that began the evening before.
+     *
+     * Measured on the phone: a night of 22:18 to 08:58 on a midnight-pinned axis was drawn
+     * 00:00-08:58, because the chart clamps anything outside its extent onto the plot edge.
+     * The headline above it read the true 10h 40m, so one screen gave two answers to how long
+     * the night was.
+     */
+    @Test
+    fun `a night starting before midnight widens the day backwards`() {
+        val midnight = Instant.parse("2026-09-19T00:00:00Z")
+        val nextMidnight = midnight.plusSeconds(24 * 3600)
+        val night = Session(
+            start = midnight.minusSeconds(102 * 60), // 22:18 the previous evening
+            end = midnight.plusSeconds((8 * 60 + 58) * 60),
+            title = null,
+            kind = Session.Kind.SLEEP,
+            origin = "com.garmin.android.apps.connectmobile",
+        )
+
+        val widened = widenToSessions(midnight..nextMidnight, listOf(night))
+
+        assertEquals(night.start, widened.start)
+        assertEquals(nextMidnight, widened.endInclusive)
+        assertTrue("the whole night must fit inside", night.end <= widened.endInclusive)
+    }
+
+    /** A day whose sessions sit inside it keeps the fixed midnight-to-midnight axis. */
+    @Test
+    fun `a day containing its sessions is left alone`() {
+        val midnight = Instant.parse("2026-09-19T00:00:00Z")
+        val day = midnight..midnight.plusSeconds(24 * 3600)
+        val nap = Session(
+            start = midnight.plusSeconds(13 * 3600),
+            end = midnight.plusSeconds(14 * 3600),
+            title = null,
+            kind = Session.Kind.SLEEP,
+            origin = "com.garmin.android.apps.connectmobile",
+        )
+
+        assertSame(day, widenToSessions(day, listOf(nap)))
+        assertSame(day, widenToSessions(day, emptyList()))
+    }
+
+    /**
+     * Never forwards. A session running past the end belongs to the next day -- sleep is
+     * selected by its end so it cannot occur, and an exercise crossing midnight is shown on
+     * the day it began. Widening forward would pull tomorrow's evening onto today's axis.
+     */
+    @Test
+    fun `a session running past the end does not widen the day forwards`() {
+        val midnight = Instant.parse("2026-09-19T00:00:00Z")
+        val nextMidnight = midnight.plusSeconds(24 * 3600)
+        val lateRun = Session(
+            start = midnight.plusSeconds(23 * 3600),
+            end = nextMidnight.plusSeconds(3600),
+            title = null,
+            kind = Session.Kind.EXERCISE,
+            origin = "com.garmin.android.apps.connectmobile",
+        )
+
+        val widened = widenToSessions(midnight..nextMidnight, listOf(lateRun))
+        assertEquals(nextMidnight, widened.endInclusive)
     }
 }

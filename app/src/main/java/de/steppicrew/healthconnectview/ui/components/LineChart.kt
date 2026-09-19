@@ -800,7 +800,12 @@ private fun TimeAxis(
     val visibleEnd = visibleStart.plusMillis((whole.toMillis() / zoom).toLong())
 
     val span = Duration.between(visibleStart, visibleEnd)
-    val intraday = !span.isNegative && span <= Duration.ofHours(HOURS_IN_DAY)
+    // The threshold is a day *plus the evening a night can reach back into*, not exactly 24
+    // hours. A sleep day widens its extent to contain a night that began before midnight
+    // (22:18 on the device, so 25.7 hours), and at a hard 24 that window fell through to the
+    // multi-day format and labelled a single night with one repeated date -- which read on
+    // screen as the axis losing its labels entirely.
+    val intraday = !span.isNegative && span <= Duration.ofHours(HOURS_INTRADAY_MAX)
 
     // Within a day, ticks are placed at round hours rather than snapped to samples: a
     // record-built series has points at whatever minute activity happened, so snapping gave
@@ -1109,7 +1114,14 @@ private const val BAND_ALPHA = 0.16f
 /** A calm night blue, fixed so it keeps meaning "asleep" whatever the wallpaper. */
 private val SLEEP_BAND = Color(0xFF5C7CFA)
 
-private const val HOURS_IN_DAY = 24L
+/**
+ * Longest window still labelled as clock times rather than dates.
+ *
+ * A day, plus the margin a night may push the start back by: a session beginning the previous
+ * evening widens the day's extent, and the result is still one night to a reader. Matched to
+ * the session margin the sessions themselves are searched over.
+ */
+private const val HOURS_INTRADAY_MAX = 36L
 
 /** Small enough to read as an axis mark rather than as a control. */
 private const val AXIS_ICON = 14

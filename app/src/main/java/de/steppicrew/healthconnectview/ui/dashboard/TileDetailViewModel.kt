@@ -10,6 +10,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -130,6 +131,10 @@ data class TileDetailData(
      * you are looking for slides across the screen as the day fills in. The line still stops
      * at its last real point, so the empty remainder reads as a day in progress rather than as
      * readings that were never taken.
+     *
+     * Widened backwards where a session began before midnight, since a night belongs to the
+     * day it ended on -- see `widenToSessions`. Only then: a day whose sessions sit inside it
+     * keeps the fixed axis exactly as before.
      */
     val extent: ClosedRange<Instant>? = null,
     /**
@@ -639,17 +644,37 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /**
-     * Midnight to midnight for a single day, else null.
+     * Midnight to midnight for a single day, widened to contain any session that started
+     * before it. Null for every other span.
      *
      * Only the day span: across a week or a month the chart already runs edge to edge, since
      * every bucket in the window produces a point whether or not anything was recorded in it.
      * It is within a day that the series stops at the last reading.
+     *
+     * **Why a night may push the start earlier.** A night is credited to the day it *ends* on
+     * but begins the previous evening -- measured 22:18 to 08:58. Pinned to midnight, the
+     * 1h 42m before it has nowhere to go: `horizontalFractions` clamps anything outside the
+     * extent onto the plot edge, so the band was drawn 00:00-08:58 while the headline above it
+     * read 10h 40m. The same screen gave two answers to "how long did I sleep", which is the
+     * defect the headline itself was fixed for in section 5.
+     *
+     * Widening keeps the band and the headline agreeing, and keeps the honest claim that the
+     * shaded width *is* the session. The cost is that the axis no longer always starts at
+     * midnight, which section 5 deliberately fixed it to -- so it is paid only on the days
+     * that need it, and only by the types that draw sessions at all. A day whose sessions sit
+     * inside it is midnight to midnight exactly as before.
      */
-    private fun dayExtent(span: Span, offset: Int): ClosedRange<Instant>? {
+    private fun dayExtent(
+        span: Span,
+        offset: Int,
+        sessions: List<Session>,
+    ): ClosedRange<Instant>? {
         if (span.intradayBucket == null) return null
         val zone = HealthRepository.DEFAULT_ZONE
-        return span.startDate(offset).atStartOfDay(zone).toInstant()..
-            span.endDate(offset).atStartOfDay(zone).toInstant()
+        val start = span.startDate(offset).atStartOfDay(zone).toInstant()
+        val end = span.endDate(offset).atStartOfDay(zone).toInstant()
+
+        return widenToSessions(start..end, sessions)
     }
 
     /**
@@ -1075,7 +1100,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessionCurveZones = zonesFor(heartRateSpec()),
             sessionCurveUnitRes = heartRateSpec()?.unitRes,
             lineZones = zonesFor(spec).takeIf { span.intradayBucket != null },
-            extent = dayExtent(span, offset),
+            extent = dayExtent(span, offset, sessions),
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             shapeSource = shapeSource,
