@@ -1,0 +1,1 @@
+0.4.1 — Nur Wartung. Eine Bibliothek, die die Abrechnungskomponente von Google Play mitbringt, wurde auf eine aktuelle Version gehoben. In der App sieht und verhält sich nichts anders als in 0.4.
