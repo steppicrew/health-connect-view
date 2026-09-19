@@ -147,6 +147,7 @@ private fun DetailContent(
                         points = data.points,
                         smooth = data.spec.tile.smoothChart,
                         unitRes = data.spec.unitRes,
+                        integral = data.spec.tile.integralValues,
                     )
                     Text(
                         text = stringResource(

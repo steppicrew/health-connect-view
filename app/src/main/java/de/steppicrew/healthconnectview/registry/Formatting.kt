@@ -27,6 +27,21 @@ object Formatting {
         }.format(value)
     }
 
+    /**
+     * A number at an exact number of decimals, for an axis label.
+     *
+     * [number] chooses decimals from the value's own magnitude, which is right for a reading
+     * shown on its own and wrong for a column of gridline labels: on a scale stepping by 0.5
+     * the whole values would print without a decimal and the halves with one, so neighbouring
+     * labels read as different kinds of number. The step decides here, so every label on an
+     * axis states the same precision -- and a whole-numbered step states none.
+     */
+    fun axisLabel(value: Double, decimals: Int, locale: Locale = Locale.getDefault()): String =
+        NumberFormat.getInstance(locale).apply {
+            maximumFractionDigits = decimals
+            minimumFractionDigits = decimals
+        }.format(value)
+
     fun integer(value: Long, locale: Locale = Locale.getDefault()): String =
         NumberFormat.getInstance(locale).format(value)
 

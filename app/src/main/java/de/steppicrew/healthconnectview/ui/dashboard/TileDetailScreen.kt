@@ -355,6 +355,7 @@ private fun SpanSummary(
                 sessions = data.sessions,
                 zones = data.lineZones,
                 markReadings = data.spec.tile.markReadings,
+                integral = data.spec.tile.integralValues,
                 extent = data.extent,
                 modifier = Modifier.padding(top = 16.dp),
             )
@@ -574,6 +575,8 @@ private fun SessionRow(
                 // Never on a session curve: it is heart rate at full resolution by
                 // definition, so every sample would carry a dot.
                 markReadings = false,
+                // The curve is heart rate whatever type opened the session.
+                integral = true,
                 extent = session.start..session.end,
             )
 
