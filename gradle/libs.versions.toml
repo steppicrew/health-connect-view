@@ -9,6 +9,7 @@ navigation = "2.10.0"
 coroutines = "1.11.0"
 healthConnect = "1.1.0"
 billing = "9.1.0"
+fragment = "1.8.9"
 datastore = "1.2.1"
 gpp = "4.1.1"
 junit = "4.13.2"
@@ -22,6 +23,7 @@ navigation-compose = { module = "androidx.navigation:navigation-compose", versio
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 health-connect = { module = "androidx.health.connect:connect-client", version.ref = "healthConnect" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
+fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }

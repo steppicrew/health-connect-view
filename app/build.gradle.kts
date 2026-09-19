@@ -251,6 +251,17 @@ dependencies {
         exclude(group = "com.google.android.datatransport")
         exclude(group = "com.google.firebase")
     }
+    // Play Billing reaches androidx.fragment 1.1.0 through play-services-base, and the Play
+    // Console flags that version as outdated on every release. R8 strips the library entirely
+    // -- a Compose app uses no fragments, and the shipped dex contains zero androidx/fragment
+    // references -- but the version still appears in the bundle's dependency metadata, which
+    // is what the Console's SDK scanner reads. The constraint raises what that metadata
+    // declares; it cannot change what ships, because nothing of it ships.
+    constraints {
+        implementation(libs.fragment) {
+            because("Play flags 1.1.0 from play-services-base as outdated")
+        }
+    }
     implementation(libs.datastore.preferences)
 
     debugImplementation(libs.compose.ui.tooling)
