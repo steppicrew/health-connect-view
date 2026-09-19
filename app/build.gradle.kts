@@ -33,7 +33,12 @@ play {
     enabled.set(serviceAccount != null)
     if (serviceAccount != null) serviceAccountCredentials.set(File(serviceAccount))
     defaultToAppBundles.set(true)
-    track.set("internal")
+    // Overridable from the command line, so `release.sh --track production` reaches the
+    // plugin. Hardcoded, it silently won: the script printed "is on the 'production' track"
+    // while gradle-play-publisher uploaded to internal, and only the Play API showed the
+    // difference. Internal stays the default, so a bare `publishReleaseBundle` cannot go
+    // public by accident.
+    track.set(providers.gradleProperty("play.track").orElse("internal"))
 }
 
 android {
