@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Lock
@@ -67,11 +65,11 @@ import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.ui.components.SpanSelector
+import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.windowLabel
 import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 /**
  * One type, full screen, over a span the user can step through.
@@ -791,55 +789,6 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
     }
 }
 
-@Composable
-private fun SpanSelector(selected: Span, onSelect: (Span) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Span.entries.forEach { span ->
-            FilterChip(
-                selected = span == selected,
-                onClick = { onSelect(span) },
-                label = { Text(stringResource(span.labelRes)) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun WindowStepper(
-    label: String,
-    canStepForward: Boolean,
-    onBack: () -> Unit,
-    onForward: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        IconButton(onClick = onBack) {
-            Icon(
-                imageVector = Icons.Default.ChevronLeft,
-                contentDescription = stringResource(R.string.span_previous),
-            )
-        }
-        Text(text = label, style = MaterialTheme.typography.labelLarge)
-        IconButton(onClick = onForward, enabled = canStepForward) {
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = stringResource(R.string.span_next),
-            )
-        }
-    }
-}
-
 private const val SESSION_ICON = 16
 private const val SESSION_CURVE_HEIGHT = 40
 
@@ -853,24 +802,3 @@ private const val MINUTES_PER_HOUR = 60
 @Composable
 private fun titleFor(spec: RecordTypeSpec<*>?): String =
     spec?.let { stringResource(it.displayNameRes) } ?: ""
-
-/**
- * The window being shown, derived from the span rather than from the loaded data.
- *
- * A day with nothing recorded still *is* a day, and naming it is what lets the user step to
- * another one: taking the label from the data left an empty screen with no date at all, and
- * therefore no clue which day had nothing in it.
- */
-@Composable
-private fun windowLabel(span: Span, offset: Int): String {
-    val start = span.startDate(offset)
-    val end = span.endDate(offset).minusDays(1)
-    return if (start == end) {
-        formatDate(start)
-    } else {
-        formatDate(start) + " – " + formatDate(end)
-    }
-}
-
-private fun formatDate(date: LocalDate): String =
-    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))

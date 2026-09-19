@@ -106,10 +106,6 @@
     <string name="field_record_id">Datensatz-ID</string>
 
     <!-- Zeiträume -->
-    <string name="range_week">7 Tage</string>
-    <string name="range_month">30 Tage</string>
-    <string name="range_quarter">90 Tage</string>
-    <string name="range_year">1 Jahr</string>
     <string name="span_day">Tag</string>
     <string name="span_week">Woche</string>
     <string name="span_month">4 Wochen</string>
