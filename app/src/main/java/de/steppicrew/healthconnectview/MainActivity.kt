@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
@@ -40,6 +41,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Declared rather than inherited: from targetSdk 35 the platform draws edge-to-edge
+        // regardless, and opting in explicitly is what makes the bars' scrim and icon tint
+        // ours to set. The tint itself follows the in-app theme, in HealthConnectViewTheme.
+        enableEdgeToEdge()
         startRoute = DebugNav.startRoute(intent)
         setContent {
             // Read here rather than inside the theme so a change repaints the whole app at
