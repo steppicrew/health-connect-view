@@ -107,7 +107,9 @@ specific apps name their sessions.
 
 **Sleep spans midnight, so a day-bounded read misses it.** A night credited to the morning it
 ends on starts the previous evening (measured: 22:48 to 05:15). Search sessions over a widened
-window and clip to the visible range.
+window and *select* by the visible range -- keep or drop each session whole, never trim it to
+the range. Trimming makes the clipped start read as the real one and every night then begins
+at midnight. Sleep is kept by its end, exercise by overlap.
 
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*
@@ -148,13 +150,19 @@ settings while backgrounded.
 
 ## Testing on hardware
 
-The Xiaomi test phone (HyperOS) blocks `adb install` **and** `adb shell input tap`
-(`SecurityException: INJECT_EVENTS`). Both need a signed-in Mi account, deliberately not
-created — see `docs/ROADMAP.md` §9. So:
+The Xiaomi test phone (HyperOS) blocks **input injection** -- `adb shell input tap` and
+`input keyevent` both fail with `SecurityException: INJECT_EVENTS` -- and refuses
+`settings put system` and `wm size` from the shell (`WRITE_SETTINGS`/`WRITE_SECURE_SETTINGS`).
+See `docs/ROADMAP.md` §9. So:
 
-- **Install:** `adb push` the APK to `/sdcard/Download/hcv.apk` -- always that exact name, so
-  the user is never hunting for the newest of several files -- and ask the user to tap it.
-- **Drive the UI:** ask the user to tap; read the result from `screencap` and `logcat`.
+- **Install:** `adb install -r` works. Measured 19.09.2026 on HyperOS/Android 16: "Success".
+  An earlier note here said installs were blocked too; they are not, and pushing the APK for
+  the user to tap is only needed if that ever changes.
+- **Drive the UI:** anything reachable by route, drive from the host with the nav backdoor
+  below. Anything needing a tap -- a span chip, a settings toggle, Back -- needs a person.
+- **Rotation cannot be forced from the host.** Both `user_rotation` and `wm size` are refused,
+  so landscape needs the phone physically turned. A layout change that only shows in landscape
+  cannot be self-verified.
 - **Avoid tapping entirely** where possible — the debug activities are startable with
   `am start`: `SeedActivity`, `AggregationCheckActivity`, `DataShapeActivity`.
 - **Open any screen directly** with the debug nav backdoor, so checking a rendering change is
