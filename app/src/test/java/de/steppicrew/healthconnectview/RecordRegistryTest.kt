@@ -85,4 +85,22 @@ class RecordRegistryTest {
                 )
             }
     }
+
+    /**
+     * Two chart decisions read these flags as opposites, so a type setting both would be
+     * asked to be a counted quantity and a taken reading at once.
+     *
+     * `cumulativeIntraday` draws the multi-day chart as bars from zero, because each bucket
+     * is a total. `markReadings` connects that chart through days with nothing recorded,
+     * because a day without a weigh-in says nothing rather than zero. A type with both would
+     * draw bars through days it has no value for, which invents a total nobody wrote.
+     */
+    @Test
+    fun `a type is either a counted quantity or a taken reading, never both`() {
+        val both = RecordRegistry.all
+            .filter { it.tile.cumulativeIntraday && it.tile.markReadings }
+            .map { it.type.simpleName }
+
+        assertTrue("Types claiming to be counted and measured at once: $both", both.isEmpty())
+    }
 }

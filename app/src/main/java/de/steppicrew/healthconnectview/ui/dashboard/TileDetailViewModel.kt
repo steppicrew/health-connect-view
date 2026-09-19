@@ -810,10 +810,28 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     // ends on days with nothing yet recorded -- today, most obviously -- and
                     // those break no line, so counting them would claim a hole that is not
                     // there.
+                    //
+                    // Not for the types a reading is *taken* of -- weight, body fat, blood
+                    // pressure. Those are measured when someone chooses to measure, so a day
+                    // without one carries no information: weighing in on Monday and the
+                    // Monday after is a fortnight's trend, not two isolated facts. Breaking
+                    // there stranded every point in a segment of its own, and a one-point
+                    // segment draws as a bare dot with no line at all -- so a weekly weigh-in
+                    // produced a chart with no line anywhere. `markReadings` is already the
+                    // registry's name for that distinction ("the gap between two of them is a
+                    // fact about the data"), and for these types the honest reading of that
+                    // fact is a connecting line, with the dots saying where the measurements
+                    // actually fell.
+                    //
+                    // A counted quantity keeps the break: a day with no steps recorded is not
+                    // a day of zero steps, and drawing through it would claim a number nobody
+                    // wrote.
                     val withValue = buckets.filter { it.result[metric] != null }
                     val firstRecorded = withValue.firstOrNull()?.startTime
                     val lastRecorded = withValue.lastOrNull()?.startTime
-                    emptyBuckets = if (firstRecorded == null || lastRecorded == null) {
+                    emptyBuckets = if (
+                        firstRecorded == null || lastRecorded == null || spec.tile.markReadings
+                    ) {
                         emptyList()
                     } else {
                         buckets
