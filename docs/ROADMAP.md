@@ -817,6 +817,23 @@ A versionCode is spent once uploaded anywhere: code 4 could not be re-uploaded t
 production, only promoted. Chasing a failed upload with a version bump would have burned a
 number for nothing.
 
+**0.4.1 (versionCode 5) followed the same day**, and with the `--track` binding fixed,
+`release.sh --track production` published it directly -- the first time that command did what
+it said. It carries no user-visible change: the Play Console flagged `androidx.fragment` 1.1.0,
+which Play Billing reaches through `play-services-base`, and a constraint raises it to 1.8.9.
+
+The finding is worth understanding before acting on the next one like it. R8 strips the library
+entirely -- a Compose app instantiates no fragments, and the release dex holds zero
+`androidx/fragment` references, the only "fragment" strings in it being `android.app.Fragment`
+from the framework. What the Console reads is `BUNDLE-METADATA/.../dependencies.pb`, which
+records the *resolved* version whether or not any of it survives shrinking. So an outdated-SDK
+warning here is a claim about what the bundle declares, not about what users receive, and its
+security framing does not apply to code that is not there.
+
+A constraint rather than an `exclude`: excluding is closer to the truth, but `play-services-base`
+declares the dependency deliberately, and removing an API Billing might call at runtime trades a
+warning for a crash on a payment path this app cannot yet exercise.
+
 ## 12. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
