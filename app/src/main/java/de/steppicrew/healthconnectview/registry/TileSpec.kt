@@ -66,6 +66,20 @@ data class TileSpec(
      */
     val cumulativeIntraday: Boolean = false,
     /**
+     * Whether this quantity is counted in whole units, so its axis may not be stepped in
+     * fractions.
+     *
+     * Steps, floors, beats per minute and a count of sessions are whole things; an axis
+     * labelled 78,5 bpm or 2,5 floors claims a precision the measurement does not have. Off by
+     * default, because most types here are genuinely continuous -- a weight, a temperature, a
+     * blood glucose -- and forcing whole steps onto them flattens the chart: body weight moving
+     * inside one kilogram would have a single gridline and no shape at all.
+     *
+     * Only affects the axis. Values elsewhere are formatted from the reading itself, which
+     * carries whatever precision the writing app recorded.
+     */
+    val integralValues: Boolean = false,
+    /**
      * Session kinds shaded behind this type's intraday chart.
      *
      * Sleep behind heart rate explains an overnight trough; an exercise band explains a climb

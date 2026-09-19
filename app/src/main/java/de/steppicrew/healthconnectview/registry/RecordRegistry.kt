@@ -141,6 +141,7 @@ object RecordRegistry {
                 TileSpec.Form.RING,
                 defaultGoal = 10.0,
                 cumulativeIntraday = true,
+                integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
@@ -193,6 +194,7 @@ object RecordRegistry {
                 TileSpec.Form.RING,
                 defaultGoal = 10_000.0,
                 cumulativeIntraday = true,
+                integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
@@ -259,6 +261,7 @@ object RecordRegistry {
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
                 cumulativeIntraday = true,
+                integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
@@ -389,6 +392,7 @@ object RecordRegistry {
             tile = TileSpec(
                 TileSpec.Form.CURVE,
                 defaultZones = ValueZones.DEFAULT_HEART_RATE,
+                integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
             ),
         ),
@@ -424,7 +428,11 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.rate)) },
             summary = { Formatting.number(it.rate) },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                markReadings = true,
+                integralValues = true,
+            ),
         ),
         RecordTypeSpec(
             type = RestingHeartRateRecord::class,
@@ -436,7 +444,11 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.beatsPerMinute.toDouble())) },
             summary = { Formatting.integer(it.beatsPerMinute) + " bpm" },
             aggregate = RestingHeartRateRecord.BPM_AVG,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                markReadings = true,
+                integralValues = true,
+            ),
         ),
         RecordTypeSpec(
             type = SkinTemperatureRecord::class,

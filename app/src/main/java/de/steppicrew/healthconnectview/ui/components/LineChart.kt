@@ -37,6 +37,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.layout.Layout
 import java.time.Duration
 import androidx.compose.ui.unit.dp
+import de.steppicrew.healthconnectview.registry.AxisScale
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.ui.dashboard.StackedBucket
@@ -85,6 +86,14 @@ fun LineChart(
      * nothing measured, and reads as a trend where there is only a sequence.
      */
     bars: Boolean = false,
+    /**
+     * Whether this quantity is counted in whole units, so the axis is not stepped in fractions.
+     *
+     * Declared per type in the registry: an axis labelled 2,5 floors claims a precision the
+     * measurement does not have, while forcing whole steps onto a body weight would flatten a
+     * chart that moves inside one kilogram.
+     */
+    integral: Boolean = false,
     /**
      * Per-bucket low/high drawn as a shaded ribbon behind the line.
      *
@@ -143,12 +152,25 @@ fun LineChart(
     // at the top would show a day's peak as equal to the highest that happened to fit.
     val bandLow = rangeBand.minOfOrNull { it.low }
     val bandHigh = rangeBand.maxOfOrNull { it.high }
-    val minValue = if (bars) {
-        minOf(0.0, values.min(), goal ?: 0.0)
-    } else {
-        minOf(values.min(), goal ?: values.min(), bandLow ?: values.min())
+    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min())
+    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max())
+
+    // The ends are rounded outward onto multiples of a round step, so every gridline lands on
+    // a number a reader can use. Taking them straight from the data instead labelled a heart
+    // rate of 45..113 as 45, 62, 79, 96, 113 -- five values none of which helps place a sixth.
+    // The scale still contains the data, the goal and the band, so nothing that took part in
+    // the old range is clipped out of the new one.
+    val scale = remember(dataLow, dataHigh, bars, integral) {
+        AxisScale.of(
+            low = dataLow,
+            high = dataHigh,
+            targetSteps = GUIDE_INTERVALS,
+            integral = integral,
+            includeZero = bars,
+        )
     }
-    val maxValue = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max())
+    val minValue = scale.min
+    val maxValue = scale.max
     // A flat series would divide by zero; give it a nominal span so it draws as a centre line.
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
 
@@ -419,12 +441,11 @@ fun LineChart(
                 }
             }
 
-            // Guides labelled at their own line, so a value can be read off the chart
-            // rather than inferred from the endpoints. Four intervals gives five labels,
-            // which stays legible at the height this chart is drawn.
-            val guides = (0..GUIDE_INTERVALS).map { step ->
-                minValue + (maxValue - minValue) * step / GUIDE_INTERVALS
-            }
+            // Guides labelled at their own line, so a value can be read off the chart rather
+            // than inferred from the endpoints. The count follows from the round step rather
+            // than being fixed: four intervals is what the scale aims for, and it lands on
+            // three or five where that is what keeps the ends round.
+            val guides = scale.guides
             guides.forEach { guide ->
                 val y = yFor(guide)
                 drawLine(
@@ -440,7 +461,7 @@ fun LineChart(
                 // middle two were 127 and 114 with their last digit cut off. An axis that
                 // silently drops digits is worse than no axis.
                 val label = textMeasurer.measure(
-                    text = Formatting.number(guide),
+                    text = Formatting.axisLabel(guide, scale.decimals),
                     style = labelStyle,
                     maxLines = 1,
                     softWrap = false,
@@ -454,16 +475,27 @@ fun LineChart(
                 } else {
                     (y - label.size.height / 2f).coerceAtLeast(0f)
                 }
-                // The label sits on top of the grid and goal lines, so it is backed out to
-                // stay readable where they cross it.
-                drawRect(
-                    color = surfaceColor,
-                    topLeft = Offset(0f, labelY),
-                    size = androidx.compose.ui.geometry.Size(
-                        width = label.size.width.toFloat() + LABEL_PAD.dp.toPx(),
-                        height = label.size.height.toFloat(),
-                    ),
-                )
+                // Haloed rather than sitting on a filled block.
+                //
+                // A rect the width of the label hid whatever the series did behind it, which
+                // on a chart with bars near the axis is a bar's left edge and on a dense line
+                // is the part of the curve the reader is trying to follow. The halo separates
+                // the digits from whatever crosses them while covering almost nothing.
+                //
+                // Drawn as eight offset copies *under* the fill, not as a stroke on the glyph
+                // itself: a stroke is centred on the outline, so half its width eats inward.
+                // Measured at 2dp on this phone that is a 2.8px bite into a ~3px stem, which
+                // reads as bold text with the counters of 6, 4 and 0 filled in -- reported
+                // from the device. An offset copy only ever adds pixels outside the glyph, so
+                // the digits keep their own weight.
+                val halo = LABEL_HALO.dp.toPx()
+                HALO_DIRECTIONS.forEach { (dx, dy) ->
+                    drawText(
+                        textLayoutResult = label,
+                        color = surfaceColor,
+                        topLeft = Offset(dx * halo, labelY + dy * halo),
+                    )
+                }
                 drawText(
                     textLayoutResult = label,
                     color = labelColor,
@@ -1037,11 +1069,33 @@ private const val GOAL_DASH_OFF = 4f
 private const val GOAL_MARKER_RADIUS = 6f
 private const val GOAL_MARKER_RING = 2.5f
 
-/** Four intervals gives five labelled gridlines, legible at this chart's height. */
+/**
+ * Intervals the vertical scale aims for: four, giving five labels, which stays legible at the
+ * height this chart is drawn. A target rather than a count -- rounding the ends onto a round
+ * step can land on one fewer or one more, and a round axis is worth the variance.
+ */
 private const val GUIDE_INTERVALS = 4
 
-/** Breathing room right of a gridline label, so the line does not touch the glyphs. */
-private const val LABEL_PAD = 4f
+/**
+ * How far the halo copies of a gridline label are offset from the glyphs.
+ *
+ * Enough to lift the digits off a line or a bar crossing them, small enough that the label
+ * still hides almost nothing -- which was the point of replacing the filled backing rect.
+ */
+private const val LABEL_HALO = 1.5f
+
+/**
+ * The eight directions a halo copy is drawn in, as unit offsets.
+ *
+ * All eight, rather than the four sides: with only the axis-aligned offsets a diagonal stroke
+ * -- the tail of a 4, the waist of a 2 -- meets the background at a corner the halo never
+ * covered, and the digit frays exactly where it crosses a gridline.
+ */
+private val HALO_DIRECTIONS = listOf(
+    -1f to -1f, 0f to -1f, 1f to -1f,
+    -1f to 0f, 1f to 0f,
+    -1f to 1f, 0f to 1f, 1f to 1f,
+)
 
 /** Four intervals gives five ticks, which fit without crowding at phone width. */
 private const val AXIS_TICKS = 4
