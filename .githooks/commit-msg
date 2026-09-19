@@ -1,0 +1,23 @@
+#!/bin/sh
+# Strip Co-Authored-By: Claude trailers from commit messages.
+#
+# The user's standing rule is that these lines are never added. Tooling can be
+# instructed otherwise at a level that overrides project instructions, so this
+# hook enforces it where judgement cannot be overridden.
+#
+# Only Claude/Anthropic trailers are touched: a real human co-author must
+# survive untouched.
+set -e
+
+msg="$1"
+[ -f "$msg" ] || exit 0
+
+# Delete the trailer, case-insensitively on the key, matching Claude or an
+# @anthropic address. Anchored to the line start so prose mentioning the
+# trailer in a body is left alone.
+sed -i -E '/^[Cc][Oo]-[Aa]uthored-[Bb]y:.*([Cc]laude|@anthropic\.com)/d' "$msg"
+
+# Collapse trailing blank lines the deletion may have left.
+perl -0pi -e 's/\n{2,}\z/\n/' "$msg"
+
+exit 0
