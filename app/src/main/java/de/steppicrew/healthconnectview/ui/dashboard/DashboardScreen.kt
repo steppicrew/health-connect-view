@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -313,7 +314,6 @@ private fun TileCard(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom,
             ) {
                 // Not for a session tile: its face is a count and its subtitle a duration, so
@@ -326,6 +326,13 @@ private fun TileCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                // An explicit spacer rather than SpaceBetween, because the unit above is
+                // conditional: with it absent -- every SESSIONS tile, so Sleep and Activities
+                // -- the source marker was the row's only child and SpaceBetween put it at
+                // the start, so those two tiles named their app bottom-left while every other
+                // tile named it bottom-right. Weight keeps the gap whether or not the unit
+                // rendered, which pins the marker to the end in both cases.
+                Spacer(modifier = Modifier.weight(1f))
                 // A filtered tile shows one app's figure, which differs from the combined
                 // total the same tile shows unfiltered. Naming the source is what keeps that
                 // difference explicable rather than looking like a wrong number.
