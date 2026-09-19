@@ -796,7 +796,28 @@ difference and deep-links to the system screen.
   at a running instance switches the type but keeps the old date, which reads as the date
   extra being ignored. Force-stop first when stepping through days from the host.
 
-## 11. Deferred
+## 11. Released
+
+**0.4.0 (versionCode 4) went to production on 19.09.2026** -- the app's first public release.
+Before it only internal testing (0.2.0) and alpha had ever been used.
+
+Two things about that flow are worth not rediscovering:
+
+- **The production track needs country availability set in the Play Console by hand.** Until it
+  exists, committing an edit that puts a release on production fails with
+  `403 PERMISSION_DENIED: Release in track targeting no countries`. No script can set it, so a
+  first public release always pauses here for a person.
+- **The gradle publisher reported tracks it did not use.** `release.sh --track production`
+  uploaded to internal and said production; `promoteReleaseArtifact -Pplay.promoteTrack` said
+  BUILD SUCCESSFUL and promoted nothing. Both are fixed, and `scripts/release-status.sh` now
+  reads the live per-track state from the Play API -- which is the only thing in this flow that
+  has been reliably truthful. Verify there, never from a build log.
+
+A versionCode is spent once uploaded anywhere: code 4 could not be re-uploaded to reach
+production, only promoted. Chasing a failed upload with a version bump would have burned a
+number for nothing.
+
+## 12. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
