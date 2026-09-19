@@ -885,6 +885,18 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
         val goal = if (cumulative) goalFor(spec) else null
 
+        // A counted quantity bucketed across days is a total per bucket, not a reading taken
+        // at a moment, so it gets the mark bars carry: read by comparing heights from zero.
+        // `cumulativeIntraday` is already the registry's "this quantity adds up" flag -- steps,
+        // distance, floors, calories, hydration -- and its own KDoc notes that across days
+        // each bucket is a daily total. The same reasoning the roadmap gives for drawing
+        // sessions as bars applies unchanged: a bucket that is a whole day is a count.
+        //
+        // Means keep the line. A resting heart rate averaged over a day is still a reading,
+        // and a bar from zero would bury the small movements that are the point of watching
+        // it -- which is why this keys off the flag rather than off the span alone.
+        val bucketedTotals = span.bucket != null && spec.tile.cumulativeIntraday
+
         // Hourly buckets do not deduplicate the way the daily total does. Where one app posts
         // a whole-day summary record and another itemises, the day-long record contributes to
         // every hourly bucket and the running total ends at the sum of both writers -- 24.6
@@ -1022,10 +1034,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         return TileDetailData(
             spec = spec,
             points = perDayPoints.ifEmpty { scaledPoints },
-            // Bars wherever a point is a whole day rather than a moment: a sessions window
-            // counted per day, or a total split into components that only read as parts when
-            // drawn stacked.
-            bars = perDayPoints.isNotEmpty() || stack.isNotEmpty(),
+            // Bars wherever a point is a whole bucket rather than a moment: a sessions window
+            // counted per day, a total split into components that only read as parts when
+            // drawn stacked, or a counted quantity bucketed across days.
+            bars = perDayPoints.isNotEmpty() || stack.isNotEmpty() || bucketedTotals,
             rangeBand = rangeBand,
             stack = stack,
             stackLabels = spec.stackComponents.map { it.first },
