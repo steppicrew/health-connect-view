@@ -1,8 +1,6 @@
 package de.steppicrew.healthconnectview.health
 
-import androidx.annotation.StringRes
 import androidx.health.connect.client.time.TimeRangeFilter
-import de.steppicrew.healthconnectview.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -26,12 +24,18 @@ fun dayInstants(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): TimeRan
         date.plusDays(1).atStartOfDay(zone).toInstant(),
     )
 
-/** Selectable window of history. */
-enum class TimeRange(@param:StringRes val labelRes: Int, val days: Long) {
-    WEEK(R.string.range_week, 7L),
-    MONTH(R.string.range_month, 30L),
-    QUARTER(R.string.range_quarter, 90L),
-    YEAR(R.string.range_year, 365L);
+/**
+ * A fixed window of history ending now, for internal probes.
+ *
+ * Not user-selectable: every screen that lets the user choose a window uses [Span], which
+ * carries an offset and so can reach data older than a year. This deliberately carries no
+ * label -- it is never rendered as a chip.
+ */
+enum class TimeRange(val days: Long) {
+    WEEK(7L),
+    MONTH(30L),
+    QUARTER(90L),
+    YEAR(365L);
 
     /** Anything beyond 30 days needs the history permission to return complete data. */
     val needsHistoryPermission: Boolean get() = days > 30L

@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.numericAggregate
-import de.steppicrew.healthconnectview.health.TimeRange
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
@@ -48,8 +48,12 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
     private val _state = MutableStateFlow<UiState<TypeDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<TypeDetailData>> = _state.asStateFlow()
 
-    private val _range = MutableStateFlow(TimeRange.WEEK)
-    val range: StateFlow<TimeRange> = _range.asStateFlow()
+    private val _span = MutableStateFlow(Span.WEEK)
+    val span: StateFlow<Span> = _span.asStateFlow()
+
+    /** Steps back from the present; 0 is the current window. Never negative. */
+    private val _offset = MutableStateFlow(0)
+    val offset: StateFlow<Int> = _offset.asStateFlow()
 
     private var typeName: String? = null
 
@@ -58,8 +62,22 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         reload()
     }
 
-    fun setRange(range: TimeRange) {
-        _range.update { range }
+    /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
+    fun setSpan(span: Span) {
+        _span.update { span }
+        _offset.update { 0 }
+        reload()
+    }
+
+    fun stepBack() {
+        _offset.update { it + 1 }
+        reload()
+    }
+
+    /** Stepping forward past the current window would show an empty future. */
+    fun stepForward() {
+        if (_offset.value == 0) return
+        _offset.update { (it - 1).coerceAtLeast(0) }
         reload()
     }
 
@@ -78,10 +96,11 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
                 return@launch
             }
 
-            val range = _range.value
-            val capped = range.needsHistoryPermission &&
+            val span = _span.value
+            val offset = _offset.value
+            val capped = span.needsHistoryPermission(offset) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
-            val result = runCatching { loadData(spec, range, capped) }
+            val result = runCatching { loadData(spec, span, offset, capped) }
             result.fold(
                 onSuccess = { data ->
                     // Some types have no stored records but still aggregate to a value:
@@ -101,10 +120,11 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     private suspend fun loadData(
         spec: RecordTypeSpec<*>,
-        range: TimeRange,
+        span: Span,
+        offset: Int,
         historyCapped: Boolean,
     ): TypeDetailData {
-        val records = repository.read(spec.type, range.filter())
+        val records = repository.read(spec.type, span.instantFilter(offset))
 
         // Totals must never be computed by summing raw records: several apps can write the
         // same metric, so their records overlap and adding them double-counts. Health
@@ -118,14 +138,14 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         // so the chart would cover the last few days of the range and read as missing history.
         // Types with an aggregate metric chart from daily buckets and never need this.
         val chartRecords = if (metric == null) {
-            runCatching { repository.readForChart(spec.type, range.filter()) }
+            runCatching { repository.readForChart(spec.type, span.instantFilter(offset)) }
                 .onFailure { Log.w(TAG, "chart read failed for ${spec.type.simpleName}", it) }
                 .getOrDefault(records)
         } else {
             emptyList()
         }
         val aggregated = if (metric != null) {
-            runCatching { aggregatePoints(spec, range) }
+            runCatching { aggregatePoints(spec, span, offset) }
                 .onFailure { Log.w(TAG, "aggregation failed for ${spec.type.simpleName}", it) }
                 .onSuccess { pts ->
                     Log.i(TAG, "AGG ${spec.type.simpleName}: ${pts.size} aggregated points")
@@ -136,7 +156,7 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
 
         val contributors = if (metric != null) {
-            runCatching { repository.contributingApps(metric, range.localFilter()) }
+            runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
                 .getOrDefault(emptySet())
         } else {
             emptySet()
@@ -158,9 +178,17 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         )
     }
 
-    private suspend fun aggregatePoints(spec: RecordTypeSpec<*>, range: TimeRange): List<Point> {
+    /**
+     * Aggregated buckets for the window, sliced by the span's own bucket.
+     *
+     * The slicer comes from [Span.bucket] rather than being fixed at a day: a year window
+     * buckets by week, and asking for 365 daily buckets there would chart a year of noise.
+     * [Span.DAY] has no Period-expressible bucket, so it is not offered by this screen.
+     */
+    private suspend fun aggregatePoints(spec: RecordTypeSpec<*>, span: Span, offset: Int): List<Point> {
         val metric = spec.aggregate ?: return emptyList()
-        return repository.dailyTotals(metric, range.localFilter())
+        val bucket = span.bucket ?: return emptyList()
+        return repository.bucketedTotals(metric, span.localFilter(offset), bucket)
             .mapNotNull { bucket ->
                 val value = bucket.result[metric]?.let(::numericAggregate) ?: return@mapNotNull null
                 Point(
@@ -170,8 +198,17 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
     }
 
-    private companion object {
-        const val TAG = "TypeDetail"
+    companion object {
+        private const val TAG = "TypeDetail"
+
+        /**
+         * The spans this screen offers.
+         *
+         * [Span.DAY] is excluded: this screen charts from Period-sliced buckets, and a single
+         * day sliced by a day-wide bucket is one point rather than a chart. The tile's
+         * full-screen view offers the day because it has the intraday, Duration-sliced path.
+         */
+        val SPANS: List<Span> = listOf(Span.WEEK, Span.MONTH, Span.YEAR)
     }
 
 }

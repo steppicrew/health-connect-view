@@ -1,22 +1,17 @@
 package de.steppicrew.healthconnectview.ui.detail
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.Record
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
-import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -42,6 +36,9 @@ import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.ui.components.SpanSelector
+import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.windowLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +49,8 @@ fun TypeDetailScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val range by viewModel.range.collectAsStateWithLifecycle()
+    val span by viewModel.span.collectAsStateWithLifecycle()
+    val offset by viewModel.offset.collectAsStateWithLifecycle()
 
     val title = (state as? UiState.Data)?.value?.spec?.displayNameRes
 
@@ -73,7 +71,17 @@ fun TypeDetailScreen(
         },
     ) { padding ->
         Column(Modifier.padding(padding)) {
-            RangeSelector(selected = range, onSelect = viewModel::setRange)
+            SpanSelector(
+                selected = span,
+                onSelect = viewModel::setSpan,
+                spans = TypeDetailViewModel.SPANS,
+            )
+            WindowStepper(
+                label = windowLabel(span, offset),
+                canStepForward = offset > 0,
+                onBack = viewModel::stepBack,
+                onForward = viewModel::stepForward,
+            )
             HorizontalDivider()
 
             when (val current = state) {
@@ -98,25 +106,6 @@ fun TypeDetailScreen(
                     onOpenRecord = onOpenRecord,
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun RangeSelector(selected: TimeRange, onSelect: (TimeRange) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        TimeRange.entries.forEach { range ->
-            FilterChip(
-                selected = range == selected,
-                onClick = { onSelect(range) },
-                label = { Text(stringResource(range.labelRes)) },
-            )
         }
     }
 }

@@ -132,10 +132,6 @@
     <string name="field_record_id">Record ID</string>
 
     <!-- Time ranges -->
-    <string name="range_week">7 days</string>
-    <string name="range_month">30 days</string>
-    <string name="range_quarter">90 days</string>
-    <string name="range_year">1 year</string>
     <string name="span_day">Day</string>
     <string name="span_week">Week</string>
     <string name="span_month">4 weeks</string>
