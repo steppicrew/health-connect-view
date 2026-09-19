@@ -139,5 +139,10 @@ if [ "$changed" -gt 0 ]; then
 fi
 
 step "Done"
-echo "  $NAME (versionCode $CODE) is on the '$TRACK' track"
+# Reporting $TRACK here would restate the *request*, not the result. It did exactly that once:
+# the track was hardcoded in the gradle play block, so `--track production` uploaded to
+# internal while this line said production, and only the Play API showed the difference. A
+# release note that says where the build went has to have asked where it went.
+echo "  $NAME (versionCode $CODE) uploaded, requested track '$TRACK'"
+echo "  Verify what actually landed:  ./scripts/release-status.sh"
 echo "  Remember to commit the refreshed listing assets if screenshots changed."
