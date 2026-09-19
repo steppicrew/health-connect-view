@@ -109,13 +109,14 @@ fun List<Session>.totalDuration(): Duration =
     fold(Duration.ZERO) { total, session -> total + session.duration }
 
 /**
- * Sleep and exercise spans overlapping a window, deduplicated and clipped to it.
+ * Sleep and exercise spans overlapping a window, deduplicated and selected by it.
  *
  * The read is widened by [SESSION_MARGIN] either side because a night's sleep is credited to
  * the morning it ends on but starts the previous evening -- measured on a real device, 22:48
  * to 05:15 -- so a window-bounded query is the wrong question for it whatever the filter's
- * overlap semantics. The margin is then undone by clipping: a session that merely happened
- * nearby is not part of the window.
+ * overlap semantics. The margin is then undone by *selecting*, not by trimming: a session
+ * that merely happened nearby is dropped, and one that belongs keeps its real start and end.
+ * Trimming them to the window is what made every night read as beginning at midnight.
  *
  * Deliberately unfiltered by source. A session written by any app is still a fact about what
  * the user was doing, and the source filter is about which app's *measurements* to trust.

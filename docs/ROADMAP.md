@@ -55,6 +55,26 @@ a leap day.
 - Tile configuration and goals are non-health UI state in DataStore. Health values are never
   persisted.
 
+### Built: the grid flows, within bounds
+
+`GridCells.Fixed(2)` with square tiles gave a landscape phone two enormous tiles -- each half
+the *long* edge wide and, through `aspectRatio(1f)`, equally tall.
+
+Neither built-in cell type fits, and the reason is worth keeping: `Fixed` cannot adapt, and
+`Adaptive` has no bounds, but both bounds are real here. Any tile minimum wide enough to keep a
+tablet sensible (150dp and up) drops a 320dp phone to a *single* column, which is worse than
+the bug being fixed; and unbounded, a tablet in landscape reaches eight columns, at which point
+the tiles are too small to read a number off -- the one thing a tile exists to do.
+
+`BoundedTileCells` fits as many columns of at least 160dp as the width allows, clamped to 2..5.
+Portrait is unchanged; a landscape phone gets three or four columns at 168-197dp instead of two
+at ~350dp; a large tablet stops at five and the tiles grow instead, which keeps the column
+count predictable for the stored tile spans below.
+
+Its arithmetic is tested rather than eyeballed -- it is the kind that looks obviously right and
+is off by a spacing. The test pins the bounds, that columns and gaps fill the width exactly,
+that widths differ by at most a pixel, and that a wider screen never yields *fewer* columns.
+
 ### Still open
 
 - Tile resize (2x1, 2x2). The config already stores spans; what is missing is the layout
@@ -71,6 +91,18 @@ a leap day.
 - **Theme** — Light / Dark / System, plus a toggle for wallpaper (dynamic) colours. Read at the
   top of the activity so a change repaints everything at once and the first frame is not a
   flash of the wrong palette.
+
+  **The system bars take their icon tint from this setting, not from the system's.** At
+  `targetSdk` 35 and up the platform draws edge-to-edge regardless and ignores the legacy
+  `statusBarColor`/`navigationBarColor` attributes, so the bars are transparent over whatever
+  the app paints and only the tint is left to set. Nothing set it: neither `themes.xml` file
+  carries a bar attribute and no code touched a `WindowInsetsController`, so back/home/recents
+  were drawn nearly white on white in the light palette. The two notions of "dark" are what
+  made it worst -- `values-night` follows the *system*, the palette follows the *app*, so
+  choosing Light under a dark system was white glyphs on a white surface by construction.
+  `isAppearanceLight*Bars` now follows the same `darkTheme` the palette does, from inside the
+  theme composable so a change repaints the bars without an activity restart. Every screen is
+  a `Scaffold` and consumes the padding it is handed, so edge-to-edge puts nothing under a bar.
 - **Language** — a *link* into Android's own per-app language screen, not a control.
   `res/xml/locales_config.xml` declares the shipped locales, which is what makes the app appear
   there at all. A private override would drift from what the system's own settings show.
@@ -145,9 +177,52 @@ One hand-drawn Compose Canvas line, no charting dependency. Everything renders t
 ### Still open
 
 - X-axis tick labels between the endpoints.
-- Empty-day gaps shown as gaps rather than interpolated straight through. Relevant to the
-  "unexplained 0" problem in `FEATURE-IDEAS.md`: a line drawn through a day with no data claims
-  a value that was never recorded.
+
+### Built: the y-axis lands on round numbers
+
+The scale ran from the data's own minimum to its own maximum and cut that into four, so a heart
+rate between 45 and 113 was labelled 45, 62, 79, 96, 113 -- five arbitrary values, none of which
+helps place a sixth. `Formatting.number` then chose decimals by magnitude alone, so a step of
+17 bpm arrived as "78,5" on a quantity nobody measures in halves.
+
+`AxisScale` picks a step from 1, 2, 2.5 or 5 times a power of ten and pushes the ends outward
+onto multiples of it. That is what makes the *intermediate* labels round too: a round bottom and
+a round step cannot produce a ragged one in between. The reported case reads 40, 60, 80, 100,
+120.
+
+- **Decimals come off the step, not off each value.** On a scale stepping by 0.5 the old rule
+  printed whole values bare and halves with a decimal, so neighbouring labels read as different
+  kinds of number. `Formatting.axisLabel` takes the count explicitly.
+- **`integralValues` marks the quantities counted in whole units** -- steps, floors, wheelchair
+  pushes, heart rate, resting and respiratory rate. Off by default, because most types here are
+  continuous: whole steps on a body weight moving inside one kilogram would leave a single
+  gridline and no shape. Cadences are averaged rates and stay fractional.
+- **The scale still contains the data, the goal and the range band**, so nothing that took part
+  in the old range is clipped out of the new one -- and bars still get zero on the scale, which
+  their baseline is drawn at.
+- The interval count is a *target*, not a guarantee: rounding the ends can land on three or five
+  gridlines, and a round axis is worth the variance.
+
+2.5 earns its place in the step list: on a span of 9 the alternatives jump from nine gridlines
+to five to two, and nothing else sits between. It is the reason a week of sleep reads 0,0 2,5
+5,0 7,5 10,0 rather than being squeezed onto whole hours.
+
+### Built: gaps break a count, not a measurement
+
+Empty-day gaps are shown as gaps rather than interpolated straight through -- but only where
+the gap means something. Relevant to the "unexplained 0" problem in `FEATURE-IDEAS.md`: a line
+drawn through a day with no data claims a value that was never recorded.
+
+The split is by `markReadings`, the flag that already names the types a reading is *taken* of.
+A day with no steps recorded is not a day of zero steps, so the line breaks. A day without a
+weigh-in carries no information at all, so the line connects: weighing in on Monday and the
+Monday after is a fortnight's trend, not two isolated facts. Breaking there put every point in
+a segment of its own, and a one-point segment draws as a bare dot with no line -- a weekly
+weigh-in produced a chart with no line anywhere.
+
+The caption explaining a break is emitted from the same source, so it cannot appear on a chart
+that has none. `RecordRegistryTest` pins `markReadings` and `cumulativeIntraday` as disjoint,
+since the bar and gap rules read them as opposites.
 
 ### Built: a multi-day span has its own marks
 
@@ -188,6 +263,14 @@ Bar rendering was dropped from this list once the intraday cumulative chart step
 record's own interval -- within a day the line no longer implies continuity between counted
 events. The multi-day marks put it back for a different reason: not to fix the day view, but
 because a bucket that is a whole day is a count, not a moment.
+
+That reason applies past sessions and stacks, and at first only those got it: `bars` was
+derived from them alone, so steps and distance drew a line over week, four-week and year
+buckets that were already daily and weekly totals. The buckets were right and only the mark
+was wrong. It now follows `cumulativeIntraday`, the registry's existing flag for quantities
+that add up, whose own KDoc already observed that across days each bucket is a daily total.
+Means stay lines: a resting heart rate averaged over a day is still a reading, and a bar from
+zero would bury the small movements that are the reason to watch it.
 
 ### Chart invariants worth not breaking
 
@@ -246,8 +329,9 @@ Mountainbiken", "Stärke deinen Rücken".
 
 A night's sleep is credited to the morning it ends on but starts the previous evening —
 measured, 22:48 to 05:15. A day-bounded read is therefore the wrong query, and sleep never
-appeared. Sessions are searched over a window widened by half a day either side, then clipped
-to the visible range.
+appeared. Sessions are searched over a window widened by half a day either side, then selected
+by the visible range -- kept or dropped whole, never trimmed to it. See the bar-start defect
+below for why the distinction matters.
 
 **Built: which day a night belongs to, and where its bar starts.** Widening the window
 made sleep appear; it did not settle attribution. Two defects reported from the test build:
@@ -316,6 +400,32 @@ colouring one red would claim an alarming measurement where the data says an unr
 A coloured line is stroked span by span, since a path takes one colour, which costs the
 smoothing for those types — the right trade, as the colour says whether a reading was high and
 rounded corners do not.
+
+### Built: a night is shown from when it began
+
+The day's chart drew a sleep band from 00:00 for a night that started at 22:18, while the
+headline above it read the true 10h 40m -- 8h 58m of shading against a 10h 40m number, one
+screen giving two answers to the same question. That is the defect the headline itself was
+fixed for earlier in this section.
+
+The session was never wrong; it keeps its real start. The loss was in the plot, which pins the
+day midnight-to-midnight and clamps anything outside onto the edge, so the pre-midnight stretch
+collapsed onto x = 0.
+
+A day's extent now widens **backwards** to contain a session that began before it, and only
+then -- a day whose sessions sit inside it keeps the fixed axis below. Never forwards: a
+session past the end belongs to the next day (sleep is selected by its end, and an exercise
+crossing midnight is shown on the day it began), so widening forward would pull tomorrow's
+evening onto today's axis.
+
+`TimeAxis` needed the matching change and is the trap worth remembering: it labelled clock
+times only up to *exactly* 24 hours, so a widened night at 25.7 hours fell through to the
+multi-day date format and drew one repeated date, which on the phone read as the axis losing
+its labels altogether. The threshold is now a day plus the evening a night can reach back into.
+
+Measured on the phone: the band covers 0.415 of the track, against 0.415 predicted for the
+widened extent and 0.374 for the old one, and every axis tick lands within 0.003 of its
+computed position.
 
 ### Built: the day pinned to 24 hours, and icons on the axis
 
@@ -529,10 +639,11 @@ and reports raw-versus-aggregated counts per type without needing a single tap.
 
 ## 10. Known issues, not yet fixed
 
-Everything reported from the internal-testing build has now been fixed and, except where
-noted, confirmed on the phone against real two-writer data.
+Everything reported from the internal-testing build has been fixed and, except where noted,
+confirmed on the phone against real two-writer data.
 
-Nothing from that build is still open.
+A second round reported on 19.09.2026 is fixed in code but not yet seen on the device, below.
+Everything from that round is now fixed and confirmed on the phone.
 
 ### Fixed and confirmed on the device
 
@@ -556,6 +667,84 @@ Measured on the phone, 13.09.2026, against Garmin Connect and Health Sync.
   Note the earlier plan here -- "select a single source and sum its own records" -- turned out
   to be unnecessary. The combined view is correct once the shape comes from a writer that has
   timing; no source selection is required.
+
+### Fixed and confirmed on the device
+
+Reported 19.09.2026, verified on the phone the same day against real Garmin data.
+
+- **The system bars were nearly invisible.** See §2 — the tint followed the system's night
+  mode while the palette followed the app's setting. Confirmed on the Xiaomi with 3-button
+  nav, the reported case: dark glyphs on the light palette, white on the dark one. Still
+  unverified is the crossed case, in-app Light under a dark system, which needs a tap in
+  Settings: the choice lives in DataStore and cannot be set from the host.
+- **The source marker sat bottom-left on Sleep and Activities.** One footer row, not two code
+  paths: `Arrangement.SpaceBetween` with a conditional first child. The unit label is
+  suppressed for every `SESSIONS` tile — for sleep deliberately, since "h" labels neither a
+  count nor a duration — which left the marker as the only child, and `SpaceBetween` puts a
+  lone child at the start. A weighted spacer makes the gap unconditional. Confirmed on the
+  Sleep tile in both palettes.
+- **Steps and distance drew lines over multi-day buckets.** See §4. Confirmed: a steps week
+  draws seven daily bars, a steps year fifty-two weekly ones, distance the same.
+- **Weight drew dots with no line.** See §4. Confirmed over a year of real weigh-ins: one
+  connected line, dots on the measurements.
+- **The y-axis was labelled with the data's own extremes.** See §4. Confirmed on the reported
+  case — a day of heart rate now reads 40, 60, 80, 100, 120.
+- **A night was drawn from midnight rather than from when it began.** See §5.
+- **The tile grid gave two enormous tiles in landscape.** See §1. Confirmed with the phone
+  turned by hand: four columns at a size close to a portrait tile, eight tiles visible at
+  once, portrait unchanged. The host cannot rotate the screen -- HyperOS refuses both
+  `settings put system user_rotation` and `wm size` -- so this one needed a person.
+
+  It also confirmed the insets: with the app drawing edge-to-edge (§2) the grid clears the
+  status bar and the right-hand navigation strip rather than sliding under them, which was
+  the risk in opting in.
+
+### Found while verifying on the device
+
+- **The first and last bar were clipped in half.** A bar is centred on its timestamp and the
+  end buckets sit at fraction 0 and 1, so half of each fell outside the canvas. Pre-existing,
+  but invisible until counted quantities started drawing as bars.
+
+  Clamping the bar back inside fixed the clipping and broke the spacing: it moves one bar and
+  not its neighbour, so that gap closed to nothing -- -8px against 50px elsewhere -- and the
+  end pair read as one thick bar. The whole run is now laid out in a plot **inset by half a
+  bar** at each end, which keeps every gap identical and the outer edges flush. Two reports
+  for one defect; the second only existed because of the first fix.
+
+### Built: the axis labels are haloed, and every mark is named
+
+Two more from the same device round.
+
+**Labels sat on a filled block**, hiding whatever the series did behind them -- a bar's left
+edge, or the stretch of curve being followed. They are haloed now, which covers almost nothing.
+
+The halo is **eight offset copies drawn under the fill, not a stroke on the glyph**. A stroke
+is centred on the outline, so half its width eats *inward*: at 2dp on the test phone that is a
+2.8px bite into a ~3px stem, and the first attempt came back from the device as "the numbers
+simply look bold", with the counters of 6, 4 and 0 filled in. An offset copy only ever adds
+pixels outside the glyph. Eight directions rather than four, or a diagonal stroke frays exactly
+where it crosses a gridline.
+
+**Nothing named the shaded bands.** The caption under a chart says which *operation* produced
+the numbers; it never said what the *shapes* were, and the pale blue sleep ribbon was reported
+as simply unexplained. A line has an axis and a caption to fall back on, a bar has both plus
+its own label, but a rectangle behind them has nothing.
+
+`ChartLegend` names whatever is actually drawn -- series, stack segments, range band, sleep and
+exercise bands, goal, reading dots -- and only that: a legend naming a mark the chart does not
+have sends the reader looking for something absent. It replaces `StackLegend` so a stacked
+chart has one legend rather than two.
+
+Two cases needed their own handling, both found on the phone rather than in the code:
+
+- **A session type's day has no series at all**, only a `SessionTimeline`, so the legend never
+  rendered on the very screen the bands were reported from.
+- **A band names itself even when it is the only entry.** A lone entry is otherwise suppressed
+  as clutter, since it merely repeats the caption -- but the sleep timeline *is* one band.
+
+The swatch is deliberately stronger than the band it names. At the chart's own 0.16 alpha a
+10dp square is (227,231,254) against a (253,251,255) surface: a swatch has to read as a colour
+first and match exactly second.
 
 ### Fixed and confirmed by the reporter
 
