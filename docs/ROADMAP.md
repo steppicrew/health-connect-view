@@ -609,9 +609,12 @@ Two things fell out of that move:
 where nothing is user-selectable. It lost `labelRes` -- nothing renders it as a chip any more --
 and the four `range_*` strings went with it.
 
-**Not yet seen on the device.** This is a reachability change, and the thing worth checking on
-hardware is that stepping back past the 365-day line actually returns the older records the
-measured data says are there.
+**Confirmed on the phone, 20.09.2026.** The tile view reaches 15.06.2025 -- 462 days back --
+and `HistoryReachActivity` reports chart reads running to 494 days with the history permission
+granted, so the old 365-day wall is genuinely gone rather than merely un-asserted. The type
+detail screen shows three span chips with the day absent, and charts seven daily buckets for a
+week. The year span's weekly bucketing is the one part still unverified on hardware: the debug
+backdoor cannot switch spans (see section 11), so it needs a tap.
 
 ### Trap: probes must stay in the foreground
 
@@ -858,6 +861,25 @@ security framing does not apply to code that is not there.
 A constraint rather than an `exclude`: excluding is closer to the truth, but `play-services-base`
 declares the dependency deliberately, and removing an API Billing might call at runtime trades a
 warning for a crash on a payment path this app cannot yet exercise.
+
+**0.4.2 (versionCode 6) went to internal testing on 20.09.2026**, carrying the history-reach
+fix. Internal was two versions behind at the time -- it still held 0.4.0 while production ran
+0.4.1, because 0.4.1 was published straight to production -- so this is also the track catching
+up. Production stays on 0.4.1.
+
+versionCode 6 rather than 5: a code is spent once uploaded *anywhere*, and 5 had already gone
+to production. Even a different track cannot reuse it.
+
+Verified on the phone before publishing, which the previous session could not do for lack of a
+connected device: the type detail screen opens on three span chips (day correctly absent),
+charts seven daily buckets through `bucketedTotals()`, and the tile view reaches 15.06.2025 --
+462 days back, well past the old 365-day wall -- rendering the empty window honestly rather
+than falling back to today.
+
+One gap found while checking, not caused by this change: the debug backdoor's `span` extra is
+never applied. `Routes.tileDetail()` builds only `?date=`, so `-e route "tile/X?span=MONTH"`
+silently opens on the day span. Switching spans from the host is therefore impossible, and the
+year view's weekly bucketing could not be self-verified -- that one needs a tap.
 
 ### Two edge-to-edge warnings that need no change
 
