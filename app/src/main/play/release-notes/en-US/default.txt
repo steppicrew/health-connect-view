@@ -1,1 +1,1 @@
-0.4.1 — Housekeeping only. A library that Google Play's billing component brings in was updated to a current version. Nothing in the app looks or behaves differently from 0.4.
+0.4.2 — History further back. The type detail screen was limited to the last year, so older readings could not be reached at all — and the cut-off looked like the end of your data rather than a limit. It now steps back a week, four weeks or a year at a time, as far back as Health Connect actually holds. The year view groups by week instead of drawing a point per day.

@@ -49,8 +49,8 @@ android {
         applicationId = "de.steppicrew.healthconnectview"
         minSdk = 26
         targetSdk = 37
-        versionCode = 5
-        versionName = "0.4.1"
+        versionCode = 6
+        versionName = "0.4.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Keep only the locales this app actually translates. Without this the APK also
         // carries roughly eighty AndroidX locales it never uses.
