@@ -26,3 +26,24 @@ class AggregateValueTest {
         assertEquals(180.0, numericAggregate(Length.meters(1.8), HeightRecord.HEIGHT_AVG)!!, 1e-9)
     }
 }
+
+/** The fallback when an aggregate comes back empty must combine like the aggregate would. */
+class CombineTest {
+
+    private fun spec(name: String) = de.steppicrew.healthconnectview.registry.RecordRegistry.specOrNull(name)!!
+
+    @Test
+    fun `an averaged type is averaged, not summed`() {
+        assertEquals(51.0, spec("HeartRateRecord").combine(listOf(50.0, 52.0, 51.0))!!, 1e-9)
+    }
+
+    @Test
+    fun `a total is summed`() {
+        assertEquals(300.0, spec("StepsRecord").combine(listOf(100.0, 200.0))!!, 1e-9)
+    }
+
+    @Test
+    fun `nothing stays nothing rather than zero`() {
+        assertEquals(null, spec("StepsRecord").combine(emptyList()))
+    }
+}
