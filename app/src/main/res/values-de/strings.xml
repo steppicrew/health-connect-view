@@ -125,6 +125,34 @@
     <string name="protection_not_used">Ungeschützt</string>
     <string name="protection_unspecified">Verhütung nicht erfasst</string>
 
+    <!-- Zyklusübersicht -->
+    <string name="cycle_title">Zyklen</string>
+    <string name="cycle_open">Zyklusübersicht</string>
+    <string name="cycle_open_body">Alle Zyklen eines Jahres untereinander, ausgerichtet an Tag 1</string>
+    <string name="cycle_empty_body">In diesem Jahr wurde keine Periode oder Blutung erfasst, daher gibt es keinen Zyklus zum Ausrichten.</string>
+    <string name="cycle_legend">Schattiert: Blutung, dunkler ist stärker. Punkt unten: Schmierblutung. Dreieck: Ovulationstest, gefüllt wenn positiv. Strich: Zervixschleim erfasst. Linie: Basaltemperatur.</string>
+    <string name="cycle_not_granted">Nicht angezeigt, kein Zugriff erlaubt: %1$s</string>
+    <string name="cycle_stat_length">Zykluslänge (Median)</string>
+    <string name="cycle_stat_range">Kürzester bis längster</string>
+    <string name="cycle_stat_period">Periodenlänge (Median)</string>
+    <string name="cycle_stat_completed">Abgeschlossene Zyklen</string>
+    <plurals name="cycle_days">
+        <item quantity="one">%1$d Tag</item>
+        <item quantity="other">%1$d Tage</item>
+    </plurals>
+    <plurals name="cycle_days_range">
+        <item quantity="one">%1$d–%2$d Tag</item>
+        <item quantity="other">%1$d–%2$d Tage</item>
+    </plurals>
+    <plurals name="cycle_running">
+        <item quantity="one">läuft, bisher %1$d Tag</item>
+        <item quantity="other">läuft, bisher %1$d Tage</item>
+    </plurals>
+    <plurals name="cycle_method">
+        <item quantity="one">Ein Zyklus beginnt am ersten Tag einer als Periode oder Blutung erfassten Blutung nach mindestens %1$d Tag ohne. Hier wird nichts vorhergesagt.</item>
+        <item quantity="other">Ein Zyklus beginnt am ersten Tag einer als Periode oder Blutung erfassten Blutung nach mindestens %1$d Tagen ohne. Hier wird nichts vorhergesagt.</item>
+    </plurals>
+
     <!-- Feldbezeichnungen -->
     <string name="field_source_app">Quell-App</string>
     <string name="field_record_id">Datensatz-ID</string>

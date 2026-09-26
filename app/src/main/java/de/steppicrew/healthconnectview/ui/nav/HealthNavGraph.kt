@@ -11,6 +11,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import de.steppicrew.healthconnectview.ui.catalog.CatalogScreen
 import de.steppicrew.healthconnectview.ui.catalog.CatalogViewModel
+import de.steppicrew.healthconnectview.ui.cycle.CycleScreen
+import de.steppicrew.healthconnectview.ui.cycle.CycleViewModel
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardScreen
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardViewModel
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailScreen
@@ -31,6 +33,7 @@ object Routes {
     const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
+    const val CYCLE = "cycle"
 
     fun typeDetail(typeName: String) = "type/$typeName"
     fun tileDetail(typeName: String, date: String) = "tile/$typeName?date=$date"
@@ -72,6 +75,7 @@ fun HealthNavGraph(
             CatalogScreen(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.typeDetail(it)) },
+                onOpenCycles = { navController.navigate(Routes.CYCLE) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 onBack = { navController.popBackStack() },
             )
@@ -94,6 +98,14 @@ fun HealthNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenPrivacy = { navController.navigate(Routes.PRIVACY) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
+        }
+
+        composable(Routes.CYCLE) {
+            val viewModel: CycleViewModel = viewModel()
+            CycleScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
             )
         }
 
