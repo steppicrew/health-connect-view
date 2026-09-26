@@ -23,7 +23,7 @@ open items below and `FEATURE-IDEAS.md`.
    build with section 15's purchase code is live; the privacy text changed and wants the
    owner's review before release.
 6. [x] **Dashboard configuration export/import** -- merged 26.09.2026, see section 14.
-7. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
+7. [x] **Blood pressure morning/evening split** -- merged 27.09.2026, see section 16.
 8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
    be driven from the host on the Xiaomi.
 
@@ -1167,7 +1167,29 @@ Settings -> Licence testing), which buys with test cards and is never charged. P
 not verified on a server -- there is none -- so a rooted device can fake ownership; accepted
 for a €4 unlock.
 
-## 16. Deferred
+## 16. Blood pressure morning and evening — built
+
+The blood pressure detail view shows morning and evening averages side by side, systolic and
+diastolic in whole numbers with the reading count, below the trend (`health/BloodPressure.kt`).
+One blended average hides a morning surge, and the usual advice is to measure twice a day.
+
+- **The rule, chosen by the owner:** 04:00-13:59 is morning, 14:00 to 03:59 the evening of
+  the day before. A late reading before bed is not the next morning, and every reading lands in
+  one of the two -- no third "other" group. Stated behind the section's "i".
+- **Its own read, 04:00 to 04:00,** not the calendar window, so the last evening's
+  after-midnight readings are included and the first morning's night-before ones are not.
+- **Raw records averaged, not summed.** There is no aggregate split by time of day. The same
+  reading from two apps (same instant, same values) counts once.
+- The seeder now writes two readings a day, every third evening at 00:35.
+
+Verified on the emulator: a week showed 7 mornings and 6 evenings (today's evening still ahead),
+13 records listed; the 24th counted its 21:40 evening and not the 00:35 reading belonging to
+the 23rd. The phone holds only one to three readings, so real multi-writer data is unseen.
+
+Noticed, not changed: the headline above it says "Total" for what is an average of systolic
+values, and the chart caption says "daily totals" -- both wording carried over from summed types.
+
+## 17. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
