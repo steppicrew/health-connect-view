@@ -11,10 +11,11 @@ and has been seen on a device; tick it here in the same merge. Ranked on 26.09.2
 open items below and `FEATURE-IDEAS.md`.
 
 1. [x] **Cycle overview** -- section 12. Merged 26.09.2026.
-2. [ ] **See the cycle overview on the phone.** Only the emulator has shown it. Needs real
-   cycle data, or the seeder's (debug `WRITE_*` cycle permissions granted in Health Connect).
-   Check dark theme and dynamic colour: the bleeding rose is fixed, everything else follows
-   the scheme.
+2. [x] **See the cycle overview on the phone.** Done 26.09.2026 with the in-memory fixture
+   (`-e route "'cycle?fixture=true'"`), since the phone has no cycle data and seeding would
+   put fake periods in the owner's real store. Dark theme with dynamic colour showed light
+   flow as the *darkest* day; fixed. The real read path shows the no-permission and empty
+   states correctly. Not seen on the phone: light theme (it needs a tap) and real cycle data.
 3. [ ] **Tile comparison** -- a small up/down arrow on each tile, 7-day against 30-day
    average. Covers section 1's open comparison and the top idea in `FEATURE-IDEAS.md`. Costs a
    second `aggregate()` per tile, so measure dashboard load on the phone before and after.
@@ -996,7 +997,10 @@ Found while verifying on the emulator: the first load ran while the screen was a
 refused (the foreground trap in section 7). The screen loads in `OnResume` rather than once, so
 it recovers on return and re-reads permissions as the architecture requires.
 
-Not yet seen on the phone -- step 2 of the plan above.
+Seen on the phone on 26.09.2026 through `CycleFixture`, a debug-only in-memory copy of the
+seeder's cycles: writing fixtures into the owner's store would let any cycle tracker read fake
+periods as real. It showed the flow shading inverted in dark theme -- translucent rose reads
+lighter on a dark background -- so flow is now blended from the empty cell towards the rose.
 
 ## 13. Deferred
 
