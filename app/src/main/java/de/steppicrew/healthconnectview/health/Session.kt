@@ -191,14 +191,16 @@ suspend fun HealthRepository.recordsIn(
     start: Instant,
     end: Instant,
     origins: Set<DataOrigin> = emptySet(),
+    maxRecords: Int = HealthRepository.MAX_RECORDS,
 ): List<Record> {
     if (spec.type != SleepSessionRecord::class) {
-        return read(spec.type, TimeRangeFilter.between(start, end), origins = origins)
+        return read(spec.type, TimeRangeFilter.between(start, end), maxRecords, origins)
     }
     return read(
         spec.type,
         TimeRangeFilter.between(start.minus(SESSION_MARGIN), end.plus(SESSION_MARGIN)),
-        origins = origins,
+        maxRecords,
+        origins,
     ).filter { record ->
         val ended = spec.endTimeOf(record) ?: spec.timeOf(record)
         ended > start && ended <= end
