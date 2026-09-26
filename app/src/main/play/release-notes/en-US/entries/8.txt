@@ -1,0 +1,1 @@
+0.6.0 — Blood pressure: both values, colours after the ESH grades, and separate morning and evening averages. Pro: dashboard tiles two cells wide or two by two.

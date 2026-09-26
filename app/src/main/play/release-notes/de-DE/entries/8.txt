@@ -1,0 +1,1 @@
+0.6.0 — Blutdruck: beide Werte, Farben nach ESH-Einstufung und getrennte Durchschnitte für morgens und abends. Pro: Kacheln im Dashboard doppelt so breit oder doppelt so groß.
