@@ -41,7 +41,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         origins: Set<DataOrigin>,
         out: OutputStream,
     ): Int {
-        val unit = spec.unitRes?.let(context::getString).orEmpty()
+        val unit = spec.displayUnitRes?.let(context::getString).orEmpty()
         val sleep = spec.type == SleepSessionRecord::class
         // Nights by the day they ended on, as everywhere else in the app: read widened, keep by end.
         val range = if (sleep) {
@@ -97,7 +97,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         out: OutputStream,
     ): Int {
         val metric = requireNotNull(spec.aggregate) { "no daily totals for ${spec.type.simpleName}" }
-        val unit = spec.unitRes?.let(context::getString).orEmpty()
+        val unit = spec.displayUnitRes?.let(context::getString).orEmpty()
         val byDay = repository.bucketedTotals(
             metric,
             TimeRangeFilter.between(from.atStartOfDay(), until.atStartOfDay()),

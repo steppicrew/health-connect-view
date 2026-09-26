@@ -91,7 +91,7 @@ fun SessionSheet(
                                 )
                                 Text(
                                     text = Formatting.number(stat.value) +
-                                        (stat.spec.unitRes?.let { " " + stringResource(it) } ?: ""),
+                                        (stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )

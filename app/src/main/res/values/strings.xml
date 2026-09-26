@@ -12,6 +12,11 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
+    <string name="settings_units">Units</string>
+    <string name="settings_units_body">Weight, height, distance, speed, temperature and volume. Blood pressure stays in mmHg. Exports use the same units.</string>
+    <string name="settings_units_system">Region</string>
+    <string name="settings_units_metric">Metric</string>
+    <string name="settings_units_imperial">Imperial</string>
     <string name="settings_dynamic_color">Wallpaper colours</string>
     <string name="settings_dynamic_color_body">Take the palette from your wallpaper.</string>
     <string name="settings_language">Language</string>
@@ -274,6 +279,13 @@
     <string name="unit_ms" translatable="false">ms</string>
     <string name="unit_rpm_breath">breaths/min</string>
     <string name="unit_l" translatable="false">L</string>
+    <string name="unit_lb" translatable="false">lb</string>
+    <string name="unit_mi" translatable="false">mi</string>
+    <string name="unit_ft" translatable="false">ft</string>
+    <string name="unit_in" translatable="false">in</string>
+    <string name="unit_mph" translatable="false">mph</string>
+    <string name="unit_fahrenheit" translatable="false">°F</string>
+    <string name="unit_floz" translatable="false">fl oz</string>
     <string name="unit_h" translatable="false">h</string>
 
     <!-- Record detail field labels -->

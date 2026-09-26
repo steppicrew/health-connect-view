@@ -52,6 +52,7 @@ object SettingsBackupCodec {
             JSONObject().apply {
                 put(FIELD_THEME, backup.settings.theme.name)
                 put(FIELD_DYNAMIC, backup.settings.dynamicColor)
+                put(FIELD_UNITS, backup.settings.units.name)
                 put(FIELD_EXPLANATIONS, JSONArray().apply { backup.settings.expandedExplanations.sorted().forEach { put(it) } })
             },
         )
@@ -88,6 +89,10 @@ object SettingsBackupCodec {
                     ?.let { runCatching { ThemeChoice.valueOf(it) }.getOrNull() }
                     ?: ThemeChoice.SYSTEM,
                 dynamicColor = settings?.optBoolean(FIELD_DYNAMIC, true) ?: true,
+                // Absent from backups made before units existed; those followed the region.
+                units = settings?.optString(FIELD_UNITS)
+                    ?.let { runCatching { UnitChoice.valueOf(it) }.getOrNull() }
+                    ?: UnitChoice.SYSTEM,
                 expandedExplanations = explanations
                     ?.let { list -> (0 until list.length()).mapNotNull { list.optString(it).takeIf(String::isNotEmpty) } }
                     ?.toSet()
@@ -109,5 +114,6 @@ object SettingsBackupCodec {
     private const val FIELD_SETTINGS = "settings"
     private const val FIELD_THEME = "theme"
     private const val FIELD_DYNAMIC = "dynamicColor"
+    private const val FIELD_UNITS = "units"
     private const val FIELD_EXPLANATIONS = "openExplanations"
 }

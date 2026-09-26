@@ -27,6 +27,8 @@ fun GoalDialog(
     typeName: String,
     displayName: String,
     currentGoal: Double?,
+    /** The unit the goal is typed in, beside the field. */
+    unit: String?,
     onDismiss: () -> Unit,
     onSave: (String, Double?) -> Unit,
 ) {
@@ -46,6 +48,7 @@ fun GoalDialog(
                     singleLine = true,
                     label = { Text(stringResource(R.string.goal_hint)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    suffix = unit?.let { { Text(it) } },
                 )
             }
         },

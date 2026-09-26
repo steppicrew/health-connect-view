@@ -4,6 +4,8 @@ import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.records.ElevationGainedRecord
 import androidx.health.connect.client.records.HeightRecord
 import androidx.health.connect.client.units.Energy
+import de.steppicrew.healthconnectview.registry.RecordRegistry
+import de.steppicrew.healthconnectview.registry.Units
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Percentage
@@ -26,7 +28,14 @@ import java.time.Duration
  * height in centimetres. Converting every length to kilometres made a week of 670 m climbed
  * read "0.67 m" beside records of 0.8 m each.
  */
-fun numericAggregate(value: Any, metric: AggregateMetric<*>? = null): Double? = when (value) {
+fun numericAggregate(value: Any, metric: AggregateMetric<*>? = null): Double? {
+    val metricValue = metricAggregate(value, metric) ?: return null
+    // In the unit the type's records are shown in, so a total matches the rows beside it.
+    val quantity = metric?.let(RecordRegistry.quantityOfMetric::get) ?: return metricValue
+    return quantity.convert(metricValue, Units.system)
+}
+
+private fun metricAggregate(value: Any, metric: AggregateMetric<*>?): Double? = when (value) {
     is Long -> value.toDouble()
     is Double -> value
     is Duration -> value.toMinutes() / 60.0

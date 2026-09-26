@@ -135,9 +135,14 @@ fun DashboardScreen(
         GoalDialog(
             typeName = editing.tile.typeName,
             displayName = stringResource(editing.spec.displayNameRes),
-            currentGoal = editing.tile.effectiveGoal,
+            // Typed and shown in the chosen unit, stored metric: switching units later then
+            // converts the goal rather than reinterpreting "5" as five of the new unit.
+            currentGoal = editing.tile.effectiveGoal?.let { goal ->
+                (editing.spec.display(goal) * 100).roundToInt() / 100.0
+            },
+            unit = editing.spec.displayUnitRes?.let { stringResource(it) },
             onDismiss = { editingGoalFor = null },
-            onSave = viewModel::setGoal,
+            onSave = { typeName, goal -> viewModel.setGoal(typeName, goal?.let(editing.spec::toMetric)) },
         )
     }
 
@@ -368,7 +373,7 @@ private fun TileCard(
             ) {
                 // Not for a session tile: its face is a count and its subtitle a duration, so
                 // the type's own unit ("h", for sleep) would label neither of them.
-                data.spec.unitRes?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
+                data.spec.displayUnitRes?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
                     ?.let { unit ->
                         Text(
                             text = stringResource(unit),
