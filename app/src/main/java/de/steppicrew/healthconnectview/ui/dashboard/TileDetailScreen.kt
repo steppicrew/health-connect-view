@@ -1,6 +1,11 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import de.steppicrew.healthconnectview.ui.components.SourceMark
 import androidx.compose.material3.Surface
 import androidx.compose.foundation.BorderStroke
@@ -871,6 +876,31 @@ private fun sessionTitle(session: Session): String? =
  * Only shown where more than one app wrote; with a single writer there is nothing to choose.
  */
 /**
+ * Every writer's mark, overlapping, as the "all sources" chip: the choice is the union of the
+ * icons beside it, and a picture of that says so without words. Writers with no mark at all
+ * are left out of the picture; the chip's label still names the choice for a screen reader.
+ */
+@Composable
+private fun StackedSources(sources: List<String>) {
+    val label = stringResource(R.string.source_all)
+    val ring = MaterialTheme.colorScheme.surface
+    Box(Modifier.semantics(mergeDescendants = true) { contentDescription = label }) {
+        sources.forEachIndexed { index, packageName ->
+            Box(
+                Modifier
+                    .padding(start = (index * STACK_STEP).dp)
+                    .clip(CircleShape)
+                    .background(ring)
+                    .padding(1.dp)
+                    .clearAndSetSemantics { },
+            ) {
+                SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX, Modifier.clip(CircleShape)) {}
+            }
+        }
+    }
+}
+
+/**
  * A compact selectable chip for the source picker.
  *
  * Material's filter chip pads its content by 16dp a side, which for a 20dp app icon made each
@@ -909,80 +939,94 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
     // One outlined box for chips, "i" and explanation, so they read as one control -- and so
     // the space is already taken while the writers are still being read, and the chart below
     // does not jump when they arrive.
-    OutlinedCard(Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
-            if (data.listPending) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SOURCE_PLACEHOLDER_HEIGHT.dp),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                }
-                return@Column
-            }
-            if (sources.size > 1) {
-                Row(verticalAlignment = Alignment.Top) {
-                    // Wraps rather than scrolls: with four or five writers a scrolling row hid the
-                    // last ones off the edge, and nothing said there were more.
-                    FlowRow(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    //
+    // The label sits in the top border, as on a form's fieldset: it names the box once, which
+    // is what lets the "all" chip be a picture of every writer rather than the words.
+    Box(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        OutlinedCard(Modifier.fillMaxWidth().padding(top = SOURCE_LEGEND_OFFSET.dp)) {
+            Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                if (data.listPending) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(SOURCE_PLACEHOLDER_HEIGHT.dp),
+                        contentAlignment = Alignment.CenterStart,
                     ) {
-                        SourceChip(
-                            selected = data.selectedSource == null,
-                            onClick = { onSelectSource(null) },
+                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                    }
+                    return@Column
+                }
+                if (sources.size > 1) {
+                    Row(verticalAlignment = Alignment.Top) {
+                        // Wraps rather than scrolls: with four or five writers a scrolling row hid the
+                        // last ones off the edge, and nothing said there were more.
+                        FlowRow(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Text(stringResource(R.string.source_all), style = MaterialTheme.typography.labelLarge)
-                        }
-                        sources.forEach { packageName ->
                             SourceChip(
-                                selected = data.selectedSource == packageName,
-                                onClick = { onSelectSource(packageName) },
+                                selected = data.selectedSource == null,
+                                onClick = { onSelectSource(null) },
                             ) {
-                                // The app's own icon where it has one, which fits several sources
-                                // on screen at once where "Garmin Connect" and "Health Sync"
-                                // already ran off the edge. The label stays as the icon's content
-                                // description, and as the visible text wherever no icon can be had.
-                                SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX) {
-                                    Text(context.appLabelFor(packageName), style = MaterialTheme.typography.labelLarge)
+                                StackedSources(sources)
+                            }
+                            sources.forEach { packageName ->
+                                SourceChip(
+                                    selected = data.selectedSource == packageName,
+                                    onClick = { onSelectSource(packageName) },
+                                ) {
+                                    // The app's own icon where it has one, which fits several sources
+                                    // on screen at once where "Garmin Connect" and "Health Sync"
+                                    // already ran off the edge. The label stays as the icon's content
+                                    // description, and as the visible text wherever no icon can be had.
+                                    SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX) {
+                                        Text(context.appLabelFor(packageName), style = MaterialTheme.typography.labelLarge)
+                                    }
                                 }
                             }
                         }
+                        // The chips are the data; what choosing one means is the explanation.
+                        InfoToggle(explanation)
                     }
-                    // The chips are the data; what choosing one means is the explanation.
-                    InfoToggle(explanation)
+                }
+
+                // With a single writer there is nothing to choose and nothing to explain: naming it
+                // is the data itself, so it always shows.
+                if (sources.size == 1 || explanation.expanded == true) {
+                    Text(
+                        text = data.selectedSource?.let {
+                            stringResource(R.string.source_showing_one, context.appLabelFor(it))
+                        } ?: if (sources.size > 1) {
+                            stringResource(R.string.source_all_explained)
+                        } else {
+                            stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+
+                // The overlap winner is Health Connect's own priority setting, not ours to define.
+                if (sources.size > 1 && explanation.expanded == true) {
+                    Text(
+                        text = stringResource(R.string.source_priority_hint),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
                 }
             }
-
-            // With a single writer there is nothing to choose and nothing to explain: naming it
-            // is the data itself, so it always shows.
-            if (sources.size == 1 || explanation.expanded == true) {
-                Text(
-                    text = data.selectedSource?.let {
-                        stringResource(R.string.source_showing_one, context.appLabelFor(it))
-                    } ?: if (sources.size > 1) {
-                        stringResource(R.string.source_all_explained)
-                    } else {
-                        stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            }
-
-            // The overlap winner is Health Connect's own priority setting, not ours to define.
-            if (sources.size > 1 && explanation.expanded == true) {
-                Text(
-                    text = stringResource(R.string.source_priority_hint),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-            }
         }
+        Text(
+            text = stringResource(R.string.source_section_title),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 4.dp),
+        )
     }
 }
 
@@ -992,6 +1036,12 @@ private const val SESSION_CURVE_HEIGHT = 40
 /** Big enough to recognise a brand mark, small enough that several chips fit a phone width. */
 private const val SOURCE_ICON = 20
 private const val SOURCE_CHIP_HEIGHT = 32
+
+/** Half the label's line height, so the border runs through its middle. */
+private const val SOURCE_LEGEND_OFFSET = 8
+
+/** How far each icon in the "all sources" stack sits from the one before it. */
+private const val STACK_STEP = 12
 
 /** Roughly one row of chips, so the box keeps its size while the writers load. */
 private const val SOURCE_PLACEHOLDER_HEIGHT = 48
