@@ -57,6 +57,11 @@
     <string name="trend_rule">Verglichen werden die 7 Tage vor diesem Tag mit den 30 Tagen davor, nicht dieser Tag mit gestern. Dieser Tag zählt nicht mit, weil er noch nicht vorbei sein kann. Tage ohne Aufzeichnung bleiben außen vor. Unterschiede kleiner als die normale Schwankung von Tag zu Tag gelten als gleich.</string>
     <string name="explanation_show">Erklärung anzeigen</string>
     <string name="explanation_hide">Erklärung ausblenden</string>
+    <string name="stage_awake">Wach</string>
+    <string name="stage_rem">REM</string>
+    <string name="stage_light">Leicht</string>
+    <string name="stage_deep">Tief</string>
+    <string name="stage_asleep">Schlaf</string>
     <string name="goal_title">Tagesziel</string>
     <string name="goal_hint">Zielwert</string>
     <string name="goal_reset">Standard verwenden</string>

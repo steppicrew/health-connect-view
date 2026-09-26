@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 import androidx.compose.foundation.clickable
@@ -731,6 +732,17 @@ private fun SessionRow(
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }
+        }
+
+        // Stages first, where the writer recorded them: for a night they are what is being
+        // asked about, and the heart rate below is the context.
+        if (session.stages.isNotEmpty()) {
+            Hypnogram(
+                stages = session.stages,
+                start = session.start,
+                end = session.end,
+                modifier = Modifier.padding(vertical = 6.dp),
+            )
         }
 
         when {

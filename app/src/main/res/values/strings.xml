@@ -58,6 +58,11 @@
     <string name="trend_rule">Compares the 7 days before this day with the 30 days before it, not this day with yesterday. This day does not count, since it may not be over. Days with nothing recorded are left out. Differences smaller than normal day-to-day variation count as level.</string>
     <string name="explanation_show">Show explanation</string>
     <string name="explanation_hide">Hide explanation</string>
+    <string name="stage_awake">Awake</string>
+    <string name="stage_rem">REM</string>
+    <string name="stage_light">Light</string>
+    <string name="stage_deep">Deep</string>
+    <string name="stage_asleep">Asleep</string>
     <string name="goal_title">Daily goal</string>
     <string name="goal_hint">Target value</string>
     <string name="goal_reset">Use default</string>
