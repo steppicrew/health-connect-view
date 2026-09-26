@@ -290,6 +290,9 @@ class RecordShapeActivity : ComponentActivity() {
                     "SLEEP start=${rec.startTime.atZone(zone).toLocalDateTime()} " +
                         "end=${rec.endTime.atZone(zone).toLocalDateTime()} " +
                         "overlapsDay=$overlapsDay startsInDay=$startsInDay " +
+                        // Counts only: whether a writer supplies stages at all, and how many
+                        // kinds, decides whether a stage view is possible -- not what they were.
+                        "stages=${rec.stages.size} stageKinds=${rec.stages.map { it.stage }.toSet().size} " +
                         "origin=${rec.metadata.dataOrigin.packageName}",
                 )
             }
