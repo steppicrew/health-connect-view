@@ -35,7 +35,7 @@ fun LoadingView(modifier: Modifier = Modifier, progress: Float? = null) {
                 progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 48.dp),
+                    .padding(horizontal = 16.dp),
             )
         }
     }
