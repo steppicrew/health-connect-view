@@ -47,6 +47,7 @@
     <string name="tile_no_data" translatable="false">–</string>
     <string name="tile_locked">Not allowed</string>
     <string name="tile_grant">Allow</string>
+    <string name="tile_value_as_of">as of %1$s</string>
     <string name="trend_up">Last 7 days above the 30-day average</string>
     <string name="trend_flat">Last 7 days level with the 30-day average</string>
     <string name="trend_down">Last 7 days below the 30-day average</string>

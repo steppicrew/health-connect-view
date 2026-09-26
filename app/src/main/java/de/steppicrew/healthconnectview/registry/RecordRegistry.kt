@@ -305,7 +305,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.percentage.value)) },
             summary = { Formatting.number(it.percentage.value) + " %" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = BodyWaterMassRecord::class,
@@ -316,7 +316,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = BoneMassRecord::class,
@@ -327,7 +327,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = HeightRecord::class,
@@ -339,7 +339,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.height.inMeters * 100.0)) },
             summary = { Formatting.number(it.height.inMeters * 100.0) + " cm" },
             aggregate = HeightRecord.HEIGHT_AVG,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = LeanBodyMassRecord::class,
@@ -350,7 +350,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Formatting.number(it.mass.inKilograms) + " kg" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = WeightRecord::class,
@@ -362,7 +362,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.weight.inKilograms)) },
             summary = { Formatting.number(it.weight.inKilograms) + " kg" },
             aggregate = WeightRecord.WEIGHT_AVG,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
             type = BloodGlucoseRecord::class,

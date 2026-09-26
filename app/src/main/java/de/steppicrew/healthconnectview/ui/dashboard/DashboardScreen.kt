@@ -617,6 +617,24 @@ private fun TileValue(data: TileData) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        data.valueDate != null -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Muted and dated: a carried weight is the latest known, not today's, and must not
+            // read as a measurement taken on the day on screen.
+            Text(
+                text = Formatting.number(data.value),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(
+                    R.string.tile_value_as_of,
+                    data.valueDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                ),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
         else -> Text(
             text = Formatting.number(data.value),
             style = MaterialTheme.typography.headlineMedium,
