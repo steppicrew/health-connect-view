@@ -124,7 +124,13 @@ carries its own `startTime` lambda instead.
 
 **Unit-typed aggregates.** Aggregates come back as `Long`, `Double`, `Duration`, or a unit
 type (`Mass`, `Length`, `Energy`, `Volume`, `Power`, `Velocity`, `Percentage`, `Pressure`,
-`Temperature`). Missing one silently empties that type's chart.
+`Temperature`). Missing one silently empties that type's chart. A `Length` also needs the
+metric: distance is shown in km, elevation in m, height in cm, and converting all three to km
+made a week of 666 m climbed read "0.67 m". Always call `numericAggregate(value, metric)`.
+
+**A fallback must combine like the aggregate.** Where one app's own readings stand in for an
+empty aggregate, use `spec.combine()`: a sum for a total, a mean for an average. Summing heart
+rate turned five readings of 51 bpm into a day's "average" of 256.
 
 ## Architecture
 

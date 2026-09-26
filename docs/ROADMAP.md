@@ -28,12 +28,7 @@ open items below and `FEATURE-IDEAS.md`.
    three sizes" in section 1. Seen on the emulator; the Xiaomi cannot be driven to resize from
    the host.
 9. [x] **Blood pressure report** (PDF, Pro) -- merged 27.09.2026, see section 17.
-10. [ ] **Imperial and metric units** -- a setting, defaulting to the phone's locale. Everything
-    is metric today, as Health Connect stores it; the registry's `unitRes` is the seam. Weight
-    (kg/lb), height and distance (m, km / ft, in, mi), temperature (°C/°F), volume (ml/fl oz)
-    and energy (kcal/kJ is a separate question). Conversion at display and export only --
-    stored goals and zones stay metric, so switching units never rewrites them. Blood pressure
-    stays mmHg everywhere.
+10. [x] **Imperial and metric units** -- merged 27.09.2026, see section 18.
 11. [ ] **More on large tiles.** A 2x1 or 2x2 tile has room the 1x1 face does not use: a scale
     on its chart (axis values, the goal line), a default time range other than the day (a week
     of steps, a month of weight), and a choice of what the face shows. Per tile, stored beside
@@ -1268,7 +1263,39 @@ for the drawing).
 Verified on the emulator with seeded data: four weeks gave 53 readings on 3 pages, the averages
 matching the detail view (morning 134/86 from 27, evening 126/75 from 26).
 
-## 18. Deferred
+## 18. Units — built
+
+A setting under Appearance: Region (the default), Metric or Imperial. Region means imperial in
+the US, Liberia and Myanmar and metric elsewhere; the UK mixes both and is left metric.
+
+- **Converted where values enter the app**, not where they are drawn: `spec.pointsOf` and
+  `numericAggregate` return the shown unit, `spec.displayUnitRes` names it. So every tile,
+  chart, record list, trend, session statistic and export follows without knowing units exist.
+  Specs stay written in Health Connect's metric with a `Quantity` beside them.
+- **What converts:** weight and body masses (lb), distance (mi), elevation (ft), height (in),
+  speed (mph), temperature (°F; skin temperature is a *change*, scaled but never shifted by 32)
+  and hydration (fl oz). Not blood pressure (mmHg everywhere), energy (US "Calories" are
+  kilocalories) or glucose -- mmol/L versus mg/dL follows a country's lab convention, not its
+  measuring system, and would need its own setting.
+- **Goals stay stored metric** and convert for the ring, the goal line and the dialog, which
+  shows the unit beside the field. Switching units converts a goal instead of reinterpreting
+  "5" as five of the new unit.
+- **Exports use the chosen unit**, with the unit column saying which.
+- **Read synchronously at start.** Values are converted when read and labelled when drawn, so
+  a first screen loaded before the stored choice arrived would label metric numbers "lb".
+  The dashboard's cache key includes the unit system, so a change shows on return.
+- In the settings backup as `units`; older backups without it restore Region.
+
+Two bugs surfaced on the way, both fixed first in their own commits: every length aggregate
+came back in kilometres, so a week of 666 m climbed read "0.67 m" (and height averages
+100,000× too small); and the single-source fallback for an empty aggregate *summed* an
+averaged type's readings, so five heart-rate readings after midnight showed an average of
+256 bpm.
+
+Verified on the emulator: a weight month reads 175 lb in imperial and 79.5 kg in metric, across
+a cold start.
+
+## 19. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
