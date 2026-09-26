@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.health
 
+import de.steppicrew.healthconnectview.registry.ValueZones
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -68,4 +69,28 @@ fun splitByDayPart(readings: List<PressureReading>, zone: ZoneId): DayPartSplit 
         )
     }
     return DayPartSplit(morning = average(DayPart.MORNING), evening = average(DayPart.EVENING))
+}
+
+/**
+ * Where a reading sits, after the European Society of Hypertension's classification, with low
+ * pressure added below it. Each value is classified on its own and the higher category wins,
+ * as the classification specifies -- 128/92 is grade 1 because of the 92.
+ *
+ * In the order of [ValueZones.ZONE_COLORS], so the colours carry over: blue low, green normal,
+ * yellow high normal, orange grade 1, red grade 2 and above.
+ */
+enum class PressureCategory { LOW, NORMAL, HIGH_NORMAL, GRADE_1, GRADE_2 }
+
+/** Systolic bands: below 90 low, 90-129 normal, 130-139 high normal, 140-159, 160 and up. */
+val SYSTOLIC_ZONES = ValueZones(listOf(90.0, 130.0, 140.0, 160.0), stepped = true)
+
+/** Diastolic bands: below 60 low, 60-84 normal, 85-89 high normal, 90-99, 100 and up. */
+val DIASTOLIC_ZONES = ValueZones(listOf(60.0, 85.0, 90.0, 100.0), stepped = true)
+
+fun pressureCategory(systolic: Double, diastolic: Double): PressureCategory {
+    val high = maxOf(SYSTOLIC_ZONES.zoneOf(systolic), DIASTOLIC_ZONES.zoneOf(diastolic))
+    // Raised wins over low: 150/55 is a hypertension finding, not a low one.
+    if (high > PressureCategory.NORMAL.ordinal) return PressureCategory.entries[high]
+    val low = systolic < SYSTOLIC_ZONES.bounds.first() || diastolic < DIASTOLIC_ZONES.bounds.first()
+    return if (low) PressureCategory.LOW else PressureCategory.NORMAL
 }
