@@ -28,10 +28,13 @@ import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.DIASTOLIC_ZONES
+import de.steppicrew.healthconnectview.health.SYSTOLIC_ZONES
 import de.steppicrew.healthconnectview.health.PressureReading
 import de.steppicrew.healthconnectview.health.dayPartWindow
 import de.steppicrew.healthconnectview.health.splitByDayPart
 import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.aggregate.AggregateMetric
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TrendResult
@@ -70,6 +73,9 @@ data class TileDetailData(
     val spec: RecordTypeSpec<*>,
     val points: List<Point>,
     val total: Double?,
+    /** The type's second value where it has one -- diastolic beside systolic -- else empty. */
+    val secondaryPoints: List<Point> = emptyList(),
+    val secondaryTotal: Double? = null,
     /** True when [points] came from Health Connect's deduplicating aggregation. */
     val aggregated: Boolean,
     /** True when a bucket is wider than a day, so the caption must not say "daily". */
@@ -149,6 +155,8 @@ data class TileDetailData(
      * an alarming measurement where the data says an unremarkable mean.
      */
     val lineZones: ValueZones? = null,
+    /** Bands for [secondaryPoints]' line, where the type classifies its second value too. */
+    val secondaryZones: ValueZones? = null,
     /**
      * Horizontal extent the chart is drawn across, or null to span exactly the readings.
      *
@@ -849,6 +857,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
+        // Filled in wherever the type has a second value, from the same read as the first.
+        var secondaryPoints: List<Point> = emptyList()
         // Whether the points on screen actually came from aggregation. A type can have an
         // aggregate metric and still be charted from its raw readings within a day, and the
         // caption must describe the series that was drawn rather than the metric that exists.
@@ -889,9 +899,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 // raw records would double-count.
                 duration != null && spec.shape != RecordTypeSpec.Shape.INTERVAL -> {
                     seriesAggregated = false
-                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
-                        .flatMap { spec.pointsOf(it) }
-                        .sortedBy { it.time }
+                    val readings = repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+                    secondaryPoints = readings.flatMap { spec.secondaryPointsOf(it) }.sortedBy { it.time }
+                    readings.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
                 }
 
                 duration != null -> repository
@@ -910,8 +920,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                         span.localFilter(offset),
                         period,
                         origins,
-                        also = (bandMetrics?.toList().orEmpty() + stackMetrics.map { it.second })
-                            .toSet(),
+                        also = (
+                            bandMetrics?.toList().orEmpty() + stackMetrics.map { it.second } +
+                                listOfNotNull(spec.secondaryAggregate)
+                            ).toSet(),
                     )
 
                     // The day's total split into its parts, from the same buckets as the
@@ -990,8 +1002,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                             .map { it.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant() }
                     }
 
-                    buckets.mapNotNull { bucket ->
-                        val value = bucket.result[metric]?.let(::numericAggregate)
+                    fun series(of: AggregateMetric<*>): List<Point> = buckets.mapNotNull { bucket ->
+                        val value = bucket.result[of]?.let(::numericAggregate)
                             ?: return@mapNotNull null
                         Point(
                             time = bucket.startTime
@@ -999,6 +1011,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                             value = value,
                         )
                     }
+                    secondaryPoints = spec.secondaryAggregate?.let(::series).orEmpty()
+                    series(metric)
                 }
 
                 else -> emptyList()
@@ -1052,6 +1066,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // A goal line only means something against a running total for one day; across days
         // each point is its own day's total and the goal would be a different comparison.
         val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
+        val secondaryTotal = spec.secondaryAggregate?.let { second ->
+            runCatching { repository.total(second, span.localFilter(offset), origins) }.getOrNull()
+        }
         stepDone() // the total
         val goal = if (cumulative) goalFor(spec) else null
 
@@ -1176,6 +1193,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             stackLabels = spec.stackComponents.map { it.first },
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind != Session.Kind.SLEEP,
             total = headlineTotal,
+            secondaryPoints = secondaryPoints,
+            secondaryTotal = secondaryTotal,
             aggregated = seriesAggregated,
             contributingApps = emptySet(),
             selectedSource = source,
@@ -1193,7 +1212,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessions = sessions,
             sessionCurveZones = zonesFor(heartRateSpec()),
             sessionCurveUnitRes = heartRateSpec()?.unitRes,
-            lineZones = zonesFor(spec).takeIf { span.intradayBucket != null },
+            // Blood pressure is coloured by its grade at every span: unlike a heart-rate zone,
+            // a grade is what a day's mean is read for, not only a single reading.
+            lineZones = if (spec.type == BloodPressureRecord::class) {
+                SYSTOLIC_ZONES
+            } else {
+                zonesFor(spec).takeIf { span.intradayBucket != null }
+            },
+            secondaryZones = DIASTOLIC_ZONES.takeIf { spec.type == BloodPressureRecord::class },
             extent = dayExtent(span, offset, sessions),
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,

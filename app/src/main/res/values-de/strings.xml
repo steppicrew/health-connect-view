@@ -68,6 +68,15 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
     <string name="detail_records_loading">Datensätze werden geladen …</string>
+    <string name="span_average">Durchschnitt</string>
+    <string name="chart_source_aggregated_mean">Tagesmittel, von Health Connect entdoppelt</string>
+    <string name="chart_source_aggregated_weekly_mean">Wochenmittel, von Health Connect entdoppelt</string>
+    <string name="bp_grade_low">Niedrig</string>
+    <string name="bp_grade_normal">Normal</string>
+    <string name="bp_grade_high_normal">Hoch-normal</string>
+    <string name="bp_grade_1">Grad 1</string>
+    <string name="bp_grade_2">Grad 2+</string>
+    <string name="bp_legend_lines">Obere Linie systolisch, untere diastolisch.</string>
     <string name="bp_parts_title">Morgens und abends</string>
     <string name="bp_part_morning">Morgens</string>
     <string name="bp_part_evening">Abends</string>
@@ -76,7 +85,7 @@
         <item quantity="one">Ø %1$s mmHg · %2$d Messung</item>
         <item quantity="other">Ø %1$s mmHg · %2$d Messungen</item>
     </plurals>
-    <string name="bp_parts_rule">Morgens zählt von 4:00 bis 13:59, abends ab 14:00. Eine Messung nach Mitternacht, aber vor 4:00 zählt zum Abend davor. Dieselbe Messung, von mehreren Apps gespeichert, zählt einmal.</string>
+    <string name="bp_parts_rule">Morgens zählt von 4:00 bis 13:59, abends ab 14:00. Eine Messung nach Mitternacht, aber vor 4:00 zählt zum Abend davor. Dieselbe Messung, von mehreren Apps gespeichert, zählt einmal.\n\nDie Farben folgen der Einteilung der Europäischen Hypertonie-Gesellschaft (ESH) für Messungen in der Praxis: niedrig unter 90/60, normal unter 130/85, hoch-normal bis 139/89, Grad 1 ab 140/90, Grad 2 ab 160/100. Der höhere der beiden Werte entscheidet. Zu Hause gilt schon ab 135/85 als erhöht. Eine Orientierung, keine Diagnose.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Pro kaufen · %1$s</string>
     <string name="pro_body">Einmalkauf, kein Abo. Schaltet den CSV-Export und alle künftigen Pro-Funktionen frei.</string>

@@ -70,6 +70,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.health.pressureCategory
+import de.steppicrew.healthconnectview.health.PressureCategory
 import kotlin.math.roundToInt
 import de.steppicrew.healthconnectview.health.PartAverage
 import de.steppicrew.healthconnectview.health.DayPartSplit
@@ -379,6 +381,60 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
     }
 }
 
+/** "132/85" where a second value exists, whole numbers as a cuff shows them; else the value. */
+private fun pressureText(first: Double, second: Double?): String =
+    if (second == null) Formatting.number(first) else "${first.roundToInt()}/${second.roundToInt()}"
+
+@StringRes
+private fun PressureCategory.labelRes(): Int = when (this) {
+    PressureCategory.LOW -> R.string.bp_grade_low
+    PressureCategory.NORMAL -> R.string.bp_grade_normal
+    PressureCategory.HIGH_NORMAL -> R.string.bp_grade_high_normal
+    PressureCategory.GRADE_1 -> R.string.bp_grade_1
+    PressureCategory.GRADE_2 -> R.string.bp_grade_2
+}
+
+private val PressureCategory.color: Color get() = ValueZones.ZONE_COLORS[ordinal]
+
+@Composable
+private fun CategoryDot(category: PressureCategory) {
+    Box(
+        Modifier
+            .padding(end = 6.dp)
+            .size(10.dp)
+            .background(category.color, CircleShape),
+    )
+}
+
+/** The grade in words beside its colour, so the colour is never the only signal. */
+@Composable
+private fun CategoryBadge(category: PressureCategory) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        CategoryDot(category)
+        Text(
+            text = stringResource(category.labelRes()),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun PressureLegend() {
+    Column(Modifier.padding(top = 6.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            PressureCategory.entries.forEach { category ->
+                LegendEntry(color = category.color, label = category.labelRes())
+            }
+        }
+        Text(
+            text = stringResource(R.string.bp_legend_lines),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp),
+        )
+    }
+}
+
 /**
  * Morning and evening blood pressure side by side, rather than one blended average that hides
  * a morning surge. The rule for where the day splits is behind the "i".
@@ -410,12 +466,13 @@ private fun DayPartsSection(split: DayPartSplit) {
 
 @Composable
 private fun DayPartRow(label: String, average: PartAverage?) {
-    Row(Modifier.fillMaxWidth()) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
         )
+        average?.let { CategoryDot(pressureCategory(it.systolic, it.diastolic)) }
         Text(
             text = average?.let {
                 pluralStringResource(
@@ -461,7 +518,8 @@ private fun SpanSummary(
 
         data.total?.let { total ->
             Text(
-                text = stringResource(R.string.span_total),
+                // A mean is not a total: "Total 129 mmHg" read as blood pressures added up.
+                text = stringResource(if (data.spec.isAveraged) R.string.span_average else R.string.span_total),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -473,11 +531,14 @@ private fun SpanSummary(
                 text = if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
                     Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
                 } else {
-                    Formatting.number(total) +
+                    pressureText(total, data.secondaryTotal) +
                         (data.spec.unitRes?.let { " " + stringResource(it) } ?: "")
                 },
                 style = MaterialTheme.typography.headlineMedium,
             )
+            data.secondaryTotal?.let { second ->
+                if (data.secondaryZones != null) CategoryBadge(pressureCategory(total, second))
+            }
         }
 
         // Reading a dashed line against a curve is fiddly; say the answer in words too.
@@ -552,6 +613,8 @@ private fun SpanSummary(
                 emptyBuckets = data.emptyBuckets,
                 sessions = data.sessions,
                 zones = data.lineZones,
+                secondaryPoints = data.secondaryPoints,
+                secondaryZones = data.secondaryZones,
                 markReadings = data.spec.tile.markReadings,
                 integral = data.spec.tile.integralValues,
                 extent = data.extent,
@@ -565,6 +628,8 @@ private fun SpanSummary(
                         data.sessionCounts -> R.string.chart_source_sessions_per_day
                         data.approximated -> R.string.chart_source_cumulative_scaled
                         data.cumulative -> R.string.chart_source_cumulative
+                        data.aggregated && data.weeklyBuckets && data.spec.isAveraged ->
+                            R.string.chart_source_aggregated_weekly_mean
                         data.aggregated && data.weeklyBuckets ->
                             R.string.chart_source_aggregated_weekly
                         // "Totals" is wrong for a mean, and doubly so with a spread drawn
@@ -573,6 +638,7 @@ private fun SpanSummary(
                             R.string.chart_source_aggregated_range
                         data.aggregated && data.stack.isNotEmpty() ->
                             R.string.chart_source_aggregated_split
+                        data.aggregated && data.spec.isAveraged -> R.string.chart_source_aggregated_mean
                         data.aggregated -> R.string.chart_source_aggregated
                         else -> R.string.chart_source_raw
                     },
@@ -640,6 +706,12 @@ private fun SpanSummary(
  */
 @Composable
 private fun ChartLegend(data: TileDetailData) {
+    // A classified pair of lines: the colours are the message, so the legend names the grades
+    // instead of repeating "line" and "reading" in a colour neither line has.
+    if (data.secondaryZones != null && data.points.isNotEmpty()) {
+        PressureLegend()
+        return
+    }
     val sleepShown = data.sessions.any { it.kind == Session.Kind.SLEEP }
     val exerciseShown = data.sessions.any { it.kind == Session.Kind.EXERCISE }
     val stacked = data.stack.isNotEmpty() && data.stackLabels.isNotEmpty()
