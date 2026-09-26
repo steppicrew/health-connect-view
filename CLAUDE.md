@@ -22,7 +22,10 @@ These are enforced by build checks, not just convention. Breaking one fails `./g
 2. **Read-only.** Only `READ_*` permissions in release. The debug source set has `WRITE_*` for
    the seeder; the same build check fails if any release manifest requests write access.
 3. **No health data on disk.** Records live in memory for the current screen only. DataStore
-   holds non-health UI state. Backups and device transfer are disabled.
+   holds non-health UI state. Backups and device transfer are disabled. The one exception is
+   an export the user starts (`export/Exporter.kt`): written straight into a file they chose in
+   the system save dialog, page by page, with no copy kept. The privacy page says so; any
+   other path that writes health data anywhere breaks this rule.
 4. **No health values in logs**, including debug builds. The debug reporters log counts,
    package names and rounded percentiles — never a reading.
 
