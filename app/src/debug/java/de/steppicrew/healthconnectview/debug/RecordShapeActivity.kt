@@ -68,6 +68,36 @@ class RecordShapeActivity : ComponentActivity() {
                 }
             }
 
+            // Who wrote a type over the last year: record count and first/last day per writer,
+            // no values. `-e writers StepsRecord`. Paged through the whole year, since read()'s
+            // newest 5000 would hide a writer that stopped months ago.
+            intent?.getStringExtra("writers")?.let { wanted ->
+                val spec = RecordRegistry.all.firstOrNull { it.type.simpleName == wanted }
+                if (spec != null) {
+                    val perWriter = mutableMapOf<String, Triple<Int, LocalDate, LocalDate>>()
+                    runCatching {
+                        repository.forEachPage(
+                            spec.type,
+                            androidx.health.connect.client.time.TimeRangeFilter.between(
+                                day.minusDays(365).atStartOfDay(zone).toInstant(),
+                                day.plusDays(1).atStartOfDay(zone).toInstant(),
+                            ),
+                        ) { page ->
+                            page.forEach { record ->
+                                val origin = record.metadata.dataOrigin.packageName
+                                val date = spec.timeOf(record).atZone(zone).toLocalDate()
+                                val (n, first, last) = perWriter[origin] ?: Triple(0, date, date)
+                                perWriter[origin] = Triple(n + 1, minOf(first, date), maxOf(last, date))
+                            }
+                        }
+                    }.onFailure { Log.w(TAG, "writers read failed: ${it.javaClass.simpleName}") }
+                    perWriter.forEach { (origin, stats) ->
+                        Log.i(TAG, "WRITER $wanted origin=$origin records=${stats.first} first=${stats.second} last=${stats.third}")
+                    }
+                    Log.i(TAG, "WRITER done")
+                }
+            }
+
             val floors = runCatching {
                 repository.read(FloorsClimbedRecord::class, dayInstants(day, zone))
             }.getOrElse {
