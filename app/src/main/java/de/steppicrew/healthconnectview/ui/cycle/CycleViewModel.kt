@@ -51,7 +51,13 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
     private val _offset = MutableStateFlow(0)
     val offset: StateFlow<Int> = _offset.asStateFlow()
 
-    fun load() = reload()
+    /** Draw [CycleFixture]'s synthetic cycles instead of reading; debug builds only. */
+    private var fixture = false
+
+    fun load(fixture: Boolean = false) {
+        this.fixture = fixture
+        reload()
+    }
 
     fun stepBack() {
         _offset.update { it + 1 }
@@ -67,6 +73,13 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
     private fun reload() {
         viewModelScope.launch {
             _state.update { UiState.Loading }
+            if (fixture) {
+                val records = CycleFixture.records(ZoneId.systemDefault())
+                if (records != null) {
+                    _state.update { UiState.Data(present(records, _offset.value, notGranted = emptyList(), capped = false)) }
+                    return@launch
+                }
+            }
             val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
             // Periods and flow share READ_MENSTRUATION. Without it there is no day 1 to align
             // anything to, so the other layers alone cannot make a single row.
@@ -110,18 +123,26 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
             mucus = readIfGranted(CervicalMucusRecord::class),
             temperatures = readIfGranted(BasalBodyTemperatureRecord::class),
         )
+        return present(
+            records,
+            offset,
+            notGranted = LAYERS.filter { permissionOf(it) !in granted }
+                .map { RecordRegistry.spec(it).displayNameRes },
+            capped = RecordRegistry.HISTORY_PERMISSION !in granted,
+        )
+    }
+
+    private fun present(records: CycleRecords, offset: Int, notGranted: List<Int>, capped: Boolean): CycleData {
+        val zone = ZoneId.systemDefault()
+        val today = LocalDate.now(zone)
+        val start = SPAN.startDate(offset, today)
+        val end = SPAN.endDate(offset, today)
         val cycles = buildCycles(
             days = mergeCycleDays(records, zone),
             window = start..end.minusDays(1),
             lastDay = minOf(end.plusDays(MARGIN_DAYS), today),
         )
-        return CycleData(
-            cycles = cycles,
-            stats = cycleStats(cycles),
-            notGranted = LAYERS.filter { permissionOf(it) !in granted }
-                .map { RecordRegistry.spec(it).displayNameRes },
-            historyCapped = RecordRegistry.HISTORY_PERMISSION !in granted,
-        )
+        return CycleData(cycles = cycles, stats = cycleStats(cycles), notGranted = notGranted, historyCapped = capped)
     }
 
     private fun permissionOf(type: KClass<out Record>): String = RecordRegistry.spec(type).permission

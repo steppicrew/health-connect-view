@@ -67,13 +67,14 @@ fun CycleScreen(
     viewModel: CycleViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    fixture: Boolean = false,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val offset by viewModel.offset.collectAsStateWithLifecycle()
 
     // Also the first load. Access can change in system settings while the app is away, and a
     // read attempted while backgrounded is refused, so a resume must read again either way.
-    OnResume { viewModel.load() }
+    OnResume { viewModel.load(fixture) }
 
     Scaffold(
         modifier = modifier,

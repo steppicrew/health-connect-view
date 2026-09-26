@@ -33,7 +33,10 @@ object Routes {
     const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
-    const val CYCLE = "cycle"
+    /** `fixture` draws synthetic cycles; only the debug build has any to draw. */
+    const val CYCLE = "cycle?fixture={fixture}"
+
+    fun cycle() = "cycle"
 
     fun typeDetail(typeName: String) = "type/$typeName"
     fun tileDetail(typeName: String, date: String) = "tile/$typeName?date=$date"
@@ -75,7 +78,7 @@ fun HealthNavGraph(
             CatalogScreen(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.typeDetail(it)) },
-                onOpenCycles = { navController.navigate(Routes.CYCLE) },
+                onOpenCycles = { navController.navigate(Routes.cycle()) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 onBack = { navController.popBackStack() },
             )
@@ -101,11 +104,20 @@ fun HealthNavGraph(
             )
         }
 
-        composable(Routes.CYCLE) {
+        composable(
+            route = Routes.CYCLE,
+            arguments = listOf(
+                navArgument("fixture") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                },
+            ),
+        ) { entry ->
             val viewModel: CycleViewModel = viewModel()
             CycleScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
+                fixture = entry.arguments?.getBoolean("fixture") ?: false,
             )
         }
 
