@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.health
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
+import de.steppicrew.healthconnectview.registry.Point
 import java.time.Duration
 import java.time.Instant
 
@@ -203,3 +204,32 @@ fun widenToSessions(
     val earliest = sessions.minOfOrNull { it.start } ?: return range
     return if (earliest < range.start) earliest..range.endInclusive else range
 }
+
+/**
+ * The one writer's samples to draw across a session: the writer covering most of it.
+ *
+ * Coverage is counted in [slot]-wide slots of the session holding at least one sample, with
+ * the sample count only breaking ties. Picking by count alone lost the start of a night on the
+ * phone: Health Sync's copy had more samples overall but none before midnight, while Garmin's
+ * own had one every two minutes from 23:30 -- so the curve under a 23:29 night began at 00:00.
+ * Merging writers instead is not an option: instantaneous samples from two apps interleave
+ * into a zigzag between two accounts of one heart rate.
+ */
+fun <K> fullestWriter(
+    byWriter: Map<K, List<Point>>,
+    start: Instant,
+    end: Instant,
+    slot: Duration = COVERAGE_SLOT,
+): List<Point> {
+    fun coverage(points: List<Point>): Int = points
+        .filter { it.time >= start && it.time <= end }
+        .map { Duration.between(start, it.time).toMillis() / slot.toMillis() }
+        .distinct()
+        .size
+    return byWriter.values
+        .maxWithOrNull(compareBy<List<Point>>({ coverage(it) }, { it.size }))
+        ?.sortedBy { it.time }
+        .orEmpty()
+}
+
+private val COVERAGE_SLOT: Duration = Duration.ofMinutes(5)
