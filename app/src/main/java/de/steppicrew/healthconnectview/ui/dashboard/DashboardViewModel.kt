@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import android.app.Application
+import android.util.Log
+import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +13,10 @@ import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.TREND_DAYS
+import de.steppicrew.healthconnectview.health.Trend
+import de.steppicrew.healthconnectview.health.numericAggregate
+import de.steppicrew.healthconnectview.health.trendOf
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.dayFilter
 import de.steppicrew.healthconnectview.health.dayInstants
@@ -36,6 +42,7 @@ import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.Period
 import java.time.temporal.ChronoUnit
 
 /**
@@ -67,6 +74,11 @@ data class TileData(
      * unfiltered and the difference would otherwise be unexplained.
      */
     val source: String? = null,
+    /**
+     * The week before the shown day against the 30 days before it, or null where the type has
+     * no aggregate or too few recorded days to say.
+     */
+    val trend: Trend? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -300,12 +312,14 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     value = carried.value,
                     curve = carried.curve,
                     sessions = carried.sessions,
+                    trend = carried.trend,
                     loading = false,
                 )
             }
         }
         _state.update { it.copy(tiles = shown, loading = false) }
 
+        val started = System.currentTimeMillis()
         val gate = Semaphore(MAX_CONCURRENT_TILES)
         val loaded = coroutineScope {
             placeholders.map { placeholder ->
@@ -318,7 +332,27 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }.awaitAll()
         }
-        _state.update { it.copy(tiles = loaded) }
+        // Keep the previous arrows until the new ones arrive, as with the values above.
+        val withCarried = loaded.map { tile ->
+            val carried = previous[tile.tile.typeName]
+            if (carried != null && carried.source == tile.source) tile.copy(trend = carried.trend) else tile
+        }
+        _state.update { it.copy(tiles = withCarried) }
+        // Timing and count only, never a value: how long the dashboard takes to fill is the
+        // cost every per-tile read adds to, so it is worth being able to measure from adb.
+        Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
+
+        val trended = loadTrends(loaded, date, gate)
+        // Only if nothing has replaced these tiles in the meantime -- a day step or a source
+        // change starts a new load, and its tiles must not receive this load's arrows.
+        _state.update { state ->
+            if (state.date == date && state.tiles.map { it.tile } == trended.map { it.tile }) {
+                state.copy(tiles = trended)
+            } else {
+                state
+            }
+        }
+        Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
         cache = key.copy(loadedAt = System.currentTimeMillis())
     }
 
@@ -390,6 +424,53 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /**
+     * The trend arrows, fetched after the values are on screen.
+     *
+     * A month of daily buckets per tile nearly doubled the time to fill the dashboard when it
+     * was read alongside each value -- measured on the phone, about 650 ms to 1200 ms for
+     * eight tiles -- because the tiles are published together once the slowest finishes. The
+     * arrow is secondary to the number, so the number no longer waits for it.
+     */
+    private suspend fun loadTrends(tiles: List<TileData>, date: LocalDate, gate: Semaphore): List<TileData> =
+        coroutineScope {
+            tiles.map { data ->
+                async {
+                    val metric = data.spec.aggregate
+                    if (!data.granted || metric == null || data.spec.tile.form == TileSpec.Form.SESSIONS) {
+                        return@async data
+                    }
+                    val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+                    val trend = gate.withPermit {
+                        runCatching { trendBefore(metric, date, origins) }.getOrNull()
+                    }
+                    data.copy(trend = trend)
+                }
+            }.awaitAll()
+        }
+
+    /**
+     * One aggregate call yields both averages: daily buckets for the [TREND_DAYS] complete
+     * days before [date]. The shown day is left out because today is always partial. Days are
+     * placed by their own date, so a day the platform returns no bucket for stays a gap.
+     */
+    private suspend fun trendBefore(
+        metric: AggregateMetric<*>,
+        date: LocalDate,
+        origins: Set<DataOrigin>,
+    ): Trend? {
+        val start = date.minusDays(TREND_DAYS.toLong())
+        val byDay = repository.bucketedTotals(
+            metric,
+            TimeRangeFilter.between(start.atStartOfDay(), date.atStartOfDay()),
+            Period.ofDays(1),
+            origins,
+        ).associate { bucket ->
+            bucket.startTime.toLocalDate() to bucket.result[metric]?.let(::numericAggregate)
+        }
+        return trendOf(List(TREND_DAYS) { byDay[start.plusDays(it.toLong())] })
+    }
+
+    /**
      * The day's sessions of one kind.
      *
      * Read unfiltered by source, matching the chart's bands: a session written by any app is
@@ -447,6 +528,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private companion object {
+        const val TAG = "Dashboard"
         const val MAX_CONCURRENT_TILES = 4
 
         /**

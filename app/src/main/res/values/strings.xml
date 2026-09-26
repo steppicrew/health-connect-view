@@ -46,6 +46,9 @@
     <string name="dashboard_empty_body">Add the stats you want to see from the list of all data types.</string>
     <string name="tile_no_data" translatable="false">–</string>
     <string name="tile_locked">Not allowed</string>
+    <string name="trend_up">Last 7 days above the 30-day average</string>
+    <string name="trend_flat">Last 7 days level with the 30-day average</string>
+    <string name="trend_down">Last 7 days below the 30-day average</string>
     <string name="goal_title">Daily goal</string>
     <string name="goal_hint">Target value</string>
     <string name="goal_reset">Use default</string>
