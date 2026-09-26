@@ -87,6 +87,8 @@ fun DashboardScreen(
     onOpenType: (String, String) -> Unit,
     onOpenCatalog: () -> Unit,
     onOpenPermissions: () -> Unit,
+    /** The permission list itself, one step closer than [onOpenPermissions]'s settings. */
+    onGrantAccess: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -250,6 +252,7 @@ fun DashboardScreen(
                         onRemove = { viewModel.removeTile(tile.tile.typeName) },
                         onSetGoal = { editingGoalFor = tile },
                         onSetZones = { editingZonesFor = tile },
+                        onGrantAccess = onGrantAccess,
                     )
                 }
             }
@@ -273,6 +276,7 @@ private fun TileCard(
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
+    onGrantAccess: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -313,7 +317,7 @@ private fun TileCard(
                         onSetZones = onSetZones,
                     )
                 } else {
-                    TileBody(data)
+                    TileBody(data, onGrantAccess)
                 }
             }
 
@@ -438,13 +442,13 @@ private fun TileEditControls(
  * -- so a tile always shows something rather than an empty box.
  */
 @Composable
-private fun TileBody(data: TileData) {
+private fun TileBody(data: TileData, onGrantAccess: () -> Unit) {
     val progress = data.progress
     // The user's bands where they set them; the type's defaults otherwise.
     val zones = data.tile.effectiveZones
 
     when {
-        !data.granted -> TileValue(data)
+        !data.granted -> LockedTile(onGrantAccess)
 
         // Before the loading and null-value checks: a session tile never has a value, and
         // zero sessions is a real answer rather than an absence of data.
@@ -559,6 +563,34 @@ private fun TrendMark(trend: Trend) {
     )
 }
 
+/**
+ * A tile whose type is not granted, with the way to change that on the tile itself.
+ *
+ * Tapping the tile opens its detail, which only repeats "not allowed"; the grant lives two
+ * screens away in settings. The button goes straight to the permission list, which is the only
+ * thing a locked tile can usefully lead to.
+ */
+@Composable
+private fun LockedTile(onGrantAccess: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(
+            imageVector = Icons.Default.Lock,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(LOCK_ICON.dp),
+        )
+        Text(
+            text = stringResource(R.string.tile_locked),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        TextButton(onClick = onGrantAccess) {
+            Text(stringResource(R.string.tile_grant))
+        }
+    }
+}
+
 @Composable
 private fun TileValue(data: TileData) {
     when {
@@ -607,6 +639,7 @@ private const val CURVE_HEIGHT = 28
 /** Just enough to recognise the app; the tile has little room to spare. */
 private const val TILE_SOURCE_ICON = 16
 private const val TREND_ICON = 16
+private const val LOCK_ICON = 20
 private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
