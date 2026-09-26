@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Publishes the privacy page when main is pushed with changed privacy strings.
+#
+# The page is generated from the app's privacy_* strings and the Play listing links to it, so
+# the live page must say what the published app says. Pushing main is the moment that becomes
+# true; drafts on dev branches and ordinary string edits never touch the website.
+#
+# A failed sync warns and lets the push through: no network or an unavailable host must not
+# stop the code going out. `./scripts/sync-privacy.sh --check` shows any drift afterwards.
+#
+# Enable with:  git config core.hooksPath .githooks
+set -uo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+ZERO=0000000000000000000000000000000000000000
+PAGE_SOURCES=('app/src/main/res/values*/strings.xml' 'scripts/privacy-page.py')
+
+changed=false
+while read -r _local_ref local_sha remote_ref remote_sha; do
+    [ "$remote_ref" = "refs/heads/main" ] || continue
+    [ "$local_sha" = "$ZERO" ] && continue          # deleting main: nothing to publish
+    if [ "$remote_sha" = "$ZERO" ]; then
+        changed=true                                # first push of main
+    elif git diff -U0 "$remote_sha" "$local_sha" -- "${PAGE_SOURCES[@]}" \
+        | grep -qE '^[-+].*(name="privacy_|privacy-page)|^\+\+\+ b/scripts/privacy-page.py'; then
+        changed=true
+    fi
+done
+
+$changed || exit 0
+
+echo "privacy page changed on main; publishing"
+if ! ./scripts/sync-privacy.sh; then
+    echo "warning: privacy page NOT published; run ./scripts/sync-privacy.sh once the target is reachable" >&2
+fi
+exit 0
