@@ -116,18 +116,10 @@ data class TileDetailData(
     val goalCrossing: Instant?,
     /** Sleep or exercise spans shaded behind the chart, associated by time overlap only. */
     val sessions: List<Session>,
-    /**
-     * Heart rate through each session's own window, keyed by session start.
-     *
-     * Only filled for a [TileSpec.Form.SESSIONS] type, where the sessions are the content of
-     * the screen rather than context behind a chart. A missing entry means no heart rate was
-     * recorded then, which is distinct from an empty list and is said in different words.
-     */
-    val sessionCurves: Map<Instant, List<Point>> = emptyMap(),
     /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
     val heartRateLocked: Boolean = false,
     /**
-     * Value bands for [sessionCurves], the user's for heart rate where they set them, so the
+     * Value bands for the session curves (see `curveFor`), the user's for heart rate where they set them, so the
      * same reading is the same colour here as on the dashboard tile. Fixed rather than
      * window-relative: bands from each session's own extent would paint a calm walk in the
      * full sweep and make two sessions incomparable.
@@ -661,41 +653,44 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * Connect stores no session id on a sample, so these are the readings taken during the
      * session and deliberately not readings tagged as belonging to it.
      */
-    private suspend fun curvesFor(sessions: List<Session>): Map<Instant, List<Point>> {
-        val spec = heartRateSpec() ?: return emptyMap()
-        val gate = Semaphore(MAX_CONCURRENT_STATS)
+    /**
+     * Heart rate through one session's own window, read when its row comes on screen.
+     *
+     * Reading every session's curve up front made the year view of Trainings wait for all 728
+     * of them before showing anything -- about 66 ms each on the phone, so near 48 s -- for rows
+     * mostly never scrolled to. Now the list appears at once and each curve is read as its row
+     * is shown, at most [MAX_CONCURRENT_STATS] at a time, and kept for this screen only: memory,
+     * like every other reading here, never disk. Null means no heart rate was recorded then,
+     * which the row says in its own words.
+     */
+    suspend fun curveFor(session: Session): List<Point>? {
+        curveCache[session]?.let { return it.points }
+        val spec = heartRateSpec() ?: return null
+        val points = curveGate.withPermit {
+            val records = runCatching {
+                repository.readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
+            }.getOrDefault(emptyList())
 
-        return coroutineScope {
-            sessions.map { session ->
-                async {
-                    gate.withPermit {
-                        val records = runCatching {
-                            repository.readForChart(
-                                spec.type,
-                                TimeRangeFilter.between(session.start, session.end),
-                            )
-                        }.getOrDefault(emptyList())
-
-                        // One writer's samples rather than everyone's merged. Heart rate is
-                        // instantaneous, so aggregation cannot deduplicate it: two apps
-                        // mirroring the same session sample at slightly different instants
-                        // and values would interleave into a zigzag between two accounts of
-                        // one heart rate. Measured on this phone the Pilates session had a
-                        // single writer, so this changes nothing there -- it is the guard for
-                        // the sessions that do have two, which most types here already do.
-                        val points = fullestWriter(
-                            records.groupBy { spec.originOf(it) }
-                                .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
-                            session.start,
-                            session.end,
-                        )
-
-                        points.takeIf { it.size > 1 }?.let { session.start to it }
-                    }
-                }
-            }.awaitAll().filterNotNull().toMap()
+            // One writer's samples rather than everyone's merged. Heart rate is
+            // instantaneous, so aggregation cannot deduplicate it: two apps mirroring the
+            // same session sample at slightly different instants and values would interleave
+            // into a zigzag between two accounts of one heart rate.
+            fullestWriter(
+                records.groupBy { spec.originOf(it) }
+                    .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
+                session.start,
+                session.end,
+            ).takeIf { it.size > 1 }
         }
+        curveCache[session] = CachedCurve(points)
+        return points
     }
+
+    /** Wrapper so a session with no curve is remembered as such, not read again. */
+    private class CachedCurve(val points: List<Point>?)
+
+    private val curveCache = java.util.concurrent.ConcurrentHashMap<Session, CachedCurve>()
+    private val curveGate = Semaphore(MAX_CONCURRENT_STATS)
 
     private fun heartRateSpec(): RecordTypeSpec<*>? = RecordRegistry.specOrNull(HEART_RATE)
 
@@ -1088,11 +1083,6 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // the day look like". Only for a session type's own screen -- elsewhere the sessions
         // are bands behind a chart that is already showing something.
         val heartRateGranted = sessionKind != null && heartRateGranted()
-        val sessionCurves = if (sessionKind != null && heartRateGranted) {
-            curvesFor(sessions)
-        } else {
-            emptyMap()
-        }
 
         // Newest first, matching how the other list reads.
         val records = runCatching {
@@ -1169,7 +1159,6 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             goalCrossing = if (shapeFromWholeDayOnly) null else goalCrossing(scaledPoints, goal),
             emptyBuckets = emptyBuckets,
             sessions = sessions,
-            sessionCurves = sessionCurves,
             sessionCurveZones = zonesFor(heartRateSpec()),
             sessionCurveUnitRes = heartRateSpec()?.unitRes,
             lineZones = zonesFor(spec).takeIf { span.intradayBucket != null },

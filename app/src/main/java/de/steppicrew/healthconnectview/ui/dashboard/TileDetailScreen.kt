@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.produceState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.platform.LocalResources
@@ -194,6 +195,7 @@ fun TileDetailScreen(
                     data = current.value,
                     onSelectSource = viewModel::selectSource,
                     onOpenSession = { openSession = it },
+                    loadCurve = viewModel::curveFor,
                 )
             }
         }
@@ -205,6 +207,7 @@ private fun SpanContent(
     data: TileDetailData,
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
+    loadCurve: suspend (Session) -> List<Point>?,
 ) {
     LazyColumn {
         item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession) }
@@ -254,7 +257,7 @@ private fun SpanContent(
             items(data.sessions, key = { it.start.toString() }) { session ->
                 SessionRow(
                     session = session,
-                    curve = data.sessionCurves[session.start],
+                    loadCurve = loadCurve,
                     zones = data.sessionCurveZones,
                     heartRateUnitRes = data.sessionCurveUnitRes,
                     heartRateLocked = data.heartRateLocked,
@@ -716,10 +719,15 @@ private fun SessionCaption(session: Session, onClick: () -> Unit) {
  * value of its own -- the readings that describe it are separate types over the same window --
  * so showing them here is what turns "a 53-minute activity" into something you can read.
  */
+private sealed interface CurveLoad {
+    data object Loading : CurveLoad
+    data class Done(val points: List<Point>?) : CurveLoad
+}
+
 @Composable
 private fun SessionRow(
     session: Session,
-    curve: List<Point>?,
+    loadCurve: suspend (Session) -> List<Point>?,
     zones: ValueZones?,
     @StringRes heartRateUnitRes: Int?,
     heartRateLocked: Boolean,
@@ -783,7 +791,15 @@ private fun SessionRow(
             )
         }
 
-        when {
+        // Read when the row is shown rather than for every session up front; see curveFor.
+        // Nothing is drawn until it arrives, so a row never claims "no heart rate recorded"
+        // for a curve that is merely still loading.
+        val curveLoad by produceState<CurveLoad>(CurveLoad.Loading, session, heartRateLocked) {
+            value = CurveLoad.Done(if (heartRateLocked) null else loadCurve(session))
+        }
+        val curve = (curveLoad as? CurveLoad.Done)?.points
+
+        if (curveLoad is CurveLoad.Done) when {
             // The full chart rather than a spark line: at this size the samples are dense
             // enough to be worth reading individually, and the readout answers "what was my
             // rate at that dip" -- which a curve you cannot touch only poses.
