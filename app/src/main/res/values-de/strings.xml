@@ -178,7 +178,7 @@
     <string name="permission_history_body">Ohne diese Freigabe liefert Health Connect nur die letzten 30 Tage – egal, wie weit deine Daten zurückreichen.</string>
     <string name="action_select_all">Alle auswählen</string>
     <string name="action_privacy">Datenschutz</string>
-    <string name="action_continue">Überspringen</string>
+    <string name="action_continue">Weiter</string>
     <plurals name="action_grant_selected">
         <item quantity="one">%1$d Auswahl freigeben</item>
         <item quantity="other">%1$d ausgewählte freigeben</item>
