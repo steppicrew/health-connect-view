@@ -1008,7 +1008,9 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                 }
 
                 // The overlap winner is Health Connect's own priority setting, not ours to define.
-                if (sources.size > 1 && explanation.expanded == true) {
+                // Only for the combined view: with one app selected nothing is deduplicated, so
+                // which app would win an overlap says nothing about the figure shown.
+                if (sources.size > 1 && explanation.expanded == true && data.selectedSource == null) {
                     Text(
                         text = stringResource(R.string.source_priority_hint),
                         style = MaterialTheme.typography.labelSmall,
