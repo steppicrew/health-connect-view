@@ -15,12 +15,14 @@ import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.records.metadata.Metadata
 import androidx.health.connect.client.units.Energy
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
+import androidx.health.connect.client.units.Pressure
 import androidx.health.connect.client.units.Percentage
 import java.time.Instant
 import java.time.ZoneId
@@ -55,6 +57,7 @@ object SampleDataSeeder {
         ActiveCaloriesBurnedRecord::class,
         DistanceRecord::class,
         FloorsClimbedRecord::class,
+        BloodPressureRecord::class,
     )
 
 /** One kind of seeded workout: what it was, what it is called, and when it happens. */
@@ -346,6 +349,28 @@ private val SEEDED_WORKOUTS = listOf(
                             ),
                         )
                     }
+                }
+
+                // Blood pressure twice a day, as the usual advice asks, with mornings higher
+                // than evenings so the morning/evening split has a difference to show. Every
+                // third evening is measured after midnight, which must still count as that
+                // evening rather than the next morning.
+                val morningAt = dayStart.plus(7, ChronoUnit.HOURS).plus(15, ChronoUnit.MINUTES)
+                val eveningAt = if (dayOffset % 3 == 0) {
+                    dayStart.plus(24, ChronoUnit.HOURS).plus(35, ChronoUnit.MINUTES)
+                } else {
+                    dayStart.plus(21, ChronoUnit.HOURS).plus(40, ChronoUnit.MINUTES)
+                }
+                listOf(morningAt to 134.0, eveningAt to 124.0).forEach { (at, systolic) ->
+                    if (past(at)) add(
+                        BloodPressureRecord(
+                            time = at,
+                            zoneOffset = offset,
+                            systolic = Pressure.millimetersOfMercury(systolic + random.nextInt(-4, 5)),
+                            diastolic = Pressure.millimetersOfMercury(systolic - 48 + random.nextInt(-3, 4)),
+                            metadata = metadata(),
+                        ),
+                    )
                 }
 
                 // Weight only every few days, so the sparse-series path is exercised too.
