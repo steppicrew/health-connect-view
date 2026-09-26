@@ -204,7 +204,7 @@
     <string name="permission_history_body">Without this, Health Connect only returns the last 30 days, however far back your data goes.</string>
     <string name="action_select_all">Select all</string>
     <string name="action_privacy">Privacy</string>
-    <string name="action_continue">Skip</string>
+    <string name="action_continue">Continue</string>
     <plurals name="action_grant_selected">
         <item quantity="one">Allow %1$d selected</item>
         <item quantity="other">Allow %1$d selected</item>
