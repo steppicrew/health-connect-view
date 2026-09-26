@@ -67,6 +67,7 @@
     <string name="export_daily">Tageswerte (CSV)</string>
     <string name="export_premium">%1$s · Premium</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
+    <string name="detail_records_loading">Datensätze werden geladen …</string>
     <plurals name="export_done">
         <item quantity="one">%1$d Zeile exportiert</item>
         <item quantity="other">%1$d Zeilen exportiert</item>

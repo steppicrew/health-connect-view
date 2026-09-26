@@ -8,6 +8,8 @@ import android.provider.DocumentsContract
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.components.ExportKind
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -104,6 +106,11 @@ data class TileDetailData(
      * the tile shows a day, and a trend "before" a week or a year would be a different claim.
      */
     val trend: TrendResult? = null,
+    /**
+     * True while the record list and the source picker are still being read. The chart is
+     * shown first and these follow; see `loadData`.
+     */
+    val listPending: Boolean = false,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
     /**
@@ -406,13 +413,22 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     val canStepForward: Boolean get() = _offset.value > 0
 
+    /** The load in flight, cancelled when a newer one starts. */
+    private var loadJob: Job? = null
+
+    /**
+     * Reloads, replacing any load still running. With the list read after the chart is shown,
+     * swiping on through years while one loads would otherwise let the older load finish last
+     * and put its window's list under the newer window's chart.
+     */
     private fun reload() {
         val spec = RecordRegistry.specOrNull(typeName ?: return) ?: run {
             _state.update { UiState.Error("Unknown type") }
             return
         }
 
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { UiState.Loading }
 
             val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
@@ -426,7 +442,21 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             val capped = span.needsHistoryPermission(offset) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
-            val result = runCatching { loadData(spec, span, offset, capped, selectedSource) }
+            val result = runCatching {
+                loadData(spec, span, offset, capped, selectedSource) { chart ->
+                    ensureActive()
+                    _progress.value = null
+                    // Only when there is something to show: a partial that turns out empty
+                    // would flash a chart-less screen before the empty message.
+                    if (chart.points.isNotEmpty() || chart.total != null || chart.sessions.isNotEmpty()) {
+                        _state.update { UiState.Data(chart) }
+                    }
+                }
+            }
+            // runCatching also catches cancellation, and the reads inside swallow it into
+            // defaults, so a superseded load can reach this point with a result. It must not
+            // put that result, or an error, over the newer load's screen.
+            ensureActive()
             _progress.value = null
             result.fold(
                 onSuccess = { data ->
@@ -792,52 +822,23 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         offset: Int,
         historyCapped: Boolean,
         source: String?,
+        onChartReady: (TileDetailData) -> Unit = {},
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
         val hasSessions = spec.tile.form == TileSpec.Form.SESSIONS ||
             (span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty())
-        val steps = 5 + if (hasSessions) 1 else 0
+        // Only what comes before the chart can be shown: the list and picker follow it.
+        val steps = 2 + if (hasSessions) 1 else 0
         val done = java.util.concurrent.atomic.AtomicInteger(0)
         fun stepDone() {
             _progress.value = done.incrementAndGet().toFloat() / steps
         }
         _progress.value = 0f
 
-        // The list and the source picker's reads depend on nothing the chart computes, so they
-        // run alongside it rather than after it. Measured on the phone for a year of heart rate
-        // the steps ran one after another for ~20 s; the chart alone was ~5 s of that.
         val windowStart = windowStart(span, offset)
         val windowEnd = windowEnd(span, offset)
-        val recordsRead = async {
-            runCatching { repository.recordsIn(spec, windowStart, windowEnd, origins) }
-                .getOrDefault(emptyList())
-                .also { stepDone() }
-        }
-        // Only to name the other writers when one is selected, so one page is enough: the
-        // aggregate's origins below already name every writer that reaches a total, and this
-        // catches the ones that do not. Reading the full 5000 again took 7 s for a year.
-        val otherWritersRead = if (origins.isEmpty()) {
-            null
-        } else {
-            async {
-                runCatching {
-                    repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
-                        .map { spec.originOf(it) }
-                        .toSet()
-                }.getOrDefault(emptySet()).also { stepDone() }
-            }
-        }
-        if (otherWritersRead == null) stepDone()
-        val aggregateOriginsRead = metric?.let { aggregate ->
-            async {
-                runCatching { repository.contributingApps(aggregate, span.localFilter(offset)) }
-                    .getOrDefault(emptySet())
-                    .also { stepDone() }
-            }
-        }
-        if (aggregateOriginsRead == null) stepDone()
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
@@ -1141,24 +1142,6 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // are bands behind a chart that is already showing something.
         val heartRateGranted = sessionKind != null && heartRateGranted()
 
-        // Newest first, matching how the other list reads.
-        val records = recordsRead.await()
-
-        // Deliberately unfiltered: this drives the source picker, so it must list every app
-        // that wrote into the window. Scoping it to the current selection would collapse the
-        // picker to that one app and strand the user there with no way back. So the records
-        // above are reused only when nothing is filtered, which is the common case.
-        //
-        // The writers are taken from the records and unioned with the aggregate's origins,
-        // never from the origins alone. The two legitimately disagree: a writer whose records
-        // do not reach the aggregate is absent from the origins while still plainly present
-        // in the list below. The whole-day-summary case is exactly that -- a record as wide
-        // as its bucket aggregates to nothing (see CLAUDE.md) -- and with one contributor
-        // left the picker hid itself, so the user saw two writers listed and no way to choose
-        // between them. Origins still contribute because some types aggregate without storing
-        // records at all, where the records alone would name nobody.
-        val writers = otherWritersRead?.await() ?: records.map { spec.originOf(it) }.toSet()
-        val contributors = writers + (aggregateOriginsRead?.await() ?: emptySet())
 
         // A sessions tile answers "how much did these sessions cover", so its own list is the
         // authority: already deduplicated across writers, and already attributed by the rule
@@ -1174,7 +1157,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             total
         }
 
-        TileDetailData(
+        val chart = TileDetailData(
             spec = spec,
             points = perDayPoints.ifEmpty { scaledPoints },
             // Bars wherever a point is a whole bucket rather than a moment: a sessions window
@@ -1187,7 +1170,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind != Session.Kind.SLEEP,
             total = headlineTotal,
             aggregated = seriesAggregated,
-            contributingApps = contributors,
+            contributingApps = emptySet(),
             selectedSource = source,
             goal = goal,
             trend = if (span == Span.DAY && metric != null && spec.tile.form != TileSpec.Form.SESSIONS) {
@@ -1212,8 +1195,68 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             historyCapped = historyCapped,
             start = span.startDate(offset),
             end = span.endDate(offset).minusDays(1),
+            records = emptyList(),
+            truncated = false,
+            listPending = true,
+        )
+
+        // The chart first, then the list and the picker.
+        //
+        // Health Connect serves one app's requests largely in turn, so reading these alongside
+        // the chart only queued the chart behind them: a year of heart rate showed nothing for
+        // ~13.5 s. Handing the chart over first puts it on screen in about half that, while the
+        // picker keeps its place and the list says it is loading.
+        onChartReady(chart)
+
+        val recordsRead = async {
+            runCatching { repository.recordsIn(spec, windowStart, windowEnd, origins) }
+                .getOrDefault(emptyList())
+        }
+        // Only to name the other writers when one is selected, so one page is enough: the
+        // aggregate's origins below already name every writer that reaches a total, and this
+        // catches the ones that do not. Reading the full 5000 again took 7 s for a year.
+        val otherWritersRead = if (origins.isEmpty()) {
+            null
+        } else {
+            async {
+                runCatching {
+                    repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
+                        .map { spec.originOf(it) }
+                        .toSet()
+                }.getOrDefault(emptySet())
+            }
+        }
+        val aggregateOriginsRead = metric?.let { aggregate ->
+            async {
+                runCatching { repository.contributingApps(aggregate, span.localFilter(offset)) }
+                    .getOrDefault(emptySet())
+            }
+        }
+
+        // Newest first, matching how the other list reads.
+        val records = recordsRead.await()
+
+        // Deliberately unfiltered: this drives the source picker, so it must list every app
+        // that wrote into the window. Scoping it to the current selection would collapse the
+        // picker to that one app and strand the user there with no way back. So the records
+        // above are reused only when nothing is filtered, which is the common case.
+        //
+        // The writers are taken from the records and unioned with the aggregate's origins,
+        // never from the origins alone. The two legitimately disagree: a writer whose records
+        // do not reach the aggregate is absent from the origins while still plainly present
+        // in the list below. The whole-day-summary case is exactly that -- a record as wide
+        // as its bucket aggregates to nothing (see CLAUDE.md) -- and with one contributor
+        // left the picker hid itself, so the user saw two writers listed and no way to choose
+        // between them. Origins still contribute because some types aggregate without storing
+        // records at all, where the records alone would name nobody.
+        val writers = otherWritersRead?.await() ?: records.map { spec.originOf(it) }.toSet()
+        val contributors = writers + (aggregateOriginsRead?.await() ?: emptySet())
+
+        chart.copy(
             records = records,
             truncated = records.size >= HealthRepository.MAX_RECORDS,
+            contributingApps = contributors,
+            listPending = false,
         )
     }
 
