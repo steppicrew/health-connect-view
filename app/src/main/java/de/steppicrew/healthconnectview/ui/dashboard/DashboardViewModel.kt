@@ -28,6 +28,7 @@ import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -163,8 +164,21 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         refresh()
     }
 
+    /** The load in flight, cancelled when a newer one starts. */
+    private var loadJob: Job? = null
+
+    /**
+     * Reloads, replacing any load still running.
+     *
+     * `init` and the screen's first ON_RESUME both call this, a few milliseconds apart and
+     * before either has filled the cache, so every cold start ran every read twice -- seen in
+     * the load log as two identical lines. Cancelling the older load rather than skipping the
+     * newer one means the latest inputs always win: a resume after a grant in settings must
+     * not be swallowed by a load that started before it.
+     */
     fun refresh() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val availability = resolveAvailability(getApplication())
             if (availability != Availability.Available) {
                 _state.update { it.copy(availability = availability, loading = false) }
