@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
@@ -87,6 +89,42 @@ fun WindowStepper(
         }
     }
 }
+
+/**
+ * Steps the window by a horizontal swipe, as the [WindowStepper] arrows do: a swipe to the
+ * right reveals the previous window, as on a calendar, and to the left the next one.
+ *
+ * Put on the screen's content rather than on the chart. The chart pans and reads values by
+ * dragging and consumes those gestures, which a parent's drag detector then ignores -- so a
+ * drag that starts on the chart stays the chart's, and the rest of the screen swipes.
+ *
+ * Keyed on its callbacks as well as on [canStepForward]; bound references such as
+ * `viewModel::stepBack` compare equal across recompositions, so this does not restart.
+ */
+fun Modifier.swipeToStep(
+    canStepForward: Boolean,
+    onBack: () -> Unit,
+    onForward: () -> Unit,
+): Modifier = pointerInput(canStepForward, onBack, onForward) {
+    val threshold = SWIPE_THRESHOLD_DP.dp.toPx()
+    var travelled = 0f
+    detectHorizontalDragGestures(
+        onDragStart = { travelled = 0f },
+        onDragEnd = {
+            when {
+                travelled > threshold -> onBack()
+                travelled < -threshold && canStepForward -> onForward()
+            }
+        },
+        onHorizontalDrag = { change, amount ->
+            change.consume()
+            travelled += amount
+        },
+    )
+}
+
+/** Far enough that a sloppy vertical scroll does not step the window by accident. */
+private const val SWIPE_THRESHOLD_DP = 64
 
 /**
  * The window being shown, derived from the span rather than from the loaded data.

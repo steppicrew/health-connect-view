@@ -38,6 +38,7 @@ import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +71,11 @@ fun TypeDetailScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.padding(padding)) {
+        Column(
+            Modifier
+                .padding(padding)
+                .swipeToStep(offset > 0, viewModel::stepBack, viewModel::stepForward),
+        ) {
             SpanSelector(
                 selected = span,
                 onSelect = viewModel::setSpan,
