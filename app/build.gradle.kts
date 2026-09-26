@@ -14,7 +14,13 @@ val envFile = rootProject.file(".env")
 val env = Properties().apply {
     if (envFile.exists()) envFile.inputStream().use { load(it) }
 }
-fun env(key: String): String? = (System.getenv(key) ?: env.getProperty(key))?.takeIf { it.isNotBlank() }
+// Quotes stripped as a shell would: the release scripts source .env with bash, which removes
+// them, while Properties keeps them -- so a quoted password worked through release.sh and was
+// "incorrect" through a bare ./gradlew.
+fun env(key: String): String? = (System.getenv(key) ?: env.getProperty(key)?.unquoted())
+    ?.takeIf { it.isNotBlank() }
+fun String.unquoted(): String =
+    if (length >= 2 && first() == last() && (first() == '"' || first() == '\'')) substring(1, length - 1) else this
 
 /** Real android.jar, located from the SDK env — never a hardcoded absolute path. */
 val androidJar: File = File(
