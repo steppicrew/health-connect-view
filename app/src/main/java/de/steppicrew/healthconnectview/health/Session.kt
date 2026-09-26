@@ -27,6 +27,8 @@ data class Session(
      * further discrimination.
      */
     val exerciseType: Int? = null,
+    /** A night's stages where its writer recorded them; always empty for exercise. */
+    val stages: List<SleepStage> = emptyList(),
 ) {
     enum class Kind { SLEEP, EXERCISE }
 }
@@ -49,10 +51,15 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
                 candidate.start < existing.end &&
                 candidate.end > existing.start
         }
-        if (overlapping < 0) {
-            kept += candidate
-        } else if (kept[overlapping].title == null && candidate.title != null) {
-            kept[overlapping] = candidate
+        val existing = kept.getOrNull(overlapping)
+        when {
+            existing == null -> kept += candidate
+            existing.title == null && candidate.title != null -> kept[overlapping] = candidate
+            // Among equally named copies of a night, the one with more stages: a re-sync can
+            // lose detail but never add it. Measured on the phone, Health Sync's copy of a
+            // Garmin night once carried one segment fewer than Garmin's own.
+            existing.title == candidate.title && candidate.stages.size > existing.stages.size ->
+                kept[overlapping] = candidate
         }
     }
     return kept
@@ -93,6 +100,7 @@ fun SleepSessionRecord.toSession(): Session = Session(
     title = title,
     kind = Session.Kind.SLEEP,
     origin = metadata.dataOrigin.packageName,
+    stages = stages.mapNotNull { it.toSleepStage() },
 )
 
 /** How long a session lasted. */
