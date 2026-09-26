@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,14 +9,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
@@ -28,11 +29,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.CloseFullscreen
+import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +49,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +57,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.billing.Feature
+import de.steppicrew.healthconnectview.dashboard.SIZES
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -98,6 +108,11 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+    // The state flow itself rather than has(): it starts from what is already known, so an
+    // owner's large tiles do not open as single cells and then jump.
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
+    val resizable = pro.allows(Feature.TILE_SIZES)
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editing by remember { mutableStateOf(false) }
@@ -232,34 +247,48 @@ fun DashboardScreen(
                 modifier = Modifier.padding(padding),
             )
 
-            else -> LazyVerticalGrid(
-                columns = remember {
-                    BoundedTileCells(TILE_MIN_WIDTH, TILE_COLUMNS_MIN, TILE_COLUMNS_MAX)
-                },
+            else -> TileGrid(
+                // Without Pro every tile is drawn as one cell, but the stored sizes are kept: a
+                // refund or a restored backup should not cost the layout, and buying Pro again
+                // brings it back as it was.
+                sizes = state.tiles.map { if (resizable) it.tile.width to it.tile.height else 1 to 1 },
+                spacing = 12.dp,
+                contentPadding = PaddingValues(12.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(state.tiles, key = { it.tile.typeName }) { tile ->
-                    TileCard(
-                        data = tile,
-                        editing = editing,
-                        onClick = {
-                            // In edit mode a tap must not navigate away: the user is arranging
-                            // tiles, not reading them.
-                            if (!editing) onOpenType(tile.tile.typeName, state.date.toString())
-                        },
-                        onLongClick = { editing = true },
-                        onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },
-                        onMoveDown = { viewModel.moveTile(tile.tile.typeName, forward = true) },
-                        onRemove = { viewModel.removeTile(tile.tile.typeName) },
-                        onSetGoal = { editingGoalFor = tile },
-                        onSetZones = { editingZonesFor = tile },
-                        onGrantAccess = onGrantAccess,
-                    )
+                state.tiles.forEach { tile ->
+                    // Keyed so a tile keeps its own state when a move or resize reorders the
+                    // children, as the lazy grid's item keys did.
+                    key(tile.tile.typeName) {
+                        TileCard(
+                            data = tile,
+                            editing = editing,
+                            resizable = resizable,
+                            onClick = {
+                                // In edit mode a tap must not navigate away: the user is
+                                // arranging tiles, not reading them.
+                                if (!editing) onOpenType(tile.tile.typeName, state.date.toString())
+                            },
+                            onLongClick = { editing = true },
+                            onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },
+                            onMoveDown = { viewModel.moveTile(tile.tile.typeName, forward = true) },
+                            onResize = {
+                                // Locked, the button is where the purchase starts, as the
+                                // export menu's locked entries are.
+                                if (resizable) {
+                                    viewModel.resizeTile(tile.tile.typeName)
+                                } else {
+                                    activity?.let(AppEntitlements.current::buy)
+                                }
+                            },
+                            onRemove = { viewModel.removeTile(tile.tile.typeName) },
+                            onSetGoal = { editingGoalFor = tile },
+                            onSetZones = { editingZonesFor = tile },
+                            onGrantAccess = onGrantAccess,
+                        )
+                    }
                 }
             }
         }
@@ -275,19 +304,21 @@ fun DashboardScreen(
 private fun TileCard(
     data: TileData,
     editing: Boolean,
+    resizable: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
+    onResize: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
     onGrantAccess: () -> Unit,
 ) {
+    // The grid hands every tile its exact size, square or spanning; the card only fills it.
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
+            .fillMaxSize()
             .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -316,14 +347,18 @@ private fun TileCard(
                         // Only where a curve is actually coloured by them; a ring or a plain
                         // number has nothing for zones to change.
                         canSetZones = data.spec.tile.defaultZones != null,
+                        resizable = resizable,
+                        width = data.tile.width,
+                        height = data.tile.height,
                         onMoveUp = onMoveUp,
                         onMoveDown = onMoveDown,
+                        onResize = onResize,
                         onRemove = onRemove,
                         onSetGoal = onSetGoal,
                         onSetZones = onSetZones,
                     )
                 } else {
-                    TileBody(data, onGrantAccess)
+                    TileBody(data, large = resizable && data.tile.height > 1, onGrantAccess)
                 }
             }
 
@@ -383,56 +418,87 @@ private fun TileCard(
  * Reordering is by single steps rather than drag-and-drop: it needs no gesture to discover,
  * works with accessibility services, and cannot drop a tile into an unintended slot. Ordering
  * is the whole layout, so a mis-drop is not a trivial mistake to undo.
+ *
+ * Resizing is a button for the same reasons, stepping through the sizes rather than dragging
+ * a corner. It also works where a drag cannot be tested: the Xiaomi refuses injected input.
+ *
+ * A flowing row, because a resized tile has room for all of them on one line while a square
+ * one needs two -- and on the narrowest phones, three.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TileEditControls(
     canSetGoal: Boolean,
     canSetZones: Boolean,
+    resizable: Boolean,
+    width: Int,
+    height: Int,
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
+    onResize: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            IconButton(onClick = onMoveUp) {
+    val size = stringResource(R.string.tile_size, width, height)
+    val resize = stringResource(R.string.tile_resize)
+    FlowRow(horizontalArrangement = Arrangement.Center, verticalArrangement = Arrangement.Center) {
+        IconButton(onClick = onMoveUp) {
+            Icon(
+                imageVector = Icons.Default.ArrowUpward,
+                contentDescription = stringResource(R.string.tile_move_up),
+            )
+        }
+        IconButton(onClick = onMoveDown) {
+            Icon(
+                imageVector = Icons.Default.ArrowDownward,
+                contentDescription = stringResource(R.string.tile_move_down),
+            )
+        }
+        IconButton(
+            onClick = onResize,
+            modifier = if (resizable) Modifier.semantics { stateDescription = size } else Modifier,
+        ) {
+            // The arrows point the way the next tap goes: outwards until the largest
+            // size, then inwards back to a single cell.
+            val largest = resizable && (width to height) == SIZES.last()
+            // Locked, it stays in place with a padlock: a control that silently vanishes
+            // cannot be asked about.
+            BadgedBox(
+                badge = {
+                    if (!resizable) {
+                        Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(LOCK_BADGE.dp))
+                    }
+                },
+            ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowUpward,
-                    contentDescription = stringResource(R.string.tile_move_up),
-                )
-            }
-            IconButton(onClick = onMoveDown) {
-                Icon(
-                    imageVector = Icons.Default.ArrowDownward,
-                    contentDescription = stringResource(R.string.tile_move_down),
+                    imageVector = if (largest) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
+                    contentDescription = if (resizable) resize else stringResource(R.string.export_premium, resize),
                 )
             }
         }
-        Row {
-            if (canSetGoal) {
-                IconButton(onClick = onSetGoal) {
-                    Icon(
-                        imageVector = Icons.Default.Flag,
-                        contentDescription = stringResource(R.string.tile_set_goal),
-                    )
-                }
-            }
-            if (canSetZones) {
-                IconButton(onClick = onSetZones) {
-                    Icon(
-                        imageVector = Icons.Default.Palette,
-                        contentDescription = stringResource(R.string.tile_set_zones),
-                    )
-                }
-            }
-            IconButton(onClick = onRemove) {
+        if (canSetGoal) {
+            IconButton(onClick = onSetGoal) {
                 Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.tile_remove),
-                    tint = MaterialTheme.colorScheme.error,
+                    imageVector = Icons.Default.Flag,
+                    contentDescription = stringResource(R.string.tile_set_goal),
                 )
             }
+        }
+        if (canSetZones) {
+            IconButton(onClick = onSetZones) {
+                Icon(
+                    imageVector = Icons.Default.Palette,
+                    contentDescription = stringResource(R.string.tile_set_zones),
+                )
+            }
+        }
+        IconButton(onClick = onRemove) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.tile_remove),
+                tint = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }
@@ -443,7 +509,7 @@ private fun TileEditControls(
  * -- so a tile always shows something rather than an empty box.
  */
 @Composable
-private fun TileBody(data: TileData, onGrantAccess: () -> Unit) {
+private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) {
     val progress = data.progress
     // The user's bands where they set them; the type's defaults otherwise.
     val zones = data.tile.effectiveZones
@@ -455,11 +521,11 @@ private fun TileBody(data: TileData, onGrantAccess: () -> Unit) {
         // zero sessions is a real answer rather than an absence of data.
         data.spec.tile.form == TileSpec.Form.SESSIONS -> SessionCount(data)
 
-        data.loading || data.value == null -> TileValue(data)
+        data.loading || data.value == null -> TileValue(data, large)
 
         data.spec.tile.form == TileSpec.Form.RING && progress != null ->
             ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
-                TileValue(data)
+                TileValue(data, large)
             }
 
         data.spec.tile.form == TileSpec.Form.CURVE && zones != null && data.curve.size > 1 ->
@@ -468,18 +534,20 @@ private fun TileBody(data: TileData, onGrantAccess: () -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                TileValue(data)
+                TileValue(data, large)
+                // A tall tile gives the curve the room below the number: the day's shape is
+                // what the extra height is for, and a larger number would say nothing more.
                 SparkCurve(
                     points = data.curve,
                     zones = zones,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(CURVE_HEIGHT.dp)
+                        .then(if (large) Modifier.weight(1f) else Modifier.height(CURVE_HEIGHT.dp))
                         .padding(top = 6.dp),
                 )
             }
 
-        else -> TileValue(data)
+        else -> TileValue(data, large)
     }
 }
 
@@ -593,7 +661,10 @@ private fun LockedTile(onGrantAccess: () -> Unit) {
 }
 
 @Composable
-private fun TileValue(data: TileData) {
+private fun TileValue(data: TileData, large: Boolean = false) {
+    // A tall tile's number grows with it; left at tile size it sat lost in the middle of a
+    // ring four times the area.
+    val valueStyle = if (large) MaterialTheme.typography.displayMedium else MaterialTheme.typography.headlineMedium
     when {
         // "Not allowed to look" and "nothing here" need different words: showing a dash for a
         // locked type would read as an empty day rather than a missing permission.
@@ -623,7 +694,7 @@ private fun TileValue(data: TileData) {
             // read as a measurement taken on the day on screen.
             Text(
                 text = tileValueText(data.value, data.secondaryValue),
-                style = MaterialTheme.typography.headlineMedium,
+                style = valueStyle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
@@ -649,14 +720,14 @@ private fun TileValue(data: TileData) {
             )
             Text(
                 text = tileValueText(data.value, data.secondaryValue),
-                style = MaterialTheme.typography.headlineMedium,
+                style = valueStyle,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
         else -> Text(
             text = Formatting.number(data.value),
-            style = MaterialTheme.typography.headlineMedium,
+            style = valueStyle,
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
@@ -681,6 +752,7 @@ private const val CURVE_HEIGHT = 28
 private const val TILE_SOURCE_ICON = 16
 private const val TREND_ICON = 16
 private const val LOCK_ICON = 20
+private const val LOCK_BADGE = 12
 private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
