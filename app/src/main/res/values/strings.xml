@@ -69,6 +69,22 @@
     <string name="export_premium">%1$s · Premium</string>
     <string name="export_failed">Export failed. No file was kept.</string>
     <string name="detail_records_loading">Loading records…</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_backup_export">Export settings</string>
+    <string name="settings_backup_export_body">Dashboard, source choices and display settings as a file. No health data.</string>
+    <string name="settings_backup_import">Import settings</string>
+    <string name="settings_backup_import_body">Replaces the current dashboard and settings with those from a file.</string>
+    <string name="backup_confirm_title">Replace settings?</string>
+    <plurals name="backup_confirm_body">
+        <item quantity="one">The backup holds %1$d tile. Your current dashboard, source choices and display settings will be replaced.</item>
+        <item quantity="other">The backup holds %1$d tiles. Your current dashboard, source choices and display settings will be replaced.</item>
+    </plurals>
+    <string name="backup_confirm_action">Replace</string>
+    <string name="backup_exported">Settings exported</string>
+    <string name="backup_restored">Settings restored</string>
+    <string name="backup_not_a_backup">This file is not a settings backup of this app.</string>
+    <string name="backup_newer">This backup comes from a newer version of the app. Update the app first.</string>
+    <string name="backup_failed">The file could not be read or written.</string>
     <string name="source_section_title">Sources</string>
     <plurals name="export_done">
         <item quantity="one">Exported %1$d row</item>

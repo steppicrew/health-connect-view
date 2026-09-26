@@ -68,6 +68,15 @@ class SettingsStore(private val context: Context) {
         }
     }
 
+    /** Replaces every setting at once, for restoring a backup. */
+    suspend fun restore(settings: Settings) {
+        context.settingsDataStore.edit { prefs ->
+            prefs[KEY_THEME] = settings.theme.name
+            prefs[KEY_DYNAMIC_COLOR] = settings.dynamicColor
+            prefs[KEY_EXPANDED_EXPLANATIONS] = settings.expandedExplanations
+        }
+    }
+
     private companion object {
         val KEY_THEME = stringPreferencesKey("theme")
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")

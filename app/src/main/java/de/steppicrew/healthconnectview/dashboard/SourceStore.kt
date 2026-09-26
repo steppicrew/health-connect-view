@@ -91,6 +91,14 @@ class SourceStore(private val context: Context) {
         }
     }
 
+    /** Replaces every choice at once, for restoring a backup. */
+    suspend fun restore(selections: Map<String, String>, preferred: String?) {
+        context.sourceDataStore.edit { prefs ->
+            prefs[KEY_SOURCES] = encode(selections)
+            if (preferred == null) prefs.remove(KEY_PREFERRED) else prefs[KEY_PREFERRED] = preferred
+        }
+    }
+
     private fun encode(selections: Map<String, String>): String =
         JSONObject().apply { selections.forEach { (type, pkg) -> put(type, pkg) } }.toString()
 

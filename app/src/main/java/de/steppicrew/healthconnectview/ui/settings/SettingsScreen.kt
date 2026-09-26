@@ -1,5 +1,12 @@
 package de.steppicrew.healthconnectview.ui.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.runtime.LaunchedEffect
+import java.time.LocalDate
 import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
@@ -73,6 +80,59 @@ fun SettingsScreen(
     val preferredSource by viewModel.preferredSource.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmRevoke by remember { mutableStateOf(false) }
+    val pendingRestore by viewModel.pendingRestore.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+    LaunchedEffect(viewModel) {
+        viewModel.backupEvents.collect { event ->
+            snackbar.showSnackbar(
+                resources.getString(
+                    when (event) {
+                        BackupEvent.Exported -> R.string.backup_exported
+                        BackupEvent.Restored -> R.string.backup_restored
+                        BackupEvent.NotABackup -> R.string.backup_not_a_backup
+                        BackupEvent.NewerFormat -> R.string.backup_newer
+                        BackupEvent.Failed -> R.string.backup_failed
+                    },
+                ),
+            )
+        }
+    }
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri -> uri?.let(viewModel::exportBackup) }
+    // Any type, not only JSON: file managers and cloud drives often label a .json as plain text
+    // or octet-stream, and a filter that hid the user's own backup would be a dead end. The
+    // content is checked when read.
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri -> uri?.let(viewModel::readBackup) }
+
+    pendingRestore?.let { backup ->
+        AlertDialog(
+            onDismissRequest = viewModel::cancelRestore,
+            title = { Text(stringResource(R.string.backup_confirm_title)) },
+            text = {
+                Text(
+                    pluralStringResource(
+                        R.plurals.backup_confirm_body,
+                        backup.dashboard.tiles.size,
+                        backup.dashboard.tiles.size,
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::confirmRestore) {
+                    Text(stringResource(R.string.backup_confirm_action))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::cancelRestore) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
 
     // Access can be changed in Health Connect while this screen is backgrounded.
     OnResume { viewModel.refresh() }
@@ -102,6 +162,7 @@ fun SettingsScreen(
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_title)) },
@@ -208,6 +269,22 @@ fun SettingsScreen(
                     danger = true,
                 )
             }
+
+            HorizontalDivider()
+            SectionHeader(stringResource(R.string.settings_backup))
+
+            // Free, unlike the health-data export: nothing here is health data, and losing a
+            // hand-arranged dashboard on a phone switch is exactly what this prevents.
+            LinkRow(
+                title = stringResource(R.string.settings_backup_export),
+                body = stringResource(R.string.settings_backup_export_body),
+                onClick = { exportLauncher.launch("health-connect-view-settings-${LocalDate.now()}.json") },
+            )
+            LinkRow(
+                title = stringResource(R.string.settings_backup_import),
+                body = stringResource(R.string.settings_backup_import_body),
+                onClick = { importLauncher.launch(arrayOf("*/*")) },
+            )
 
             HorizontalDivider()
             SectionHeader(stringResource(R.string.settings_about))
