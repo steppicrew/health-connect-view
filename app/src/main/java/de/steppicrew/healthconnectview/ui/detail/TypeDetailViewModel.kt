@@ -196,7 +196,7 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         val bucket = span.bucket ?: return emptyList()
         return repository.bucketedTotals(metric, span.localFilter(offset), bucket)
             .mapNotNull { bucket ->
-                val value = bucket.result[metric]?.let(::numericAggregate) ?: return@mapNotNull null
+                val value = bucket.result[metric]?.let { numericAggregate(it, metric) } ?: return@mapNotNull null
                 Point(
                     time = bucket.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
                     value = value,

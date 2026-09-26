@@ -209,7 +209,7 @@ class HealthRepository(private val context: Context) {
         origins: Set<DataOrigin> = emptySet(),
     ): Double? = withContext(Dispatchers.IO) {
         val result = client.aggregate(AggregateRequest(setOf(metric), range, origins))
-        result[metric]?.let(::numericAggregate)
+        result[metric]?.let { numericAggregate(it, metric) }
     }
 
     /**
