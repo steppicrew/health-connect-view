@@ -103,7 +103,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
             TimeRangeFilter.between(from.atStartOfDay(), until.atStartOfDay()),
             Period.ofDays(1),
             origins,
-        ).associate { it.startTime.toLocalDate() to it.result[metric]?.let(::numericAggregate) }
+        ).associate { it.startTime.toLocalDate() to it.result[metric]?.let { numericAggregate(it, metric) } }
 
         val writer = out.bufferedWriter(Charsets.UTF_8)
         writer.write(BOM)

@@ -917,7 +917,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 duration != null -> repository
                     .intradayTotals(metric, span.instantFilter(offset), duration, origins)
                     .mapNotNull { bucket ->
-                        val value = bucket.result[metric]?.let(::numericAggregate)
+                        val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
                             ?: return@mapNotNull null
                         Point(time = bucket.startTime, value = value)
                     }
@@ -945,7 +945,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     } else {
                         buckets.mapNotNull { bucket ->
                             val parts = stackMetrics.map { (_, partMetric) ->
-                                bucket.result[partMetric]?.let(::numericAggregate)
+                                bucket.result[partMetric]?.let { numericAggregate(it, partMetric) }
                                     ?: return@mapNotNull null
                             }
                             StackedBucket(
@@ -962,8 +962,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     // one, which would read as a range reaching to zero.
                     rangeBand = bandMetrics?.let { (lowMetric, highMetric) ->
                         buckets.mapNotNull { bucket ->
-                            val low = bucket.result[lowMetric]?.let(::numericAggregate)
-                            val high = bucket.result[highMetric]?.let(::numericAggregate)
+                            val low = bucket.result[lowMetric]?.let { numericAggregate(it, lowMetric) }
+                            val high = bucket.result[highMetric]?.let { numericAggregate(it, highMetric) }
                             if (low == null || high == null) return@mapNotNull null
                             ValueBand(
                                 time = bucket.startTime
@@ -1013,7 +1013,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     }
 
                     fun series(of: AggregateMetric<*>): List<Point> = buckets.mapNotNull { bucket ->
-                        val value = bucket.result[of]?.let(::numericAggregate)
+                        val value = bucket.result[of]?.let { numericAggregate(it, of) }
                             ?: return@mapNotNull null
                         Point(
                             time = bucket.startTime

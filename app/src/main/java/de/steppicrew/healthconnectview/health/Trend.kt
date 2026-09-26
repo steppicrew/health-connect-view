@@ -79,7 +79,7 @@ suspend fun HealthRepository.trendBefore(
         Period.ofDays(1),
         origins,
     ).associate { bucket ->
-        bucket.startTime.toLocalDate() to bucket.result[metric]?.let(::numericAggregate)
+        bucket.startTime.toLocalDate() to bucket.result[metric]?.let { numericAggregate(it, metric) }
     }
     return trendOf(List(TREND_DAYS) { byDay[start.plusDays(it.toLong())] })
 }
