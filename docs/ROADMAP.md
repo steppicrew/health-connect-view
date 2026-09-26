@@ -16,10 +16,8 @@ open items below and `FEATURE-IDEAS.md`.
    put fake periods in the owner's real store. Dark theme with dynamic colour showed light
    flow as the *darkest* day; fixed. The real read path shows the no-permission and empty
    states correctly. Not seen on the phone: light theme (it needs a tap) and real cycle data.
-3. [ ] **Tile comparison** -- a small up/down arrow on each tile, 7-day against 30-day
-   average. Covers section 1's open comparison and the top idea in `FEATURE-IDEAS.md`. Costs a
-   second `aggregate()` per tile, so measure dashboard load on the phone before and after.
-   Decide first what "flat" is, or every tile shows an arrow for noise.
+3. [x] **Tile comparison** -- merged 26.09.2026; see "Built: a trend arrow on every tile" in
+   section 1.
 4. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
    Storage Access Framework only; no permission changes. Decide raw records vs. deduplicated
    daily totals (probably both, labelled), and update the privacy policy's wording on data
@@ -122,10 +120,28 @@ that widths differ by at most a pixel, and that a wider screen never yields *few
   geometry and a second gesture.
 - Which stats form the default tile set on first run. Currently steps, heart rate, sleep,
   weight, total calories, floors.
-- Whether a tile shows a comparison (vs. yesterday, vs. 7-day average). Useful, but it is a
-  second aggregation per tile.
 - Whether "advanced dashboard" becomes the premium feature. `Feature.CUSTOM_DASHBOARD` is
   reserved; free would keep a fixed starter dashboard, paid unlocks arbitrary tiles.
+
+### Built: a trend arrow on every tile
+
+Each tile with an aggregate metric shows up, flat or down: the 7 complete days before the shown
+day against the 30-day average (`health/Trend.kt`). The shown day is excluded because today is
+always partial -- a step count at ten in the morning would point down every day.
+
+- **Flat is scale-free**: a difference under half the 30 days' standard deviation. One rule
+  fits steps and weight: a kilo on a steady weight shows, normal step noise does not.
+- **Unrecorded days are gaps, not zeros**, and too few recorded days (under 4 of 7 or 15 of 30)
+  give no arrow rather than a confident one. Weight, weighed a few times a month, has none.
+- **Neutral colour.** Up is good for steps and bad for resting heart rate.
+- **Fetched after the values.** Read alongside them it took eight tiles from ~650 to ~1200 ms
+  on the phone, because tiles publish together once the slowest finishes. The arrows now
+  follow in a second pass (~800 ms), and the numbers do not wait.
+
+Measuring this found a bug that predated it: `init` and the first `ON_RESUME` both started a
+full load, so every cold start read every tile twice. One load now cancels a superseded one,
+and the values arrive in ~480 ms. The debug log line `Dashboard: loaded N tiles in X ms`
+carries timing only, for measuring from adb.
 
 ## 2. Settings screen — built
 
