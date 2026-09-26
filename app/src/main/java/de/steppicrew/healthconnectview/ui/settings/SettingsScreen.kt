@@ -52,6 +52,9 @@ import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import androidx.activity.compose.LocalActivity
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.billing.ProState
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.settings.ThemeChoice
 import de.steppicrew.healthconnectview.ui.components.OnResume
@@ -134,8 +137,13 @@ fun SettingsScreen(
         )
     }
 
-    // Access can be changed in Health Connect while this screen is backgrounded.
-    OnResume { viewModel.refresh() }
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
+    // Access can be changed in Health Connect while this screen is backgrounded, and a purchase
+    // can be completed or refunded in the Play Store.
+    OnResume {
+        viewModel.refresh()
+        AppEntitlements.current.refresh()
+    }
 
     if (confirmRevoke) {
         AlertDialog(
@@ -287,6 +295,10 @@ fun SettingsScreen(
             )
 
             HorizontalDivider()
+            SectionHeader(stringResource(R.string.settings_pro))
+            ProRow(pro)
+
+            HorizontalDivider()
             SectionHeader(stringResource(R.string.settings_about))
 
             LinkRow(
@@ -409,17 +421,50 @@ private fun PreferredSourceRow(
     }
 }
 
+/**
+ * The Pro unlock: bought, waiting on a slow payment, on offer, or out of reach.
+ *
+ * The price is Play's own string for the user's country; without one there is nothing to buy,
+ * so the row offers a retry rather than a button that cannot start a purchase.
+ */
+@Composable
+private fun ProRow(pro: ProState) {
+    val activity = LocalActivity.current
+    when {
+        pro.owned -> LinkRow(
+            title = stringResource(R.string.pro_owned),
+            body = stringResource(R.string.pro_owned_body),
+            onClick = null,
+        )
+        pro.pending -> LinkRow(
+            title = stringResource(R.string.pro_pending),
+            body = stringResource(R.string.pro_pending_body),
+            onClick = null,
+        )
+        pro.price != null -> LinkRow(
+            title = stringResource(R.string.pro_buy, pro.price),
+            body = stringResource(R.string.pro_body),
+            onClick = { activity?.let(AppEntitlements.current::buy) },
+        )
+        else -> LinkRow(
+            title = stringResource(R.string.settings_pro),
+            body = stringResource(R.string.pro_unavailable_body),
+            onClick = AppEntitlements.current::refresh,
+        )
+    }
+}
+
 @Composable
 private fun LinkRow(
     title: String,
     body: String?,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     danger: Boolean = false,
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(
