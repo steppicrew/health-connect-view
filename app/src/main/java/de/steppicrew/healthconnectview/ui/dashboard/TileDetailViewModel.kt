@@ -7,6 +7,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.components.ExportKind
+import de.steppicrew.healthconnectview.util.appLabelFor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -279,11 +280,20 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 withContext(Dispatchers.IO) {
                     requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
                         when (kind) {
-                            ExportKind.RECORDS -> exporter.writeRecords(
-                                spec, windowStart(span, offset), windowEnd(span, offset), origins, out,
+                            ExportKind.RECORDS -> ExportResult.Written(
+                                exporter.writeRecords(spec, windowStart(span, offset), windowEnd(span, offset), origins, out),
                             )
-                            ExportKind.DAILY -> exporter.writeDailyTotals(
-                                spec, span.startDate(offset), span.endDate(offset), origins, out,
+                            ExportKind.DAILY -> ExportResult.Written(
+                                exporter.writeDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins, out),
+                            )
+                            ExportKind.REPORT -> ExportResult.Report(
+                                exporter.writePressureReport(
+                                    span.startDate(offset),
+                                    span.endDate(offset).minusDays(1),
+                                    origins,
+                                    selectedSource?.let { getApplication<Application>().appLabelFor(it) },
+                                    out,
+                                ),
                             )
                         }
                     }
@@ -293,7 +303,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 Log.w(TAG, "export failed: ${it.javaClass.simpleName}")
                 runCatching { DocumentsContract.deleteDocument(resolver, uri) }
             }
-            _exportResults.tryEmit(result.fold({ ExportResult.Written(it) }, { ExportResult.Failed }))
+            _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
         }
     }
 

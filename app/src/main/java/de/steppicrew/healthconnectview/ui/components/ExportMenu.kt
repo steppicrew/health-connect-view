@@ -24,8 +24,12 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 
-/** The two files an export can produce; see `Exporter`. */
-enum class ExportKind(val suffix: String) { RECORDS("records"), DAILY("daily") }
+/** The files an export can produce; see `Exporter` and `PressureReportPdf`. */
+enum class ExportKind(val suffix: String, val extension: String, val feature: Feature) {
+    RECORDS("records", "csv", Feature.EXPORT_CSV),
+    DAILY("daily", "csv", Feature.EXPORT_CSV),
+    REPORT("report", "pdf", Feature.PRESSURE_REPORT),
+}
 
 /**
  * The export action for a detail view: a menu of the files on offer, each saved through the
@@ -39,28 +43,43 @@ enum class ExportKind(val suffix: String) { RECORDS("records"), DAILY("daily") }
 fun ExportAction(
     fileBase: String,
     dailyAvailable: Boolean,
+    /** Blood pressure only: the log for a doctor. */
+    reportAvailable: Boolean,
     onExport: (ExportKind, Uri) -> Unit,
 ) {
     val activity = LocalActivity.current
-    val unlocked by remember { AppEntitlements.current.has(Feature.EXPORT_CSV) }
-        .collectAsStateWithLifecycle(initialValue = false)
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
     var open by remember { mutableStateOf(false) }
     var pending by remember { mutableStateOf<ExportKind?>(null) }
-    val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+    val onSaved: (Uri?) -> Unit = { uri ->
         val kind = pending
         pending = null
         if (uri != null && kind != null) onExport(kind, uri)
     }
+    // One launcher per file type: the save dialog's type is fixed when it is registered.
+    val saveCsv = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv"), onSaved)
+    val savePdf = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf"), onSaved)
 
     Box {
         IconButton(onClick = { open = true }) {
             Icon(Icons.Default.FileDownload, contentDescription = stringResource(R.string.export_action))
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            val kinds = if (dailyAvailable) ExportKind.entries else listOf(ExportKind.RECORDS)
+            val kinds = ExportKind.entries.filter { kind ->
+                when (kind) {
+                    ExportKind.RECORDS -> true
+                    ExportKind.DAILY -> dailyAvailable
+                    ExportKind.REPORT -> reportAvailable
+                }
+            }
             kinds.forEach { kind ->
+                val unlocked = pro.allows(kind.feature)
                 val label = stringResource(
-                    if (kind == ExportKind.RECORDS) R.string.export_records else R.string.export_daily,
+                    when (kind) {
+                        ExportKind.RECORDS -> R.string.export_records
+                        ExportKind.DAILY -> R.string.export_daily
+                        ExportKind.REPORT -> R.string.export_report
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text(if (unlocked) label else stringResource(R.string.export_premium, label)) },
@@ -69,7 +88,8 @@ fun ExportAction(
                         open = false
                         if (unlocked) {
                             pending = kind
-                            save.launch("${fileBase}_${kind.suffix}.csv")
+                            val name = "${fileBase}_${kind.suffix}.${kind.extension}"
+                            if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
                         } else {
                             activity?.let(AppEntitlements.current::buy)
                         }

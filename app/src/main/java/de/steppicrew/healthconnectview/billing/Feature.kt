@@ -18,4 +18,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** Dashboard tiles larger than one cell. */
     TILE_SIZES(isPremium = true),
+
+    /** The blood pressure log as a PDF, for a doctor. */
+    PRESSURE_REPORT(isPremium = true),
 }

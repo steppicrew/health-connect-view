@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.records.BloodPressureRecord
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.PressureReading
+import de.steppicrew.healthconnectview.health.dayPartWindow
+import de.steppicrew.healthconnectview.health.pressureReport
 import de.steppicrew.healthconnectview.health.SESSION_MARGIN
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
@@ -111,6 +115,33 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         }
         writer.flush()
         return rows
+    }
+
+    /**
+     * The blood pressure log for [first] through [last] as a PDF. Returns the number of
+     * readings in it.
+     *
+     * Paged through every record rather than the capped list read, so a year of three readings
+     * a day is complete; read from 04:00 to 04:00 so each evening keeps its after-midnight
+     * readings, as on screen.
+     */
+    suspend fun writePressureReport(
+        first: LocalDate,
+        last: LocalDate,
+        origins: Set<DataOrigin>,
+        source: String?,
+        out: OutputStream,
+    ): Int {
+        val (start, end) = dayPartWindow(first, last, zone)
+        val readings = mutableListOf<PressureReading>()
+        repository.forEachPage(BloodPressureRecord::class, TimeRangeFilter.between(start, end), origins) { page ->
+            page.forEach {
+                readings += PressureReading(it.time, it.systolic.inMillimetersOfMercury, it.diastolic.inMillimetersOfMercury)
+            }
+        }
+        val report = pressureReport(readings, first, last, zone)
+        PressureReportPdf(context).write(report, zone, source, out)
+        return report.readings.size
     }
 
     private companion object {

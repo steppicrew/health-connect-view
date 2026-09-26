@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.semantics
@@ -71,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.pressureCategory
+import de.steppicrew.healthconnectview.health.labelRes
 import de.steppicrew.healthconnectview.health.PressureCategory
 import kotlin.math.roundToInt
 import de.steppicrew.healthconnectview.health.PartAverage
@@ -139,6 +141,8 @@ fun TileDetailScreen(
                 when (result) {
                     is ExportResult.Written ->
                         resources.getQuantityString(R.plurals.export_done, result.rows, result.rows)
+                    is ExportResult.Report ->
+                        resources.getQuantityString(R.plurals.export_report_done, result.readings, result.readings)
                     ExportResult.Failed -> resources.getString(R.string.export_failed)
                 },
             )
@@ -168,6 +172,7 @@ fun TileDetailScreen(
                             // a file would give a second answer to "how long did I sleep".
                             dailyAvailable = current.aggregate != null &&
                                 current.tile.form != TileSpec.Form.SESSIONS,
+                            reportAvailable = current.type == BloodPressureRecord::class,
                             onExport = viewModel::export,
                         )
                     }
@@ -384,15 +389,6 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
 /** "132/85" where a second value exists, whole numbers as a cuff shows them; else the value. */
 private fun pressureText(first: Double, second: Double?): String =
     if (second == null) Formatting.number(first) else "${first.roundToInt()}/${second.roundToInt()}"
-
-@StringRes
-private fun PressureCategory.labelRes(): Int = when (this) {
-    PressureCategory.LOW -> R.string.bp_grade_low
-    PressureCategory.NORMAL -> R.string.bp_grade_normal
-    PressureCategory.HIGH_NORMAL -> R.string.bp_grade_high_normal
-    PressureCategory.GRADE_1 -> R.string.bp_grade_1
-    PressureCategory.GRADE_2 -> R.string.bp_grade_2
-}
 
 private val PressureCategory.color: Color get() = ValueZones.ZONE_COLORS[ordinal]
 
