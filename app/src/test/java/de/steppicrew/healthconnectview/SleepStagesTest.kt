@@ -5,6 +5,8 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.SleepStage
 import de.steppicrew.healthconnectview.health.StageKind
 import de.steppicrew.healthconnectview.health.dedupeSessions
+import de.steppicrew.healthconnectview.health.fullestWriter
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.health.stageKindOf
 import de.steppicrew.healthconnectview.health.stageTotals
 import org.junit.Assert.assertEquals
@@ -67,5 +69,26 @@ class SleepStagesTest {
         )
         val kept = dedupeSessions(listOf(copy("health.sync", 18), copy("garmin", 19)))
         assertEquals("garmin", kept.single().origin)
+    }
+
+    @Test
+    fun `the curve comes from the writer covering the night, not the one with most samples`() {
+        val end = night.plusSeconds(8 * 3600)
+        val midnight = night.plusSeconds(3600)
+        // Every two minutes from the start of the night.
+        val own = List(240) { Point(night.plusSeconds(it * 120L), 55.0) }
+        // Every minute, but only from midnight on: more samples, less of the night.
+        val copy = List(420) { Point(midnight.plusSeconds(it * 60L), 55.0) }
+
+        val drawn = fullestWriter(mapOf("garmin" to own, "health.sync" to copy), night, end)
+        assertEquals(night, drawn.first().time)
+    }
+
+    @Test
+    fun `equal coverage falls back to the denser writer`() {
+        val end = night.plusSeconds(3600)
+        val sparse = List(12) { Point(night.plusSeconds(it * 300L), 55.0) }
+        val dense = List(60) { Point(night.plusSeconds(it * 60L), 56.0) }
+        assertEquals(60, fullestWriter(mapOf("a" to sparse, "b" to dense), night, end).size)
     }
 }

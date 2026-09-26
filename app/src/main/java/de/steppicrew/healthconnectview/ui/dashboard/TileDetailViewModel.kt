@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.widenToSessions
+import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -627,13 +628,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                         // one heart rate. Measured on this phone the Pilates session had a
                         // single writer, so this changes nothing there -- it is the guard for
                         // the sessions that do have two, which most types here already do.
-                        val points = records
-                            .groupBy { spec.originOf(it) }
-                            .values
-                            .map { group -> group.flatMap { spec.pointsOf(it) } }
-                            .maxByOrNull { it.size }
-                            ?.sortedBy { it.time }
-                            .orEmpty()
+                        val points = fullestWriter(
+                            records.groupBy { spec.originOf(it) }
+                                .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
+                            session.start,
+                            session.end,
+                        )
 
                         points.takeIf { it.size > 1 }?.let { session.start to it }
                     }
