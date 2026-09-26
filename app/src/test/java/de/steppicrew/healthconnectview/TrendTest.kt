@@ -14,35 +14,42 @@ class TrendTest {
 
     @Test
     fun `a clear rise points up`() {
-        assertEquals(Trend.UP, trendOf(month(8000.0, 500.0, 11000.0)))
+        assertEquals(Trend.UP, trendOf(month(8000.0, 500.0, 11000.0))?.direction)
     }
 
     @Test
     fun `a clear fall points down`() {
-        assertEquals(Trend.DOWN, trendOf(month(8000.0, 500.0, 5000.0)))
+        assertEquals(Trend.DOWN, trendOf(month(8000.0, 500.0, 5000.0))?.direction)
     }
 
     @Test
     fun `a change within day-to-day noise is flat`() {
-        assertEquals(Trend.FLAT, trendOf(month(8000.0, 3000.0, 8600.0)))
+        assertEquals(Trend.FLAT, trendOf(month(8000.0, 3000.0, 8600.0))?.direction)
     }
 
     @Test
     fun `a small shift on a steady metric still shows`() {
         // Weight barely moves day to day, so a kilo is well outside its usual spread.
-        assertEquals(Trend.DOWN, trendOf(month(80.0, 0.2, 79.0)))
+        assertEquals(Trend.DOWN, trendOf(month(80.0, 0.2, 79.0))?.direction)
     }
 
     @Test
     fun `a constant series is flat, not undefined`() {
-        assertEquals(Trend.FLAT, trendOf(List(30) { 60.0 }))
+        assertEquals(Trend.FLAT, trendOf(List(30) { 60.0 })?.direction)
     }
 
     @Test
     fun `missing days are left out, not read as zero`() {
         // Every other recent day unrecorded: counting them as zero would halve the week.
         val daily = List(23) { 8000.0 } + listOf(8000.0, null, 8000.0, null, 8000.0, null, 8000.0)
-        assertEquals(Trend.FLAT, trendOf(daily))
+        assertEquals(Trend.FLAT, trendOf(daily)?.direction)
+    }
+
+    @Test
+    fun `the averages behind the arrow are reported`() {
+        val result = trendOf(List(23) { 6.0 } + List(7) { 13.0 })!!
+        assertEquals(13.0, result.recent, 1e-9)
+        assertEquals((23 * 6.0 + 7 * 13.0) / 30, result.baseline, 1e-9)
     }
 
     @Test

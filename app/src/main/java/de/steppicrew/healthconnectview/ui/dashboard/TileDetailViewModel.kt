@@ -14,6 +14,8 @@ import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.TrendResult
+import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.registry.Point
@@ -84,6 +86,11 @@ data class TileDetailData(
      * one. Meaningless on a multi-day chart, where each point is a separate day's total.
      */
     val goal: Double?,
+    /**
+     * The same trend the dashboard tile draws, with its averages, for a day window only --
+     * the tile shows a day, and a trend "before" a week or a year would be a different claim.
+     */
+    val trend: TrendResult? = null,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
     /**
@@ -1090,6 +1097,11 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             contributingApps = contributors,
             selectedSource = source,
             goal = goal,
+            trend = if (span == Span.DAY && metric != null && spec.tile.form != TileSpec.Form.SESSIONS) {
+                runCatching { repository.trendBefore(metric, span.startDate(offset), origins) }.getOrNull()
+            } else {
+                null
+            },
             cumulative = cumulative,
             // Suppressed on an apportioned curve: "reached at 19:59" on a straight ramp is
             // reading a time off a line that was drawn, not measured.

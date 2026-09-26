@@ -50,6 +50,11 @@
     <string name="trend_up">Letzte 7 Tage über dem 30-Tage-Schnitt</string>
     <string name="trend_flat">Letzte 7 Tage gleichauf mit dem 30-Tage-Schnitt</string>
     <string name="trend_down">Letzte 7 Tage unter dem 30-Tage-Schnitt</string>
+    <string name="trend_title_up">Trend: über dem Üblichen</string>
+    <string name="trend_title_flat">Trend: etwa wie üblich</string>
+    <string name="trend_title_down">Trend: unter dem Üblichen</string>
+    <string name="trend_numbers">Schnitt der letzten 7 Tage %1$s, Schnitt der 30 Tage %2$s.</string>
+    <string name="trend_rule">Verglichen werden die 7 Tage vor diesem Tag mit den 30 Tagen davor, nicht dieser Tag mit gestern. Dieser Tag zählt nicht mit, weil er noch nicht vorbei sein kann. Tage ohne Aufzeichnung bleiben außen vor. Unterschiede kleiner als die normale Schwankung von Tag zu Tag gelten als gleich.</string>
     <string name="goal_title">Tagesziel</string>
     <string name="goal_hint">Zielwert</string>
     <string name="goal_reset">Standard verwenden</string>
