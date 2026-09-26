@@ -1,3 +1,5 @@
+0.7.1 — New: metric or imperial units (Settings). Fixed: elevation and height totals, and a heart rate average far too high shortly after midnight.
+
 0.7.0 — Pro: a blood pressure report as PDF for your doctor, with morning and evening averages, every day and every reading.
 
 0.6.0 — Blood pressure: both values, colours after the ESH grades, and separate morning and evening averages. Pro: dashboard tiles two cells wide or two by two.
