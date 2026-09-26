@@ -41,13 +41,31 @@ object CycleSeeder {
     suspend fun seed(client: HealthConnectClient) {
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now(zone)
+        val first = firstDay(today)
+        val records = records(today, zone)
+
+        val window = TimeRangeFilter.between(
+            first.minusDays(1).atStartOfDay(zone).toInstant(),
+            Instant.now(),
+        )
+        SEEDED_TYPES.forEach { type -> runCatching { client.deleteRecords(type, window) } }
+        records.chunked(500).forEach { client.insertRecords(it) }
+    }
+
+    private fun firstDay(today: LocalDate): LocalDate = today.minusDays(LENGTHS.sum().toLong() - 10)
+
+    /**
+     * The fixture as records, without writing them. Shared with [CycleFixture], which shows the
+     * same cycles on a device whose Health Connect store must not be touched.
+     */
+    fun records(today: LocalDate, zone: ZoneId): List<Record> {
         val random = Random(seed = 7)
-        val first = today.minusDays(LENGTHS.sum().toLong() - 10)
+        val first = firstDay(today)
 
         fun metadata() = Metadata.manualEntry()
         fun at(date: LocalDate, hour: Int) = date.atTime(hour, 0).atZone(zone)
 
-        val records = buildList<Record> {
+        return buildList {
             var start = first
             LENGTHS.forEachIndexed { cycleIndex, length ->
                 val ovulationDay = length - 14
@@ -114,12 +132,5 @@ object CycleSeeder {
                 start = start.plusDays(length.toLong())
             }
         }
-
-        val window = TimeRangeFilter.between(
-            first.minusDays(1).atStartOfDay(zone).toInstant(),
-            Instant.now(),
-        )
-        SEEDED_TYPES.forEach { type -> runCatching { client.deleteRecords(type, window) } }
-        records.chunked(500).forEach { client.insertRecords(it) }
     }
 }
