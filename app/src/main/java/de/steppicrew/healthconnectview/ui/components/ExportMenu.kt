@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.components
 
 import android.net.Uri
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,8 @@ enum class ExportKind(val suffix: String) { RECORDS("records"), DAILY("daily") }
  * system's own "save as" dialog, so the user picks the place and the app never chooses one.
  *
  * Locked entries stay visible with a padlock: a feature that silently vanishes cannot be asked
- * about, and "Premium" says why it is unavailable.
+ * about, and "Pro" says why it is unavailable. Tapping one opens Play's purchase sheet, so the
+ * way to the feature starts where the user met the lock.
  */
 @Composable
 fun ExportAction(
@@ -39,6 +41,7 @@ fun ExportAction(
     dailyAvailable: Boolean,
     onExport: (ExportKind, Uri) -> Unit,
 ) {
+    val activity = LocalActivity.current
     val unlocked by remember { AppEntitlements.current.has(Feature.EXPORT_CSV) }
         .collectAsStateWithLifecycle(initialValue = false)
     var open by remember { mutableStateOf(false) }
@@ -61,12 +64,15 @@ fun ExportAction(
                 )
                 DropdownMenuItem(
                     text = { Text(if (unlocked) label else stringResource(R.string.export_premium, label)) },
-                    enabled = unlocked,
                     leadingIcon = if (unlocked) null else { { Icon(Icons.Default.Lock, contentDescription = null) } },
                     onClick = {
                         open = false
-                        pending = kind
-                        save.launch("${fileBase}_${kind.suffix}.csv")
+                        if (unlocked) {
+                            pending = kind
+                            save.launch("${fileBase}_${kind.suffix}.csv")
+                        } else {
+                            activity?.let(AppEntitlements.current::buy)
+                        }
                     },
                 )
             }

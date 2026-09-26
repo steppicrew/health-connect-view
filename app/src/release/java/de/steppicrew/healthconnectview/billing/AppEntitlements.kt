@@ -1,9 +1,13 @@
 package de.steppicrew.healthconnectview.billing
 
-/**
- * Release build: what Play Billing says. Until a product exists in the Play Console that is
- * "nothing owned", so premium features show as locked for everyone.
- */
+import android.content.Context
+
+/** Release build: what Play Billing says. Installed once, from the Application. */
 object AppEntitlements {
-    val current: Entitlements = BillingEntitlements()
+    lateinit var current: Entitlements
+        private set
+
+    fun install(context: Context) {
+        current = BillingEntitlements(context)
+    }
 }
