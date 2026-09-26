@@ -127,6 +127,36 @@ class HealthRepository(private val context: Context) {
     }
 
     /**
+     * Every record in the range, oldest first, handed over one page at a time.
+     *
+     * For export, which needs the whole range rather than [read]'s newest [MAX_RECORDS]: a year
+     * of heart rate is hundreds of thousands of samples. Pages are passed on and dropped, so
+     * memory holds one page however long the range, and nothing is retained afterwards.
+     */
+    suspend fun <T : Record> forEachPage(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        origins: Set<DataOrigin> = emptySet(),
+        onPage: suspend (List<T>) -> Unit,
+    ) = withContext(Dispatchers.IO) {
+        var pageToken: String? = null
+        do {
+            val response = client.readRecords(
+                ReadRecordsRequest(
+                    recordType = type,
+                    timeRangeFilter = range,
+                    dataOriginFilter = origins,
+                    ascendingOrder = true,
+                    pageSize = PAGE_SIZE,
+                    pageToken = pageToken,
+                ),
+            )
+            onPage(response.records)
+            pageToken = response.pageToken
+        } while (pageToken != null)
+    }
+
+    /**
      * True if this type has anything to show — a cheap catalog probe.
      *
      * Checks aggregation as well as raw records, because some types derive a value without
