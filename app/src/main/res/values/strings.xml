@@ -284,8 +284,8 @@
     <string name="sessions_curve_missing">No heart rate was recorded during this one.</string>
     <string name="sessions_locked_heart_rate">Allow heart rate to see the curve for each session.</string>
     <string name="source_all">All sources</string>
-    <string name="source_all_explained">Combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
-    <string name="source_showing_one">Showing only %1$s. This is what that app recorded, not your deduplicated total.</string>
+    <string name="source_all_explained">All sources: combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
+    <string name="source_showing_one">%1$s: only this app\'s figure, not your deduplicated total.</string>
     <string name="source_priority_hint">Which app wins where records overlap is set in Health Connect, under app priority.</string>
     <string name="detail_history_capped">Showing only the last 30 days. Allow access to older data on the permissions screen to see the full period.</string>
     <plurals name="detail_records_header">
