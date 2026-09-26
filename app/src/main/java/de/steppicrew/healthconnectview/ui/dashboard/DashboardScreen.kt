@@ -57,6 +57,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import androidx.compose.foundation.background
+import kotlin.math.roundToInt
+import androidx.compose.foundation.shape.CircleShape
+import de.steppicrew.healthconnectview.registry.ValueZones
+import de.steppicrew.healthconnectview.health.pressureCategory
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.health.Trend
@@ -617,7 +622,7 @@ private fun TileValue(data: TileData) {
             // Muted and dated: a carried weight is the latest known, not today's, and must not
             // read as a measurement taken on the day on screen.
             Text(
-                text = Formatting.number(data.value),
+                text = tileValueText(data.value, data.secondaryValue),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -631,6 +636,24 @@ private fun TileValue(data: TileData) {
             )
         }
 
+        // Two values read as one: the grade's colour beside them, as on the detail screen.
+        data.secondaryValue != null -> Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .padding(end = 6.dp)
+                    .size(10.dp)
+                    .background(
+                        ValueZones.ZONE_COLORS[pressureCategory(data.value, data.secondaryValue).ordinal],
+                        CircleShape,
+                    ),
+            )
+            Text(
+                text = tileValueText(data.value, data.secondaryValue),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+
         else -> Text(
             text = Formatting.number(data.value),
             style = MaterialTheme.typography.headlineMedium,
@@ -638,6 +661,10 @@ private fun TileValue(data: TileData) {
         )
     }
 }
+
+/** "128/82" for a pair, whole numbers as a cuff shows them; the plain number otherwise. */
+private fun tileValueText(value: Double, secondary: Double?): String =
+    if (secondary == null) Formatting.number(value) else "${value.roundToInt()}/${secondary.roundToInt()}"
 
 @Composable
 private fun dayLabel(date: LocalDate): String =

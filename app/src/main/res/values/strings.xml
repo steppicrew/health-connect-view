@@ -69,6 +69,15 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export failed. No file was kept.</string>
     <string name="detail_records_loading">Loading records…</string>
+    <string name="span_average">Average</string>
+    <string name="chart_source_aggregated_mean">Daily averages, deduplicated by Health Connect</string>
+    <string name="chart_source_aggregated_weekly_mean">Weekly averages, deduplicated by Health Connect</string>
+    <string name="bp_grade_low">Low</string>
+    <string name="bp_grade_normal">Normal</string>
+    <string name="bp_grade_high_normal">High normal</string>
+    <string name="bp_grade_1">Grade 1</string>
+    <string name="bp_grade_2">Grade 2+</string>
+    <string name="bp_legend_lines">Upper line systolic, lower line diastolic.</string>
     <string name="bp_parts_title">Morning and evening</string>
     <string name="bp_part_morning">Morning</string>
     <string name="bp_part_evening">Evening</string>
@@ -77,7 +86,7 @@
         <item quantity="one">Avg %1$s mmHg · %2$d reading</item>
         <item quantity="other">Avg %1$s mmHg · %2$d readings</item>
     </plurals>
-    <string name="bp_parts_rule">Morning is 4:00 to 13:59, evening from 14:00. A reading after midnight but before 4:00 counts for the evening before. The same reading stored by several apps counts once.</string>
+    <string name="bp_parts_rule">Morning is 4:00 to 13:59, evening from 14:00. A reading after midnight but before 4:00 counts for the evening before. The same reading stored by several apps counts once.\n\nColours follow the European Society of Hypertension grades for readings taken at a practice: low below 90/60, normal below 130/85, high normal up to 139/89, grade 1 from 140/90, grade 2 from 160/100. The higher of the two values decides. At home, 135/85 and above already counts as raised. A guide, not a diagnosis.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Buy Pro · %1$s</string>
     <string name="pro_body">One-time purchase, no subscription. Unlocks CSV export and every future Pro feature.</string>

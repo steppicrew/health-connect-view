@@ -53,6 +53,8 @@ data class TileData(
     val tile: Tile,
     val spec: RecordTypeSpec<*>,
     val value: Double? = null,
+    /** The type's second value where it has one -- blood pressure's diastolic. */
+    val secondaryValue: Double? = null,
     /** Recent readings for a curve tile; empty for every other form. */
     val curve: List<Point> = emptyList(),
     /**
@@ -325,6 +327,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             } else {
                 placeholder.copy(
                     value = carried.value,
+                    secondaryValue = carried.secondaryValue,
                     valueDate = carried.valueDate,
                     curve = carried.curve,
                     sessions = carried.sessions,
@@ -430,6 +433,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }.getOrNull()
         }
 
+        // Only beside a first value from the same day: a diastolic without its systolic, or one
+        // paired with a carried reading from another day, would be half of two readings.
+        val secondaryValue = if (value != null) {
+            spec.secondaryAggregate?.let { second ->
+                runCatching { repository.total(second, dayFilter(date), origins) }.getOrNull()
+            }
+        } else {
+            null
+        }
+
         val curve = if (spec.tile.form == TileSpec.Form.CURVE) {
             runCatching { recentPoints(spec, date, origins) }.getOrDefault(emptyList())
         } else {
@@ -446,6 +459,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         return tile.copy(
             value = value ?: carried?.second,
+            secondaryValue = secondaryValue,
             valueDate = carried?.first,
             curve = curve,
             loading = false,
