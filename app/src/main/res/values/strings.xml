@@ -63,6 +63,15 @@
     <string name="stage_light">Light</string>
     <string name="stage_deep">Deep</string>
     <string name="stage_asleep">Asleep</string>
+    <string name="export_action">Export</string>
+    <string name="export_records">Records (CSV)</string>
+    <string name="export_daily">Daily totals (CSV)</string>
+    <string name="export_premium">%1$s · Premium</string>
+    <string name="export_failed">Export failed. No file was kept.</string>
+    <plurals name="export_done">
+        <item quantity="one">Exported %1$d row</item>
+        <item quantity="other">Exported %1$d rows</item>
+    </plurals>
     <string name="goal_title">Daily goal</string>
     <string name="goal_hint">Target value</string>
     <string name="goal_reset">Use default</string>

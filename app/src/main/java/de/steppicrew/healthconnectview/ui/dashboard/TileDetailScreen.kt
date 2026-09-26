@@ -1,6 +1,12 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.runtime.LaunchedEffect
+import de.steppicrew.healthconnectview.export.ExportResult
+import de.steppicrew.healthconnectview.ui.components.ExportAction
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.rememberExplanation
@@ -103,9 +109,23 @@ fun TileDetailScreen(
         )
     }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val resources = LocalResources.current
+    LaunchedEffect(viewModel) {
+        viewModel.exportResults.collect { result ->
+            snackbar.showSnackbar(
+                when (result) {
+                    is ExportResult.Written ->
+                        resources.getQuantityString(R.plurals.export_done, result.rows, result.rows)
+                    ExportResult.Failed -> resources.getString(R.string.export_failed)
+                },
+            )
+        }
+    }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text(titleFor(spec)) },
@@ -114,6 +134,19 @@ fun TileDetailScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.action_back),
+                        )
+                    }
+                },
+                actions = {
+                    spec?.let { current ->
+                        ExportAction(
+                            fileBase = exportFileBase(current, span, offset),
+                            // Not for sessions: Health Connect's daily sleep total cuts nights at
+                            // midnight, while the app credits a night to the morning it ended --
+                            // a file would give a second answer to "how long did I sleep".
+                            dailyAvailable = current.aggregate != null &&
+                                current.tile.form != TileSpec.Form.SESSIONS,
+                            onExport = viewModel::export,
                         )
                     }
                 },
@@ -309,6 +342,11 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
         }
     }
 }
+
+/** "Steps_2026-09-20_2026-09-26": type and the window's first and last day. */
+private fun exportFileBase(spec: RecordTypeSpec<*>, span: Span, offset: Int): String =
+    spec.type.simpleName.orEmpty().removeSuffix("Record") + "_" + span.startDate(offset) + "_" +
+        span.endDate(offset).minusDays(1)
 
 @Composable
 private fun SpanSummary(
