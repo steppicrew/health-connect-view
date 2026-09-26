@@ -19,10 +19,8 @@ open items below and `FEATURE-IDEAS.md`.
 3. [x] **Tile comparison** -- merged 26.09.2026; see "Built: a trend arrow on every tile" in
    section 1.
 4. [x] **Sleep stages** -- merged 26.09.2026; see "Built: sleep stages" in section 5.
-5. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
-   Storage Access Framework only; no permission changes. Decide raw records vs. deduplicated
-   daily totals (probably both, labelled), and update the privacy policy's wording on data
-   leaving the app *before* shipping.
+5. [x] **CSV export** -- merged 26.09.2026, see section 13. Release shows it locked until a
+   Play product exists; the privacy text changed and wants the owner's review before release.
 6. [ ] **Dashboard configuration export/import** as local JSON. No health data involved.
 7. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
 8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
@@ -1066,7 +1064,31 @@ seeder's cycles: writing fixtures into the owner's store would let any cycle tra
 periods as real. It showed the flow shading inverted in dark theme -- translucent rose reads
 lighter on a dark background -- so flow is now blended from the empty cell towards the rose.
 
-## 13. Deferred
+## 13. Export — built
+
+An export action in the tile's detail view writes what is on screen -- type, window, source
+filter -- into a file chosen in the system save dialog (`export/`).
+
+- **Two files, both offered.** *Records*: one row per reading (start, end, time, value, unit,
+  text, writing app), duplicates across writers kept and labelled -- it is what each app stored.
+  *Daily totals*: Health Connect's deduplicated value per day, an empty field for a day with
+  none, never zero.
+- **Sessions get records only.** The platform's daily sleep total cuts a night at midnight,
+  while the app credits it to the morning it ended; a file would give a second answer.
+- **Nothing kept.** Pages are written straight into the stream (`HealthRepository.forEachPage`),
+  so a year of heart rate never sits in memory whole; a failed export deletes its file. This is
+  the one exception to "no health data on disk", written into CLAUDE.md and the privacy page.
+- **Plain CSV.** RFC 4180, dot decimals without grouping, ISO 8601 times with offset, UTF-8 with
+  a BOM so Excel reads umlauts. German Excel expects `;` -- import rather than double-click.
+- **Premium.** `Feature.EXPORT_CSV`, now read through `AppEntitlements`: debug unlocks
+  everything, release asks Play Billing, which owns nothing until a product exists -- so in
+  release the entries show locked with "Premium" for everyone for now.
+
+Verified on the emulator: a week of steps exported 840 record rows and 7 daily rows, today's
+matching the tile. Not yet: the type detail screen (catalog path) has no export action, sleep
+stages are not in the records file, and JSON or a PDF report would plug in beside `Csv`.
+
+## 14. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
