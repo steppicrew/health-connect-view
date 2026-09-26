@@ -1186,8 +1186,29 @@ Verified on the emulator: a week showed 7 mornings and 6 evenings (today's eveni
 13 records listed; the 24th counted its 21:40 evening and not the 00:35 reading belonging to
 the 23rd. The phone holds only one to three readings, so real multi-writer data is unseen.
 
-Noticed, not changed: the headline above it says "Total" for what is an average of systolic
-values, and the chart caption says "daily totals" -- both wording carried over from summed types.
+### Both values and graded colours
+
+Blood pressure used to be its systolic alone. Now the tile, the headline, the chart (two lines)
+and the touch readout all show systolic/diastolic, in whole numbers. `RecordTypeSpec` gained a
+second value (`secondaryPoints`, `secondaryAggregate`) rather than a blood-pressure branch.
+
+- **Colour is the ESH grade** (`PressureCategory`): low below 90/60, normal below 130/85, high
+  normal to 139/89, grade 1 from 140/90, grade 2+ from 160/100. Each value graded alone, the
+  higher grade wins; raised wins over low. Stepped zones -- one flat colour per grade, since a
+  blend between two claims a category the reading is not in. Fixed, not user-editable like the
+  heart-rate zones: it is a published classification, not a personal range.
+- **Never colour alone.** The grade is named beside the headline, each morning/evening
+  average carries a coloured dot, and the legend names all five grades.
+- **Stated as a guide.** The "i" gives the thresholds, notes they are for readings taken at a
+  practice (at home 135/85 already counts as raised) and says it is not a diagnosis.
+- **Averages called averages.** Every type whose aggregate is a mean now says "Average" over
+  its headline and "daily/weekly averages" under its chart; it said "Total" and "daily
+  totals". The means are listed by hand (`AVERAGED_METRICS`), since the library exposes no
+  kind for a metric.
+
+Verified on the emulator: week 129/81 "Normal", morning 132/85 yellow, evening 126/75 green,
+both lines coloured per point, legend with the five grades; the tile shows 134/84 with a
+yellow dot.
 
 ## 17. Deferred
 
