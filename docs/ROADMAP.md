@@ -470,6 +470,21 @@ own curve when it comes on screen (four at a time, memory only), so the list, ba
 appear at once: measured 0.7-0.95 s for the year, and the week from 1.2 s to 0.6 s. A row shows
 nothing until its curve arrives, so it never says "no heart rate recorded" for one still loading.
 
+### Built: a faster year, and a progress bar
+
+A year of heart rate took ~20 s on the phone, measured by step: weekly chart buckets 5.2 s,
+total 0.75 s, list 3.1 s, the source picker's writers 7.4 s, its contributing apps 3.3 s. The
+writers step re-read 5000 records just to learn app names; one page now does, with the
+aggregate's origins naming every writer that reaches a total. List and picker reads start
+alongside the chart. Result: ~13.5 s, steady over three runs. Parallelism gained less than the
+arithmetic suggests -- Health Connect appears to serve one app's requests largely in turn.
+
+The rest is the platform aggregating hundreds of thousands of samples, so the loading view
+shows a bar that advances per finished step (chart, total, list, two picker reads, sessions
+where present). Steps, not time: no request reports progress of its own. Showing the chart
+before the list and picker arrive would cut the wait further; it would also shift the chart
+down when the picker appears, which is why it was not done here.
+
 ### Built: the Activities tile
 
 `TileSpec.Form.SESSIONS` on the existing `ExerciseSessionRecord` and `SleepSessionRecord`
