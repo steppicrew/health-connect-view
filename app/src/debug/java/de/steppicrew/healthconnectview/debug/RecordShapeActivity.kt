@@ -282,6 +282,27 @@ class RecordShapeActivity : ComponentActivity() {
             val dayStart = day.atStartOfDay(zone).toInstant()
             val dayEnd = day.plusDays(1).atStartOfDay(zone).toInstant()
             Log.i(TAG, "SLEEP wideCount=${sleepWide.size}")
+            // Heart rate before midnight inside each night, per writer, as record shapes and
+            // sample counts: a night's curve starting at midnight could be missing data or a
+            // day-bounded read, and only the counts tell those apart.
+            sleepWide.distinctBy { it.startTime }.forEach { night ->
+                val midnight = night.startTime.atZone(zone).toLocalDate().plusDays(1).atStartOfDay(zone).toInstant()
+                if (midnight >= night.endTime) return@forEach
+                val hr = runCatching {
+                    repository.read(
+                        androidx.health.connect.client.records.HeartRateRecord::class,
+                        androidx.health.connect.client.time.TimeRangeFilter.between(night.startTime, midnight),
+                    )
+                }.getOrDefault(emptyList())
+                hr.groupBy { it.metadata.dataOrigin.packageName }.forEach { (origin, records) ->
+                    val before = records.sumOf { r -> r.samples.count { it.time >= night.startTime && it.time < midnight } }
+                    val shapes = records.joinToString(" ") { r ->
+                        "${r.startTime.atZone(zone).toLocalDateTime()}..${r.endTime.atZone(zone).toLocalDateTime()}"
+                    }
+                    Log.i(TAG, "NIGHT-HR night=${night.startTime.atZone(zone).toLocalDateTime()} origin=$origin records=${records.size} samplesBeforeMidnight=$before shapes=$shapes")
+                }
+                if (hr.isEmpty()) Log.i(TAG, "NIGHT-HR night=${night.startTime.atZone(zone).toLocalDateTime()} no records before midnight")
+            }
             sleepWide.sortedBy { it.startTime }.forEach { rec ->
                 val overlapsDay = rec.startTime < dayEnd && rec.endTime > dayStart
                 val startsInDay = rec.startTime >= dayStart && rec.startTime < dayEnd
