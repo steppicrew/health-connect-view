@@ -3,7 +3,16 @@ package de.steppicrew.healthconnectview.registry
 import androidx.annotation.StringRes
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.CyclingPedalingCadenceRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.HeightRecord
+import androidx.health.connect.client.records.PowerRecord
 import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.RestingHeartRateRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsCadenceRecord
+import androidx.health.connect.client.records.WeightRecord
 import java.time.Instant
 import kotlin.reflect.KClass
 
@@ -73,6 +82,15 @@ data class RecordTypeSpec<T : Record>(
      */
     val rangeAggregates: Pair<AggregateMetric<*>, AggregateMetric<*>>? = null,
     /**
+     * A second value measured together with the first, charted as its own line and shown
+     * after a slash: blood pressure is two numbers, and the diastolic alone decides a grade as
+     * often as the systolic does. [points] and [aggregate] stay the first value, so every
+     * path that knows nothing of this still shows something correct.
+     */
+    val secondaryPoints: ((T) -> List<Point>)? = null,
+    /** The deduplicating metric for [secondaryPoints]. */
+    val secondaryAggregate: AggregateMetric<*>? = null,
+    /**
      * Components this type's daily total splits into, drawn as a stacked bar.
      *
      * Total calories is the sum of what the body spends at rest and what activity added, and
@@ -116,6 +134,12 @@ data class RecordTypeSpec<T : Record>(
      */
     val isPinnable: Boolean get() = isChartable || tile.form == TileSpec.Form.SESSIONS
 
+    /**
+     * Whether the aggregate is a mean rather than a sum, so a window's figure is its average.
+     * Labelling a mean "total" read as a sum of blood pressures.
+     */
+    val isAveraged: Boolean get() = aggregate != null && aggregate in AVERAGED_METRICS
+
     // The casts below are safe by construction: a spec is only ever applied to records
     // read via ReadRecordsRequest(spec.type), so the runtime type always matches T.
     @Suppress("UNCHECKED_CAST")
@@ -131,6 +155,9 @@ data class RecordTypeSpec<T : Record>(
     fun pointsOf(record: Record): List<Point> = points(record as T)
 
     @Suppress("UNCHECKED_CAST")
+    fun secondaryPointsOf(record: Record): List<Point> = secondaryPoints?.invoke(record as T).orEmpty()
+
+    @Suppress("UNCHECKED_CAST")
     fun summaryOf(record: Record): String = summary(record as T)
 
     @Suppress("UNCHECKED_CAST")
@@ -139,3 +166,21 @@ data class RecordTypeSpec<T : Record>(
     @Suppress("UNCHECKED_CAST")
     fun detailsOf(record: Record): List<Field> = details(record as T)
 }
+
+/**
+ * The aggregates that are means. Health Connect's metrics carry no public "kind", so the list
+ * is kept by hand next to the registry's use of them; a new average not added here is only
+ * labelled "total", not computed wrongly.
+ */
+private val AVERAGED_METRICS: Set<AggregateMetric<*>> = setOf(
+    BloodPressureRecord.SYSTOLIC_AVG,
+    BloodPressureRecord.DIASTOLIC_AVG,
+    CyclingPedalingCadenceRecord.RPM_AVG,
+    HeartRateRecord.BPM_AVG,
+    HeightRecord.HEIGHT_AVG,
+    PowerRecord.POWER_AVG,
+    RestingHeartRateRecord.BPM_AVG,
+    SpeedRecord.SPEED_AVG,
+    StepsCadenceRecord.RATE_AVG,
+    WeightRecord.WEIGHT_AVG,
+)
