@@ -393,6 +393,11 @@ private val SEEDED_WORKOUTS = listOf(
         // Insert in batches: a single call with tens of thousands of records exceeds the
         // binder transaction limit.
         records.chunked(BATCH_SIZE).forEach { client.insertRecords(it) }
+
+        // After the main fixture and allowed to fail on its own: the cycle write permissions
+        // are granted separately, and missing them must not cost the rest of the seed.
+        runCatching { CycleSeeder.seed(client) }
+            .onFailure { Log.w("SampleDataSeeder", "cycle seed skipped: ${it.javaClass.simpleName}") }
     }
 
     /** Half-hourly through the waking day, which is how a watch reports these. */
