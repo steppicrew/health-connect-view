@@ -462,6 +462,14 @@ the writer with the most samples, and Health Sync's copy has more -- but none be
 while Garmin's own ran every two minutes from 23:30. The writer covering most of the session in
 5-minute slots is drawn now; the curve's first sample was checked at 23:30 on the phone.
 
+### Built: session curves load with their row
+
+The sessions view read every session's heart-rate curve before showing anything. A year of
+Trainings on the phone is 728 sessions at about 66 ms each -- near 48 s. Each row now reads its
+own curve when it comes on screen (four at a time, memory only), so the list, bars and totals
+appear at once: measured 0.7-0.95 s for the year, and the week from 1.2 s to 0.6 s. A row shows
+nothing until its curve arrives, so it never says "no heart rate recorded" for one still loading.
+
 ### Built: the Activities tile
 
 `TileSpec.Form.SESSIONS` on the existing `ExerciseSessionRecord` and `SleepSessionRecord`
