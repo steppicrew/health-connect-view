@@ -18,6 +18,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
+import androidx.compose.material.icons.automirrored.filled.TrendingFlat
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
@@ -55,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Availability
+import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -327,6 +331,7 @@ private fun TileCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                data.trend?.takeIf { data.granted && !data.loading }?.let { TrendMark(it) }
                 // An explicit spacer rather than SpaceBetween, because the unit above is
                 // conditional: with it absent -- every SESSIONS tile, so Sleep and Activities
                 // -- the source marker was the row's only child and SpaceBetween put it at
@@ -532,6 +537,28 @@ private fun SessionCount(data: TileData) {
     }
 }
 
+/**
+ * Which way the last week went against the month before it. Drawn in the tile's quiet colour,
+ * never red or green: up is good for steps and bad for resting heart rate, and the arrow does
+ * not know which it is looking at.
+ */
+@Composable
+private fun TrendMark(trend: Trend) {
+    val (icon, description) = when (trend) {
+        Trend.UP -> Icons.AutoMirrored.Filled.TrendingUp to R.string.trend_up
+        Trend.FLAT -> Icons.AutoMirrored.Filled.TrendingFlat to R.string.trend_flat
+        Trend.DOWN -> Icons.AutoMirrored.Filled.TrendingDown to R.string.trend_down
+    }
+    Icon(
+        imageVector = icon,
+        contentDescription = stringResource(description),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier
+            .padding(start = 4.dp)
+            .size(TREND_ICON.dp),
+    )
+}
+
 @Composable
 private fun TileValue(data: TileData) {
     when {
@@ -579,6 +606,7 @@ private const val CURVE_HEIGHT = 28
 /** How many activity icons fit on a tile face beside the count without crowding it. */
 /** Just enough to recognise the app; the tile has little room to spare. */
 private const val TILE_SOURCE_ICON = 16
+private const val TREND_ICON = 16
 private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
