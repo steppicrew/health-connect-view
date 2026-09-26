@@ -18,14 +18,28 @@ open items below and `FEATURE-IDEAS.md`.
    states correctly. Not seen on the phone: light theme (it needs a tap) and real cycle data.
 3. [x] **Tile comparison** -- merged 26.09.2026; see "Built: a trend arrow on every tile" in
    section 1.
-4. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
+4. [ ] **Sleep stages** -- light, deep, REM and awake per night, from
+   `SleepSessionRecord.stages` (measured present: 12-37 segments of 3-4 kinds per Garmin
+   night). One writer per night, as sessions already pick one: Health Sync copies Garmin's
+   nights and once had one segment fewer. No sleep score -- Garmin's is not in Health Connect,
+   and making one up would be the app's own claim about sleep quality.
+5. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
    Storage Access Framework only; no permission changes. Decide raw records vs. deduplicated
    daily totals (probably both, labelled), and update the privacy policy's wording on data
    leaving the app *before* shipping.
-5. [ ] **Dashboard configuration export/import** as local JSON. No health data involved.
-6. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
-7. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
+6. [ ] **Dashboard configuration export/import** as local JSON. No health data involved.
+7. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
+8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
    be driven from the host on the Xiaomi.
+
+Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
+views, a grant button on locked tiles, body measurements carrying their last reading, the
+trend explained with its averages in the day view, and "Weiter" for the permission screen's
+leave button.
+
+Not in Health Connect, checked on the phone 26.09.2026: a Garmin nap recorded that day had no
+sleep session by evening (possibly a sync delay -- recheck), and nothing marks an activity as
+auto-detected rather than started.
 
 Decisions waiting on the owner, not on code:
 
@@ -36,7 +50,9 @@ Decisions waiting on the owner, not on code:
   overview proves useful on the phone.
 
 Not ranked yet: overlaying two metrics on one timeline, a local reminder notification, goal
-streaks, and **sleep stages**. Measured on the phone 26.09.2026: every Garmin night carries
+streaks.
+
+Sleep stages, step 4, measured on the phone 26.09.2026: every Garmin night carries
 12-37 stage segments of 3-4 kinds in `SleepSessionRecord.stages`, so a light/deep/REM/awake
 view needs no inference. Garmin's sleep *score* is not in Health Connect. Health Sync writes a
 copy of each night, once with one segment fewer than Garmin's own -- pick one writer per night,
