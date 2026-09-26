@@ -2,19 +2,23 @@ Health Connect speichert die Daten, die Uhr, Waage und Fitness-Apps schreiben �
 
 WAS SIE KANN
 
-• Ein Dashboard mit den Werten, die dich interessieren, Tag für Tag
+• Ein Dashboard mit den Werten, die Sie interessieren, Tag für Tag
 • Alle von Health Connect unterstützten Datentypen durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
 • Einzelne Datensätze mit genauen Zeitstempeln, Werten und Einheiten ansehen
 • Erkennen, welche App welchen Datensatz geschrieben hat
 • Trends nach Tag, Woche, vier Wochen oder Jahr grafisch darstellen
 • Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
 • Jedes Training mit der dabei aufgezeichneten Herzfrequenz
+• Schlafphasen — Tief-, Leicht-, REM-Schlaf und Wachphasen — für jede Nacht, in der Ihre Uhr sie erfasst
+• Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, am ersten Tag ausgerichtet, mit Blutung, Ovulationstests und Temperatur — nur was erfasst wurde, keine Vorhersagen
+• Trendpfeile im Dashboard, die die letzte Woche mit Ihrem 30-Tage-Durchschnitt vergleichen
+• Dashboard und Einstellungen als Datei sichern und auf einem neuen Handy wiederherstellen
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
 Diese App hat keine Internet-Berechtigung. Das ist kein Versprechen, nichts hochzuladen — Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
 
-Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben.
+Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben, außer Sie exportieren es selbst.
 
 SIE ENTSCHEIDEN, WAS SIE TEILEN
 
@@ -25,6 +29,15 @@ KORREKTE SUMMEN
 Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte — überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, sodass Tagessummen korrekt sind und nicht doppelt gezählt werden.
 
 Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo diese App Statistiken zu einer Sitzung zeigt, sagt sie klar, dass sie über die Zeit zugeordnet sind — statt eine Sicherheit vorzugeben, die die Daten nicht hergeben.
+
+PRO — EINMALKAUF, KEIN ABO
+
+Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
+
+• CSV-Export — jeden Datentyp aus Ihrem Dashboard als Tabellendatei speichern: alle einzelnen Datensätze mit der schreibenden App oder die entdoppelten Tagessummen von Health Connect. Sie wählen, wo die Datei gespeichert wird; die App behält keine Kopie.
+• Alle künftigen Pro-Funktionen, ohne weitere Kosten.
+
+Der Kauf wird vollständig über Google Play abgewickelt und begleitet Ihr Google-Konto auf ein neues Handy.
 
 OPEN SOURCE
 
