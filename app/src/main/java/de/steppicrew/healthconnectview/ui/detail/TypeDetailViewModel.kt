@@ -6,6 +6,7 @@ import androidx.health.connect.client.records.Record
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Point
@@ -124,7 +125,12 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         offset: Int,
         historyCapped: Boolean,
     ): TypeDetailData {
-        val records = repository.read(spec.type, span.instantFilter(offset))
+        val zone = HealthRepository.DEFAULT_ZONE
+        val records = repository.recordsIn(
+            spec,
+            span.startDate(offset).atStartOfDay(zone).toInstant(),
+            span.endDate(offset).atStartOfDay(zone).toInstant(),
+        )
 
         // Totals must never be computed by summing raw records: several apps can write the
         // same metric, so their records overlap and adding them double-counts. Health
