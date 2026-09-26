@@ -49,6 +49,7 @@ import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -93,7 +94,11 @@ fun CycleScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.padding(padding)) {
+        Column(
+            Modifier
+                .padding(padding)
+                .swipeToStep(offset > 0, viewModel::stepBack, viewModel::stepForward),
+        ) {
             WindowStepper(
                 label = windowLabel(Span.YEAR, offset),
                 canStepForward = offset > 0,

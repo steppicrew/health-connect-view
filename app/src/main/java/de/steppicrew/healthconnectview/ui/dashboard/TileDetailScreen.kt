@@ -67,6 +67,7 @@ import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
@@ -114,7 +115,11 @@ fun TileDetailScreen(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .swipeToStep(offset > 0, viewModel::stepBack, viewModel::stepForward),
+        ) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan)
             WindowStepper(
                 label = windowLabel(span, offset),
