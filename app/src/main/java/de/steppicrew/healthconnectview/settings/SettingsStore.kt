@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -24,6 +25,12 @@ data class Settings(
      * feel native, but some people prefer a palette that does not shift.
      */
     val dynamicColor: Boolean = true,
+    /**
+     * Explanations the user has opened, by key. Every explanation starts closed, so the data is
+     * what shows at first glance, and stays open once opened. Per key: wanting the trend
+     * explained says nothing about wanting sources explained.
+     */
+    val expandedExplanations: Set<String> = emptySet(),
 )
 
 /**
@@ -42,6 +49,7 @@ class SettingsStore(private val context: Context) {
                 ?.let { stored -> runCatching { ThemeChoice.valueOf(stored) }.getOrNull() }
                 ?: ThemeChoice.SYSTEM,
             dynamicColor = prefs[KEY_DYNAMIC_COLOR] ?: true,
+            expandedExplanations = prefs[KEY_EXPANDED_EXPLANATIONS] ?: emptySet(),
         )
     }
 
@@ -53,8 +61,16 @@ class SettingsStore(private val context: Context) {
         context.settingsDataStore.edit { it[KEY_DYNAMIC_COLOR] = enabled }
     }
 
+    suspend fun setExplanationExpanded(key: String, expanded: Boolean) {
+        context.settingsDataStore.edit { prefs ->
+            val open = prefs[KEY_EXPANDED_EXPLANATIONS] ?: emptySet()
+            prefs[KEY_EXPANDED_EXPLANATIONS] = if (expanded) open + key else open - key
+        }
+    }
+
     private companion object {
         val KEY_THEME = stringPreferencesKey("theme")
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
+        val KEY_EXPANDED_EXPLANATIONS = stringSetPreferencesKey("expanded_explanations")
     }
 }

@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import de.steppicrew.healthconnectview.ui.components.InfoToggle
+import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -270,17 +272,25 @@ private fun SpanContent(
 @Composable
 private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
     val unit = unitRes?.let { " " + stringResource(it) }.orEmpty()
+    val explanation = rememberExplanation("trend")
+
     Column(Modifier.padding(top = 8.dp)) {
-        Text(
-            text = stringResource(
-                when (trend.direction) {
-                    Trend.UP -> R.string.trend_title_up
-                    Trend.FLAT -> R.string.trend_title_flat
-                    Trend.DOWN -> R.string.trend_title_down
-                },
-            ),
-            style = MaterialTheme.typography.titleSmall,
-        )
+        // The headline and the averages always show: they are the data. The rule is behind the
+        // "i", closed until asked for, so the numbers are what is seen at first glance.
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(
+                    when (trend.direction) {
+                        Trend.UP -> R.string.trend_title_up
+                        Trend.FLAT -> R.string.trend_title_flat
+                        Trend.DOWN -> R.string.trend_title_down
+                    },
+                ),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation)
+        }
         Text(
             text = stringResource(
                 R.string.trend_numbers,
@@ -289,11 +299,13 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
             ),
             style = MaterialTheme.typography.bodyMedium,
         )
-        Text(
-            text = stringResource(R.string.trend_rule),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.trend_rule),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -772,60 +784,70 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
     val context = LocalContext.current
     val sources = data.contributingApps.sortedBy { context.appLabelFor(it) }
 
+    val explanation = rememberExplanation("sources")
+
     Column(Modifier.padding(top = 8.dp)) {
         if (sources.size > 1) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                FilterChip(
-                    selected = data.selectedSource == null,
-                    onClick = { onSelectSource(null) },
-                    label = { Text(stringResource(R.string.source_all)) },
-                )
-                sources.forEach { packageName ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     FilterChip(
-                        selected = data.selectedSource == packageName,
-                        onClick = { onSelectSource(packageName) },
-                        // The app's own icon where it has one, which fits several sources on
-                        // screen at once where "Garmin Connect" and "Health Sync" already
-                        // ran off the edge. The label stays as the icon's content
-                        // description, and as the visible text wherever no icon can be had.
-                        label = {
-                            val icon = rememberAppIcon(packageName)
-                            if (icon != null) {
-                                AppIcon(
-                                    icon = icon,
-                                    packageName = packageName,
-                                    sizePx = SOURCE_ICON_PX,
-                                    modifier = Modifier.size(SOURCE_ICON.dp),
-                                )
-                            } else {
-                                Text(context.appLabelFor(packageName))
-                            }
-                        },
+                        selected = data.selectedSource == null,
+                        onClick = { onSelectSource(null) },
+                        label = { Text(stringResource(R.string.source_all)) },
                     )
+                    sources.forEach { packageName ->
+                        FilterChip(
+                            selected = data.selectedSource == packageName,
+                            onClick = { onSelectSource(packageName) },
+                            // The app's own icon where it has one, which fits several sources on
+                            // screen at once where "Garmin Connect" and "Health Sync" already
+                            // ran off the edge. The label stays as the icon's content
+                            // description, and as the visible text wherever no icon can be had.
+                            label = {
+                                val icon = rememberAppIcon(packageName)
+                                if (icon != null) {
+                                    AppIcon(
+                                        icon = icon,
+                                        packageName = packageName,
+                                        sizePx = SOURCE_ICON_PX,
+                                        modifier = Modifier.size(SOURCE_ICON.dp),
+                                    )
+                                } else {
+                                    Text(context.appLabelFor(packageName))
+                                }
+                            },
+                        )
+                    }
                 }
+                // The chips are the data; what choosing one means is the explanation.
+                InfoToggle(explanation)
             }
         }
 
-        Text(
-            text = data.selectedSource?.let {
-                stringResource(R.string.source_showing_one, context.appLabelFor(it))
-            } ?: if (sources.size > 1) {
-                stringResource(R.string.source_all_explained)
-            } else {
-                stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
-            },
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp),
-        )
+        // With a single writer there is nothing to choose and nothing to explain: naming it
+        // is the data itself, so it always shows.
+        if (sources.size == 1 || explanation.expanded == true) {
+            Text(
+                text = data.selectedSource?.let {
+                    stringResource(R.string.source_showing_one, context.appLabelFor(it))
+                } ?: if (sources.size > 1) {
+                    stringResource(R.string.source_all_explained)
+                } else {
+                    stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
 
         // The overlap winner is Health Connect's own priority setting, not ours to define.
-        if (sources.size > 1) {
+        if (sources.size > 1 && explanation.expanded == true) {
             Text(
                 text = stringResource(R.string.source_priority_hint),
                 style = MaterialTheme.typography.labelSmall,
