@@ -481,9 +481,18 @@ arithmetic suggests -- Health Connect appears to serve one app's requests largel
 
 The rest is the platform aggregating hundreds of thousands of samples, so the loading view
 shows a bar that advances per finished step (chart, total, list, two picker reads, sessions
-where present). Steps, not time: no request reports progress of its own. Showing the chart
-before the list and picker arrive would cut the wait further; it would also shift the chart
-down when the picker appears, which is why it was not done here.
+where present). Steps, not time: no request reports progress of its own.
+
+Then the chart first: since Health Connect answers in turn, the list and picker reads now start
+only once the chart is handed over. The sources sit in one outlined box that keeps its space
+with a loading bar, so the chart does not move when they arrive. Measured: chart after ~5.9 s
+for the heart-rate year (from ~13.5 s), 0.95 s for four weeks (from 3.2 s); the full load is
+unchanged. A newer load cancels an older one -- with the list arriving late, swiping on through
+years could otherwise put one window's list under another window's chart.
+
+"Android-System" (a wrench icon) and "This phone" among step writers are the phone's own step
+counter before and after 05.06.2026: `android` wrote 12.12.2025-05.06.2026, the synthetic
+`com.android.healthconnect.phone.*` origin from that day on, never overlapping.
 
 ### Built: the Activities tile
 
