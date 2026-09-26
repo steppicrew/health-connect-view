@@ -124,7 +124,8 @@ class RecordRegistryTest {
     fun `no cycle type shows a raw integer`() {
         val raw = RecordRegistry.all
             .filter { it.category == Category.CYCLE }
-            .filter { it.summaryRes == null && it.shape != RecordTypeSpec.Shape.INTERVAL }
+            // Measured types (basal temperature) have a number to show; the rest are enums.
+            .filter { !it.isChartable && it.summaryRes == null && it.shape != RecordTypeSpec.Shape.INTERVAL }
             .map { it.type.simpleName }
 
         assertTrue("Cycle types without worded values: $raw", raw.isEmpty())

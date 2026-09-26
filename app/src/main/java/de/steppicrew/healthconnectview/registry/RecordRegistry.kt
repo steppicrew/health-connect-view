@@ -365,17 +365,6 @@ object RecordRegistry {
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
-            type = BasalBodyTemperatureRecord::class,
-            displayNameRes = R.string.type_basal_body_temperature,
-            category = Category.VITALS,
-            unitRes = R.string.unit_celsius,
-            shape = Shape.INSTANT,
-            startTime = { it.time },
-            points = { listOf(Point(it.time, it.temperature.inCelsius)) },
-            summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
-        ),
-        RecordTypeSpec(
             type = BloodGlucoseRecord::class,
             displayNameRes = R.string.type_blood_glucose,
             category = Category.VITALS,
@@ -598,6 +587,19 @@ object RecordRegistry {
             startTime = { it.time },
             points = { emptyList() },
             summaryRes = { listOf(ovulationRes(it.result)) },
+        ),
+        RecordTypeSpec(
+            type = BasalBodyTemperatureRecord::class,
+            displayNameRes = R.string.type_basal_body_temperature,
+            // Filed with the cycle rather than the vitals: a basal reading means little on its
+            // own and is read for the shift across a cycle, which is where the overview draws it.
+            category = Category.CYCLE,
+            unitRes = R.string.unit_celsius,
+            shape = Shape.INSTANT,
+            startTime = { it.time },
+            points = { listOf(Point(it.time, it.temperature.inCelsius)) },
+            summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
             type = SexualActivityRecord::class,
