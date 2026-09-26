@@ -21,8 +21,8 @@ Especially relevant since more than one app can potentially write to the same ca
 
 Worth its own logic since it behaves differently from other metrics:
 
-- Separate display for morning vs. evening readings (standard guidance is twice daily) instead of one blended average.
-- A simple PDF/CSV export for a chosen date range — useful for doctor visits when they ask for a log.
+- *Built (ROADMAP §16):* separate display for morning vs. evening readings (standard guidance is twice daily) instead of one blended average.
+- *Built (ROADMAP §17):* a PDF report for a chosen date range — useful for doctor visits when they ask for a log.
 
 ## Everyday usability
 
