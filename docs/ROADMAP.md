@@ -18,11 +18,7 @@ open items below and `FEATURE-IDEAS.md`.
    states correctly. Not seen on the phone: light theme (it needs a tap) and real cycle data.
 3. [x] **Tile comparison** -- merged 26.09.2026; see "Built: a trend arrow on every tile" in
    section 1.
-4. [ ] **Sleep stages** -- light, deep, REM and awake per night, from
-   `SleepSessionRecord.stages` (measured present: 12-37 segments of 3-4 kinds per Garmin
-   night). One writer per night, as sessions already pick one: Health Sync copies Garmin's
-   nights and once had one segment fewer. No sleep score -- Garmin's is not in Health Connect,
-   and making one up would be the app's own claim about sleep quality.
+4. [x] **Sleep stages** -- merged 26.09.2026; see "Built: sleep stages" in section 5.
 5. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
    Storage Access Framework only; no permission changes. Decide raw records vs. deduplicated
    daily totals (probably both, labelled), and update the privacy policy's wording on data
@@ -37,9 +33,10 @@ views, a grant button on locked tiles, body measurements carrying their last rea
 trend explained with its averages in the day view, and "Weiter" for the permission screen's
 leave button.
 
-Not in Health Connect, checked on the phone 26.09.2026: a Garmin nap recorded that day had no
-sleep session by evening (possibly a sync delay -- recheck), and nothing marks an activity as
-auto-detected rather than started.
+Not in Health Connect, checked on the phone 26.09.2026 after a manual Health Sync: Garmin's
+timeline for 25.09 showed an auto-detected walk (~11:30) and a nap (~14:30); neither exists as
+a session, and the 26th's nap is missing too. Recorded activities and night sleep all arrive.
+Nothing marks a session as auto-detected. Not something this app can recover.
 
 Decisions waiting on the owner, not on code:
 
@@ -446,6 +443,26 @@ the 12th keeping its real start time.
   with the wallpaper until it stops reading as night.
 - An icon per activity, falling back to a generic sports mark rather than to nothing.
 - Tapping a session opens its assembled statistics.
+
+### Built: sleep stages
+
+Each night in the sleep view carries a hypnogram -- awake, REM, light and deep in lanes across
+the night's own span -- with the time in each stage as its legend (`health/SleepStages.kt`,
+`ui/components/Hypnogram.kt`). On the phone the 26th read Wach 49m, REM 1h 13m, Leicht 6h 42m,
+Tief 1h 10m, which sums to the 9h 54m headline.
+
+- **Three waking codes are one lane**; unclassified sleep stays apart from light sleep, and
+  unknown is a gap rather than a stage.
+- **The fuller copy of a night wins.** Garmin and Health Sync write identical untitled nights;
+  among those, the one with more stages is kept, since a re-sync only loses detail.
+- **No score.** Garmin's sleep score is not in Health Connect, and inventing one would be this
+  app's own claim about how well someone slept.
+- **Fixed colours**, so dynamic colour cannot turn deep sleep and REM into one wallpaper shade.
+
+Found on the way: a night starting 23:29 drew its heart rate from 00:00. The session curve took
+the writer with the most samples, and Health Sync's copy has more -- but none before midnight,
+while Garmin's own ran every two minutes from 23:30. The writer covering most of the session in
+5-minute slots is drawn now; the curve's first sample was checked at 23:30 on the phone.
 
 ### Built: the Activities tile
 
