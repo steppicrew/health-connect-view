@@ -40,6 +40,8 @@
     <string name="dashboard_add_tile">Kachel hinzufügen</string>
     <string name="tile_move_up">Nach oben</string>
     <string name="tile_move_down">Nach unten</string>
+    <string name="tile_resize">Größe ändern</string>
+    <string name="tile_size">Größe %1$d × %2$d</string>
     <string name="tile_remove">Entfernen</string>
     <string name="tile_set_goal">Ziel festlegen</string>
     <string name="dashboard_empty_title">Noch keine Kacheln</string>

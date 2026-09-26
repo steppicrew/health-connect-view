@@ -255,6 +255,29 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    /**
+     * Steps a tile to its next size. The shown tiles are updated in place rather than
+     * reloaded: nothing about the data changes, and a reload would blank every tile to a dash
+     * for the length of a read just to make one of them bigger.
+     */
+    fun resizeTile(typeName: String) {
+        config = config.resized(typeName)
+        _state.update { it.copy(tiles = withCurrentSizes(it.tiles)) }
+        viewModelScope.launch { store.save(config) }
+    }
+
+    /**
+     * [tiles] with the sizes the config holds now. A load reads the config when it starts, so
+     * a tile resized while it runs would otherwise snap back when the load publishes.
+     */
+    private fun withCurrentSizes(tiles: List<TileData>): List<TileData> {
+        val current = config.tiles.associateBy { it.typeName }
+        return tiles.map { data ->
+            val tile = current[data.tile.typeName] ?: return@map data
+            data.copy(tile = data.tile.copy(width = tile.width, height = tile.height))
+        }
+    }
+
     /** Types that may be pinned but are not yet: the add picker's contents. */
     fun addableTypes(): List<RecordTypeSpec<*>> {
         val pinned = config.tiles.map { it.typeName }.toSet()
@@ -356,12 +379,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             val carried = previous[tile.tile.typeName]
             if (carried != null && carried.source == tile.source) tile.copy(trend = carried.trend) else tile
         }
-        _state.update { it.copy(tiles = withCarried) }
+        _state.update { it.copy(tiles = withCurrentSizes(withCarried)) }
         // Timing and count only, never a value: how long the dashboard takes to fill is the
         // cost every per-tile read adds to, so it is worth being able to measure from adb.
         Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
 
-        val trended = loadTrends(loaded, date, gate)
+        val trended = withCurrentSizes(loadTrends(loaded, date, gate))
         // Only if nothing has replaced these tiles in the meantime -- a day step or a source
         // change starts a new load, and its tiles must not receive this load's arrows.
         _state.update { state ->

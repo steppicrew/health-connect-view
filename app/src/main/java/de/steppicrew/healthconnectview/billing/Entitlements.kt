@@ -18,7 +18,9 @@ data class ProState(
     /** Paid by a slow method (cash at a shop, bank transfer); Pro unlocks once Play confirms. */
     val pending: Boolean = false,
     val price: String? = null,
-)
+) {
+    fun allows(feature: Feature): Boolean = !feature.isPremium || owned
+}
 
 /**
  * Whether the user may use a given feature.
@@ -31,7 +33,7 @@ interface Entitlements {
 
     val isPremium: Flow<Boolean> get() = pro.map { it.owned }
 
-    fun has(feature: Feature): Flow<Boolean> = pro.map { !feature.isPremium || it.owned }
+    fun has(feature: Feature): Flow<Boolean> = pro.map { it.allows(feature) }
 
     /** Re-reads what the user owns; a purchase made or refunded elsewhere shows up here. */
     fun refresh()

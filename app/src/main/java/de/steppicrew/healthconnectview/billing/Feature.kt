@@ -15,4 +15,7 @@ enum class Feature(val isPremium: Boolean) {
     LONG_RANGE_HISTORY(isPremium = true),
     EXPORT_CSV(isPremium = true),
     ADVANCED_STATS(isPremium = true),
+
+    /** Dashboard tiles larger than one cell. */
+    TILE_SIZES(isPremium = true),
 }
