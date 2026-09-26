@@ -90,9 +90,9 @@
     <string name="bp_parts_rule">Morgens zählt von 4:00 bis 13:59, abends ab 14:00. Eine Messung nach Mitternacht, aber vor 4:00 zählt zum Abend davor. Dieselbe Messung, von mehreren Apps gespeichert, zählt einmal.\n\nDie Farben folgen der Einteilung der Europäischen Hypertonie-Gesellschaft (ESH) für Messungen in der Praxis: niedrig unter 90/60, normal unter 130/85, hoch-normal bis 139/89, Grad 1 ab 140/90, Grad 2 ab 160/100. Der höhere der beiden Werte entscheidet. Zu Hause gilt schon ab 135/85 als erhöht. Eine Orientierung, keine Diagnose.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Pro kaufen · %1$s</string>
-    <string name="pro_body">Einmalkauf, kein Abo. Schaltet den CSV-Export und alle künftigen Pro-Funktionen frei.</string>
+    <string name="pro_body">Einmalkauf, kein Abo. Schaltet den CSV-Export, größere Kacheln im Dashboard und alle künftigen Pro-Funktionen frei.</string>
     <string name="pro_owned">Pro ist freigeschaltet</string>
-    <string name="pro_owned_body">Danke für deine Unterstützung. Der CSV-Export und alle künftigen Pro-Funktionen gehören dir.</string>
+    <string name="pro_owned_body">Danke für deine Unterstützung. Der CSV-Export, größere Kacheln und alle künftigen Pro-Funktionen gehören dir.</string>
     <string name="pro_pending">Kauf ausstehend</string>
     <string name="pro_pending_body">Pro wird freigeschaltet, sobald Google Play die Zahlung bestätigt.</string>
     <string name="pro_unavailable_body">Google Play ist gerade nicht erreichbar. Tippen, um es erneut zu versuchen.</string>
