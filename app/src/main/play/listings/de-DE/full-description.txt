@@ -35,6 +35,7 @@ PRO — EINMALKAUF, KEIN ABO
 Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
 
 • CSV-Export — jeden Datentyp aus Ihrem Dashboard als Tabellendatei speichern: alle einzelnen Datensätze mit der schreibenden App oder die entdoppelten Tagessummen von Health Connect. Sie wählen, wo die Datei gespeichert wird; die App behält keine Kopie.
+• Größere Kacheln — jede Kachel im Dashboard doppelt so breit oder doppelt so groß, für einen größeren Ring oder Verlauf.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
 Der Kauf wird vollständig über Google Play abgewickelt und begleitet Ihr Google-Konto auf ein neues Handy.
