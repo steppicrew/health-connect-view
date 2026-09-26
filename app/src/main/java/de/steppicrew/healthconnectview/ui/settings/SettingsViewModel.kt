@@ -1,5 +1,17 @@
 package de.steppicrew.healthconnectview.ui.settings
 
+import android.net.Uri
+import de.steppicrew.healthconnectview.dashboard.DashboardStore
+import de.steppicrew.healthconnectview.settings.BackupError
+import de.steppicrew.healthconnectview.settings.SettingsBackup
+import de.steppicrew.healthconnectview.settings.SettingsBackupCodec
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,6 +35,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+
+/** How a backup action went, for a one-line message. */
+enum class BackupEvent { Exported, Restored, NotABackup, NewerFormat, Failed }
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -137,8 +152,92 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    private val dashboardStore = DashboardStore(application)
+
+    /** A backup read from a file and waiting for the user to confirm replacing everything. */
+    private val _pendingRestore = MutableStateFlow<SettingsBackup?>(null)
+    val pendingRestore: StateFlow<SettingsBackup?> = _pendingRestore.asStateFlow()
+
+    private val _backupEvents = MutableSharedFlow<BackupEvent>(extraBufferCapacity = 1)
+    val backupEvents: SharedFlow<BackupEvent> = _backupEvents.asSharedFlow()
+
+    /** Writes the dashboard, source choices and display settings to [uri]. No health data. */
+    fun exportBackup(uri: Uri) {
+        viewModelScope.launch {
+            val resolver = getApplication<Application>().contentResolver
+            val result = runCatching {
+                val backup = SettingsBackup(
+                    dashboard = dashboardStore.config.first(),
+                    sourceSelections = sourceStore.selections.first(),
+                    preferredSource = sourceStore.preferred.first(),
+                    settings = store.settings.first(),
+                )
+                val text = SettingsBackupCodec.encode(backup, LocalDate.now())
+                withContext(Dispatchers.IO) {
+                    requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }
+                        .use { it.write(text.toByteArray(Charsets.UTF_8)) }
+                }
+            }
+            _backupEvents.tryEmit(if (result.isSuccess) BackupEvent.Exported else BackupEvent.Failed)
+        }
+    }
+
+    /**
+     * Reads a backup from [uri] and holds it for confirmation; nothing changes yet. Replacing a
+     * dashboard someone arranged by hand is not undoable, so it is asked, not assumed.
+     */
+    fun readBackup(uri: Uri) {
+        viewModelScope.launch {
+            val resolver = getApplication<Application>().contentResolver
+            val result = runCatching {
+                val text = withContext(Dispatchers.IO) {
+                    requireNotNull(resolver.openInputStream(uri)) { "cannot open $uri" }.use { input ->
+                        // A settings backup is a few kilobytes; anything far larger is not one,
+                        // and reading it whole would only waste memory before refusing it.
+                        val bytes = input.readAtMost(MAX_BACKUP_BYTES + 1)
+                        if (bytes.size > MAX_BACKUP_BYTES) throw BackupError.NotABackup()
+                        bytes.toString(Charsets.UTF_8)
+                    }
+                }
+                SettingsBackupCodec.decode(text)
+            }
+            result.fold(
+                onSuccess = { _pendingRestore.value = it },
+                onFailure = { error ->
+                    _backupEvents.tryEmit(
+                        when (error) {
+                            is BackupError.NotABackup -> BackupEvent.NotABackup
+                            is BackupError.NewerFormat -> BackupEvent.NewerFormat
+                            else -> BackupEvent.Failed
+                        },
+                    )
+                },
+            )
+        }
+    }
+
+    fun confirmRestore() {
+        val backup = _pendingRestore.value ?: return
+        _pendingRestore.value = null
+        viewModelScope.launch {
+            val result = runCatching {
+                dashboardStore.save(backup.dashboard)
+                sourceStore.restore(backup.sourceSelections, backup.preferredSource)
+                store.restore(backup.settings)
+            }
+            _backupEvents.tryEmit(if (result.isSuccess) BackupEvent.Restored else BackupEvent.Failed)
+        }
+    }
+
+    fun cancelRestore() {
+        _pendingRestore.value = null
+    }
+
     private companion object {
         const val STOP_TIMEOUT = 5_000L
+
+        /** Far above any real backup (a few KB), far below anything worth reading whole. */
+        const val MAX_BACKUP_BYTES = 256 * 1024
 
         /** Newest records per type when discovering writers; enough to name who writes now. */
         const val WRITER_SAMPLE = 50
@@ -146,4 +245,16 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         /** Parallel reads while discovering writers; matches the dashboard's tile cap. */
         const val MAX_CONCURRENT_READS = 4
     }
+}
+
+/** Up to [limit] bytes; InputStream.readNBytes would do this but needs API 33, minSdk is 26. */
+private fun java.io.InputStream.readAtMost(limit: Int): ByteArray {
+    val out = java.io.ByteArrayOutputStream()
+    val buffer = ByteArray(8 * 1024)
+    while (out.size() < limit) {
+        val read = read(buffer, 0, minOf(buffer.size, limit - out.size()))
+        if (read < 0) break
+        out.write(buffer, 0, read)
+    }
+    return out.toByteArray()
 }

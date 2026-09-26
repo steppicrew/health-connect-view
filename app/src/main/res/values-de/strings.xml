@@ -68,6 +68,22 @@
     <string name="export_premium">%1$s · Premium</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
     <string name="detail_records_loading">Datensätze werden geladen …</string>
+    <string name="settings_backup">Sicherung</string>
+    <string name="settings_backup_export">Einstellungen exportieren</string>
+    <string name="settings_backup_export_body">Dashboard, Quellenwahl und Anzeigeeinstellungen als Datei. Keine Gesundheitsdaten.</string>
+    <string name="settings_backup_import">Einstellungen importieren</string>
+    <string name="settings_backup_import_body">Ersetzt das aktuelle Dashboard und die Einstellungen durch die aus einer Datei.</string>
+    <string name="backup_confirm_title">Einstellungen ersetzen?</string>
+    <plurals name="backup_confirm_body">
+        <item quantity="one">Die Sicherung enthält %1$d Kachel. Dein aktuelles Dashboard, deine Quellenwahl und deine Anzeigeeinstellungen werden ersetzt.</item>
+        <item quantity="other">Die Sicherung enthält %1$d Kacheln. Dein aktuelles Dashboard, deine Quellenwahl und deine Anzeigeeinstellungen werden ersetzt.</item>
+    </plurals>
+    <string name="backup_confirm_action">Ersetzen</string>
+    <string name="backup_exported">Einstellungen exportiert</string>
+    <string name="backup_restored">Einstellungen wiederhergestellt</string>
+    <string name="backup_not_a_backup">Diese Datei ist keine Einstellungssicherung dieser App.</string>
+    <string name="backup_newer">Diese Sicherung stammt aus einer neueren Version der App. Bitte zuerst die App aktualisieren.</string>
+    <string name="backup_failed">Die Datei konnte nicht gelesen oder geschrieben werden.</string>
     <string name="source_section_title">Quellen</string>
     <plurals name="export_done">
         <item quantity="one">%1$d Zeile exportiert</item>
