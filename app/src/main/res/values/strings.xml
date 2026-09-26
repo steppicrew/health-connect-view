@@ -69,6 +69,15 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export failed. No file was kept.</string>
     <string name="detail_records_loading">Loading records…</string>
+    <string name="bp_parts_title">Morning and evening</string>
+    <string name="bp_part_morning">Morning</string>
+    <string name="bp_part_evening">Evening</string>
+    <string name="bp_part_none">No reading</string>
+    <plurals name="bp_part_value">
+        <item quantity="one">Avg %1$s mmHg · %2$d reading</item>
+        <item quantity="other">Avg %1$s mmHg · %2$d readings</item>
+    </plurals>
+    <string name="bp_parts_rule">Morning is 4:00 to 13:59, evening from 14:00. A reading after midnight but before 4:00 counts for the evening before. The same reading stored by several apps counts once.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Buy Pro · %1$s</string>
     <string name="pro_body">One-time purchase, no subscription. Unlocks CSV export and every future Pro feature.</string>
