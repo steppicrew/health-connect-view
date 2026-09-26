@@ -14,7 +14,15 @@ import androidx.compose.ui.graphics.Color
  * scale, and a maximum heart rate falls with age. [DEFAULT_HEART_RATE] is only a starting
  * point.
  */
-data class ValueZones(val bounds: List<Double>) {
+data class ValueZones(
+    val bounds: List<Double>,
+    /**
+     * One flat colour per band instead of a blend across it. For a classification, where a
+     * band is a named category -- blood pressure's grades -- and a colour halfway to the next
+     * one would claim a category the reading is not in.
+     */
+    val stepped: Boolean = false,
+) {
 
     /**
      * Colour for [value], interpolated across the band it falls in.
@@ -25,6 +33,7 @@ data class ValueZones(val bounds: List<Double>) {
      */
     fun colorFor(value: Double): Color {
         if (bounds.isEmpty()) return ZONE_COLORS.first()
+        if (stepped) return ZONE_COLORS[zoneOf(value)]
         // Below the first boundary and above the last, the end colours hold rather than
         // wrapping: an extreme reading must not cycle back to looking calm.
         if (value <= bounds.first()) return ZONE_COLORS.first()

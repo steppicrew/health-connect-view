@@ -2,6 +2,8 @@ package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.health.DayPart
 import de.steppicrew.healthconnectview.health.PressureReading
+import de.steppicrew.healthconnectview.health.PressureCategory
+import de.steppicrew.healthconnectview.health.pressureCategory
 import de.steppicrew.healthconnectview.health.dayPartOf
 import de.steppicrew.healthconnectview.health.dayPartWindow
 import de.steppicrew.healthconnectview.health.splitByDayPart
@@ -74,5 +76,27 @@ class BloodPressureTest {
     fun `a part without readings is absent rather than zero`() {
         val split = splitByDayPart(listOf(PressureReading(at(day, 7), 130.0, 85.0)), zone)
         assertNull(split.evening)
+    }
+
+    @Test
+    fun `the higher of the two values decides the category`() {
+        assertEquals(PressureCategory.NORMAL, pressureCategory(125.0, 80.0))
+        assertEquals(PressureCategory.HIGH_NORMAL, pressureCategory(135.0, 80.0))
+        assertEquals(PressureCategory.GRADE_1, pressureCategory(128.0, 92.0))
+        assertEquals(PressureCategory.GRADE_2, pressureCategory(165.0, 85.0))
+    }
+
+    @Test
+    fun `boundaries belong to the higher band`() {
+        assertEquals(PressureCategory.HIGH_NORMAL, pressureCategory(130.0, 70.0))
+        assertEquals(PressureCategory.GRADE_1, pressureCategory(140.0, 70.0))
+        assertEquals(PressureCategory.GRADE_2, pressureCategory(120.0, 100.0))
+    }
+
+    @Test
+    fun `low only when nothing is raised`() {
+        assertEquals(PressureCategory.LOW, pressureCategory(85.0, 55.0))
+        assertEquals(PressureCategory.LOW, pressureCategory(110.0, 58.0))
+        assertEquals(PressureCategory.GRADE_1, pressureCategory(150.0, 55.0))
     }
 }
