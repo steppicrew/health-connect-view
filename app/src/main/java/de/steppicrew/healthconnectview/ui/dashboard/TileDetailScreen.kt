@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.Trend
+import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.totalDuration
@@ -258,6 +260,43 @@ private fun SpanContent(
     }
 }
 
+/**
+ * What the tile's arrow means, with the numbers behind it.
+ *
+ * On the phone the arrow on floors pointed up on a day with 4 climbed after a day with 10,
+ * and read as wrong: it compares a week with a month, not today with yesterday, and leaves
+ * today out altogether. Saying so, with both averages, is what makes the arrow checkable.
+ */
+@Composable
+private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
+    val unit = unitRes?.let { " " + stringResource(it) }.orEmpty()
+    Column(Modifier.padding(top = 8.dp)) {
+        Text(
+            text = stringResource(
+                when (trend.direction) {
+                    Trend.UP -> R.string.trend_title_up
+                    Trend.FLAT -> R.string.trend_title_flat
+                    Trend.DOWN -> R.string.trend_title_down
+                },
+            ),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            text = stringResource(
+                R.string.trend_numbers,
+                Formatting.number(trend.recent) + unit,
+                Formatting.number(trend.baseline) + unit,
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            text = stringResource(R.string.trend_rule),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
 @Composable
 private fun SpanSummary(
     data: TileDetailData,
@@ -327,6 +366,9 @@ private fun SpanSummary(
                 modifier = Modifier.padding(top = 4.dp),
             )
         }
+
+        // Beside the day's own total, which is what the tile's arrow was misread against.
+        data.trend?.let { TrendExplanation(it, data.spec.unitRes) }
 
         if (data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)

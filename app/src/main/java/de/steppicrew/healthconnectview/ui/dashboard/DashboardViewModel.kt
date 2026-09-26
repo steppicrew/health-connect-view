@@ -2,7 +2,6 @@ package de.steppicrew.healthconnectview.ui.dashboard
 
 import android.app.Application
 import android.util.Log
-import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,10 +12,8 @@ import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
-import de.steppicrew.healthconnectview.health.TREND_DAYS
 import de.steppicrew.healthconnectview.health.Trend
-import de.steppicrew.healthconnectview.health.numericAggregate
-import de.steppicrew.healthconnectview.health.trendOf
+import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.dayFilter
 import de.steppicrew.healthconnectview.health.dayInstants
@@ -43,7 +40,6 @@ import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
-import java.time.Period
 import java.time.temporal.ChronoUnit
 
 /**
@@ -501,34 +497,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     }
                     val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
                     val trend = gate.withPermit {
-                        runCatching { trendBefore(metric, date, origins) }.getOrNull()
+                        runCatching { repository.trendBefore(metric, date, origins)?.direction }.getOrNull()
                     }
                     data.copy(trend = trend)
                 }
             }.awaitAll()
         }
 
-    /**
-     * One aggregate call yields both averages: daily buckets for the [TREND_DAYS] complete
-     * days before [date]. The shown day is left out because today is always partial. Days are
-     * placed by their own date, so a day the platform returns no bucket for stays a gap.
-     */
-    private suspend fun trendBefore(
-        metric: AggregateMetric<*>,
-        date: LocalDate,
-        origins: Set<DataOrigin>,
-    ): Trend? {
-        val start = date.minusDays(TREND_DAYS.toLong())
-        val byDay = repository.bucketedTotals(
-            metric,
-            TimeRangeFilter.between(start.atStartOfDay(), date.atStartOfDay()),
-            Period.ofDays(1),
-            origins,
-        ).associate { bucket ->
-            bucket.startTime.toLocalDate() to bucket.result[metric]?.let(::numericAggregate)
-        }
-        return trendOf(List(TREND_DAYS) { byDay[start.plusDays(it.toLong())] })
-    }
 
     /**
      * The day's sessions of one kind.
