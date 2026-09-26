@@ -4,6 +4,44 @@ What exists, why it works the way it does, and what is still planned. Sections m
 describe shipped behaviour and the decisions behind it; the rest is intent recorded so it
 survives beyond the session it was discussed in.
 
+## Next steps
+
+The working plan, in order. Each step is one branch, merged fast-forward when it builds, passes
+and has been seen on a device; tick it here in the same merge. Ranked on 26.09.2026 from the
+open items below and `FEATURE-IDEAS.md`.
+
+1. [x] **Cycle overview** -- section 12. Merged 26.09.2026.
+2. [ ] **See the cycle overview on the phone.** Only the emulator has shown it. Needs real
+   cycle data, or the seeder's (debug `WRITE_*` cycle permissions granted in Health Connect).
+   Check dark theme and dynamic colour: the bleeding rose is fixed, everything else follows
+   the scheme.
+3. [ ] **Tile comparison** -- a small up/down arrow on each tile, 7-day against 30-day
+   average. Covers section 1's open comparison and the top idea in `FEATURE-IDEAS.md`. Costs a
+   second `aggregate()` per tile, so measure dashboard load on the phone before and after.
+   Decide first what "flat" is, or every tile shows an arrow for noise.
+4. [ ] **CSV export** -- `Feature.EXPORT_CSV`, reserved as premium. Local file through the
+   Storage Access Framework only; no permission changes. Decide raw records vs. deduplicated
+   daily totals (probably both, labelled), and update the privacy policy's wording on data
+   leaving the app *before* shipping.
+5. [ ] **Dashboard configuration export/import** as local JSON. No health data involved.
+6. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
+7. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
+   be driven from the host on the Xiaomi.
+
+Decisions waiting on the owner, not on code:
+
+- Whether the cycle overview's year window counts as `LONG_RANGE_HISTORY` (premium). It
+  needs `READ_HEALTH_DATA_HISTORY` to show more than 30 days, which is one to two cycles.
+- Whether a custom dashboard becomes the premium feature (section 1), and the default tile set.
+- A dashboard strip for the cycle -- the overview has no tile. Worth building only if the
+  overview proves useful on the phone.
+
+Not ranked yet: overlaying two metrics on one timeline, a local reminder notification, goal
+streaks.
+
+Not planned: an insights tile. Deciding what is "notable" is easy to overclaim and reads as
+medical advice.
+
 ## 1. Dashboard start screen — built
 
 The launch destination is a configurable grid of tiles, each showing one data type in a form
@@ -156,7 +194,7 @@ points at where the real setting lives.
 - **The contributor list is read unfiltered.** Scoping it to the current selection collapses the
   picker to one app and strands the user with no way back.
 
-## 4. Chart refinement — partly built
+## 4. Chart refinement — built
 
 One hand-drawn Compose Canvas line, no charting dependency. Everything renders through a single
 `LineChart` signature, so swapping the implementation stays a single-file change.
@@ -176,9 +214,9 @@ One hand-drawn Compose Canvas line, no charting dependency. Everything renders t
   row whether or not anything is selected, so touching does not shift the layout out from under
   the finger.
 
-### Still open
+### Built since
 
-- X-axis tick labels between the endpoints.
+- X-axis tick labels between the endpoints (`df6d30b`). Nothing in this section is open.
 
 ### Built: the y-axis lands on round numbers
 
@@ -613,8 +651,10 @@ and the four `range_*` strings went with it.
 and `HistoryReachActivity` reports chart reads running to 494 days with the history permission
 granted, so the old 365-day wall is genuinely gone rather than merely un-asserted. The type
 detail screen shows three span chips with the day absent, and charts seven daily buckets for a
-week. The year span's weekly bucketing is the one part still unverified on hardware: the debug
-backdoor cannot switch spans (see section 11), so it needs a tap.
+week. The year span's weekly bucketing was at first unverified on hardware, because the debug
+backdoor seemed unable to switch spans (see section 11). It can: on 26.09.2026 the emulator
+opened `tile/StepsRecord?span=YEAR` on the year span with weekly bars, so a phone check needs
+no tap either.
 
 ### Trap: probes must stay in the foreground
 
@@ -876,10 +916,12 @@ charts seven daily buckets through `bucketedTotals()`, and the tile view reaches
 462 days back, well past the old 365-day wall -- rendering the empty window honestly rather
 than falling back to today.
 
-One gap found while checking, not caused by this change: the debug backdoor's `span` extra is
-never applied. `Routes.tileDetail()` builds only `?date=`, so `-e route "tile/X?span=MONTH"`
-silently opens on the day span. Switching spans from the host is therefore impossible, and the
-year view's weekly bucketing could not be self-verified -- that one needs a tap.
+One gap reported while checking was wrong: that the debug backdoor's `span` extra is never
+applied. `Routes.tileDetail()` does build only `?date=`, but the backdoor passes a raw route
+string and the graph declares `span` since `dc50488`. Checked on the emulator 26.09.2026:
+`-e route "'tile/StepsRecord?span=YEAR'"` opens on the year span. Keep the inner quotes: the route
+passes through the device shell, where `?` and `&` are special. Why the original check failed
+was not established.
 
 ### Two edge-to-edge warnings that need no change
 
@@ -918,7 +960,45 @@ declares, which is not the same as what this app *does*. Deobfuscate the reporte
 the release mapping before believing a finding is yours -- twice now the answer has been that it
 was not.
 
-## 12. Deferred
+## 12. Cycle overview — built
+
+The six cycle types were bare lists showing the library's integers ("flow 2", "result 1"),
+and protection "unknown" rendered as "unprotected" -- stating something never recorded. Values
+are now words via `RecordTypeSpec.summaryRes`, resolved at render time because a summary lambda
+has no Context.
+
+The overview (`ui/cycle`, logic in `health/Cycles.kt`) draws one row per cycle, aligned on day
+1, for a year at a time. A calendar was rejected: dedicated trackers already do that better, and
+it shows one month where the value of a viewer is the history across writers. Aligned rows put
+the same cycle day of every month in one column, so drift in length, period and the basal
+temperature shift show as shapes.
+
+Decisions, each with its reason in the code:
+
+- **Merged per local day, never counted.** The cycle types have no aggregate, so there is no
+  platform deduplication. A day bled if any writer says so; the heaviest flow wins; the
+  strongest ovulation result wins; basal temperature is the day's *earliest* reading, since a
+  later one is by definition not basal.
+- **Bleeding from period records or flow entries.** Some apps write one, some the other.
+- **A cycle starts after 3 dry days** (`MIN_GAP_DAYS`), so one unlogged day inside a period
+  does not split it. Spotting never starts a cycle. The screen states the rule.
+- **Selected by start, kept whole.** Read 60 days either side of the year; a cycle is shown if
+  it starts in the window and is never trimmed -- the sleep rule again.
+- **Median and range, not mean**, so one missed period does not skew every number.
+- **Nothing predicted.** No fertile window, no next period: a read-only viewer should not make
+  a contraceptive claim, and it keeps the app out of medical-app policy.
+- **Sexual activity is not drawn.** It is the most sensitive type and adds nothing to the
+  alignment; its own list remains.
+- **Basal body temperature moved from Vitals to Cycle** in the catalog.
+- **Missing layers are named**, so an absent ovulation mark is not read as a negative test.
+
+Found while verifying on the emulator: the first load ran while the screen was asleep and was
+refused (the foreground trap in section 7). The screen loads in `OnResume` rather than once, so
+it recovers on return and re-reads permissions as the architecture requires.
+
+Not yet seen on the phone -- step 2 of the plan above.
+
+## 13. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the

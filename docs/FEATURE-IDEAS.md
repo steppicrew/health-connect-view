@@ -2,7 +2,7 @@
 
 Possible directions for the app, roughly ordered by expected value. Nothing here is committed
 work — see `ROADMAP.md` for what is actually planned, and open an issue if you want to pick
-something up.
+something up. The order they are being worked in is under "Next steps" in `ROADMAP.md`.
 
 ## Trends, not just raw data
 
@@ -14,8 +14,8 @@ something up.
 
 Especially relevant since more than one app can potentially write to the same category:
 
-- Show which app/source contributed a given value per tile, and optionally let the user set a priority source per data type in case two apps write to the same category at once.
-- Visually distinguish missing days from genuine zero values (grey/dashed instead of "0"). An unexplained "0" is easily read as "you took no steps" when it actually means nothing was recorded.
+- *Built (ROADMAP §3):* show which app/source contributed a given value per tile, and optionally let the user set a priority source per data type in case two apps write to the same category at once.
+- *Built (ROADMAP §1, "a missing value renders as a dash"):* visually distinguish missing days from genuine zero values (grey/dashed instead of "0"). An unexplained "0" is easily read as "you took no steps" when it actually means nothing was recorded.
 
 ## Blood pressure specifics
 
