@@ -1,6 +1,17 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import android.app.Application
+import android.util.Log
+import de.steppicrew.healthconnectview.export.ExportResult
+import android.net.Uri
+import android.provider.DocumentsContract
+import de.steppicrew.healthconnectview.export.Exporter
+import de.steppicrew.healthconnectview.ui.components.ExportKind
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.withContext
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -232,6 +243,46 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     // Opens on the day, matching the tile that was tapped: landing on a week would show a
     // different number from the one just touched, and the point of opening a tile is to see
     // that figure in more detail.
+    /** Outcome of the last export, for a snackbar; one event per export. */
+    private val _exportResults = MutableSharedFlow<ExportResult>(extraBufferCapacity = 1)
+    val exportResults: SharedFlow<ExportResult> = _exportResults.asSharedFlow()
+
+    /**
+     * Writes what is on screen -- this type, this window, this source filter -- to [uri].
+     *
+     * A failed export removes the file it started, so a half-written CSV is not left looking
+     * like a complete one.
+     */
+    fun export(kind: ExportKind, uri: Uri) {
+        val spec = _spec.value ?: return
+        val span = _span.value
+        val offset = _offset.value
+        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        viewModelScope.launch {
+            val resolver = getApplication<Application>().contentResolver
+            val exporter = Exporter(getApplication(), repository)
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
+                        when (kind) {
+                            ExportKind.RECORDS -> exporter.writeRecords(
+                                spec, windowStart(span, offset), windowEnd(span, offset), origins, out,
+                            )
+                            ExportKind.DAILY -> exporter.writeDailyTotals(
+                                spec, span.startDate(offset), span.endDate(offset), origins, out,
+                            )
+                        }
+                    }
+                }
+            }
+            result.onFailure {
+                Log.w(TAG, "export failed: ${it.javaClass.simpleName}")
+                runCatching { DocumentsContract.deleteDocument(resolver, uri) }
+            }
+            _exportResults.tryEmit(result.fold({ ExportResult.Written(it) }, { ExportResult.Failed }))
+        }
+    }
+
     private val _span = MutableStateFlow(Span.DAY)
     val span: StateFlow<Span> = _span.asStateFlow()
 
@@ -1136,6 +1187,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private companion object {
+        const val TAG = "TileDetail"
         /**
          * A record at least this long is a whole-day summary rather than an event, and says
          * nothing about when within the day it happened.
