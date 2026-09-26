@@ -36,7 +36,11 @@ Decisions waiting on the owner, not on code:
   overview proves useful on the phone.
 
 Not ranked yet: overlaying two metrics on one timeline, a local reminder notification, goal
-streaks.
+streaks, and **sleep stages**. Measured on the phone 26.09.2026: every Garmin night carries
+12-37 stage segments of 3-4 kinds in `SleepSessionRecord.stages`, so a light/deep/REM/awake
+view needs no inference. Garmin's sleep *score* is not in Health Connect. Health Sync writes a
+copy of each night, once with one segment fewer than Garmin's own -- pick one writer per night,
+as sessions already do, never merge their stages.
 
 Not planned: an insights tile. Deciding what is "notable" is easy to overclaim and reads as
 medical advice.
