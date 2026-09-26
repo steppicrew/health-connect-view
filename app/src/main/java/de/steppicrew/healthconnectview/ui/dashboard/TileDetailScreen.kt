@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import de.steppicrew.healthconnectview.ui.components.SourceMark
 import androidx.compose.material3.Surface
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -944,15 +945,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                                 // on screen at once where "Garmin Connect" and "Health Sync"
                                 // already ran off the edge. The label stays as the icon's content
                                 // description, and as the visible text wherever no icon can be had.
-                                val icon = rememberAppIcon(packageName)
-                                if (icon != null) {
-                                    AppIcon(
-                                        icon = icon,
-                                        packageName = packageName,
-                                        sizePx = SOURCE_ICON_PX,
-                                        modifier = Modifier.size(SOURCE_ICON.dp),
-                                    )
-                                } else {
+                                SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX) {
                                     Text(context.appLabelFor(packageName), style = MaterialTheme.typography.labelLarge)
                                 }
                             }
