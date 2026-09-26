@@ -126,6 +126,34 @@
     <string name="protection_not_used">Unprotected</string>
     <string name="protection_unspecified">Protection not recorded</string>
 
+    <!-- Cycle overview -->
+    <string name="cycle_title">Cycles</string>
+    <string name="cycle_open">Cycle overview</string>
+    <string name="cycle_open_body">Every cycle of a year side by side, aligned on day 1</string>
+    <string name="cycle_empty_body">No period or flow was recorded in this year, so there is no cycle to align.</string>
+    <string name="cycle_legend">Shaded: bleeding, darker is heavier. Dot below: spotting. Triangle: ovulation test, filled when positive. Tick: mucus observation. Line: basal temperature.</string>
+    <string name="cycle_not_granted">Not shown, access not allowed: %1$s</string>
+    <string name="cycle_stat_length">Median cycle</string>
+    <string name="cycle_stat_range">Shortest to longest</string>
+    <string name="cycle_stat_period">Median period</string>
+    <string name="cycle_stat_completed">Completed cycles</string>
+    <plurals name="cycle_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <plurals name="cycle_days_range">
+        <item quantity="one">%1$d–%2$d day</item>
+        <item quantity="other">%1$d–%2$d days</item>
+    </plurals>
+    <plurals name="cycle_running">
+        <item quantity="one">running, %1$d day so far</item>
+        <item quantity="other">running, %1$d days so far</item>
+    </plurals>
+    <plurals name="cycle_method">
+        <item quantity="one">A cycle starts on the first day of bleeding recorded as a period or as flow, after at least %1$d day without. Nothing here is predicted.</item>
+        <item quantity="other">A cycle starts on the first day of bleeding recorded as a period or as flow, after at least %1$d days without. Nothing here is predicted.</item>
+    </plurals>
+
     <!-- Units -->
     <string name="unit_kcal" translatable="false">kcal</string>
     <string name="unit_kcal_day" translatable="false">kcal/day</string>

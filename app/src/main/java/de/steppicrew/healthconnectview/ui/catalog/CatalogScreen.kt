@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
@@ -47,6 +48,7 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 fun CatalogScreen(
     viewModel: CatalogViewModel,
     onOpenType: (String) -> Unit,
+    onOpenCycles: () -> Unit,
     onOpenPermissions: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -92,6 +94,11 @@ fun CatalogScreen(
             else -> LazyColumn(modifier = Modifier.padding(padding)) {
                 RecordRegistry.byCategory.forEach { (category, specs) ->
                     item(key = "header_${category.name}") { CategoryHeader(category) }
+                    // The cycle types mean little one at a time; the overview is how they are
+                    // read together, so it leads the category rather than hiding in a type.
+                    if (category == Category.CYCLE) {
+                        item(key = "cycle_overview") { CycleOverviewRow(onClick = onOpenCycles) }
+                    }
                     items(specs, key = { it.type.simpleName.orEmpty() }) { spec ->
                         TypeRow(
                             spec = spec,
@@ -115,6 +122,35 @@ private fun CategoryHeader(category: Category) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
     )
+}
+
+@Composable
+private fun CycleOverviewRow(onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Default.CalendarViewMonth,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp),
+        )
+        Column(Modifier.padding(start = 12.dp)) {
+            Text(
+                text = stringResource(R.string.cycle_open),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = stringResource(R.string.cycle_open_body),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @Composable
