@@ -1067,7 +1067,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val total = aggregatedTotal ?: if (metric != null && source != null) {
             chartPoints.takeIf { it.isNotEmpty() }?.let { pts ->
                 // Already a running total when cumulative, so the last point is the sum.
-                if (cumulativeCandidate(spec, span)) pts.last().value else pts.sumOf { it.value }
+                if (cumulativeCandidate(spec, span)) pts.last().value else spec.combine(pts.map { it.value })
             }
         } else {
             null

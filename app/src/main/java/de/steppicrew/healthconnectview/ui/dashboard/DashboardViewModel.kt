@@ -560,7 +560,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         )
     }
 
-    /** One app's own records for the day, summed. Only valid for a single-source filter. */
+    /** One app's own records for the day, combined. Only valid for a single-source filter. */
     private suspend fun sumOwnRecords(
         spec: RecordTypeSpec<*>,
         date: LocalDate,
@@ -568,8 +568,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     ): Double? = runCatching {
         repository.read(spec.type, dayInstants(date), origins = origins)
             .flatMap { spec.pointsOf(it) }
-            .takeIf { it.isNotEmpty() }
-            ?.sumOf { it.value }
+            .let { points -> spec.combine(points.map { it.value }) }
     }.getOrNull()
 
     /**

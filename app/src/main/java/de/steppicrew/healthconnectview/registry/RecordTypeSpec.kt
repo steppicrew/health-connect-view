@@ -140,6 +140,17 @@ data class RecordTypeSpec<T : Record>(
      */
     val isAveraged: Boolean get() = aggregate != null && aggregate in AVERAGED_METRICS
 
+    /**
+     * One app's own readings combined the way [aggregate] would combine them, for where the
+     * aggregate comes back empty: a sum for a total, a mean for an average. Summing heart rate
+     * made five readings of about 51 bpm a day's "average" of 256.
+     */
+    fun combine(values: List<Double>): Double? = when {
+        values.isEmpty() -> null
+        isAveraged -> values.average()
+        else -> values.sum()
+    }
+
     // The casts below are safe by construction: a spec is only ever applied to records
     // read via ReadRecordsRequest(spec.type), so the runtime type always matches T.
     @Suppress("UNCHECKED_CAST")
