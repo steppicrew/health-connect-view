@@ -21,7 +21,7 @@ open items below and `FEATURE-IDEAS.md`.
 4. [x] **Sleep stages** -- merged 26.09.2026; see "Built: sleep stages" in section 5.
 5. [x] **CSV export** -- merged 26.09.2026, see section 13. Release shows it locked until a
    Play product exists; the privacy text changed and wants the owner's review before release.
-6. [ ] **Dashboard configuration export/import** as local JSON. No health data involved.
+6. [x] **Dashboard configuration export/import** -- merged 26.09.2026, see section 14.
 7. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
 8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
    be driven from the host on the Xiaomi.
@@ -1120,7 +1120,28 @@ Verified on the emulator: a week of steps exported 840 record rows and 7 daily r
 matching the tile. Not yet: the type detail screen (catalog path) has no export action, sleep
 stages are not in the records file, and JSON or a PDF report would plug in beside `Csv`.
 
-## 14. Deferred
+## 14. Settings backup — built
+
+Settings -> Backup exports and imports the dashboard (tiles, order, goals, zones), the source
+choices and the display settings as one JSON file, through the system file dialogs. No health
+data is in it, so it is free and needs no privacy wording.
+
+- **Versioned.** `kind` and `format` fields: unrelated JSON is refused rather than misread, and a
+  file from a newer app is refused rather than half-applied. Within a valid file an unreadable
+  field falls back on its own, and unknown tile types are dropped.
+- **Asked, not assumed.** Import checks the file first, then confirms before replacing a
+  hand-arranged dashboard, naming how many tiles the backup holds.
+- **One tile format.** The tile JSON moved out of `DashboardStore` into `DashboardJson`, so the
+  stored layout and the backup cannot drift apart.
+- **Tested against the real org.json.** android.jar's stubs return empty defaults under
+  `isReturnDefaultValues`, so the build puts the real library first on the unit-test
+  classpath only.
+
+Verified on the emulator: export wrote 7 tiles and the open explanations; an edited file (dark
+theme, three tiles one of them unknown, a goal, a source choice) restored as dark, two tiles,
+the goal on the ring and the chosen source's marker.
+
+## 15. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
