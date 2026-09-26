@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.registry
 
 import androidx.health.connect.client.permission.HealthPermission
 import de.steppicrew.healthconnectview.health.Session
+import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.records.*
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec.Shape
@@ -63,6 +64,22 @@ private fun protectionRes(value: Int): Int = when (value) {
  */
 object RecordRegistry {
 
+    /**
+     * The quantity each aggregate measures, so an aggregate converts exactly as its type's
+     * records do. Built from the specs, so a new metric needs no second list.
+     */
+    val quantityOfMetric: Map<AggregateMetric<*>, Quantity> by lazy {
+        buildMap {
+            all.forEach { spec ->
+                val quantity = spec.quantity ?: return@forEach
+                listOfNotNull(spec.aggregate, spec.secondaryAggregate)
+                    .plus(spec.rangeAggregates?.toList().orEmpty())
+                    .plus(spec.stackComponents.map { it.second })
+                    .forEach { put(it, quantity) }
+            }
+        }
+    }
+
     val all: List<RecordTypeSpec<*>> = listOf(
         RecordTypeSpec(
             type = ActiveCaloriesBurnedRecord::class,
@@ -109,11 +126,12 @@ object RecordRegistry {
             displayNameRes = R.string.type_distance,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_km,
+            quantity = Quantity.DISTANCE,
             shape = Shape.INTERVAL,
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.distance.inKilometers)) },
-            summary = { Formatting.number(it.distance.inKilometers) + " km" },
+            summary = { Units.format(Quantity.DISTANCE, it.distance.inKilometers) },
             aggregate = DistanceRecord.DISTANCE_TOTAL,
             tile = TileSpec(
                 TileSpec.Form.RING,
@@ -127,11 +145,12 @@ object RecordRegistry {
             displayNameRes = R.string.type_elevation_gained,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_m,
+            quantity = Quantity.ELEVATION,
             shape = Shape.INTERVAL,
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.elevation.inMeters)) },
-            summary = { Formatting.number(it.elevation.inMeters) + " m" },
+            summary = { Units.format(Quantity.ELEVATION, it.elevation.inMeters) },
             aggregate = ElevationGainedRecord.ELEVATION_GAINED_TOTAL,
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
@@ -203,10 +222,16 @@ object RecordRegistry {
             displayNameRes = R.string.type_speed,
             category = Category.ACTIVITY,
             unitRes = R.string.unit_kmh,
+            quantity = Quantity.SPEED,
             shape = Shape.SERIES,
             startTime = { it.startTime },
             points = { r -> r.samples.map { Point(it.time, it.speed.inKilometersPerHour) } },
-            summary = { r -> seriesSummary(r.samples.map { it.speed.inKilometersPerHour }, "km/h") },
+            summary = { r ->
+                seriesSummary(
+                    r.samples.map { Quantity.SPEED.convert(it.speed.inKilometersPerHour, Units.system) },
+                    Quantity.SPEED.symbol(Units.system),
+                )
+            },
             aggregate = SpeedRecord.SPEED_AVG,
         ),
         RecordTypeSpec(
@@ -312,10 +337,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_body_water_mass,
             category = Category.BODY,
             unitRes = R.string.unit_kg,
+            quantity = Quantity.MASS,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
-            summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
@@ -323,10 +349,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_bone_mass,
             category = Category.BODY,
             unitRes = R.string.unit_kg,
+            quantity = Quantity.MASS,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
-            summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
@@ -334,10 +361,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_height,
             category = Category.BODY,
             unitRes = R.string.unit_cm,
+            quantity = Quantity.BODY_HEIGHT,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.height.inMeters * 100.0)) },
-            summary = { Formatting.number(it.height.inMeters * 100.0) + " cm" },
+            summary = { Units.format(Quantity.BODY_HEIGHT, it.height.inMeters * 100.0) },
             aggregate = HeightRecord.HEIGHT_AVG,
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
@@ -346,10 +374,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_lean_body_mass,
             category = Category.BODY,
             unitRes = R.string.unit_kg,
+            quantity = Quantity.MASS,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
-            summary = { Formatting.number(it.mass.inKilograms) + " kg" },
+            summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
@@ -357,10 +386,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_weight,
             category = Category.BODY,
             unitRes = R.string.unit_kg,
+            quantity = Quantity.MASS,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.weight.inKilograms)) },
-            summary = { Formatting.number(it.weight.inKilograms) + " kg" },
+            summary = { Units.format(Quantity.MASS, it.weight.inKilograms) },
             aggregate = WeightRecord.WEIGHT_AVG,
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
@@ -394,10 +424,11 @@ object RecordRegistry {
             displayNameRes = R.string.type_body_temperature,
             category = Category.VITALS,
             unitRes = R.string.unit_celsius,
+            quantity = Quantity.TEMPERATURE,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.temperature.inCelsius)) },
-            summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
+            summary = { Units.format(Quantity.TEMPERATURE, it.temperature.inCelsius) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
@@ -477,18 +508,22 @@ object RecordRegistry {
             displayNameRes = R.string.type_skin_temperature,
             category = Category.VITALS,
             unitRes = R.string.unit_celsius,
+            quantity = Quantity.TEMPERATURE_CHANGE,
             shape = Shape.SERIES,
             startTime = { it.startTime },
             // The measurements live in deltas; baseline is often absent, so charting only the
             // baseline would leave the chart empty while records were still listed.
             points = { r -> r.deltas.map { Point(it.time, it.delta.inCelsius) } },
             summary = { r ->
-                val baseline = r.baseline?.let { "%s °C".format(Formatting.number(it.inCelsius)) }
+                val baseline = r.baseline?.let { Units.format(Quantity.TEMPERATURE, it.inCelsius) }
                 val deltas = r.deltas.map { it.delta.inCelsius }
                 when {
                     baseline != null -> baseline
                     deltas.isEmpty() -> "—"
-                    else -> "%+.2f °C".format(deltas.average())
+                    else -> "%+.2f %s".format(
+                        Quantity.TEMPERATURE_CHANGE.convert(deltas.average(), Units.system),
+                        Quantity.TEMPERATURE_CHANGE.symbol(Units.system),
+                    )
                 }
             },
         ),
@@ -497,11 +532,12 @@ object RecordRegistry {
             displayNameRes = R.string.type_hydration,
             category = Category.NUTRITION,
             unitRes = R.string.unit_l,
+            quantity = Quantity.VOLUME,
             shape = Shape.INTERVAL,
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.volume.inLiters)) },
-            summary = { Formatting.number(it.volume.inLiters) + " L" },
+            summary = { Units.format(Quantity.VOLUME, it.volume.inLiters) },
             aggregate = HydrationRecord.VOLUME_TOTAL,
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
@@ -597,10 +633,11 @@ object RecordRegistry {
             // own and is read for the shift across a cycle, which is where the overview draws it.
             category = Category.CYCLE,
             unitRes = R.string.unit_celsius,
+            quantity = Quantity.TEMPERATURE,
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.temperature.inCelsius)) },
-            summary = { Formatting.number(it.temperature.inCelsius) + " °C" },
+            summary = { Units.format(Quantity.TEMPERATURE, it.temperature.inCelsius) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(

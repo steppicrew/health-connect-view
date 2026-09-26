@@ -833,12 +833,15 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             ?: spec.tile.defaultZones
     }
 
-    /** The user's goal for this type if they set one, else the type's default. */
+    /**
+     * The user's goal for this type if they set one, else the type's default -- in the shown
+     * unit, since goals are stored metric and the chart is not.
+     */
     private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
-        val typeName = spec.type.simpleName ?: return spec.tile.defaultGoal
+        val typeName = spec.type.simpleName ?: return spec.tile.defaultGoal?.let(spec::display)
         val stored = runCatching { dashboardStore.config.first() }.getOrNull()
-        return stored?.tiles?.firstOrNull { it.typeName == typeName }?.effectiveGoal
-            ?: spec.tile.defaultGoal
+        return (stored?.tiles?.firstOrNull { it.typeName == typeName }?.effectiveGoal ?: spec.tile.defaultGoal)
+            ?.let(spec::display)
     }
 
     private suspend fun loadData(
@@ -1221,7 +1224,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             emptyBuckets = emptyBuckets,
             sessions = sessions,
             sessionCurveZones = zonesFor(heartRateSpec()),
-            sessionCurveUnitRes = heartRateSpec()?.unitRes,
+            sessionCurveUnitRes = heartRateSpec()?.displayUnitRes,
             // Blood pressure is coloured by its grade at every span: unlike a heart-rate zone,
             // a grade is what a day's mean is read for, not only a single reading.
             lineZones = if (spec.type == BloodPressureRecord::class) {

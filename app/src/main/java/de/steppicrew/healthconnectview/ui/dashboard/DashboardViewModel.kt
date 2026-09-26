@@ -29,6 +29,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import de.steppicrew.healthconnectview.registry.UnitSystem
+import de.steppicrew.healthconnectview.registry.Units
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -90,7 +92,8 @@ data class TileData(
     /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
     val progress: Float?
         get() {
-            val goal = tile.effectiveGoal ?: return null
+            // Goals are stored metric; the value is in the shown unit.
+            val goal = tile.effectiveGoal?.let(spec::display) ?: return null
             val current = value ?: return null
             if (goal <= 0.0) return null
             return (current / goal).toFloat().coerceIn(0f, 1f)
@@ -153,12 +156,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val preferred: String?,
         val granted: Set<String>,
         val loadedAt: Long,
+        /** Values are converted as they are read, so a change of units needs a fresh read. */
+        val units: UnitSystem = Units.system,
     ) {
         fun isFresh(now: Long, other: CacheKey): Boolean =
             date == other.date &&
                 tiles == other.tiles &&
                 sources == other.sources &&
                 preferred == other.preferred &&
+                units == other.units &&
                 granted == other.granted &&
                 now - loadedAt < CACHE_TTL_MS
     }

@@ -22,6 +22,9 @@ import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.settings.ThemeChoice
+import de.steppicrew.healthconnectview.settings.UnitChoice
+import de.steppicrew.healthconnectview.registry.Units
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -131,6 +134,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun setTheme(theme: ThemeChoice) {
         viewModelScope.launch { store.setTheme(theme) }
+    }
+
+    fun setUnits(units: UnitChoice) {
+        // At once, not when the stored value comes round again: the screen the user returns
+        // to reloads on resume and must already read in the new units.
+        Units.system = units.resolve(Locale.getDefault())
+        viewModelScope.launch { store.setUnits(units) }
     }
 
     fun setDynamicColor(enabled: Boolean) {

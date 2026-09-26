@@ -8,8 +8,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import de.steppicrew.healthconnectview.registry.UnitSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "settings",
@@ -17,6 +19,20 @@ private val Context.settingsDataStore: DataStore<Preferences> by preferencesData
 
 /** Which colour scheme to use, regardless of the system setting. */
 enum class ThemeChoice { SYSTEM, LIGHT, DARK }
+
+/** Which units to show values in; SYSTEM follows the phone's region. */
+enum class UnitChoice {
+    SYSTEM,
+    METRIC,
+    IMPERIAL,
+    ;
+
+    fun resolve(locale: Locale): UnitSystem = when (this) {
+        SYSTEM -> UnitSystem.forLocale(locale)
+        METRIC -> UnitSystem.METRIC
+        IMPERIAL -> UnitSystem.IMPERIAL
+    }
+}
 
 data class Settings(
     val theme: ThemeChoice = ThemeChoice.SYSTEM,
@@ -31,6 +47,7 @@ data class Settings(
      * explained says nothing about wanting sources explained.
      */
     val expandedExplanations: Set<String> = emptySet(),
+    val units: UnitChoice = UnitChoice.SYSTEM,
 )
 
 /**
@@ -50,11 +67,18 @@ class SettingsStore(private val context: Context) {
                 ?: ThemeChoice.SYSTEM,
             dynamicColor = prefs[KEY_DYNAMIC_COLOR] ?: true,
             expandedExplanations = prefs[KEY_EXPANDED_EXPLANATIONS] ?: emptySet(),
+            units = prefs[KEY_UNITS]
+                ?.let { stored -> runCatching { UnitChoice.valueOf(stored) }.getOrNull() }
+                ?: UnitChoice.SYSTEM,
         )
     }
 
     suspend fun setTheme(theme: ThemeChoice) {
         context.settingsDataStore.edit { it[KEY_THEME] = theme.name }
+    }
+
+    suspend fun setUnits(units: UnitChoice) {
+        context.settingsDataStore.edit { it[KEY_UNITS] = units.name }
     }
 
     suspend fun setDynamicColor(enabled: Boolean) {
@@ -74,6 +98,7 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_THEME] = settings.theme.name
             prefs[KEY_DYNAMIC_COLOR] = settings.dynamicColor
             prefs[KEY_EXPANDED_EXPLANATIONS] = settings.expandedExplanations
+            prefs[KEY_UNITS] = settings.units.name
         }
     }
 
@@ -81,5 +106,6 @@ class SettingsStore(private val context: Context) {
         val KEY_THEME = stringPreferencesKey("theme")
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
         val KEY_EXPANDED_EXPLANATIONS = stringSetPreferencesKey("expanded_explanations")
+        val KEY_UNITS = stringPreferencesKey("units")
     }
 }

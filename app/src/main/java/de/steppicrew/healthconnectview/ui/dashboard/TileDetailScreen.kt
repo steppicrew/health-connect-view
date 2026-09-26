@@ -528,7 +528,7 @@ private fun SpanSummary(
                     Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
                 } else {
                     pressureText(total, data.secondaryTotal) +
-                        (data.spec.unitRes?.let { " " + stringResource(it) } ?: "")
+                        (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
                 },
                 style = MaterialTheme.typography.headlineMedium,
             )
@@ -569,7 +569,7 @@ private fun SpanSummary(
         }
 
         // Beside the day's own total, which is what the tile's arrow was misread against.
-        data.trend?.let { TrendExplanation(it, data.spec.unitRes) }
+        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes) }
 
         data.dayParts?.let { DayPartsSection(it) }
 
@@ -605,7 +605,7 @@ private fun SpanSummary(
                 stack = data.stack,
                 goal = data.goal,
                 goalCrossing = data.goalCrossing,
-                unitRes = data.spec.unitRes,
+                unitRes = data.spec.displayUnitRes,
                 emptyBuckets = data.emptyBuckets,
                 sessions = data.sessions,
                 zones = data.lineZones,

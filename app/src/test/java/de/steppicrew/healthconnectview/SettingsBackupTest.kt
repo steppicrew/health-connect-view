@@ -8,6 +8,7 @@ import de.steppicrew.healthconnectview.settings.Settings
 import de.steppicrew.healthconnectview.settings.SettingsBackup
 import de.steppicrew.healthconnectview.settings.SettingsBackupCodec
 import de.steppicrew.healthconnectview.settings.ThemeChoice
+import de.steppicrew.healthconnectview.settings.UnitChoice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -27,7 +28,12 @@ class SettingsBackupTest {
         ),
         sourceSelections = mapOf("StepsRecord" to "com.garmin.android.apps.connectmobile"),
         preferredSource = "nl.appyhapps.healthsync",
-        settings = Settings(theme = ThemeChoice.DARK, dynamicColor = false, expandedExplanations = setOf("trend")),
+        settings = Settings(
+            theme = ThemeChoice.DARK,
+            dynamicColor = false,
+            expandedExplanations = setOf("trend"),
+            units = UnitChoice.IMPERIAL,
+        ),
     )
 
     private fun roundTrip(text: String) = SettingsBackupCodec.decode(text)

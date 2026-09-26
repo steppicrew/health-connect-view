@@ -140,7 +140,7 @@ private fun DetailContent(
                     LineChart(
                         points = data.points,
                         smooth = data.spec.tile.smoothChart,
-                        unitRes = data.spec.unitRes,
+                        unitRes = data.spec.displayUnitRes,
                         integral = data.spec.tile.integralValues,
                     )
                     Text(

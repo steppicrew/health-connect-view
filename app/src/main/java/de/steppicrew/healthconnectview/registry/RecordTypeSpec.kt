@@ -34,6 +34,12 @@ data class RecordTypeSpec<T : Record>(
     val category: Category,
     /** Unit label resource, or null when the type has no chartable numeric value. */
     @param:StringRes val unitRes: Int?,
+    /**
+     * What the value measures, where metric and imperial differ; null where they do not.
+     * [unitRes] and [points] stay metric -- Health Connect's own units -- and [pointsOf] and
+     * [displayUnitRes] convert, so a spec is written once for both systems.
+     */
+    val quantity: Quantity? = null,
     val shape: Shape,
     /**
      * Raw points for display only. Never sum these: overlapping records from multiple
@@ -134,6 +140,16 @@ data class RecordTypeSpec<T : Record>(
      */
     val isPinnable: Boolean get() = isChartable || tile.form == TileSpec.Form.SESSIONS
 
+    /** The unit values are shown in: [unitRes], or its imperial counterpart. */
+    @get:StringRes
+    val displayUnitRes: Int? get() = quantity?.unitRes(Units.system) ?: unitRes
+
+    /** A metric value -- a stored goal -- in the unit values are shown in. */
+    fun display(metric: Double): Double = quantity?.convert(metric, Units.system) ?: metric
+
+    /** A value the user typed in the shown unit, back to metric for storing. */
+    fun toMetric(shown: Double): Double = quantity?.toMetric(shown, Units.system) ?: shown
+
     /**
      * Whether the aggregate is a mean rather than a sum, so a window's figure is its average.
      * Labelling a mean "total" read as a sum of blood pressures.
@@ -163,10 +179,16 @@ data class RecordTypeSpec<T : Record>(
     fun originOf(record: Record): String = record.metadata.dataOrigin.packageName
 
     @Suppress("UNCHECKED_CAST")
-    fun pointsOf(record: Record): List<Point> = points(record as T)
+    fun pointsOf(record: Record): List<Point> = shown(points(record as T))
 
     @Suppress("UNCHECKED_CAST")
-    fun secondaryPointsOf(record: Record): List<Point> = secondaryPoints?.invoke(record as T).orEmpty()
+    fun secondaryPointsOf(record: Record): List<Point> = shown(secondaryPoints?.invoke(record as T).orEmpty())
+
+    private fun shown(points: List<Point>): List<Point> {
+        val quantity = quantity ?: return points
+        val system = Units.system
+        return if (system == UnitSystem.METRIC) points else points.map { it.copy(value = quantity.convert(it.value, system)) }
+    }
 
     @Suppress("UNCHECKED_CAST")
     fun summaryOf(record: Record): String = summary(record as T)
