@@ -1,0 +1,1 @@
+0.7.0 — Pro: Blutdruck-Bericht als PDF für Ihre Ärztin oder Ihren Arzt, mit Durchschnitten morgens und abends, jedem Tag und jeder Messung.
