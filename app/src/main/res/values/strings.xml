@@ -102,6 +102,30 @@
     <string name="type_ovulation_test">Ovulation test</string>
     <string name="type_sexual_activity">Sexual activity</string>
 
+    <!-- Cycle values: the library stores these as integers, never shown raw -->
+    <string name="cycle_recorded">Recorded</string>
+    <string name="flow_light">Light flow</string>
+    <string name="flow_medium">Medium flow</string>
+    <string name="flow_heavy">Heavy flow</string>
+    <string name="flow_unspecified">Flow not specified</string>
+    <string name="ovulation_positive">Positive</string>
+    <string name="ovulation_high">High</string>
+    <string name="ovulation_negative">Negative</string>
+    <string name="ovulation_inconclusive">Inconclusive</string>
+    <string name="mucus_dry">Dry</string>
+    <string name="mucus_sticky">Sticky</string>
+    <string name="mucus_creamy">Creamy</string>
+    <string name="mucus_watery">Watery</string>
+    <string name="mucus_egg_white">Egg white</string>
+    <string name="mucus_unusual">Unusual</string>
+    <string name="mucus_unspecified">Appearance not specified</string>
+    <string name="sensation_light">light sensation</string>
+    <string name="sensation_medium">medium sensation</string>
+    <string name="sensation_heavy">heavy sensation</string>
+    <string name="protection_used">Protected</string>
+    <string name="protection_not_used">Unprotected</string>
+    <string name="protection_unspecified">Protection not recorded</string>
+
     <!-- Units -->
     <string name="unit_kcal" translatable="false">kcal</string>
     <string name="unit_kcal_day" translatable="false">kcal/day</string>

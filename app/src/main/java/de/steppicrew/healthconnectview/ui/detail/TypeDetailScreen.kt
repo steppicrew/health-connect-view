@@ -220,9 +220,13 @@ private fun DetailContent(
     }
 }
 
-/** Appends the localised unit, for the types whose unit is a word rather than a symbol. */
+/**
+ * Appends the localised unit, for the types whose unit is a word rather than a symbol, and
+ * resolves the words of an enum-valued type.
+ */
 @Composable
 internal fun summaryWithUnit(spec: RecordTypeSpec<*>, record: Record): String {
+    spec.summaryResOf(record)?.let { words -> return words.map { stringResource(it) }.joinToString(", ") }
     val value = spec.summaryOf(record)
     val unit = spec.summaryUnitRes?.let { stringResource(it) } ?: return value
     return "$value $unit"

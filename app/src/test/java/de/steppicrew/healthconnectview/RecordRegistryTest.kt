@@ -1,5 +1,8 @@
 package de.steppicrew.healthconnectview
 
+import androidx.health.connect.client.records.SexualActivityRecord
+import androidx.health.connect.client.records.metadata.Metadata
+import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import org.junit.Assert.assertEquals
@@ -7,6 +10,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
+import java.time.Instant
 
 /**
  * Plain JVM tests — no Robolectric. The registry is pure data, and the platform
@@ -102,5 +106,27 @@ class RecordRegistryTest {
             .map { it.type.simpleName }
 
         assertTrue("Types claiming to be counted and measured at once: $both", both.isEmpty())
+    }
+
+    @Test
+    fun `unrecorded protection is its own state, not unprotected`() {
+        val spec = RecordRegistry.spec(SexualActivityRecord::class)
+        fun wordsFor(value: Int) = spec.summaryResOf(
+            SexualActivityRecord(Instant.EPOCH, null, Metadata.manualEntry(), value),
+        )
+
+        assertEquals(listOf(R.string.protection_unspecified), wordsFor(SexualActivityRecord.PROTECTION_USED_UNKNOWN))
+        assertEquals(listOf(R.string.protection_used), wordsFor(SexualActivityRecord.PROTECTION_USED_PROTECTED))
+        assertEquals(listOf(R.string.protection_not_used), wordsFor(SexualActivityRecord.PROTECTION_USED_UNPROTECTED))
+    }
+
+    @Test
+    fun `no cycle type shows a raw integer`() {
+        val raw = RecordRegistry.all
+            .filter { it.category == Category.CYCLE }
+            .filter { it.summaryRes == null && it.shape != RecordTypeSpec.Shape.INTERVAL }
+            .map { it.type.simpleName }
+
+        assertTrue("Cycle types without worded values: $raw", raw.isEmpty())
     }
 }
