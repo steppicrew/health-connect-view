@@ -130,7 +130,7 @@
     <string name="cycle_open">Zyklusübersicht</string>
     <string name="cycle_open_body">Alle Zyklen eines Jahres untereinander, ausgerichtet an Tag 1</string>
     <string name="cycle_empty_body">In diesem Jahr wurde keine Periode oder Blutung erfasst, daher gibt es keinen Zyklus zum Ausrichten.</string>
-    <string name="cycle_legend">Schattiert: Blutung, dunkler ist stärker. Punkt unten: Schmierblutung. Dreieck: Ovulationstest, gefüllt wenn positiv. Strich: Zervixschleim erfasst. Linie: Basaltemperatur.</string>
+    <string name="cycle_legend">Schattiert: Blutung, kräftiger ist stärker. Punkt unten: Schmierblutung. Dreieck: Ovulationstest, gefüllt wenn positiv. Strich: Zervixschleim erfasst. Linie: Basaltemperatur.</string>
     <string name="cycle_not_granted">Nicht angezeigt, kein Zugriff erlaubt: %1$s</string>
     <string name="cycle_stat_length">Zykluslänge (Median)</string>
     <string name="cycle_stat_range">Kürzester bis längster</string>
