@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.health
 
+import androidx.annotation.StringRes
+import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.ValueZones
 import java.time.Instant
 import java.time.LocalDate
@@ -59,16 +61,24 @@ fun dayPartWindow(first: LocalDate, last: LocalDate, zone: ZoneId): Pair<Instant
  * day, and one reading per sitting is what the average is of.
  */
 fun splitByDayPart(readings: List<PressureReading>, zone: ZoneId): DayPartSplit {
-    val distinct = readings.distinctBy { Triple(it.time, it.systolic, it.diastolic) }
-    val byPart = distinct.groupBy { dayPartOf(it.time, zone).second }
-    fun average(part: DayPart): PartAverage? = byPart[part]?.let { list ->
-        PartAverage(
-            count = list.size,
-            systolic = list.map { it.systolic }.average(),
-            diastolic = list.map { it.diastolic }.average(),
-        )
-    }
-    return DayPartSplit(morning = average(DayPart.MORNING), evening = average(DayPart.EVENING))
+    val byPart = distinctReadings(readings).groupBy { dayPartOf(it.time, zone).second }
+    return DayPartSplit(
+        morning = byPart[DayPart.MORNING]?.let(::averageOf),
+        evening = byPart[DayPart.EVENING]?.let(::averageOf),
+    )
+}
+
+/** One reading per sitting: the same measurement copied by a second app counts once. */
+fun distinctReadings(readings: List<PressureReading>): List<PressureReading> =
+    readings.distinctBy { Triple(it.time, it.systolic, it.diastolic) }
+
+/** The average of [readings], or null when there are none. */
+fun averageOf(readings: List<PressureReading>): PartAverage? = readings.takeIf { it.isNotEmpty() }?.let { list ->
+    PartAverage(
+        count = list.size,
+        systolic = list.map { it.systolic }.average(),
+        diastolic = list.map { it.diastolic }.average(),
+    )
 }
 
 /**
@@ -86,6 +96,16 @@ val SYSTOLIC_ZONES = ValueZones(listOf(90.0, 130.0, 140.0, 160.0), stepped = tru
 
 /** Diastolic bands: below 60 low, 60-84 normal, 85-89 high normal, 90-99, 100 and up. */
 val DIASTOLIC_ZONES = ValueZones(listOf(60.0, 85.0, 90.0, 100.0), stepped = true)
+
+/** The grade's name, shared by the detail screen and the report. */
+@StringRes
+fun PressureCategory.labelRes(): Int = when (this) {
+    PressureCategory.LOW -> R.string.bp_grade_low
+    PressureCategory.NORMAL -> R.string.bp_grade_normal
+    PressureCategory.HIGH_NORMAL -> R.string.bp_grade_high_normal
+    PressureCategory.GRADE_1 -> R.string.bp_grade_1
+    PressureCategory.GRADE_2 -> R.string.bp_grade_2
+}
 
 fun pressureCategory(systolic: Double, diastolic: Double): PressureCategory {
     val high = maxOf(SYSTOLIC_ZONES.zoneOf(systolic), DIASTOLIC_ZONES.zoneOf(diastolic))
