@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TrendResult
@@ -301,8 +302,11 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val preferred = runCatching { sourceStore.preferred.first() }.getOrNull() ?: return null
         val spec = RecordRegistry.specOrNull(typeName) ?: return null
         val writers = runCatching {
-            repository.read(spec.type, _span.value.instantFilter(_offset.value))
-                .map { spec.originOf(it) }
+            repository.recordsIn(
+                spec,
+                windowStart(_span.value, _offset.value),
+                windowEnd(_span.value, _offset.value),
+            ).map { spec.originOf(it) }
                 .toSet()
         }.getOrDefault(emptySet())
         return sourceStore.effective(typeName, selections, preferred, writers)
@@ -671,6 +675,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * that need it, and only by the types that draw sessions at all. A day whose sessions sit
      * inside it is midnight to midnight exactly as before.
      */
+    private fun windowStart(span: Span, offset: Int): Instant =
+        span.startDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+
+    private fun windowEnd(span: Span, offset: Int): Instant =
+        span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+
     private fun dayExtent(
         span: Span,
         offset: Int,
@@ -1035,7 +1045,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         // Newest first, matching how the other list reads.
         val records = runCatching {
-            repository.read(spec.type, span.instantFilter(offset), origins = origins)
+            repository.recordsIn(spec, windowStart(span, offset), windowEnd(span, offset), origins)
         }.getOrDefault(emptyList())
 
         // Deliberately unfiltered: this drives the source picker, so it must list every app
@@ -1055,7 +1065,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             records.map { spec.originOf(it) }.toSet()
         } else {
             runCatching {
-                repository.read(spec.type, span.instantFilter(offset))
+                repository.recordsIn(spec, windowStart(span, offset), windowEnd(span, offset))
                     .map { spec.originOf(it) }
                     .toSet()
             }.getOrDefault(emptySet())

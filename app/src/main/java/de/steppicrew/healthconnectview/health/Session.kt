@@ -4,6 +4,9 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.Point
+import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.metadata.DataOrigin
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import java.time.Duration
 import java.time.Instant
 
@@ -172,6 +175,34 @@ suspend fun HealthRepository.sessionsIn(
         sleepSessions.filter { it.end > start && it.end <= end }
 
     return kept.sortedBy { it.start }
+}
+
+/**
+ * A type's records for a window, with nights selected the way [sessionsIn] selects them.
+ *
+ * Health Connect matches an interval record to a window by its start, so a night running
+ * 23:29 to 09:24 was listed under the day it began: the sleep view of the 26th showed the night
+ * in its session list and "0 records" beneath it, and the 25th listed a night it did not show.
+ * Sleep is read widened and kept by its end, like the sessions; every other type is read as
+ * before.
+ */
+suspend fun HealthRepository.recordsIn(
+    spec: RecordTypeSpec<*>,
+    start: Instant,
+    end: Instant,
+    origins: Set<DataOrigin> = emptySet(),
+): List<Record> {
+    if (spec.type != SleepSessionRecord::class) {
+        return read(spec.type, TimeRangeFilter.between(start, end), origins = origins)
+    }
+    return read(
+        spec.type,
+        TimeRangeFilter.between(start.minus(SESSION_MARGIN), end.plus(SESSION_MARGIN)),
+        origins = origins,
+    ).filter { record ->
+        val ended = spec.endTimeOf(record) ?: spec.timeOf(record)
+        ended > start && ended <= end
+    }
 }
 
 /**
