@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Keeps the published privacy page in step with the app's privacy strings.
+# Keeps the local copy of the privacy page in step with the app's privacy strings.
 #
-# The page is generated from those strings, so editing them without republishing leaves the
-# website contradicting the app -- and the Play listing links to the website. Rather than
-# rely on remembering, the sync runs whenever the strings are part of a commit.
+# Only regenerates build/privacy -- no network. Publishing happens when main is pushed (see
+# pre-push): main only moves by fast-forward, which runs no commit hook, and a commit on a dev
+# branch is a draft that must not go live.
 #
 # Enable with:  git config core.hooksPath .githooks
 set -euo pipefail
@@ -15,6 +15,4 @@ fi
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
-
-echo "privacy strings changed; regenerating the public page"
-./scripts/sync-privacy.sh
+./scripts/privacy-page.py build/privacy >/dev/null
