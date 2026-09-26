@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -244,7 +245,7 @@ private fun DrawScope.drawCycle(
         val left = index * cell
         val centre = left + cell / 2
         drawRoundRect(
-            color = if (day.bleeding) BLEEDING.copy(alpha = flowAlpha(day.flow)) else colors.cell,
+            color = if (day.bleeding) lerp(colors.cell, BLEEDING, flowStrength(day.flow)) else colors.cell,
             topLeft = Offset(left + gap / 2, bandTop),
             size = Size(cell - gap, band),
             cornerRadius = corner,
@@ -319,11 +320,16 @@ private fun DrawScope.drawTemperature(
     }
 }
 
-/** Heavier flow is darker; bleeding with no stated flow sits in the middle. */
-private fun flowAlpha(flow: Int?): Float = when (flow) {
-    MenstruationFlowRecord.FLOW_LIGHT -> 0.35f
+/**
+ * How far a bleeding day moves from the empty cell towards the full rose: heavier is more
+ * colour. Blended from the cell rather than drawn translucent, because translucency means
+ * "darker" on a light theme and "lighter" on a dark one -- on the phone's dark theme light flow
+ * came out as the darkest day. Bleeding with no stated flow sits in the middle.
+ */
+private fun flowStrength(flow: Int?): Float = when (flow) {
+    MenstruationFlowRecord.FLOW_LIGHT -> 0.4f
     MenstruationFlowRecord.FLOW_MEDIUM -> 0.65f
-    MenstruationFlowRecord.FLOW_HEAVY -> 0.95f
+    MenstruationFlowRecord.FLOW_HEAVY -> 1f
     else -> 0.55f
 }
 

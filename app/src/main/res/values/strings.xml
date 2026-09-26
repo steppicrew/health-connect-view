@@ -131,7 +131,7 @@
     <string name="cycle_open">Cycle overview</string>
     <string name="cycle_open_body">Every cycle of a year side by side, aligned on day 1</string>
     <string name="cycle_empty_body">No period or flow was recorded in this year, so there is no cycle to align.</string>
-    <string name="cycle_legend">Shaded: bleeding, darker is heavier. Dot below: spotting. Triangle: ovulation test, filled when positive. Tick: mucus observation. Line: basal temperature.</string>
+    <string name="cycle_legend">Shaded: bleeding, more colour is heavier. Dot below: spotting. Triangle: ovulation test, filled when positive. Tick: mucus observation. Line: basal temperature.</string>
     <string name="cycle_not_granted">Not shown, access not allowed: %1$s</string>
     <string name="cycle_stat_length">Median cycle</string>
     <string name="cycle_stat_range">Shortest to longest</string>
