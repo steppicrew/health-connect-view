@@ -31,7 +31,14 @@ data class RecordTypeSpec<T : Record>(
      * writing apps would be double-counted. Totals come from [aggregate].
      */
     val points: (T) -> List<Point>,
-    val summary: (T) -> String,
+    /** Value as text; ignored where [summaryRes] is set. */
+    val summary: (T) -> String = { "—" },
+    /**
+     * Value as words, for types whose value is an enum: string resources joined at render time.
+     * [summary] has no Context, so without this the cycle types could only show the library's
+     * raw integers -- "flow 2" -- which nobody can read. Takes precedence over [summary].
+     */
+    val summaryRes: ((T) -> List<Int>)? = null,
     /**
      * Unit appended to [summary] at render time. Only set where the unit is a word rather
      * than an international symbol -- "steps" needs translating, "kg" does not -- because a
@@ -125,6 +132,9 @@ data class RecordTypeSpec<T : Record>(
 
     @Suppress("UNCHECKED_CAST")
     fun summaryOf(record: Record): String = summary(record as T)
+
+    @Suppress("UNCHECKED_CAST")
+    fun summaryResOf(record: Record): List<Int>? = summaryRes?.invoke(record as T)
 
     @Suppress("UNCHECKED_CAST")
     fun detailsOf(record: Record): List<Field> = details(record as T)

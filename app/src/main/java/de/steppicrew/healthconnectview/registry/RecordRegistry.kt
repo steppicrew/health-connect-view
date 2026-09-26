@@ -15,13 +15,44 @@ private fun durationHours(start: Instant, end: Instant): Double =
 private fun seriesSummary(values: List<Double>, unit: String): String =
     if (values.isEmpty()) "—" else Formatting.number(values.average()) + " " + unit + " (" + values.size + ")"
 
-private fun appearanceLabel(value: Int): String = "appearance " + value
+private fun flowRes(flow: Int): Int = when (flow) {
+    MenstruationFlowRecord.FLOW_LIGHT -> R.string.flow_light
+    MenstruationFlowRecord.FLOW_MEDIUM -> R.string.flow_medium
+    MenstruationFlowRecord.FLOW_HEAVY -> R.string.flow_heavy
+    else -> R.string.flow_unspecified
+}
 
-private fun flowLabel(value: Int): String = "flow " + value
+private fun ovulationRes(result: Int): Int = when (result) {
+    OvulationTestRecord.RESULT_POSITIVE -> R.string.ovulation_positive
+    OvulationTestRecord.RESULT_HIGH -> R.string.ovulation_high
+    OvulationTestRecord.RESULT_NEGATIVE -> R.string.ovulation_negative
+    else -> R.string.ovulation_inconclusive
+}
 
-private fun ovulationLabel(value: Int): String = "result " + value
+private fun mucusRes(record: CervicalMucusRecord): List<Int> = listOfNotNull(
+    when (record.appearance) {
+        CervicalMucusRecord.APPEARANCE_DRY -> R.string.mucus_dry
+        CervicalMucusRecord.APPEARANCE_STICKY -> R.string.mucus_sticky
+        CervicalMucusRecord.APPEARANCE_CREAMY -> R.string.mucus_creamy
+        CervicalMucusRecord.APPEARANCE_WATERY -> R.string.mucus_watery
+        CervicalMucusRecord.APPEARANCE_EGG_WHITE -> R.string.mucus_egg_white
+        CervicalMucusRecord.APPEARANCE_UNUSUAL -> R.string.mucus_unusual
+        else -> R.string.mucus_unspecified
+    },
+    when (record.sensation) {
+        CervicalMucusRecord.SENSATION_LIGHT -> R.string.sensation_light
+        CervicalMucusRecord.SENSATION_MEDIUM -> R.string.sensation_medium
+        CervicalMucusRecord.SENSATION_HEAVY -> R.string.sensation_heavy
+        else -> null
+    },
+)
 
-private fun protectionLabel(value: Int): String = if (value == 1) "protected" else "unprotected"
+// Unknown is its own state: rendering it as either answer would state something never recorded.
+private fun protectionRes(value: Int): Int = when (value) {
+    SexualActivityRecord.PROTECTION_USED_PROTECTED -> R.string.protection_used
+    SexualActivityRecord.PROTECTION_USED_UNPROTECTED -> R.string.protection_not_used
+    else -> R.string.protection_unspecified
+}
 
 /**
  * Every Health Connect record type this app can display, as data.
@@ -523,7 +554,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { emptyList() },
-            summary = { appearanceLabel(it.appearance) },
+            summaryRes = { mucusRes(it) },
         ),
         RecordTypeSpec(
             type = IntermenstrualBleedingRecord::class,
@@ -533,7 +564,8 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { emptyList() },
-            summary = { "—" },
+            // The record carries no value: its existence is the observation.
+            summaryRes = { listOf(R.string.cycle_recorded) },
         ),
         RecordTypeSpec(
             type = MenstruationFlowRecord::class,
@@ -543,7 +575,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { emptyList() },
-            summary = { flowLabel(it.flow) },
+            summaryRes = { listOf(flowRes(it.flow)) },
         ),
         RecordTypeSpec(
             type = MenstruationPeriodRecord::class,
@@ -565,7 +597,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { emptyList() },
-            summary = { ovulationLabel(it.result) },
+            summaryRes = { listOf(ovulationRes(it.result)) },
         ),
         RecordTypeSpec(
             type = SexualActivityRecord::class,
@@ -575,7 +607,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { emptyList() },
-            summary = { protectionLabel(it.protectionUsed) },
+            summaryRes = { listOf(protectionRes(it.protectionUsed)) },
         ),
     )
 

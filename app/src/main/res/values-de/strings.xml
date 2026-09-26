@@ -101,6 +101,30 @@
     <string name="type_ovulation_test">Ovulationstest</string>
     <string name="type_sexual_activity">Sexuelle Aktivität</string>
 
+    <!-- Zykluswerte -->
+    <string name="cycle_recorded">Erfasst</string>
+    <string name="flow_light">Leichte Blutung</string>
+    <string name="flow_medium">Mittlere Blutung</string>
+    <string name="flow_heavy">Starke Blutung</string>
+    <string name="flow_unspecified">Blutungsstärke nicht angegeben</string>
+    <string name="ovulation_positive">Positiv</string>
+    <string name="ovulation_high">Hoch</string>
+    <string name="ovulation_negative">Negativ</string>
+    <string name="ovulation_inconclusive">Nicht eindeutig</string>
+    <string name="mucus_dry">Trocken</string>
+    <string name="mucus_sticky">Klebrig</string>
+    <string name="mucus_creamy">Cremig</string>
+    <string name="mucus_watery">Wässrig</string>
+    <string name="mucus_egg_white">Spinnbar (Eiweiß)</string>
+    <string name="mucus_unusual">Ungewöhnlich</string>
+    <string name="mucus_unspecified">Beschaffenheit nicht angegeben</string>
+    <string name="sensation_light">leichtes Gefühl</string>
+    <string name="sensation_medium">mittleres Gefühl</string>
+    <string name="sensation_heavy">starkes Gefühl</string>
+    <string name="protection_used">Geschützt</string>
+    <string name="protection_not_used">Ungeschützt</string>
+    <string name="protection_unspecified">Verhütung nicht erfasst</string>
+
     <!-- Feldbezeichnungen -->
     <string name="field_source_app">Quell-App</string>
     <string name="field_record_id">Datensatz-ID</string>
