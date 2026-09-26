@@ -9,12 +9,16 @@ WHAT IT DOES
 • Chart trends by day, week, four weeks or year
 • Sleep and workouts shaded behind the day's charts, so a peak or a trough has an explanation
 • Each workout with the heart rate recorded during it
+• Sleep stages — deep, light, REM and awake — for every night your watch records them
+• A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature — only what was recorded, nothing predicted
+• Trend arrows on the dashboard, comparing the last week with your 30-day average
+• Back up your dashboard and settings to a file and restore them on a new phone
 
 YOUR DATA STAYS ON YOUR PHONE
 
 This app has no internet permission. Not "we promise not to upload anything" — Android itself prevents it from making any network connection at all. There is no account, no server, no analytics, no advertising and no tracking.
 
-It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk, so uninstalling removes everything.
+It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk unless you export it yourself, so uninstalling removes everything.
 
 YOU CHOOSE WHAT TO SHARE
 
@@ -25,6 +29,15 @@ ACCURATE TOTALS
 When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are correct rather than double-counted, and it tells you when more than one app contributed.
 
 Health Connect stores no link between a workout and the readings taken during it. Where this app shows a session's statistics, it says plainly that they are matched by time rather than pretending to a certainty the data does not support.
+
+PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
+
+Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
+
+• CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
+• Every future Pro feature, with no further charge.
+
+Purchases are handled entirely by Google Play. Your purchase follows your Google account to a new phone.
 
 OPEN SOURCE
 
