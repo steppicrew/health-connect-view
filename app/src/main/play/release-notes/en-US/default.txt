@@ -1,1 +1,3 @@
+0.6.0 — Blood pressure: both values, colours after the ESH grades, and separate morning and evening averages. Pro: dashboard tiles two cells wide or two by two.
+
 0.5.0 — Cycle overview, sleep stages, trend arrows on tiles, swiping between periods and faster year views. New: back up and restore your settings. Pro (one-time purchase, no subscription): CSV export of your data.
