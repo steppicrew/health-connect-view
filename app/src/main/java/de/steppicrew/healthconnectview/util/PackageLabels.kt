@@ -35,4 +35,7 @@ fun Context.appIconFor(packageName: String): Drawable? {
     return runCatching { packageManager.getApplicationIcon(packageName) }.getOrNull()
 }
 
+/** Whether [packageName] is the phone's own sensors, which have no app and so no app icon. */
+fun isPhoneSensors(packageName: String): Boolean = packageName.startsWith(PHONE_SENSOR_PREFIX)
+
 private const val PHONE_SENSOR_PREFIX = "com.android.healthconnect.phone"

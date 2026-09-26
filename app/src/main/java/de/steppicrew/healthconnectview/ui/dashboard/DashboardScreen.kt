@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Availability
+import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
@@ -350,17 +351,12 @@ private fun TileCard(
                     // The app's icon rather than its name: on a tile this narrow "Garmin
                     // Connect" crowded out the unit beside it, and the point of the marker is
                     // only to say the figure is one app's rather than the combined total.
-                    val icon = rememberAppIcon(packageName)
-                    if (icon != null) {
-                        AppIcon(
-                            icon = icon,
-                            packageName = packageName,
-                            sizePx = TILE_SOURCE_ICON_PX,
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                .size(TILE_SOURCE_ICON.dp),
-                        )
-                    } else {
+                    SourceMark(
+                        packageName,
+                        TILE_SOURCE_ICON,
+                        TILE_SOURCE_ICON_PX,
+                        Modifier.padding(start = 4.dp),
+                    ) {
                         Text(
                             text = LocalContext.current.appLabelFor(packageName),
                             style = MaterialTheme.typography.labelSmall,

@@ -1,5 +1,12 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
+import de.steppicrew.healthconnectview.util.isPhoneSensors
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
@@ -49,4 +56,36 @@ fun AppIcon(
         contentDescription = label,
         modifier = modifier,
     )
+}
+
+/**
+ * A writer's mark: its app icon, a phone for the phone's own sensors, or [fallback] -- the
+ * name, usually -- where neither exists.
+ *
+ * The phone's sensors are a synthetic origin with no installed app, so there is no launcher
+ * icon to load; a text chip reading "This phone" stood out among icons as the odd one.
+ */
+@Composable
+fun SourceMark(
+    packageName: String,
+    sizeDp: Int,
+    sizePx: Int,
+    modifier: Modifier = Modifier,
+    fallback: @Composable () -> Unit,
+) {
+    if (isPhoneSensors(packageName)) {
+        Icon(
+            imageVector = Icons.Default.Smartphone,
+            contentDescription = LocalContext.current.appLabelFor(packageName),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = modifier.size(sizeDp.dp),
+        )
+        return
+    }
+    val icon = rememberAppIcon(packageName)
+    if (icon == null) {
+        fallback()
+        return
+    }
+    AppIcon(icon = icon, packageName = packageName, sizePx = sizePx, modifier = modifier.size(sizeDp.dp))
 }
