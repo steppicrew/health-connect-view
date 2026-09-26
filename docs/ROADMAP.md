@@ -20,7 +20,8 @@ open items below and `FEATURE-IDEAS.md`.
    section 1.
 4. [x] **Sleep stages** -- merged 26.09.2026; see "Built: sleep stages" in section 5.
 5. [x] **CSV export** -- merged 26.09.2026, see section 13. Release shows it locked until a
-   Play product exists; the privacy text changed and wants the owner's review before release.
+   build with section 15's purchase code is live; the privacy text changed and wants the
+   owner's review before release.
 6. [x] **Dashboard configuration export/import** -- merged 26.09.2026, see section 14.
 7. [ ] **Blood pressure morning/evening split.** Needs a stated rule for where the day splits.
 8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
@@ -1112,9 +1113,8 @@ filter -- into a file chosen in the system save dialog (`export/`).
   the one exception to "no health data on disk", written into CLAUDE.md and the privacy page.
 - **Plain CSV.** RFC 4180, dot decimals without grouping, ISO 8601 times with offset, UTF-8 with
   a BOM so Excel reads umlauts. German Excel expects `;` -- import rather than double-click.
-- **Premium.** `Feature.EXPORT_CSV`, now read through `AppEntitlements`: debug unlocks
-  everything, release asks Play Billing, which owns nothing until a product exists -- so in
-  release the entries show locked with "Premium" for everyone for now.
+- **Pro.** `Feature.EXPORT_CSV`, read through `AppEntitlements`: debug unlocks everything,
+  release asks Play Billing (section 15). A locked entry shows "Pro" and opens the purchase.
 
 Verified on the emulator: a week of steps exported 840 record rows and 7 daily rows, today's
 matching the tile. Not yet: the type detail screen (catalog path) has no export action, sleep
@@ -1141,12 +1141,36 @@ Verified on the emulator: export wrote 7 tiles and the open explanations; an edi
 theme, three tiles one of them unknown, a goal, a source choice) restored as dark, two tiles,
 the goal on the ring and the chosen source's marker.
 
-## 15. Deferred
+## 15. Pro unlock — built
+
+One non-consumable product, `pro`, created 26.09.2026: €3.99 in Germany including VAT, one-time,
+no subscription, which is the norm for a local tool with no running costs. Every other region
+takes Play's conversion of the matching net price (173 regions). `scripts/play-product.sh`
+creates or updates it and is safe to rerun; change the price or the listing text there.
+
+- **Play's word, nothing stored.** `BillingEntitlements` asks Play for the user's purchases on
+  start and on every return to Settings. Play caches them offline, carries them to a new phone
+  with the Google account, and drops a refunded one -- a local flag would do none of that.
+- **Acknowledged on every listing,** not only after buying: Play refunds a purchase left
+  unacknowledged for three days, and a purchase can complete while the app is not running.
+- **Pending payments** (cash, bank transfer) show as pending and unlock when Play confirms.
+- **No network.** Billing talks to the Play Store app over IPC; `verifyNoNetworkPermission`
+  still passes, and the privacy page's purchases paragraph already says this.
+- **Where to buy:** Settings -> Pro, or a locked export entry, which opens the sheet directly.
+- **The API is inconsistent about the path.** Creating the product works only on
+  `.../onetimeproducts/{id}`, reading it and activating it only on `.../oneTimeProducts/...`.
+  The legacy `inappproducts` endpoint answers "Please migrate to the new publishing API".
+
+Not verified: an actual purchase. Billing only answers an app installed from Play, so it needs
+a release on a testing track and the Google account added as a licence tester (Play Console ->
+Settings -> Licence testing), which buys with test cards and is never charged. Purchases are
+not verified on a server -- there is none -- so a rooted device can fake ownership; accepted
+for a €4 unlock.
+
+## 16. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
   permission can never be granted. Add once those names converge.
 - **Imperial units** — everything is metric today, matching what Health Connect returns
   natively. The registry's `unitRes` field is the seam for adding a conversion.
-- **Play Billing products** — the entitlement gate is wired but reports no premium access
-  until products exist in the Play Console.
