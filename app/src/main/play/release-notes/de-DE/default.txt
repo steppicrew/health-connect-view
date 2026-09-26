@@ -1,3 +1,5 @@
+0.7.1 — Neu: Einheiten metrisch oder imperial (Einstellungen). Behoben: Höhenmeter- und Körpergrößen-Summen, ein zu hoher Herzfrequenz-Durchschnitt kurz nach Mitternacht.
+
 0.7.0 — Pro: Blutdruck-Bericht als PDF für Ihre Ärztin oder Ihren Arzt, mit Durchschnitten morgens und abends, jedem Tag und jeder Messung.
 
 0.6.0 — Blutdruck: beide Werte, Farben nach ESH-Einstufung und getrennte Durchschnitte für morgens und abends. Pro: Kacheln im Dashboard doppelt so breit oder doppelt so groß.

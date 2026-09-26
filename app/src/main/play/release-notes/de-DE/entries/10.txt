@@ -1,0 +1,1 @@
+0.7.1 — Neu: Einheiten metrisch oder imperial (Einstellungen). Behoben: Höhenmeter- und Körpergrößen-Summen, ein zu hoher Herzfrequenz-Durchschnitt kurz nach Mitternacht.

@@ -1,0 +1,1 @@
+0.7.1 — New: metric or imperial units (Settings). Fixed: elevation and height totals, and a heart rate average far too high shortly after midnight.
