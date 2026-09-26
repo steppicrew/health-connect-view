@@ -27,6 +27,11 @@ import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.recordsIn
+import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.PressureReading
+import de.steppicrew.healthconnectview.health.dayPartWindow
+import de.steppicrew.healthconnectview.health.splitByDayPart
+import androidx.health.connect.client.records.BloodPressureRecord
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TrendResult
@@ -106,6 +111,8 @@ data class TileDetailData(
      * the tile shows a day, and a trend "before" a week or a year would be a different claim.
      */
     val trend: TrendResult? = null,
+    /** Blood pressure only: the window's morning and evening averages, kept apart. */
+    val dayParts: DayPartSplit? = null,
     /**
      * True while the record list and the source picker are still being read. The chart is
      * shown first and these follow; see `loadData`.
@@ -1233,6 +1240,32 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
 
+        // Its own read rather than the list's: a reading at 01:00 counts for the evening before,
+        // so the window runs 04:00 to 04:00 and differs from the calendar one at both ends.
+        val dayPartsRead = if (spec.type == BloodPressureRecord::class) {
+            async {
+                val (from, to) = dayPartWindow(
+                    span.startDate(offset),
+                    span.endDate(offset).minusDays(1),
+                    HealthRepository.DEFAULT_ZONE,
+                )
+                runCatching {
+                    val readings = repository.recordsIn(spec, from, to, origins)
+                        .filterIsInstance<BloodPressureRecord>()
+                        .map {
+                            PressureReading(
+                                it.time,
+                                it.systolic.inMillimetersOfMercury,
+                                it.diastolic.inMillimetersOfMercury,
+                            )
+                        }
+                    splitByDayPart(readings, HealthRepository.DEFAULT_ZONE)
+                }.getOrNull()
+            }
+        } else {
+            null
+        }
+
         // Newest first, matching how the other list reads.
         val records = recordsRead.await()
 
@@ -1256,6 +1289,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             records = records,
             truncated = records.size >= HealthRepository.MAX_RECORDS,
             contributingApps = contributors,
+            dayParts = dayPartsRead?.await()?.takeIf { it.morning != null || it.evening != null },
             listPending = false,
         )
     }

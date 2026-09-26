@@ -68,6 +68,15 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
     <string name="detail_records_loading">Datensätze werden geladen …</string>
+    <string name="bp_parts_title">Morgens und abends</string>
+    <string name="bp_part_morning">Morgens</string>
+    <string name="bp_part_evening">Abends</string>
+    <string name="bp_part_none">Keine Messung</string>
+    <plurals name="bp_part_value">
+        <item quantity="one">Ø %1$s mmHg · %2$d Messung</item>
+        <item quantity="other">Ø %1$s mmHg · %2$d Messungen</item>
+    </plurals>
+    <string name="bp_parts_rule">Morgens zählt von 4:00 bis 13:59, abends ab 14:00. Eine Messung nach Mitternacht, aber vor 4:00 zählt zum Abend davor. Dieselbe Messung, von mehreren Apps gespeichert, zählt einmal.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Pro kaufen · %1$s</string>
     <string name="pro_body">Einmalkauf, kein Abo. Schaltet den CSV-Export und alle künftigen Pro-Funktionen frei.</string>

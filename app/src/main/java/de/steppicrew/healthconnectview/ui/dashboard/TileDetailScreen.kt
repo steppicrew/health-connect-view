@@ -70,6 +70,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import kotlin.math.roundToInt
+import de.steppicrew.healthconnectview.health.PartAverage
+import de.steppicrew.healthconnectview.health.DayPartSplit
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.TrendResult
@@ -376,6 +379,63 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
     }
 }
 
+/**
+ * Morning and evening blood pressure side by side, rather than one blended average that hides
+ * a morning surge. The rule for where the day splits is behind the "i".
+ */
+@Composable
+private fun DayPartsSection(split: DayPartSplit) {
+    val explanation = rememberExplanation("dayparts")
+
+    Column(Modifier.padding(top = 8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.bp_parts_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation)
+        }
+        DayPartRow(stringResource(R.string.bp_part_morning), split.morning)
+        DayPartRow(stringResource(R.string.bp_part_evening), split.evening)
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.bp_parts_rule),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DayPartRow(label: String, average: PartAverage?) {
+    Row(Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = average?.let {
+                pluralStringResource(
+                    R.plurals.bp_part_value,
+                    it.count,
+                    // Whole numbers, as every cuff and every doctor gives them.
+                    "${it.systolic.roundToInt()}/${it.diastolic.roundToInt()}",
+                    it.count,
+                )
+            } ?: stringResource(R.string.bp_part_none),
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (average == null) {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        )
+    }
+}
+
 /** "Steps_2026-09-20_2026-09-26": type and the window's first and last day. */
 private fun exportFileBase(spec: RecordTypeSpec<*>, span: Span, offset: Int): String =
     spec.type.simpleName.orEmpty().removeSuffix("Record") + "_" + span.startDate(offset) + "_" +
@@ -453,6 +513,8 @@ private fun SpanSummary(
 
         // Beside the day's own total, which is what the tile's arrow was misread against.
         data.trend?.let { TrendExplanation(it, data.spec.unitRes) }
+
+        data.dayParts?.let { DayPartsSection(it) }
 
         if (data.listPending || data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)
