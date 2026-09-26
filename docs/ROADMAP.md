@@ -27,6 +27,17 @@ open items below and `FEATURE-IDEAS.md`.
 8. [x] **Tile resize** (2x1, 2x2) -- merged 26.09.2026, a Pro feature; see "Built: tiles in
    three sizes" in section 1. Seen on the emulator; the Xiaomi cannot be driven to resize from
    the host.
+9. [x] **Blood pressure report** (PDF, Pro) -- merged 27.09.2026, see section 17.
+10. [ ] **Imperial and metric units** -- a setting, defaulting to the phone's locale. Everything
+    is metric today, as Health Connect stores it; the registry's `unitRes` is the seam. Weight
+    (kg/lb), height and distance (m, km / ft, in, mi), temperature (°C/°F), volume (ml/fl oz)
+    and energy (kcal/kJ is a separate question). Conversion at display and export only --
+    stored goals and zones stay metric, so switching units never rewrites them. Blood pressure
+    stays mmHg everywhere.
+11. [ ] **More on large tiles.** A 2x1 or 2x2 tile has room the 1x1 face does not use: a scale
+    on its chart (axis values, the goal line), a default time range other than the day (a week
+    of steps, a month of weight), and a choice of what the face shows. Per tile, stored beside
+    the goal and zones in the tile config.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
@@ -1137,7 +1148,7 @@ filter -- into a file chosen in the system save dialog (`export/`).
 
 Verified on the emulator: a week of steps exported 840 record rows and 7 daily rows, today's
 matching the tile. Not yet: the type detail screen (catalog path) has no export action, sleep
-stages are not in the records file, and JSON or a PDF report would plug in beside `Csv`.
+stages are not in the records file, and JSON would plug in beside `Csv`. The PDF report for blood pressure is section 17.
 
 ## 14. Settings backup — built
 
@@ -1175,7 +1186,8 @@ creates or updates it and is safe to rerun; change the price or the listing text
 - **Pending payments** (cash, bank transfer) show as pending and unlock when Play confirms.
 - **No network.** Billing talks to the Play Store app over IPC; `verifyNoNetworkPermission`
   still passes, and the privacy page's purchases paragraph already says this.
-- **What it unlocks:** CSV export (section 13) and tile sizes (section 1).
+- **What it unlocks:** CSV export (section 13), tile sizes (section 1) and the blood pressure
+  report (section 17).
 - **Where to buy:** Settings -> Pro, a locked export entry, or the padlocked resize button in
   edit mode; the last two open the sheet directly.
 - **The API is inconsistent about the path.** Creating the product works only on
@@ -1231,10 +1243,33 @@ Verified on the emulator: week 129/81 "Normal", morning 132/85 yellow, evening 1
 both lines coloured per point, legend with the five grades; the tile shows 134/84 with a
 yellow dot.
 
-## 17. Deferred
+## 17. Blood pressure report — built
+
+"Report (PDF)" in the blood pressure view's export menu writes a log for the window on screen,
+the kind a doctor asks for (`health/PressureReport.kt` for the content, `export/PressureReportPdf.kt`
+for the drawing).
+
+- **Three parts.** A summary -- overall, morning and evening average with count and grade --
+  then one line per *measured* day (a year with thirty measured days is not 365 lines of
+  dashes), then every reading. The per-day average hides the single high reading a doctor
+  asks about, so the readings are listed too.
+- **The day rule from section 16.** Read 04:00 to 04:00 and paged in full, not through the list
+  read's 5,000-record cap. A reading at 00:35 is listed with its real date and time and the part
+  "evening before", so it agrees with the per-day table that counts it for the day before.
+- **Grades and a disclaimer on every page**: the ESH bands for practice readings, the 135/85
+  threshold at home, "a guide, not a diagnosis", and page n of m.
+- **Two passes.** Lines are built with their heights, then paginated, so the page count is
+  known up front and a table continued on a new page repeats its column headings.
+- **Android's `PdfDocument`**, no library; A4, printable (light shading, coloured grade dots).
+  Written into the file the user picked, like the CSV export -- the privacy text already covers
+  "an export" in general.
+- **Pro** (`Feature.PRESSURE_REPORT`); locked, the entry shows "Pro" and opens the purchase.
+
+Verified on the emulator with seeded data: four weeks gave 53 readings on 3 pages, the averages
+matching the detail view (morning 134/86 from 27, evening 126/75 from 26).
+
+## 18. Deferred
 
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
   permission can never be granted. Add once those names converge.
-- **Imperial units** — everything is metric today, matching what Health Connect returns
-  natively. The registry's `unitRes` field is the seam for adding a conversion.
