@@ -143,6 +143,17 @@ full load, so every cold start read every tile twice. One load now cancels a sup
 and the values arrive in ~480 ms. The debug log line `Dashboard: loaded N tiles in X ms`
 carries timing only, for measuring from adb.
 
+### Built: body measurements carry their last reading
+
+Weight, body fat, body water, bone mass, lean mass and height show the latest earlier reading,
+muted and dated ("Stand 23.09.26"), when the shown day has none (`TileSpec.carryLastReading`).
+They describe a state rather than a day: Monday's weight still answers Wednesday's question,
+Monday's steps do not. A reading on the day itself always wins. Looks back a year, which past 30
+days needs the history permission.
+
+A locked tile carries a button to the permission list; tapping the tile itself only reached a
+detail screen repeating "not allowed".
+
 ## 2. Settings screen — built
 
 - **Theme** — Light / Dark / System, plus a toggle for wallpaper (dynamic) colours. Read at the
