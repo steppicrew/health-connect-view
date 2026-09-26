@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -207,8 +208,8 @@ fun LineChart(
     // is a viewport over the fractions rather than a re-query, so everything positioned by
     // fraction -- the line, the bands, the axis icons, the tick labels and the touch
     // handler -- follows from one pair of numbers and cannot disagree.
-    var zoom by remember(points, extent) { mutableStateOf(1f) }
-    var pan by remember(points, extent) { mutableStateOf(0f) }
+    var zoom by remember(points, extent) { mutableFloatStateOf(1f) }
+    var pan by remember(points, extent) { mutableFloatStateOf(0f) }
 
     fun visible(fraction: Float): Float = visibleFraction(fraction, zoom, pan)
 
