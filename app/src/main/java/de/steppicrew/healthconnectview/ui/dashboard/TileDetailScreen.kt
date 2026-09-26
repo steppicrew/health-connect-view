@@ -1,6 +1,10 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.produceState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -282,7 +286,21 @@ private fun SpanContent(
             }
         }
 
-        item(key = "records_header") {
+        if (data.listPending) {
+            item(key = "records_pending") {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                    Text(
+                        text = stringResource(R.string.detail_records_loading),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
+                }
+            }
+        } else item(key = "records_header") {
             Text(
                 text = pluralStringResource(
                     R.plurals.detail_records_header,
@@ -425,7 +443,7 @@ private fun SpanSummary(
         // Beside the day's own total, which is what the tile's arrow was misread against.
         data.trend?.let { TrendExplanation(it, data.spec.unitRes) }
 
-        if (data.contributingApps.isNotEmpty()) {
+        if (data.listPending || data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)
         }
 
@@ -853,74 +871,90 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
 
     val explanation = rememberExplanation("sources")
 
-    Column(Modifier.padding(top = 8.dp)) {
-        if (sources.size > 1) {
-            Row(verticalAlignment = Alignment.Top) {
-                // Wraps rather than scrolls: with four or five writers a scrolling row hid the
-                // last ones off the edge, and nothing said there were more.
-                FlowRow(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    // One outlined box for chips, "i" and explanation, so they read as one control -- and so
+    // the space is already taken while the writers are still being read, and the chart below
+    // does not jump when they arrive.
+    OutlinedCard(Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+            if (data.listPending) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(SOURCE_PLACEHOLDER_HEIGHT.dp),
+                    contentAlignment = Alignment.CenterStart,
                 ) {
-                    FilterChip(
-                        selected = data.selectedSource == null,
-                        onClick = { onSelectSource(null) },
-                        label = { Text(stringResource(R.string.source_all)) },
-                    )
-                    sources.forEach { packageName ->
-                        FilterChip(
-                            selected = data.selectedSource == packageName,
-                            onClick = { onSelectSource(packageName) },
-                            // The app's own icon where it has one, which fits several sources on
-                            // screen at once where "Garmin Connect" and "Health Sync" already
-                            // ran off the edge. The label stays as the icon's content
-                            // description, and as the visible text wherever no icon can be had.
-                            label = {
-                                val icon = rememberAppIcon(packageName)
-                                if (icon != null) {
-                                    AppIcon(
-                                        icon = icon,
-                                        packageName = packageName,
-                                        sizePx = SOURCE_ICON_PX,
-                                        modifier = Modifier.size(SOURCE_ICON.dp),
-                                    )
-                                } else {
-                                    Text(context.appLabelFor(packageName))
-                                }
-                            },
-                        )
-                    }
+                    LinearProgressIndicator(Modifier.width(SOURCE_PLACEHOLDER_BAR.dp))
                 }
-                // The chips are the data; what choosing one means is the explanation.
-                InfoToggle(explanation)
+                return@Column
             }
-        }
+            if (sources.size > 1) {
+                Row(verticalAlignment = Alignment.Top) {
+                    // Wraps rather than scrolls: with four or five writers a scrolling row hid the
+                    // last ones off the edge, and nothing said there were more.
+                    FlowRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        FilterChip(
+                            selected = data.selectedSource == null,
+                            onClick = { onSelectSource(null) },
+                            label = { Text(stringResource(R.string.source_all)) },
+                        )
+                        sources.forEach { packageName ->
+                            FilterChip(
+                                selected = data.selectedSource == packageName,
+                                onClick = { onSelectSource(packageName) },
+                                // The app's own icon where it has one, which fits several sources on
+                                // screen at once where "Garmin Connect" and "Health Sync" already
+                                // ran off the edge. The label stays as the icon's content
+                                // description, and as the visible text wherever no icon can be had.
+                                label = {
+                                    val icon = rememberAppIcon(packageName)
+                                    if (icon != null) {
+                                        AppIcon(
+                                            icon = icon,
+                                            packageName = packageName,
+                                            sizePx = SOURCE_ICON_PX,
+                                            modifier = Modifier.size(SOURCE_ICON.dp),
+                                        )
+                                    } else {
+                                        Text(context.appLabelFor(packageName))
+                                    }
+                                },
+                            )
+                        }
+                    }
+                    // The chips are the data; what choosing one means is the explanation.
+                    InfoToggle(explanation)
+                }
+            }
 
-        // With a single writer there is nothing to choose and nothing to explain: naming it
-        // is the data itself, so it always shows.
-        if (sources.size == 1 || explanation.expanded == true) {
-            Text(
-                text = data.selectedSource?.let {
-                    stringResource(R.string.source_showing_one, context.appLabelFor(it))
-                } ?: if (sources.size > 1) {
-                    stringResource(R.string.source_all_explained)
-                } else {
-                    stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        }
+            // With a single writer there is nothing to choose and nothing to explain: naming it
+            // is the data itself, so it always shows.
+            if (sources.size == 1 || explanation.expanded == true) {
+                Text(
+                    text = data.selectedSource?.let {
+                        stringResource(R.string.source_showing_one, context.appLabelFor(it))
+                    } ?: if (sources.size > 1) {
+                        stringResource(R.string.source_all_explained)
+                    } else {
+                        stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
 
-        // The overlap winner is Health Connect's own priority setting, not ours to define.
-        if (sources.size > 1 && explanation.expanded == true) {
-            Text(
-                text = stringResource(R.string.source_priority_hint),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
-            )
+            // The overlap winner is Health Connect's own priority setting, not ours to define.
+            if (sources.size > 1 && explanation.expanded == true) {
+                Text(
+                    text = stringResource(R.string.source_priority_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
         }
     }
 }
@@ -930,6 +964,10 @@ private const val SESSION_CURVE_HEIGHT = 40
 
 /** Big enough to recognise a brand mark, small enough that several chips fit a phone width. */
 private const val SOURCE_ICON = 20
+
+/** Roughly one row of chips, so the box keeps its size while the writers load. */
+private const val SOURCE_PLACEHOLDER_HEIGHT = 48
+private const val SOURCE_PLACEHOLDER_BAR = 96
 private const val SOURCE_ICON_PX = 64
 
 /** The aggregate for a session type comes back in hours; durations format from minutes. */
