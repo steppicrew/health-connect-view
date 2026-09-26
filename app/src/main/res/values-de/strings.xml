@@ -46,6 +46,7 @@
     <string name="dashboard_empty_body">Füge die Werte hinzu, die du sehen möchtest – aus der Liste aller Datentypen.</string>
     <string name="tile_locked">Nicht freigegeben</string>
     <string name="tile_grant">Freigeben</string>
+    <string name="tile_value_as_of">Stand %1$s</string>
     <string name="trend_up">Letzte 7 Tage über dem 30-Tage-Schnitt</string>
     <string name="trend_flat">Letzte 7 Tage gleichauf mit dem 30-Tage-Schnitt</string>
     <string name="trend_down">Letzte 7 Tage unter dem 30-Tage-Schnitt</string>

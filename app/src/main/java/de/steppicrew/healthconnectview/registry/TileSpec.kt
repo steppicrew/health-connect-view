@@ -100,6 +100,15 @@ data class TileSpec(
      * dashboard concept of its own, so the dashboard still never branches on record type.
      */
     val sessionKind: Session.Kind? = null,
+    /**
+     * When the shown day has no reading, show the latest earlier one, with its date.
+     *
+     * For measurements taken now and then that describe a state rather than a day: a weight
+     * from Monday is still the best answer to "what do I weigh" on Wednesday, where Monday's
+     * steps say nothing about Wednesday's. The date always travels with the carried value, so
+     * it cannot pass for a reading taken on the day shown.
+     */
+    val carryLastReading: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

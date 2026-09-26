@@ -80,6 +80,11 @@ data class TileData(
      * no aggregate or too few recorded days to say.
      */
     val trend: Trend? = null,
+    /**
+     * The day [value] was measured on, when it is carried from before the shown day; null when
+     * it belongs to the shown day itself. See [TileSpec.carryLastReading].
+     */
+    val valueDate: LocalDate? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -324,6 +329,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             } else {
                 placeholder.copy(
                     value = carried.value,
+                    valueDate = carried.valueDate,
                     curve = carried.curve,
                     sessions = carried.sessions,
                     trend = carried.trend,
@@ -434,7 +440,47 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             emptyList()
         }
 
-        return tile.copy(value = value, curve = curve, loading = false)
+        // Only where the day itself has nothing: a reading on the shown day always wins over
+        // an older one, however recent.
+        val carried = if (value == null && spec.tile.carryLastReading) {
+            runCatching { lastReadingBefore(spec, date, origins) }.getOrNull()
+        } else {
+            null
+        }
+
+        return tile.copy(
+            value = value ?: carried?.second,
+            valueDate = carried?.first,
+            curve = curve,
+            loading = false,
+        )
+    }
+
+    /**
+     * The newest reading before [date], with the day it was taken.
+     *
+     * A raw reading rather than an aggregate, which is safe for these types because each is a
+     * measurement at a moment: two writers' weights are two readings, not an overlapping sum.
+     * Looks back a year; past 30 days that needs the history permission, and without it the
+     * platform quietly returns only what is newer, so an older weight simply is not found.
+     */
+    private suspend fun lastReadingBefore(
+        spec: RecordTypeSpec<*>,
+        date: LocalDate,
+        origins: Set<DataOrigin>,
+    ): Pair<LocalDate, Double>? {
+        val zone = HealthRepository.DEFAULT_ZONE
+        val latest = repository.read(
+            spec.type,
+            TimeRangeFilter.between(
+                date.minusDays(CARRY_DAYS).atStartOfDay(zone).toInstant(),
+                date.atStartOfDay(zone).toInstant(),
+            ),
+            maxRecords = LATEST_ONLY,
+            origins = origins,
+        ).firstOrNull() ?: return null
+        val reading = spec.pointsOf(latest).lastOrNull() ?: return null
+        return reading.time.atZone(zone).toLocalDate() to reading.value
     }
 
     /**
@@ -551,6 +597,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
          * wondering why it has not. Anything the values depend on invalidates them regardless.
          */
         const val CACHE_TTL_MS = 30_000L
+
+        /** How far back a carried reading may come from. */
+        const val CARRY_DAYS = 365L
 
         /** Trailing window for a curve tile. */
         const val CURVE_HOURS = 4L
