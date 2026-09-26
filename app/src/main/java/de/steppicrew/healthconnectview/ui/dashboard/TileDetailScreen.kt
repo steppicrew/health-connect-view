@@ -1,6 +1,11 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.annotation.StringRes
+import androidx.compose.material3.Surface
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.CircularProgressIndicator
@@ -864,6 +869,35 @@ private fun sessionTitle(session: Session): String? =
  *
  * Only shown where more than one app wrote; with a single writer there is nothing to choose.
  */
+/**
+ * A compact selectable chip for the source picker.
+ *
+ * Material's filter chip pads its content by 16dp a side, which for a 20dp app icon made each
+ * chip three times the width of what it shows, and five writers ran to two lines. Here the
+ * padding is 8dp; the touch target stays at the accessible minimum, and the selected state is
+ * announced as with any chip.
+ */
+@Composable
+private fun SourceChip(selected: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.small,
+        color = if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+        border = if (selected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        modifier = Modifier
+            .minimumInteractiveComponentSize()
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
+    ) {
+        Box(
+            modifier = Modifier
+                .height(SOURCE_CHIP_HEIGHT.dp)
+                .padding(horizontal = 8.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            content()
+        }
+    }
+}
+
 @Composable
 private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Unit) {
     val context = LocalContext.current
@@ -883,7 +917,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                         .height(SOURCE_PLACEHOLDER_HEIGHT.dp),
                     contentAlignment = Alignment.CenterStart,
                 ) {
-                    LinearProgressIndicator(Modifier.width(SOURCE_PLACEHOLDER_BAR.dp))
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
                 }
                 return@Column
             }
@@ -895,33 +929,33 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                         modifier = Modifier.weight(1f),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        FilterChip(
+                        SourceChip(
                             selected = data.selectedSource == null,
                             onClick = { onSelectSource(null) },
-                            label = { Text(stringResource(R.string.source_all)) },
-                        )
+                        ) {
+                            Text(stringResource(R.string.source_all), style = MaterialTheme.typography.labelLarge)
+                        }
                         sources.forEach { packageName ->
-                            FilterChip(
+                            SourceChip(
                                 selected = data.selectedSource == packageName,
                                 onClick = { onSelectSource(packageName) },
-                                // The app's own icon where it has one, which fits several sources on
-                                // screen at once where "Garmin Connect" and "Health Sync" already
-                                // ran off the edge. The label stays as the icon's content
+                            ) {
+                                // The app's own icon where it has one, which fits several sources
+                                // on screen at once where "Garmin Connect" and "Health Sync"
+                                // already ran off the edge. The label stays as the icon's content
                                 // description, and as the visible text wherever no icon can be had.
-                                label = {
-                                    val icon = rememberAppIcon(packageName)
-                                    if (icon != null) {
-                                        AppIcon(
-                                            icon = icon,
-                                            packageName = packageName,
-                                            sizePx = SOURCE_ICON_PX,
-                                            modifier = Modifier.size(SOURCE_ICON.dp),
-                                        )
-                                    } else {
-                                        Text(context.appLabelFor(packageName))
-                                    }
-                                },
-                            )
+                                val icon = rememberAppIcon(packageName)
+                                if (icon != null) {
+                                    AppIcon(
+                                        icon = icon,
+                                        packageName = packageName,
+                                        sizePx = SOURCE_ICON_PX,
+                                        modifier = Modifier.size(SOURCE_ICON.dp),
+                                    )
+                                } else {
+                                    Text(context.appLabelFor(packageName), style = MaterialTheme.typography.labelLarge)
+                                }
+                            }
                         }
                     }
                     // The chips are the data; what choosing one means is the explanation.
@@ -964,10 +998,10 @@ private const val SESSION_CURVE_HEIGHT = 40
 
 /** Big enough to recognise a brand mark, small enough that several chips fit a phone width. */
 private const val SOURCE_ICON = 20
+private const val SOURCE_CHIP_HEIGHT = 32
 
 /** Roughly one row of chips, so the box keeps its size while the writers load. */
 private const val SOURCE_PLACEHOLDER_HEIGHT = 48
-private const val SOURCE_PLACEHOLDER_BAR = 96
 private const val SOURCE_ICON_PX = 64
 
 /** The aggregate for a session type comes back in hours; durations format from minutes. */
