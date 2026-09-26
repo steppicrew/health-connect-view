@@ -385,6 +385,8 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.systolic.inMillimetersOfMercury)) },
             summary = { Formatting.number(it.systolic.inMillimetersOfMercury) + "/" + Formatting.number(it.diastolic.inMillimetersOfMercury) + " mmHg" },
             aggregate = BloodPressureRecord.SYSTOLIC_AVG,
+            secondaryPoints = { listOf(Point(it.time, it.diastolic.inMillimetersOfMercury)) },
+            secondaryAggregate = BloodPressureRecord.DIASTOLIC_AVG,
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
