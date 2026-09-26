@@ -112,6 +112,12 @@ android {
         test.inputs.dir("src/main/res")
             .withPropertyName("stringResources")
             .withPathSensitivity(org.gradle.api.tasks.PathSensitivity.RELATIVE)
+        // The real org.json first: android.jar's stubs of the same classes otherwise win, and
+        // with isReturnDefaultValues they return empty defaults, so no JSON parsing could be
+        // tested. Test classpath only; the app keeps the platform's own implementation.
+        test.classpath = configurations.detachedConfiguration(
+            dependencies.create(libs.orgjson.get()),
+        ) + test.classpath
     }
     // Real android.jar (not the stubbed one) so tests can reflect over platform constants.
     testOptions.unitTests.isReturnDefaultValues = true
