@@ -1121,16 +1121,24 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                 }
 
                 // With a single writer there is nothing to choose and nothing to explain: naming it
-                // is the data itself, so it always shows.
-                if (sources.size == 1 || explanation.expanded == true) {
+                // is the data itself, so it always shows -- with its icon, as the chips would. Even
+                // when that app is the preferred source: "only this app's value, not the combined
+                // one" was wrong there, since one writer's value is the combined one.
+                if (sources.size == 1) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SourceMark(sources.first(), SOURCE_ICON, SOURCE_ICON_PX) {}
+                        Text(
+                            text = stringResource(R.string.detail_written_by, context.appLabelFor(sources.first())),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+                    }
+                } else if (explanation.expanded == true) {
                     Text(
                         text = data.selectedSource?.let {
                             stringResource(R.string.source_showing_one, context.appLabelFor(it))
-                        } ?: if (sources.size > 1) {
-                            stringResource(R.string.source_all_explained)
-                        } else {
-                            stringResource(R.string.detail_written_by, context.appLabelFor(sources.first()))
-                        },
+                        } ?: stringResource(R.string.source_all_explained),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 8.dp),
