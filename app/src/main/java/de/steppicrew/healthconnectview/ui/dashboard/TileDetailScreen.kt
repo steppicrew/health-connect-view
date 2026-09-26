@@ -110,6 +110,7 @@ fun TileDetailScreen(
         )
     }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val progress by viewModel.progress.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
     LaunchedEffect(viewModel) {
@@ -168,7 +169,7 @@ fun TileDetailScreen(
             )
 
             when (val current = state) {
-                is UiState.Loading -> LoadingView()
+                is UiState.Loading -> LoadingView(progress = progress)
 
                 is UiState.NoPermission -> MessageView(
                     icon = Icons.Default.Lock,

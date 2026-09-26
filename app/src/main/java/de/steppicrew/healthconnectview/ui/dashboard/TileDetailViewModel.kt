@@ -275,6 +275,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /**
+     * Share of the current load's steps finished, 0 to 1, or null when not loading.
+     *
+     * Counted in steps -- chart, total, list, the source picker's two reads, sessions where the
+     * type has them -- because those are what is known: Health Connect reports no progress
+     * within a request. It moves in real jumps rather than a guessed time.
+     */
+    private val _progress = MutableStateFlow<Float?>(null)
+    val progress: StateFlow<Float?> = _progress.asStateFlow()
+
     private val _span = MutableStateFlow(Span.DAY)
     val span: StateFlow<Span> = _span.asStateFlow()
 
@@ -417,6 +427,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
             val result = runCatching { loadData(spec, span, offset, capped, selectedSource) }
+            _progress.value = null
             result.fold(
                 onSuccess = { data ->
                     _state.update {
@@ -781,9 +792,52 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         offset: Int,
         historyCapped: Boolean,
         source: String?,
-    ): TileDetailData {
+    ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+
+        val hasSessions = spec.tile.form == TileSpec.Form.SESSIONS ||
+            (span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty())
+        val steps = 5 + if (hasSessions) 1 else 0
+        val done = java.util.concurrent.atomic.AtomicInteger(0)
+        fun stepDone() {
+            _progress.value = done.incrementAndGet().toFloat() / steps
+        }
+        _progress.value = 0f
+
+        // The list and the source picker's reads depend on nothing the chart computes, so they
+        // run alongside it rather than after it. Measured on the phone for a year of heart rate
+        // the steps ran one after another for ~20 s; the chart alone was ~5 s of that.
+        val windowStart = windowStart(span, offset)
+        val windowEnd = windowEnd(span, offset)
+        val recordsRead = async {
+            runCatching { repository.recordsIn(spec, windowStart, windowEnd, origins) }
+                .getOrDefault(emptyList())
+                .also { stepDone() }
+        }
+        // Only to name the other writers when one is selected, so one page is enough: the
+        // aggregate's origins below already name every writer that reaches a total, and this
+        // catches the ones that do not. Reading the full 5000 again took 7 s for a year.
+        val otherWritersRead = if (origins.isEmpty()) {
+            null
+        } else {
+            async {
+                runCatching {
+                    repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
+                        .map { spec.originOf(it) }
+                        .toSet()
+                }.getOrDefault(emptySet()).also { stepDone() }
+            }
+        }
+        if (otherWritersRead == null) stepDone()
+        val aggregateOriginsRead = metric?.let { aggregate ->
+            async {
+                runCatching { repository.contributingApps(aggregate, span.localFilter(offset)) }
+                    .getOrDefault(emptySet())
+                    .also { stepDone() }
+            }
+        }
+        if (aggregateOriginsRead == null) stepDone()
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
@@ -967,6 +1021,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
 
+        stepDone() // the chart
         val aggregatedTotal = if (metric != null) {
             runCatching { repository.total(metric, span.localFilter(offset), origins) }.getOrNull()
         } else {
@@ -989,6 +1044,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // A goal line only means something against a running total for one day; across days
         // each point is its own day's total and the goal would be a different comparison.
         val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
+        stepDone() // the total
         val goal = if (cumulative) goalFor(spec) else null
 
         // A counted quantity bucketed across days is a total per bucket, not a reading taken
@@ -1051,6 +1107,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
             else -> emptyList()
         }
+        if (hasSessions) stepDone()
 
         // A multi-day window asks a different question of a sessions type than a day does.
         //
@@ -1085,9 +1142,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val heartRateGranted = sessionKind != null && heartRateGranted()
 
         // Newest first, matching how the other list reads.
-        val records = runCatching {
-            repository.recordsIn(spec, windowStart(span, offset), windowEnd(span, offset), origins)
-        }.getOrDefault(emptyList())
+        val records = recordsRead.await()
 
         // Deliberately unfiltered: this drives the source picker, so it must list every app
         // that wrote into the window. Scoping it to the current selection would collapse the
@@ -1102,21 +1157,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // left the picker hid itself, so the user saw two writers listed and no way to choose
         // between them. Origins still contribute because some types aggregate without storing
         // records at all, where the records alone would name nobody.
-        val writers = if (origins.isEmpty()) {
-            records.map { spec.originOf(it) }.toSet()
-        } else {
-            runCatching {
-                repository.recordsIn(spec, windowStart(span, offset), windowEnd(span, offset))
-                    .map { spec.originOf(it) }
-                    .toSet()
-            }.getOrDefault(emptySet())
-        }
-        val contributors = if (metric != null) {
-            writers + runCatching { repository.contributingApps(metric, span.localFilter(offset)) }
-                .getOrDefault(emptySet())
-        } else {
-            writers
-        }
+        val writers = otherWritersRead?.await() ?: records.map { spec.originOf(it) }.toSet()
+        val contributors = writers + (aggregateOriginsRead?.await() ?: emptySet())
 
         // A sessions tile answers "how much did these sessions cover", so its own list is the
         // authority: already deduplicated across writers, and already attributed by the rule
@@ -1132,7 +1174,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             total
         }
 
-        return TileDetailData(
+        TileDetailData(
             spec = spec,
             points = perDayPoints.ifEmpty { scaledPoints },
             // Bars wherever a point is a whole bucket rather than a moment: a sessions window
