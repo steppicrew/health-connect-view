@@ -137,6 +137,12 @@ fun LineChart(
      * a day in progress, and drawing to the edge would invent readings that do not exist.
      */
     extent: ClosedRange<Instant>? = null,
+    /**
+     * A second line measured together with the first -- diastolic under systolic. Drawn with
+     * the same marks, coloured by [secondaryZones], and read out after a slash on touch.
+     */
+    secondaryPoints: List<Point> = emptyList(),
+    secondaryZones: ValueZones? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -152,8 +158,12 @@ fun LineChart(
     // at the top would show a day's peak as equal to the highest that happened to fit.
     val bandLow = rangeBand.minOfOrNull { it.low }
     val bandHigh = rangeBand.maxOfOrNull { it.high }
-    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min())
-    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max())
+    // The second line takes part too: diastolic sits well below systolic, and a scale fitted
+    // to the upper line alone would cut the lower one off entirely.
+    val secondLow = secondaryPoints.minOfOrNull { it.value }
+    val secondHigh = secondaryPoints.maxOfOrNull { it.value }
+    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min())
+    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max())
 
     // The ends are rounded outward onto multiples of a round step, so every gridline lands on
     // a number a reader can use. Taking them straight from the data instead labelled a heart
@@ -226,9 +236,13 @@ fun LineChart(
     Column(modifier = modifier.fillMaxWidth()) {
         // The readout occupies a fixed row whether or not anything is selected, so touching
         // the chart does not shift the layout under the finger.
+        val selectedPoint = selected?.let(points::getOrNull)
         SelectionReadout(
-            point = selected?.let(points::getOrNull),
+            point = selectedPoint,
             unitRes = unitRes,
+            // Matched by time: both values of a reading share its instant, as do both means
+            // of a day's bucket.
+            secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
         )
 
         Canvas(
@@ -575,6 +589,42 @@ fun LineChart(
                 }
             }
 
+            // The second line, straight and coloured by its own bands like the first. It has no
+            // gaps to honour: the types that carry one are readings, joined across empty days.
+            if (secondaryPoints.isNotEmpty()) {
+                val secondFractions = horizontalFractions(
+                    secondaryPoints,
+                    extent ?: (points.first().time..points.last().time),
+                )
+                val secondOffsets = secondaryPoints.mapIndexed { index, point ->
+                    Offset(xForFraction(secondFractions[index]), yFor(point.value))
+                }
+                if (!bars) secondOffsets.zipWithNext().forEachIndexed { index, (from, to) ->
+                    val fromColor = secondaryZones?.colorFor(secondaryPoints[index].value) ?: lineColor
+                    val toColor = secondaryZones?.colorFor(secondaryPoints[index + 1].value) ?: lineColor
+                    drawLine(
+                        brush = if (fromColor == toColor) {
+                            SolidColor(fromColor)
+                        } else {
+                            Brush.linearGradient(colors = listOf(fromColor, toColor), start = from, end = to)
+                        },
+                        start = from,
+                        end = to,
+                        strokeWidth = LINE_WIDTH.dp.toPx(),
+                        cap = StrokeCap.Round,
+                    )
+                }
+                if ((markReadings || secondOffsets.size == 1) && secondaryPoints.size <= MAX_DOTS) {
+                    secondaryPoints.forEachIndexed { index, point ->
+                        drawCircle(
+                            color = secondaryZones?.colorFor(point.value) ?: lineColor,
+                            radius = 3.dp.toPx(),
+                            center = secondOffsets[index],
+                        )
+                    }
+                }
+            }
+
             // Drawn after the line so the marker is not overdrawn by it.
             if (crossingX != null && goal != null) {
                 val y = yFor(goal)
@@ -605,6 +655,11 @@ fun LineChart(
                 )
                 drawCircle(color = surfaceColor, radius = 7.dp.toPx(), center = Offset(x, y))
                 drawCircle(color = lineColor, radius = 5.dp.toPx(), center = Offset(x, y))
+                secondaryPoints.firstOrNull { it.time == points[index].time }?.let { second ->
+                    val y2 = yFor(second.value)
+                    drawCircle(color = surfaceColor, radius = 7.dp.toPx(), center = Offset(x, y2))
+                    drawCircle(color = lineColor, radius = 5.dp.toPx(), center = Offset(x, y2))
+                }
             }
 
             // Coloured like the line they sit on: in the theme colour they read as black
@@ -1004,7 +1059,7 @@ internal fun horizontalFractions(
  * disorienting: the thing being pointed at moves out from under the finger.
  */
 @Composable
-private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?) {
+private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary: Point? = null) {
     val unit = unitRes?.let { stringResource(it) }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -1013,7 +1068,9 @@ private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?) {
     ) {
         Text(
             text = point?.let { selected ->
-                Formatting.number(selected.value) + (unit?.let { " $it" } ?: "")
+                Formatting.number(selected.value) +
+                    (secondary?.let { "/" + Formatting.number(it.value) } ?: "") +
+                    (unit?.let { " $it" } ?: "")
             }.orEmpty(),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
