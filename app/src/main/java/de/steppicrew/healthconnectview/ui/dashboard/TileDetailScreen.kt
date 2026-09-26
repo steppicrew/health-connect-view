@@ -855,11 +855,11 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
 
     Column(Modifier.padding(top = 8.dp)) {
         if (sources.size > 1) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Row(
-                    modifier = Modifier
-                        .weight(1f)
-                        .horizontalScroll(rememberScrollState()),
+            Row(verticalAlignment = Alignment.Top) {
+                // Wraps rather than scrolls: with four or five writers a scrolling row hid the
+                // last ones off the edge, and nothing said there were more.
+                FlowRow(
+                    modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     FilterChip(
