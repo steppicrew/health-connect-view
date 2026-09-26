@@ -1,0 +1,1 @@
+0.7.0 — Pro: a blood pressure report as PDF for your doctor, with morning and evening averages, every day and every reading.
