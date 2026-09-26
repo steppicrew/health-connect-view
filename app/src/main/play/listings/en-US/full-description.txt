@@ -35,6 +35,7 @@ PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
 • CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
+• Larger tiles — make any dashboard tile two cells wide, or two by two, for a bigger ring or curve.
 • Every future Pro feature, with no further charge.
 
 Purchases are handled entirely by Google Play. Your purchase follows your Google account to a new phone.

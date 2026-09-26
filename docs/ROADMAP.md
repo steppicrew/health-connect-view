@@ -23,9 +23,10 @@ open items below and `FEATURE-IDEAS.md`.
    build with section 15's purchase code is live; the privacy text changed and wants the
    owner's review before release.
 6. [x] **Dashboard configuration export/import** -- merged 26.09.2026, see section 14.
-7. [x] **Blood pressure morning/evening split** -- merged 27.09.2026, see section 16.
-8. [ ] **Tile resize** (2x1, 2x2). Last: new gesture and layout geometry, and resizing cannot
-   be driven from the host on the Xiaomi.
+7. [x] **Blood pressure morning/evening split** -- merged 26.09.2026, see section 16.
+8. [x] **Tile resize** (2x1, 2x2) -- merged 26.09.2026, a Pro feature; see "Built: tiles in
+   three sizes" in section 1. Seen on the emulator; the Xiaomi cannot be driven to resize from
+   the host.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
@@ -130,10 +131,28 @@ Its arithmetic is tested rather than eyeballed -- it is the kind that looks obvi
 is off by a spacing. The test pins the bounds, that columns and gaps fill the width exactly,
 that widths differ by at most a pixel, and that a wider screen never yields *fewer* columns.
 
+### Built: tiles in three sizes
+
+1x1, 2x1 and 2x2, stepped through by a button in edit mode -- the same reasoning as reordering
+by steps: nothing to discover, reachable with accessibility services, no mis-drop. No 1x2:
+every face is a number with something under it, and width is what a curve needs.
+
+- **Not a `LazyVerticalGrid`.** Its items span columns but never rows, so a 2x2 tile stretched
+  its row and left the cells beside it half empty. `TileGrid` lays out every tile over the same
+  `BoundedTileCells` columns; a dashboard is a few dozen tiles, all loaded up front anyway.
+- **First fit in list order.** A 1x1 after a 2x2 on two columns fills the hole beside the
+  earlier 1x1 instead of leaving it. List order still decides who gets a place first, so
+  moving a tile up never moves it down the screen. Tested for overlaps at 2-5 columns.
+- **A wide tile on a narrow grid is narrowed**, never dropped; the stored size stays.
+- **Large tiles grow the face:** a larger number, and a curve that takes the extra height.
+- **Pro** (`Feature.TILE_SIZES`). Without it tiles are *drawn* 1x1 but keep their stored size,
+  so a refund or a restored backup costs nothing and buying brings the layout back. The button
+  stays visible with a padlock and opens the purchase, as the locked export entries do.
+- Resizing updates the tiles in place rather than reloading them, and a load already running
+  re-applies the current sizes when it publishes -- otherwise it snapped the tile back.
+
 ### Still open
 
-- Tile resize (2x1, 2x2). The config already stores spans; what is missing is the layout
-  geometry and a second gesture.
 - Which stats form the default tile set on first run. Currently steps, heart rate, sleep,
   weight, total calories, floors.
 - Whether "advanced dashboard" becomes the premium feature. `Feature.CUSTOM_DASHBOARD` is
@@ -1156,7 +1175,9 @@ creates or updates it and is safe to rerun; change the price or the listing text
 - **Pending payments** (cash, bank transfer) show as pending and unlock when Play confirms.
 - **No network.** Billing talks to the Play Store app over IPC; `verifyNoNetworkPermission`
   still passes, and the privacy page's purchases paragraph already says this.
-- **Where to buy:** Settings -> Pro, or a locked export entry, which opens the sheet directly.
+- **What it unlocks:** CSV export (section 13) and tile sizes (section 1).
+- **Where to buy:** Settings -> Pro, a locked export entry, or the padlocked resize button in
+  edit mode; the last two open the sheet directly.
 - **The API is inconsistent about the path.** Creating the product works only on
   `.../onetimeproducts/{id}`, reading it and activating it only on `.../oneTimeProducts/...`.
   The legacy `inappproducts` endpoint answers "Please migrate to the new publishing API".
