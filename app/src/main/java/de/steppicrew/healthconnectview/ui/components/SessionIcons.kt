@@ -23,6 +23,7 @@ import de.steppicrew.healthconnectview.health.Session
  */
 fun iconFor(session: Session): ImageVector = when (session.kind) {
     Session.Kind.SLEEP -> Icons.Default.Bedtime
+    Session.Kind.MINDFULNESS -> Icons.Default.SelfImprovement
     Session.Kind.EXERCISE -> when (session.exerciseType) {
         ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
         ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY,

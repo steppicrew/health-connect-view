@@ -10,5 +10,6 @@ enum class Category(@param:StringRes val labelRes: Int) {
     VITALS(R.string.category_vitals),
     NUTRITION(R.string.category_nutrition),
     SLEEP(R.string.category_sleep),
+    MINDFULNESS(R.string.category_mindfulness),
     CYCLE(R.string.category_cycle),
 }

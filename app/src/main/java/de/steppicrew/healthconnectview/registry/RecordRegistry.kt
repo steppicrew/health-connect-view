@@ -3,6 +3,8 @@ package de.steppicrew.healthconnectview.registry
 import androidx.health.connect.client.permission.HealthPermission
 import de.steppicrew.healthconnectview.health.Session
 import androidx.health.connect.client.aggregate.AggregateMetric
+import androidx.health.connect.client.feature.ExperimentalMindfulnessSessionApi
+import androidx.health.connect.client.records.MindfulnessSessionRecord
 import androidx.health.connect.client.records.*
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec.Shape
@@ -58,9 +60,10 @@ private fun protectionRes(value: Int): Int = when (value) {
 /**
  * Every Health Connect record type this app can display, as data.
  *
- * MindfulnessSessionRecord is deliberately absent: the library requests
- * READ_MINDFULNESS_SESSION while the platform only defines READ_MINDFULNESS, so the
- * permission could never be granted. Revisit once those names converge.
+ * MindfulnessSessionRecord was left out for a while on the belief that the library asked for
+ * `READ_MINDFULNESS_SESSION`, which the platform does not define. Checked against
+ * connect-client 1.1.0 on 27.09.2026: it resolves to `READ_MINDFULNESS`, the platform's own
+ * name, and `RecordRegistryTest` checks that against `android.jar` like every other type.
  */
 object RecordRegistry {
 
@@ -591,6 +594,7 @@ object RecordRegistry {
             summary = { Formatting.duration(Duration.between(it.startTime, it.endTime)) },
             aggregate = SleepSessionRecord.SLEEP_DURATION_TOTAL,
         ),
+        mindfulnessSpec(),
         RecordTypeSpec(
             type = CervicalMucusRecord::class,
             displayNameRes = R.string.type_cervical_mucus,
@@ -706,3 +710,30 @@ object RecordRegistry {
     fun specOrNull(simpleName: String): RecordTypeSpec<*>? =
         all.firstOrNull { it.type.simpleName == simpleName }
 }
+
+/**
+ * Meditation, breathing, guided tracks: sessions with a duration, shown like sleep -- the list,
+ * a day's total, hours per day across days, all from the sessions themselves. Its own function for the library's experimental
+ * marker on the record type, so the opt-in stays on this one entry.
+ */
+@OptIn(ExperimentalMindfulnessSessionApi::class)
+private fun mindfulnessSpec(): RecordTypeSpec<*> = RecordTypeSpec(
+    type = MindfulnessSessionRecord::class,
+    tile = TileSpec(
+        TileSpec.Form.SESSIONS,
+        smoothChart = false,
+        sessionKind = Session.Kind.MINDFULNESS,
+    ),
+    displayNameRes = R.string.type_mindfulness_session,
+    category = Category.MINDFULNESS,
+    unitRes = R.string.unit_h,
+    shape = Shape.INTERVAL,
+    startTime = { it.startTime },
+    endTime = { it.endTime },
+    points = { listOf(Point(it.startTime, durationHours(it.startTime, it.endTime))) },
+    summary = { Formatting.duration(Duration.between(it.startTime, it.endTime)) },
+    // No aggregate, although the library offers MINDFULNESS_DURATION_TOTAL: Health Connect on
+    // the phone (Android 16, 27.09.2026) refused it -- "Unsupported aggregation type
+    // MindfulnessSession_duration" -- and the whole screen failed. A sessions tile totals its
+    // own deduplicated list anyway, as sleep does.
+)

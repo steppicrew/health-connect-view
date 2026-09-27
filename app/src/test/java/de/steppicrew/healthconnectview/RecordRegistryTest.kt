@@ -24,8 +24,8 @@ class RecordRegistryTest {
 
     @Test
     fun `registry holds every supported record type exactly once`() {
-        assertEquals(40, RecordRegistry.all.size)
-        assertEquals(40, RecordRegistry.all.map { it.type }.toSet().size)
+        assertEquals(41, RecordRegistry.all.size)
+        assertEquals(41, RecordRegistry.all.map { it.type }.toSet().size)
     }
 
     /**

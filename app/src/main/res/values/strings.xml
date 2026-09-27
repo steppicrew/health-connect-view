@@ -230,6 +230,7 @@
     <string name="category_body">Body</string>
     <string name="category_vitals">Vitals</string>
     <string name="category_nutrition">Nutrition</string>
+    <string name="category_mindfulness">Mindfulness</string>
     <string name="category_sleep">Sleep</string>
     <string name="category_cycle">Cycle</string>
 
@@ -267,6 +268,7 @@
     <string name="type_skin_temperature">Skin temperature change</string>
     <string name="type_hydration">Hydration</string>
     <string name="type_nutrition">Nutrition</string>
+    <string name="type_mindfulness_session">Mindfulness</string>
     <string name="type_sleep_session">Sleep</string>
     <string name="type_cervical_mucus">Cervical mucus</string>
     <string name="type_intermenstrual_bleeding">Intermenstrual bleeding</string>
