@@ -71,6 +71,8 @@ fun LineChart(
     goalCrossing: Instant? = null,
     /** Unit shown beside a touched point's value; omitted when the type has none. */
     @StringRes unitRes: Int? = null,
+    /** Decimal places for a touched point's value, where the unit fixes them. */
+    valueDecimals: Int? = null,
     /**
      * Bucket starts that held no data. The line is broken across these rather than drawn
      * through, so a day nothing was recorded does not read as a measured value.
@@ -327,6 +329,7 @@ fun LineChart(
             SelectionReadout(
                 point = selectedPoint,
                 unitRes = unitRes,
+                decimals = valueDecimals,
                 // Matched by time: both values of a reading share its instant, as do both
                 // means of a day's bucket.
                 secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
@@ -1317,7 +1320,7 @@ internal fun horizontalFractions(
  * disorienting: the thing being pointed at moves out from under the finger.
  */
 @Composable
-private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary: Point? = null) {
+private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary: Point? = null, decimals: Int? = null) {
     val unit = unitRes?.let { stringResource(it) }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -1326,8 +1329,8 @@ private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary:
     ) {
         Text(
             text = point?.let { selected ->
-                Formatting.number(selected.value) +
-                    (secondary?.let { "/" + Formatting.number(it.value) } ?: "") +
+                Formatting.number(selected.value, decimals) +
+                    (secondary?.let { "/" + Formatting.number(it.value, decimals) } ?: "") +
                     (unit?.let { " $it" } ?: "")
             }.orEmpty(),
             style = MaterialTheme.typography.titleSmall,

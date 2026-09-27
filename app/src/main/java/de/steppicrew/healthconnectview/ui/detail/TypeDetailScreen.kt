@@ -164,11 +164,14 @@ private fun DetailContent(
                         points = data.points,
                         smooth = data.spec.tile.smoothChart,
                         unitRes = data.spec.displayUnitRes,
+                        valueDecimals = data.spec.valueDecimals,
                         integral = data.spec.tile.integralValues,
                     )
                     Text(
                         text = stringResource(
                             when {
+                                // Blood pressure, heart rate, weight: a day's mean, not its total.
+                                data.pointsAreAggregated && data.spec.isAveraged -> R.string.chart_source_aggregated_mean
                                 data.pointsAreAggregated -> R.string.chart_source_aggregated
                                 data.pointsAreSampled -> R.string.chart_source_sampled
                                 else -> R.string.chart_source_raw

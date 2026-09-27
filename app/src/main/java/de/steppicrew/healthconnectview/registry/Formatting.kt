@@ -15,6 +15,18 @@ import java.util.Locale
 object Formatting {
 
     /** Decimals scale with magnitude so small and large values both stay readable. */
+    /**
+     * [value] with exactly [decimals] places where its unit fixes them -- mg/dL is whole,
+     * mmol/L has one -- and by magnitude, as [number], where it does not (null).
+     */
+    fun number(value: Double, decimals: Int?, locale: Locale = Locale.getDefault()): String {
+        if (decimals == null) return number(value, locale)
+        return NumberFormat.getInstance(locale).apply {
+            maximumFractionDigits = decimals
+            minimumFractionDigits = decimals
+        }.format(value)
+    }
+
     fun number(value: Double, locale: Locale = Locale.getDefault()): String {
         val digits = when {
             kotlin.math.abs(value) >= 100.0 -> 0

@@ -112,6 +112,16 @@ enum class Quantity(
     fun unitRes(alternate: Boolean = alternateShown): Int = if (alternate) alternateUnitRes else baseUnitRes
 
     fun symbol(alternate: Boolean = alternateShown): String = if (alternate) alternateSymbol else baseSymbol
+
+    /**
+     * Decimal places the shown unit is read in, or null to go by magnitude. Glucose only: a
+     * meter shows mg/dL whole and mmol/L to one place, and the magnitude rule gave "91,8 mg/dL"
+     * and "5,35 mmol/L", precision no meter claims.
+     */
+    fun decimals(alternate: Boolean = alternateShown): Int? = when (this) {
+        GLUCOSE -> if (alternate) 0 else 1
+        else -> null
+    }
 }
 
 /**
@@ -132,5 +142,5 @@ object Units {
 
     /** A stored value as text in the shown unit, for a record's one-line summary. */
     fun format(quantity: Quantity, base: Double): String =
-        Formatting.number(quantity.convert(base)) + " " + quantity.symbol()
+        Formatting.number(quantity.convert(base), quantity.decimals()) + " " + quantity.symbol()
 }

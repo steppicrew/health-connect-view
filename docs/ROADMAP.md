@@ -262,8 +262,13 @@ open items below and `FEATURE-IDEAS.md`.
     afternoon. Needs a notification permission and reading in the background
     (`READ_HEALTH_DATA_IN_BACKGROUND`), so it changes what the privacy page promises; the
     owner decides before any code.
-43. [ ] **Two display slips seen in step 22** -- glucose in mg/dL shows a decimal ("91,8 mg/dL"),
-    and the blood pressure chart's caption says "Tagessummen" for daily means.
+43. [x] **Two display slips seen in step 22** -- fixed 27.09.2026. Glucose went by the
+    magnitude rule, so mg/dL read "91,8" and mmol/L "5,35"; the unit now fixes the places
+    (`Quantity.decimals`, whole mg/dL, one place in mmol/L) on the tile, the headline, the
+    trend, the chart's readout and the record rows. The type screen reached from the list
+    called every aggregated chart "Tagessummen"; for blood pressure, heart rate, weight and
+    the other averaged types it now says "Tagesmittel", as the tile's screen already did.
+    Seen on the emulator.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

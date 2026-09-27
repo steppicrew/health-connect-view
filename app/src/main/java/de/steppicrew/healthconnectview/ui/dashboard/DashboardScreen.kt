@@ -992,7 +992,7 @@ private fun TileValue(data: TileData, large: Boolean = false) {
             // Muted and dated: a carried weight is the latest known, not today's, and must not
             // read as a measurement taken on the day on screen.
             Text(
-                text = tileValueText(data.value, data.secondaryValue),
+                text = tileValueText(data.value, data.secondaryValue, data.spec.valueDecimals),
                 style = valueStyle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1013,13 +1013,13 @@ private fun TileValue(data: TileData, large: Boolean = false) {
             if (standing != null) {
                 DotText(
                     color = standing.color(),
-                    text = Formatting.number(data.value),
+                    text = Formatting.number(data.value, data.spec.valueDecimals),
                     style = valueStyle,
                     textColor = MaterialTheme.colorScheme.onSurface,
                 )
             } else {
                 Text(
-                    text = Formatting.number(data.value),
+                    text = Formatting.number(data.value, data.spec.valueDecimals),
                     style = valueStyle,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -1034,13 +1034,13 @@ private fun TileValue(data: TileData, large: Boolean = false) {
         // Two values read as one: the grade's colour beside them, as on the detail screen.
         data.secondaryValue != null -> DotText(
             color = ValueZones.ZONE_COLORS[pressureCategory(data.value, data.secondaryValue).ordinal],
-            text = tileValueText(data.value, data.secondaryValue),
+            text = tileValueText(data.value, data.secondaryValue, data.spec.valueDecimals),
             style = valueStyle,
             textColor = MaterialTheme.colorScheme.onSurface,
         )
 
         else -> Text(
-            text = Formatting.number(data.value),
+            text = Formatting.number(data.value, data.spec.valueDecimals),
             style = valueStyle,
             color = MaterialTheme.colorScheme.onSurface,
         )
@@ -1048,8 +1048,8 @@ private fun TileValue(data: TileData, large: Boolean = false) {
 }
 
 /** "128/82" for a pair, whole numbers as a cuff shows them; the plain number otherwise. */
-private fun tileValueText(value: Double, secondary: Double?): String =
-    if (secondary == null) Formatting.number(value) else "${value.roundToInt()}/${secondary.roundToInt()}"
+private fun tileValueText(value: Double, secondary: Double?, decimals: Int? = null): String =
+    if (secondary == null) Formatting.number(value, decimals) else "${value.roundToInt()}/${secondary.roundToInt()}"
 
 @Composable
 private fun dayLabel(date: LocalDate): String =

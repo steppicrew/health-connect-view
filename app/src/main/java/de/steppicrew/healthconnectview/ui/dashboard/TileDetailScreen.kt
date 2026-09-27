@@ -435,7 +435,7 @@ private fun SpanContent(
  * today out altogether. Saying so, with both averages, is what makes the arrow checkable.
  */
 @Composable
-private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
+private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decimals: Int? = null) {
     val unit = unitRes?.let { " " + stringResource(it) }.orEmpty()
     val explanation = rememberExplanation("trend")
 
@@ -466,8 +466,8 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
         Text(
             text = stringResource(
                 R.string.trend_numbers,
-                Formatting.number(trend.recent) + unit,
-                Formatting.number(trend.baseline) + unit,
+                Formatting.number(trend.recent, decimals) + unit,
+                Formatting.number(trend.baseline, decimals) + unit,
             ),
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -482,8 +482,8 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
 }
 
 /** "132/85" where a second value exists, whole numbers as a cuff shows them; else the value. */
-private fun pressureText(first: Double, second: Double?): String =
-    if (second == null) Formatting.number(first) else "${first.roundToInt()}/${second.roundToInt()}"
+private fun pressureText(first: Double, second: Double?, decimals: Int? = null): String =
+    if (second == null) Formatting.number(first, decimals) else "${first.roundToInt()}/${second.roundToInt()}"
 
 private val PressureCategory.color: Color get() = ValueZones.ZONE_COLORS[ordinal]
 
@@ -619,7 +619,7 @@ private fun SpanSummary(
                 text = if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
                     Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
                 } else {
-                    pressureText(total, data.secondaryTotal) +
+                    pressureText(total, data.secondaryTotal, data.spec.valueDecimals) +
                         (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
                 },
                 style = MaterialTheme.typography.headlineMedium,
@@ -663,7 +663,7 @@ private fun SpanSummary(
         }
 
         // Beside the day's own total, which is what the tile's arrow was misread against.
-        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes) }
+        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
 
         data.dayParts?.let { DayPartsSection(it) }
 
@@ -960,6 +960,7 @@ internal fun DataLineChart(
         goal = data.goal,
         goalCrossing = data.goalCrossing,
         unitRes = data.spec.displayUnitRes,
+        valueDecimals = data.spec.valueDecimals,
         emptyBuckets = data.emptyBuckets,
         sessions = data.sessions,
         zones = data.lineZones,
