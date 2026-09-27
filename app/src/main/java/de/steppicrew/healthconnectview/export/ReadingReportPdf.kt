@@ -2,8 +2,6 @@ package de.steppicrew.healthconnectview.export
 
 import android.content.Context
 import androidx.annotation.StringRes
-import androidx.health.connect.client.records.BloodGlucoseRecord
-import androidx.health.connect.client.records.MealType
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.GlucoseBand
 import de.steppicrew.healthconnectview.health.GlucoseReport
@@ -13,6 +11,9 @@ import de.steppicrew.healthconnectview.health.ValueStats
 import de.steppicrew.healthconnectview.health.WeightReport
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Quantity
+import de.steppicrew.healthconnectview.registry.mealLabel
+import de.steppicrew.healthconnectview.registry.relationLabel
+import de.steppicrew.healthconnectview.registry.tally
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
@@ -240,6 +241,10 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
         periodTable(report.days, R.string.report_col_date) { level(it) }
         add(gap())
 
+        // Only what the table does not show: relation and meal have columns of their own, and
+        // the overview already sorts by relation; the specimen appears nowhere else.
+        val shownInTable = setOf(R.string.report_col_relation, R.string.report_col_meal)
+        addAll(contextSection(tally(report.readings.map { reading -> reading.context.filterNot { it.labelRes in shownInTable } })))
         add(section(context.getString(R.string.report_readings)))
         wrapped(context.getString(R.string.report_one_writer), small).forEach(::add)
         val readingColumns = floatArrayOf(0f, 100f, 150f, 220f, 330f)
@@ -299,24 +304,6 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
     private fun start(first: LocalDate, zone: ZoneId) = first.atStartOfDay(zone).toInstant()
 
     private fun end(last: LocalDate, zone: ZoneId) = last.plusDays(1).atStartOfDay(zone).toInstant()
-
-    @StringRes
-    private fun relationLabel(code: Int): Int = when (code) {
-        BloodGlucoseRecord.RELATION_TO_MEAL_FASTING -> R.string.glucose_relation_fasting
-        BloodGlucoseRecord.RELATION_TO_MEAL_BEFORE_MEAL -> R.string.glucose_relation_before
-        BloodGlucoseRecord.RELATION_TO_MEAL_AFTER_MEAL -> R.string.glucose_relation_after
-        BloodGlucoseRecord.RELATION_TO_MEAL_GENERAL -> R.string.glucose_relation_general
-        else -> R.string.glucose_relation_unknown
-    }
-
-    @StringRes
-    private fun mealLabel(code: Int): Int? = when (code) {
-        MealType.MEAL_TYPE_BREAKFAST -> R.string.meal_breakfast
-        MealType.MEAL_TYPE_LUNCH -> R.string.meal_lunch
-        MealType.MEAL_TYPE_DINNER -> R.string.meal_dinner
-        MealType.MEAL_TYPE_SNACK -> R.string.meal_snack
-        else -> null
-    }
 
     private fun mmolRange(band: GlucoseBand): String {
         fun n(value: Double) = Formatting.axisLabel(value, 1)

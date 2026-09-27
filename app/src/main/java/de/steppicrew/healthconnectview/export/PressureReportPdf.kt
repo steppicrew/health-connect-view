@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.health.dayPartOf
 import de.steppicrew.healthconnectview.health.labelRes
 import de.steppicrew.healthconnectview.health.pressureCategory
 import de.steppicrew.healthconnectview.registry.ValueZones
+import de.steppicrew.healthconnectview.registry.tally
 import java.io.OutputStream
 import java.time.ZoneId
 import kotlin.math.roundToInt
@@ -82,6 +83,7 @@ class PressureReportPdf(context: Context) : ReportPdf(context) {
         }
         add(gap())
 
+        addAll(contextSection(tally(report.readings.map { it.context })))
         add(section(context.getString(R.string.report_readings)))
         val readingColumns = floatArrayOf(0f, 110f, 170f, 250f, 350f)
         val readingHeader = headerLine(

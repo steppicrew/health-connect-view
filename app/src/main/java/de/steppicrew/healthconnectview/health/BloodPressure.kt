@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.health
 
+import de.steppicrew.healthconnectview.registry.ContextItem
+import de.steppicrew.healthconnectview.registry.readingContext
 import androidx.annotation.StringRes
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.ValueZones
@@ -26,7 +28,13 @@ enum class DayPart { MORNING, EVENING }
 val DAY_START: LocalTime = LocalTime.of(4, 0)
 val EVENING_START: LocalTime = LocalTime.of(14, 0)
 
-data class PressureReading(val time: Instant, val systolic: Double, val diastolic: Double)
+data class PressureReading(
+    val time: Instant,
+    val systolic: Double,
+    val diastolic: Double,
+    /** What the writer said about how it was taken; see [readingContext]. */
+    val context: List<ContextItem> = emptyList(),
+)
 
 data class PartAverage(val count: Int, val systolic: Double, val diastolic: Double)
 
