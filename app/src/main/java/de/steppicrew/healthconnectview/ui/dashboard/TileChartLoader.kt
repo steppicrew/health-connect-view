@@ -176,7 +176,10 @@ internal class TileChartLoader(
                                 high = high,
                             )
                         }
-                    }.orEmpty()
+                        // Only where some day actually had a spread. One reading a day -- a
+                        // resting rate, most people's weight -- makes every band zero wide, and
+                        // the legend and caption then named a range the chart did not draw.
+                    }?.takeIf { bands -> bands.any { it.high > it.low } }.orEmpty()
 
                     // A bucket with no value is a day nothing was recorded, which is not the
                     // same as a day with a value of zero. Both the empty times and the points

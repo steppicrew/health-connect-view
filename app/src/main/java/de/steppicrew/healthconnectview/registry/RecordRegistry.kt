@@ -120,6 +120,7 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.revolutionsPerMinute) } },
             summary = { r -> seriesSummary(r.samples.map { it.revolutionsPerMinute }, "rpm") },
             aggregate = CyclingPedalingCadenceRecord.RPM_AVG,
+            rangeAggregates = CyclingPedalingCadenceRecord.RPM_MIN to CyclingPedalingCadenceRecord.RPM_MAX,
         ),
         RecordTypeSpec(
             type = DistanceRecord::class,
@@ -216,6 +217,7 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.power.inWatts) } },
             summary = { r -> seriesSummary(r.samples.map { it.power.inWatts }, "W") },
             aggregate = PowerRecord.POWER_AVG,
+            rangeAggregates = PowerRecord.POWER_MIN to PowerRecord.POWER_MAX,
         ),
         RecordTypeSpec(
             type = SpeedRecord::class,
@@ -233,6 +235,7 @@ object RecordRegistry {
                 )
             },
             aggregate = SpeedRecord.SPEED_AVG,
+            rangeAggregates = SpeedRecord.SPEED_MIN to SpeedRecord.SPEED_MAX,
         ),
         RecordTypeSpec(
             type = StepsRecord::class,
@@ -264,6 +267,7 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.rate) } },
             summary = { r -> seriesSummary(r.samples.map { it.rate }, "spm") },
             aggregate = StepsCadenceRecord.RATE_AVG,
+            rangeAggregates = StepsCadenceRecord.RATE_MIN to StepsCadenceRecord.RATE_MAX,
         ),
         RecordTypeSpec(
             type = TotalCaloriesBurnedRecord::class,
@@ -392,6 +396,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.weight.inKilograms)) },
             summary = { Units.format(Quantity.MASS, it.weight.inKilograms) },
             aggregate = WeightRecord.WEIGHT_AVG,
+            rangeAggregates = WeightRecord.WEIGHT_MIN to WeightRecord.WEIGHT_MAX,
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
         ),
         RecordTypeSpec(
@@ -498,6 +503,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.beatsPerMinute.toDouble())) },
             summary = { Formatting.integer(it.beatsPerMinute) + " bpm" },
             aggregate = RestingHeartRateRecord.BPM_AVG,
+            rangeAggregates = RestingHeartRateRecord.BPM_MIN to RestingHeartRateRecord.BPM_MAX,
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
                 markReadings = true,

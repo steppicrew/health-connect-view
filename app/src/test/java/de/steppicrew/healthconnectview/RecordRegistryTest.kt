@@ -109,6 +109,19 @@ class RecordRegistryTest {
     }
 
     @Test
+    fun `a spread sits only behind a mean, and converts like it`() {
+        RecordRegistry.all.forEach { spec ->
+            val (low, high) = spec.rangeAggregates ?: return@forEach
+            val name = spec.type.simpleName
+            // A counted total has no spread: the day's sum already is the whole answer.
+            assertTrue("$name has a band but is not averaged", spec.isAveraged)
+            // Otherwise a weight band stays in kilograms under a line drawn in pounds.
+            assertEquals("$name low end", RecordRegistry.quantityOfMetric[spec.aggregate], RecordRegistry.quantityOfMetric[low])
+            assertEquals("$name high end", RecordRegistry.quantityOfMetric[spec.aggregate], RecordRegistry.quantityOfMetric[high])
+        }
+    }
+
+    @Test
     fun `unrecorded protection is its own state, not unprotected`() {
         val spec = RecordRegistry.spec(SexualActivityRecord::class)
         fun wordsFor(value: Int) = spec.summaryResOf(
