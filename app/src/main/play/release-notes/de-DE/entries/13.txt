@@ -1,0 +1,1 @@
+0.10.0 — Neu: Serien, an wie vielen Tagen hintereinander Sie Ihr Ziel erreicht haben oder aktiv waren, mit der längsten des Jahres; Trainingsrouten mit Höhenprofil, nur auf Ihren Wunsch; Achtsamkeit; wie Blutzucker und Blutdruck gemessen wurden; Kacheln per Ziehen anordnen; jede Berechtigung erklärt. Pro: mehrere Kacheln für einen Wert, Kachelfarben, Routen als GPX-Datei.
