@@ -15,6 +15,7 @@ import androidx.health.connect.client.aggregate.AggregateMetric
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.trendBefore
+import de.steppicrew.healthconnectview.health.goalStreak
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.atLeast
@@ -576,6 +577,14 @@ internal class TileChartLoader(
                 runCatching { repository.trendBefore(metric, span.startDate(offset), origins) }.getOrNull()
             } else {
                 null
+            },
+            // Against the same total the goal line reads, so the count and the line agree.
+            streak = if (goal != null && metric != null && spec.tile.form == TileSpec.Form.RING) {
+                runCatching {
+                    repository.goalStreak(metric, goal, span.startDate(offset), headlineTotal, origins)
+                }.getOrNull() ?: 0
+            } else {
+                0
             },
             cumulative = cumulative,
             // Suppressed on an apportioned curve: "reached at 19:59" on a straight ramp is

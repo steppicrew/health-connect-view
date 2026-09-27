@@ -43,6 +43,10 @@ import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Badge
@@ -546,6 +550,8 @@ private fun TileCard(
                         )
                     }
                 data.trend?.takeIf { data.granted && !data.loading }?.let { TrendMark(it) }
+                data.streak.takeIf { it >= MIN_STREAK && data.granted && !data.loading && data.progress != null }
+                    ?.let { StreakMark(it) }
                 // An explicit spacer rather than SpaceBetween, because the unit above is
                 // conditional: with it absent -- every SESSIONS tile, so Sleep and Activities
                 // -- the source marker was the row's only child and SpaceBetween put it at
@@ -915,6 +921,33 @@ private fun TrendMark(trend: Trend) {
     )
 }
 
+/**
+ * How many days in a row the goal was met: a flame and the count, as streaks are usually
+ * marked. In the tile's quiet colour like the arrow, so the ring stays the loudest thing on it.
+ */
+@Composable
+private fun StreakMark(days: Int) {
+    val description = pluralStringResource(R.plurals.streak_days, days, days)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(start = 4.dp)
+            .clearAndSetSemantics { contentDescription = description },
+    ) {
+        Icon(
+            imageVector = Icons.Default.LocalFireDepartment,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(TREND_ICON.dp),
+        )
+        Text(
+            text = Formatting.integer(days.toLong()),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
 /** The arrow for a trend, shared by the tile and the detail view so the two read alike. */
 internal val Trend.icon: ImageVector
     get() = when (this) {
@@ -1068,6 +1101,9 @@ private const val VALUE_SHARE = 0.35f
 /** Just enough to recognise the app; the tile has little room to spare. */
 private const val TILE_SOURCE_ICON = 16
 private const val TREND_ICON = 16
+
+/** One day is not a run; the count shows from two. */
+internal const val MIN_STREAK = 2
 private const val LOCK_ICON = 20
 private const val LOCK_BADGE = 10
 

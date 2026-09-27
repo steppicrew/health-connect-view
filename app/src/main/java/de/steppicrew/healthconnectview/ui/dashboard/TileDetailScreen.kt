@@ -70,6 +70,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -481,6 +482,38 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
     }
 }
 
+/**
+ * The tile's streak in words, with the rule behind the "i": that a day without data bridges the
+ * run rather than breaking it is what a reader cannot guess, and what makes a count after a
+ * forgotten watch believable.
+ */
+@Composable
+private fun StreakExplanation(days: Int) {
+    val explanation = rememberExplanation("streak")
+    Column(Modifier.padding(top = 8.dp)) {
+        Row(verticalAlignment = Alignment.Top) {
+            Icon(
+                imageVector = Icons.Default.LocalFireDepartment,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
+            )
+            Text(
+                text = pluralStringResource(R.plurals.streak_days, days, days),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation)
+        }
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.streak_rule),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
 /** "132/85" where a second value exists, whole numbers as a cuff shows them; else the value. */
 private fun pressureText(first: Double, second: Double?, decimals: Int? = null): String =
     if (second == null) Formatting.number(first, decimals) else "${first.roundToInt()}/${second.roundToInt()}"
@@ -661,6 +694,8 @@ private fun SpanSummary(
                 modifier = Modifier.padding(top = 4.dp),
             )
         }
+
+        data.streak.takeIf { it >= MIN_STREAK && data.goal != null }?.let { StreakExplanation(it) }
 
         // Beside the day's own total, which is what the tile's arrow was misread against.
         data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }

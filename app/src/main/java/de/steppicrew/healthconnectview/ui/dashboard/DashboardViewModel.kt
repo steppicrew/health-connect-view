@@ -21,6 +21,7 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.trendBefore
+import de.steppicrew.healthconnectview.health.goalStreak
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
@@ -107,6 +108,11 @@ data class TileData(
      * usual range. Null for every other type, and where there are too few nights to say.
      */
     val standing: HrvStanding? = null,
+    /**
+     * Days in a row the goal was met, up to the shown day, for a ring showing a day; zero
+     * where there is no run to speak of. See [goalStreak].
+     */
+    val streak: Int = 0,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -432,6 +438,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     curve = carried.curve,
                     sessions = carried.sessions,
                     trend = carried.trend,
+                    streak = carried.streak.takeIf { carried.tile.effectiveGoal == placeholder.tile.effectiveGoal } ?: 0,
                     shownSpan = carried.shownSpan,
                     standing = carried.standing,
                     chart = carried.chart,
@@ -456,10 +463,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }.awaitAll()
         }
-        // Keep the previous arrows until the new ones arrive, as with the values above.
+        // Keep the previous arrows and streaks until the new ones arrive, as with the values
+        // above -- the streak only while the goal is the same, since a new goal is a new count.
         val withCarried = loaded.map { tile ->
             val carried = previous[tile.tile.id]
-            if (carried != null && carried.source == tile.source) tile.copy(trend = carried.trend) else tile
+            if (carried != null && carried.source == tile.source) {
+                tile.copy(
+                    trend = carried.trend,
+                    streak = carried.streak.takeIf { carried.tile.effectiveGoal == tile.tile.effectiveGoal } ?: 0,
+                )
+            } else {
+                tile
+            }
         }
         _state.update { it.copy(tiles = withCurrentLayout(withCarried)) }
         // Timing and count only, never a value: how long the dashboard takes to fill is the
@@ -658,12 +673,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /**
-     * The trend arrows, fetched after the values are on screen.
+     * The trend arrows and goal streaks, fetched after the values are on screen.
      *
      * A month of daily buckets per tile nearly doubled the time to fill the dashboard when it
      * was read alongside each value -- measured on the phone, about 650 ms to 1200 ms for
      * eight tiles -- because the tiles are published together once the slowest finishes. The
-     * arrow is secondary to the number, so the number no longer waits for it.
+     * arrow is secondary to the number, so the number no longer waits for it; the streak, which
+     * may read back a year, even less so.
      */
     private suspend fun loadTrends(tiles: List<TileData>, date: LocalDate, gate: Semaphore): List<TileData> =
         coroutineScope {
@@ -681,7 +697,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     val trend = gate.withPermit {
                         runCatching { repository.trendBefore(metric, date, origins)?.direction }.getOrNull()
                     }
-                    data.copy(trend = trend)
+                    // A ring only: the streak is about the goal the ring fills towards.
+                    val goal = data.tile.effectiveGoal?.let(data.spec::display)?.takeIf {
+                        it > 0.0 && data.spec.tile.form == TileSpec.Form.RING
+                    }
+                    val streak = goal?.let {
+                        gate.withPermit {
+                            runCatching { repository.goalStreak(metric, it, date, data.value, origins) }.getOrNull()
+                        }
+                    } ?: 0
+                    data.copy(trend = trend, streak = streak)
                 }
             }.awaitAll()
         }
