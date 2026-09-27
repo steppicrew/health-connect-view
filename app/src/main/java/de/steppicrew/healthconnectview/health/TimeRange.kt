@@ -17,6 +17,16 @@ import java.time.temporal.ChronoUnit
 fun dayFilter(date: LocalDate): TimeRangeFilter =
     TimeRangeFilter.between(date.atStartOfDay(), date.plusDays(1).atStartOfDay())
 
+/**
+ * [dayFilter] for a total, ending now if [date] is today.
+ *
+ * Health Connect derives basal energy for time nobody recorded, including the hours still to
+ * come, so a midnight-to-midnight total for today counts calories not yet burned. See
+ * [Span.totalFilter].
+ */
+fun dayTotalFilter(date: LocalDate, now: LocalDateTime = LocalDateTime.now()): TimeRangeFilter =
+    TimeRangeFilter.between(date.atStartOfDay(), minOf(date.plusDays(1).atStartOfDay(), now))
+
 /** Instant bounds for the same day, for reading raw records. */
 fun dayInstants(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): TimeRangeFilter =
     TimeRangeFilter.between(

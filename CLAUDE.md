@@ -100,6 +100,14 @@ daily `aggregate()` is correct; only the intraday slicing double-counts. Intrada
 therefore rescaled to finish on the daily aggregate -- buckets supply the timing, the platform
 supplies the magnitude -- and the chart says so when it has done this.
 
+**Today's total is wrong both ways for a running tally.** Garmin posts today's total calories
+as one 00:00-23:59 record whose value grows through the day. Aggregated to midnight, Health
+Connect adds derived basal energy for hours still to come (1,787 kcal at 10:23 against the
+record's 906); aggregated to now, it apportions the record over 24 hours and keeps the elapsed
+share (786). Today's totals therefore end at now (`Span.totalFilter`, `dayTotalFilter`) and are
+floored at the fullest single writer's own records (`openTally`), and no curve is drawn past
+now.
+
 **Sessions are not linked to the readings taken during them.** There is no session id on a
 record; `ExerciseSessionRecord` carries only type, title, notes, segments, laps and route.
 Distance, power and calories are separate types over the same window, so session statistics

@@ -5,6 +5,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.R
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 
@@ -85,6 +86,24 @@ enum class Span(@param:StringRes val labelRes: Int) {
             startDate(offset, today).atStartOfDay(),
             endDate(offset, today).atStartOfDay(),
         )
+
+    /**
+     * Local-time filter for a *total*, ending now when the window reaches into the future.
+     *
+     * Not for bucketed requests: those need the midnight-aligned [localFilter]. A total has no
+     * buckets to misalign, and ending it at the window's midnight lets the platform count what
+     * has not happened yet -- measured on the phone at 10:23, Garmin's total-calories record
+     * held 906 kcal while the day's aggregate was 1,787, the difference being basal energy
+     * Health Connect derives for the rest of the day.
+     */
+    fun totalFilter(
+        offset: Int,
+        today: LocalDate = LocalDate.now(),
+        now: LocalDateTime = LocalDateTime.now(),
+    ): TimeRangeFilter = TimeRangeFilter.between(
+        startDate(offset, today).atStartOfDay(),
+        minOf(endDate(offset, today).atStartOfDay(), now),
+    )
 
     /** Instant filter for reading raw records over the same window. */
     fun instantFilter(
