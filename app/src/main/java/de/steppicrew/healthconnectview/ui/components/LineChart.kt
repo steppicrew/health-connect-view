@@ -524,53 +524,6 @@ fun LineChart(
                     end = Offset(size.width, y),
                     strokeWidth = 1f,
                 )
-
-                // Measured on a single unwrapped line. Without this the measurer inherits the
-                // canvas width as its constraint and a label can come back wrapped or
-                // clipped -- on a session chart the guides read "138, 12, 14, 101" where the
-                // middle two were 127 and 114 with their last digit cut off. An axis that
-                // silently drops digits is worse than no axis.
-                val label = textMeasurer.measure(
-                    text = Formatting.axisLabel(guide, scale.decimals),
-                    style = labelStyle,
-                    maxLines = 1,
-                    softWrap = false,
-                )
-                // Centred on its line, except the bottom one: clamping that inside the plot
-                // puts it on top of the line and whatever the series does there, which on a
-                // rising chart is exactly where the data starts. Below the axis it is clear
-                // of both, and the padding reserved beneath the canvas leaves room for it.
-                val labelY = if (guide == guides.first()) {
-                    size.height
-                } else {
-                    (y - label.size.height / 2f).coerceAtLeast(0f)
-                }
-                // Haloed rather than sitting on a filled block.
-                //
-                // A rect the width of the label hid whatever the series did behind it, which
-                // on a chart with bars near the axis is a bar's left edge and on a dense line
-                // is the part of the curve the reader is trying to follow. The halo separates
-                // the digits from whatever crosses them while covering almost nothing.
-                //
-                // Drawn as eight offset copies *under* the fill, not as a stroke on the glyph
-                // itself: a stroke is centred on the outline, so half its width eats inward.
-                // Measured at 2dp on this phone that is a 2.8px bite into a ~3px stem, which
-                // reads as bold text with the counters of 6, 4 and 0 filled in -- reported
-                // from the device. An offset copy only ever adds pixels outside the glyph, so
-                // the digits keep their own weight.
-                val halo = LABEL_HALO.dp.toPx()
-                HALO_DIRECTIONS.forEach { (dx, dy) ->
-                    drawText(
-                        textLayoutResult = label,
-                        color = surfaceColor,
-                        topLeft = Offset(dx * halo, labelY + dy * halo),
-                    )
-                }
-                drawText(
-                    textLayoutResult = label,
-                    color = labelColor,
-                    topLeft = Offset(0f, labelY),
-                )
             }
 
             // Placed by time like every other point, so the marker sits exactly where the
@@ -781,6 +734,60 @@ fun LineChart(
                         center = Offset(xFor(index), yFor(point.value)),
                     )
                 }
+            }
+
+            // The gridline labels last, over everything drawn above. Drawn with their
+            // gridlines they sat *under* the series, so a dense line or a bar ran straight
+            // through the digits and the halo -- which exists to separate them from what
+            // crosses them -- was painted over with them. Reported on respiratory rate.
+            guides.forEach { guide ->
+                val y = yFor(guide)
+                // Measured on a single unwrapped line. Without this the measurer inherits the
+                // canvas width as its constraint and a label can come back wrapped or
+                // clipped -- on a session chart the guides read "138, 12, 14, 101" where the
+                // middle two were 127 and 114 with their last digit cut off. An axis that
+                // silently drops digits is worse than no axis.
+                val label = textMeasurer.measure(
+                    text = Formatting.axisLabel(guide, scale.decimals),
+                    style = labelStyle,
+                    maxLines = 1,
+                    softWrap = false,
+                )
+                // Centred on its line, except the bottom one: clamping that inside the plot
+                // puts it on top of the line and whatever the series does there, which on a
+                // rising chart is exactly where the data starts. Below the axis it is clear
+                // of both, and the padding reserved beneath the canvas leaves room for it.
+                val labelY = if (guide == guides.first()) {
+                    size.height
+                } else {
+                    (y - label.size.height / 2f).coerceAtLeast(0f)
+                }
+                // Haloed rather than sitting on a filled block.
+                //
+                // A rect the width of the label hid whatever the series did behind it, which
+                // on a chart with bars near the axis is a bar's left edge and on a dense line
+                // is the part of the curve the reader is trying to follow. The halo separates
+                // the digits from whatever crosses them while covering almost nothing.
+                //
+                // Drawn as eight offset copies *under* the fill, not as a stroke on the glyph
+                // itself: a stroke is centred on the outline, so half its width eats inward.
+                // Measured at 2dp on this phone that is a 2.8px bite into a ~3px stem, which
+                // reads as bold text with the counters of 6, 4 and 0 filled in -- reported
+                // from the device. An offset copy only ever adds pixels outside the glyph, so
+                // the digits keep their own weight.
+                val halo = LABEL_HALO.dp.toPx()
+                HALO_DIRECTIONS.forEach { (dx, dy) ->
+                    drawText(
+                        textLayoutResult = label,
+                        color = surfaceColor,
+                        topLeft = Offset(dx * halo, labelY + dy * halo),
+                    )
+                }
+                drawText(
+                    textLayoutResult = label,
+                    color = labelColor,
+                    topLeft = Offset(0f, labelY),
+                )
             }
         }
 
