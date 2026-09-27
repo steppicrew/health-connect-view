@@ -149,6 +149,13 @@ open items below and `FEATURE-IDEAS.md`.
     writers from a page of the window. `read()` now stops at exactly its cap; pages of 1,000
     had returned 626 or 1,000 for a cap of 500. Following the zoom confirmed by the owner on
     the phone, 27.09.2026.
+33. [x] **Choose the period when exporting** -- merged 27.09.2026, the owner's idea. After the
+    file type, a dialog offers the window on screen, last month, this month, last year, this
+    year, or a range of one's own (the platform's date range picker, up to today). "4 Wochen"
+    never lines up with a calendar month, and a report is asked for as "August". The file name
+    says the period (`Weight_2026-08_report.pdf`, `_2025_`, or both ends), the empty check of
+    step 18 runs on it, and a period reaching past 30 days without the history permission is
+    warned about in the dialog. Pro through the exports themselves. Not tapped on the phone.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

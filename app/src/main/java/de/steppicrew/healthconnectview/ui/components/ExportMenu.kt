@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
+import de.steppicrew.healthconnectview.export.ExportPeriod
 import kotlinx.coroutines.launch
 
 /** The files an export can produce; see `Exporter`, `PressureReportPdf` and `ReadingReportPdf`. */
@@ -34,8 +35,9 @@ enum class ExportKind(val suffix: String, val extension: String, val feature: Fe
 }
 
 /**
- * The export action for a detail view: a menu of the files on offer, each saved through the
- * system's own "save as" dialog, so the user picks the place and the app never chooses one.
+ * The export action for a detail view: a menu of the files on offer, then the period
+ * ([ExportPeriodDialog]), each saved through the system's own "save as" dialog, so the user
+ * picks the place and the app never chooses one.
  *
  * Locked entries stay visible with a padlock: a feature that silently vanishes cannot be asked
  * about, and "Pro" says why it is unavailable. Tapping one opens Play's purchase sheet, so the
@@ -43,23 +45,29 @@ enum class ExportKind(val suffix: String, val extension: String, val feature: Fe
  */
 @Composable
 fun ExportAction(
-    fileBase: String,
+    /** The type's name for the file, e.g. "Weight"; the period and the kind are added to it. */
+    typeName: String,
+    /** The window on screen, offered first. */
+    shown: ExportPeriod,
+    historyGranted: Boolean,
     dailyAvailable: Boolean,
     /** Types with a PDF log for a doctor (`Exporter.REPORT_TYPES`). */
     reportAvailable: Boolean,
     /** Whether the file would hold anything; the dialog opens only if so. */
-    canExport: suspend (ExportKind) -> Boolean,
-    onExport: (ExportKind, Uri) -> Unit,
+    canExport: suspend (ExportKind, ExportPeriod) -> Boolean,
+    onExport: (ExportKind, ExportPeriod, Uri) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val activity = LocalActivity.current
     val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
     var open by remember { mutableStateOf(false) }
-    var pending by remember { mutableStateOf<ExportKind?>(null) }
+    /** The file type chosen, waiting for its period. */
+    var choosing by remember { mutableStateOf<ExportKind?>(null) }
+    var pending by remember { mutableStateOf<Pair<ExportKind, ExportPeriod>?>(null) }
     val onSaved: (Uri?) -> Unit = { uri ->
-        val kind = pending
+        val job = pending
         pending = null
-        if (uri != null && kind != null) onExport(kind, uri)
+        if (uri != null && job != null) onExport(job.first, job.second, uri)
     }
     // One launcher per file type: the save dialog's type is fixed when it is registered.
     val saveCsv = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv"), onSaved)
@@ -92,12 +100,7 @@ fun ExportAction(
                     onClick = {
                         open = false
                         if (unlocked) {
-                            scope.launch {
-                                if (!canExport(kind)) return@launch
-                                pending = kind
-                                val name = "${fileBase}_${kind.suffix}.${kind.extension}"
-                                if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
-                            }
+                            choosing = kind
                         } else {
                             activity?.let(AppEntitlements.current::buy)
                         }
@@ -105,5 +108,22 @@ fun ExportAction(
                 )
             }
         }
+    }
+
+    choosing?.let { kind ->
+        ExportPeriodDialog(
+            shown = shown,
+            historyGranted = historyGranted,
+            onDismiss = { choosing = null },
+            onConfirm = { period ->
+                choosing = null
+                scope.launch {
+                    if (!canExport(kind, period)) return@launch
+                    pending = kind to period
+                    val name = "${typeName}_${period.fileTag}_${kind.suffix}.${kind.extension}"
+                    if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
+                }
+            },
+        )
     }
 }

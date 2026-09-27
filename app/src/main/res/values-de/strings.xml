@@ -85,6 +85,17 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
     <string name="export_empty">In diesem Zeitraum gibt es nichts zu exportieren.</string>
+    <string name="action_ok">OK</string>
+    <string name="export_period_title">Zeitraum</string>
+    <string name="export_period_shown">Wie angezeigt</string>
+    <string name="export_period_last_month">Letzter Monat</string>
+    <string name="export_period_this_month">Dieser Monat</string>
+    <string name="export_period_last_year">Letztes Jahr</string>
+    <string name="export_period_this_year">Dieses Jahr</string>
+    <string name="export_period_custom">Eigener Zeitraum</string>
+    <string name="export_period_custom_pick">Ersten und letzten Tag wählen</string>
+    <string name="export_period_next">Weiter</string>
+    <string name="export_period_history">Ohne Zugriff auf ältere Daten liefert Health Connect nur die letzten 30 Tage. Der Rest dieses Zeitraums fehlt dann in der Datei.</string>
     <string name="export_report">Bericht (PDF)</string>
     <string name="report_title">Blutdruck-Protokoll</string>
     <string name="report_period">%1$s – %2$s</string>
