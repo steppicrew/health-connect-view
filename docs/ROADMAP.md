@@ -75,6 +75,13 @@ open items below and `FEATURE-IDEAS.md`.
     device's kind. The record screen shows the method always and the device with its own
     maker and model (the user's data, like the app name). The records CSV gains
     `recording_method` and `device` at the end, in stable English words. Seen on the phone.
+    Since: opened with its "i", the source box spells out each chip -- app, device kind and,
+    where stored, the device's name ("Uhr (…)") -- which is too long for the chips themselves.
+    Several phones: Health Connect is one phone's store, and another phone's data only arrives
+    through an app syncing it, so sources are writing apps; two devices behind one app share a
+    chip. Probed on 27.09.2026 (`FieldPresenceActivity`, per writer): no source on the phone
+    names more than one device, and only the two step writers name one at all, so splitting
+    chips by device would change nothing here.
 21. [ ] **Decide: exercise routes.** 26 of 114 sessions in a month carry a route, all behind
     `READ_EXERCISE_ROUTES`, which the app never requests. With no network there is no map, so a
     route would be a drawn path and an elevation profile. Location is the most sensitive data
