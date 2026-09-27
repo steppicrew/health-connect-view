@@ -398,6 +398,7 @@
     <string name="permissions_title">Choose what to show</string>
     <string name="permissions_intro">Pick the data you want to see. You can grant as little or as much as you like, and change it later at any time.</string>
     <string name="permissions_revoke_hint">To take a permission back, tap a granted row: Android allows that only in Health Connect, and the row opens this app\'s page there.</string>
+    <string name="permissions_revoke_toast">Switch off “%1$s” there. Health Connect may name it a little differently.</string>
     <plurals name="permissions_granted_count">
         <item quantity="one">%1$d of %2$d type allowed</item>
         <item quantity="other">%1$d of %2$d types allowed</item>
