@@ -10,6 +10,7 @@ import android.graphics.pdf.PdfDocument
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.AxisScale
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.ui.components.monotoneControls
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
@@ -166,6 +167,8 @@ abstract class ReportPdf(protected val context: Context) {
         val dashed: Boolean = false,
         val dots: Boolean = true,
         val line: Boolean = true,
+        /** Drawn as the screen draws the type: the same monotone curve, never past a reading. */
+        val smooth: Boolean = false,
     )
 
     /**
@@ -210,8 +213,15 @@ abstract class ReportPdf(protected val context: Context) {
         }
         series.forEach { s ->
             if (s.line) {
+                val xs = FloatArray(s.points.size) { x(s.points[it].first) }
+                val ys = FloatArray(s.points.size) { y(s.points[it].second) }
                 val path = Path()
-                s.points.forEachIndexed { i, (t, v) -> if (i == 0) path.moveTo(x(t), y(v)) else path.lineTo(x(t), y(v)) }
+                if (xs.isNotEmpty()) path.moveTo(xs[0], ys[0])
+                if (s.smooth && xs.size > 2) {
+                    monotoneControls(xs, ys).forEachIndexed { i, c -> path.cubicTo(c.x1, c.y1, c.x2, c.y2, xs[i + 1], ys[i + 1]) }
+                } else {
+                    for (i in 1 until xs.size) path.lineTo(xs[i], ys[i])
+                }
                 drawPath(path, if (s.dashed) dashedInk else lineInk)
             }
             if (s.dots) s.points.forEach { (t, v) -> drawCircle(x(t), y(v), if (s.line) CHART_DOT else LONE_DOT, inkDot) }

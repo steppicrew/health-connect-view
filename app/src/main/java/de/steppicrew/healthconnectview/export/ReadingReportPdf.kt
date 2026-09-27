@@ -61,7 +61,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
         add(gap())
 
         add(section(context.getString(R.string.report_course)))
-        add(chart(listOf(ChartSeries(report.readings.map { it.time to kg.convert(it.value) })), start(report.first, zone), end(report.last, zone), zone))
+        add(chart(listOf(ChartSeries(report.readings.map { it.time to kg.convert(it.value) }, smooth = true)), start(report.first, zone), end(report.last, zone), zone))
 
         add(section(context.getString(R.string.report_by_week)))
         periodTable(report.weeks, R.string.report_col_week) { mass(it) }
@@ -118,8 +118,8 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
         add(
             chart(
                 listOf(
-                    ChartSeries(report.days.mapNotNull { d -> d.rolling?.let { noon(d.date) to it } }, dashed = true, dots = false),
-                    ChartSeries(report.days.map { noon(it.date) to it.value }),
+                    ChartSeries(report.days.mapNotNull { d -> d.rolling?.let { noon(d.date) to it } }, dashed = true, dots = false, smooth = true),
+                    ChartSeries(report.days.map { noon(it.date) to it.value }, smooth = true),
                 ),
                 start(report.first, zone),
                 end(report.last, zone),

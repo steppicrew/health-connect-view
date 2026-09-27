@@ -155,7 +155,8 @@ open items below and `FEATURE-IDEAS.md`.
     never lines up with a calendar month, and a report is asked for as "August". The file name
     says the period (`Weight_2026-08_report.pdf`, `_2025_`, or both ends), the empty check of
     step 18 runs on it, and a period reaching past 30 days without the history permission is
-    warned about in the dialog. Pro through the exports themselves. Not tapped on the phone.
+    warned about in the dialog. Pro through the exports themselves. Confirmed by the owner on the
+    phone.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
@@ -1438,7 +1439,8 @@ as `Feature.PDF_REPORTS`.
   relation and meal. At the factor of 18 the two units' limits do not meet (70 mg/dL is 3.889
   mmol/L), so the range starts at 3.85 and both 70 and 3.9 count as in range.
 - **A plain chart** in ink with a round value axis, printable in black and white; a target
-  range shaded green.
+  range shaded green. Weight and resting heart rate use the screen's monotone curve
+  (`monotoneControls`), so the paper shows the same line and never one past a reading.
 
 ## 18. Units — built
 
