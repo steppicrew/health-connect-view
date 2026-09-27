@@ -430,6 +430,8 @@
     <string name="chart_goal_reached">Goal of %1$s reached</string>
     <string name="chart_goal_remaining">%1$s of %2$s</string>
     <string name="chart_source_raw">Individual readings</string>
+    <string name="chart_source_readings_daily">Daily averages of the readings, one app per day</string>
+    <string name="chart_source_readings_weekly">Weekly averages of the readings, one app per day</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
     <string name="privacy_title">Privacy</string>

@@ -128,6 +128,12 @@ data class TileSpec(
      * `rollingMean`.
      */
     val rollingBaseline: Boolean = false,
+    /**
+     * Across days, one mean per day of the readings, with the day's spread, rather than every
+     * reading: for frequent readings with no aggregate, whose weeks were a solid wall of
+     * strokes. See `DailyReadings`.
+     */
+    val dailyMeans: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
