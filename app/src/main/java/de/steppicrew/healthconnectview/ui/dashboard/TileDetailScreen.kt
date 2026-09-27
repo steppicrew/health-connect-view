@@ -519,6 +519,8 @@ private fun SpanSummary(
                         // HRV's figure is computed, and says which: a night, or a week of them.
                         data.hrv != null && data.extent == null -> R.string.hrv_week_label
                         data.hrv != null -> R.string.hrv_night_label
+                        // One value a day: a day of it has nothing to average.
+                        data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
                         data.spec.isAveraged -> R.string.span_average
                         else -> R.string.span_total
                     },
@@ -601,7 +603,7 @@ private fun SpanSummary(
             ChartLegend(data = data)
         }
 
-        if (data.points.isNotEmpty()) {
+        if (data.drawsChart) {
             // The single nights are optional: some want the week's line alone, some want to
             // see which nights moved it. Remembered, as a display choice, not per screen.
             val context = LocalContext.current

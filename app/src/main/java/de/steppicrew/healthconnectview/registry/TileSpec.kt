@@ -115,6 +115,13 @@ data class TileSpec(
      * usual range comes from the four weeks before. See `nightlyHrv` and `hrvDays`.
      */
     val nightlyStatus: Boolean = false,
+    /**
+     * At most one value a day exists: a resting heart rate, a basal metabolic rate. A day's
+     * chart would be one dot on an empty 24-hour axis, so the day window shows the value alone
+     * (the headline already has it). Across days the same values are a real series and keep
+     * their chart -- the choice is per window, not per type.
+     */
+    val dailyValue: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

@@ -191,7 +191,14 @@ data class TileDetailData(
      */
     val records: List<Record>,
     val truncated: Boolean,
-)
+) {
+    /**
+     * Whether there is a series worth drawing. Not on a day of a type with one value a day:
+     * that chart is a lone dot on an empty axis, and the value is already the headline.
+     */
+    val drawsChart: Boolean
+        get() = points.isNotEmpty() && !(spec.tile.dailyValue && extent != null)
+}
 
 
 /** One metric measured over a session's window, for the session detail sheet. */

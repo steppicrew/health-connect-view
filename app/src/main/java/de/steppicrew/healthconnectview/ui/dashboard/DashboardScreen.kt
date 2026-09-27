@@ -579,7 +579,8 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
     // The user's bands where they set them; the type's defaults otherwise.
     val zones = data.tile.effectiveZones
 
-    val chart = data.chart?.takeIf { it.points.isNotEmpty() || it.sessions.isNotEmpty() }
+    // A day of a one-value-a-day type has no chart to draw, so its tile falls back to the value.
+    val chart = data.chart?.takeIf { it.drawsChart || it.sessions.isNotEmpty() }
     when {
         !data.granted -> LockedTile(onGrantAccess)
 

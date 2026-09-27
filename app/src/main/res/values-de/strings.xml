@@ -277,6 +277,7 @@
     <string name="span_previous">Früher</string>
     <string name="span_next">Später</string>
     <string name="span_total">Gesamt</string>
+    <string name="span_daily_value">Tageswert</string>
 
     <!-- Berechtigungen -->
     <string name="permissions_title">Auswählen, was angezeigt wird</string>

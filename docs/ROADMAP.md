@@ -109,11 +109,12 @@ open items below and `FEATURE-IDEAS.md`.
     Since: points outside the range are orange; on a week or four, the single nights sit behind
     the line as faint dots joined by a dotted line (broken where a night is missing), behind a
     remembered "Einzelne Nächte zeigen" checkbox; the explanation is behind an "i".
-29. [ ] **One value, no chart.** Where a window can only hold one value -- resting heart rate on
-    the day view is one reading a day -- the chart draws a lone dot on an empty 24-hour axis.
-    Show the value itself instead (the headline already has it) and drop the chart, or shrink
-    it to a line of text. Decide per window, not per type: the same resting rate over four
-    weeks is a real series. Owner's request, 27.09.2026.
+29. [x] **One value, no chart** -- merged 27.09.2026. `TileSpec.dailyValue` marks the types
+    with at most one value a day (resting heart rate, basal metabolic rate); on a day their
+    detail view drops the chart and labels the headline "Tageswert" instead of "Durchschnitt",
+    and a large tile set to a day and a chart face falls back to the value. Week, four weeks and
+    year keep their chart. Seen on the phone. Not done: a type that *can* hold several readings
+    but happens to have one (a single weigh-in) still draws its dot -- step 15 fixed its axis.
 30. [ ] **Range bands across gaps.** A shaded range is drawn as one ribbon through every point
     that has one, so where days are missing it runs straight across the gap and can look odd --
     a band sloping through days nothing was recorded, or narrowing to a point and widening
