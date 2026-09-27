@@ -123,7 +123,25 @@ enum class Span(@param:StringRes val labelRes: Int) {
     fun needsHistoryPermission(offset: Int, today: LocalDate = LocalDate.now()): Boolean =
         startDate(offset, today).isBefore(today.minusDays(HISTORY_FREE_DAYS))
 
+    /**
+     * How many steps back the window holding [date] sits; 0 for the current one.
+     *
+     * Counted in the span's own periods, not in days: an offset is fed to [endDate], which
+     * steps by a week, four weeks or a year as well as by a day, so a day count used directly
+     * sent a month view 28 times too far back. Stepping until the window contains the date
+     * keeps one definition of "which window is this", whatever the period.
+     */
+    fun offsetOf(date: LocalDate, today: LocalDate = LocalDate.now()): Int {
+        if (!date.isBefore(today)) return 0
+        var offset = 0
+        while (offset < MAX_OFFSET_STEPS && date.isBefore(startDate(offset, today))) offset++
+        return offset
+    }
+
     private companion object {
         const val HISTORY_FREE_DAYS = 30L
+
+        /** Ceiling on the offset search, so an absurd date cannot spin. Years at a day each. */
+        const val MAX_OFFSET_STEPS = 4000
     }
 }

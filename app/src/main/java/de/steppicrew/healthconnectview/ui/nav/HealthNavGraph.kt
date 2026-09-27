@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.nav
 
+import de.steppicrew.healthconnectview.health.Span
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,7 +40,7 @@ object Routes {
     fun cycle() = "cycle"
 
     fun typeDetail(typeName: String) = "type/$typeName"
-    fun tileDetail(typeName: String, date: String) = "tile/$typeName?date=$date"
+    fun tileDetail(typeName: String, date: String, span: Span = Span.DAY) = "tile/$typeName?date=$date&span=${span.name}"
 }
 
 @Composable
@@ -65,8 +66,8 @@ fun HealthNavGraph(
             val viewModel: DashboardViewModel = viewModel()
             DashboardScreen(
                 viewModel = viewModel,
-                onOpenType = { type, date ->
-                    navController.navigate(Routes.tileDetail(type, date))
+                onOpenType = { type, date, span ->
+                    navController.navigate(Routes.tileDetail(type, date, span))
                 },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                 onOpenPermissions = { navController.navigate(Routes.SETTINGS) },

@@ -156,6 +156,11 @@ fun LineChart(
      * size the grid decides. The parent must bound the height, as a tile cell does.
      */
     fillHeight: Boolean = false,
+    /**
+     * Half the gridlines, for a plot too short for four: on a one-row tile the labels of
+     * neighbouring lines touched and read as one number.
+     */
+    compactAxis: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -183,11 +188,11 @@ fun LineChart(
     // rate of 45..113 as 45, 62, 79, 96, 113 -- five values none of which helps place a sixth.
     // The scale still contains the data, the goal and the band, so nothing that took part in
     // the old range is clipped out of the new one.
-    val scale = remember(dataLow, dataHigh, bars, integral) {
+    val scale = remember(dataLow, dataHigh, bars, integral, compactAxis) {
         AxisScale.of(
             low = dataLow,
             high = dataHigh,
-            targetSteps = GUIDE_INTERVALS,
+            targetSteps = if (compactAxis) GUIDE_INTERVALS / 2 else GUIDE_INTERVALS,
             integral = integral,
             includeZero = bars,
         )

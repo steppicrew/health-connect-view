@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.billing.Feature
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.dashboard.TileFace
+import de.steppicrew.healthconnectview.health.Span
 import android.app.Application
 import android.util.Log
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -88,6 +92,13 @@ data class TileData(
      * it belongs to the shown day itself. See [TileSpec.carryLastReading].
      */
     val valueDate: LocalDate? = null,
+    /**
+     * The window [value] describes: the tile's own span where it is drawn large, the day
+     * otherwise. A single cell always shows the day, whatever its stored span.
+     */
+    val shownSpan: Span = Span.DAY,
+    /** The window's chart, for a large tile showing one; null for every other tile. */
+    val chart: TileDetailData? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -95,6 +106,8 @@ data class TileData(
     /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
     val progress: Float?
         get() {
+            // A goal is per day: a week's steps against a daily 5,000 would always read full.
+            if (shownSpan != Span.DAY) return null
             // Goals are stored metric; the value is in the shown unit.
             val goal = tile.effectiveGoal?.let(spec::display) ?: return null
             val current = value ?: return null
@@ -230,6 +243,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    /** Sets a large tile's window and face, and persists them. */
+    fun setOptions(typeName: String, span: Span, face: TileFace) {
+        config = config.withOptions(typeName, span, face)
+        viewModelScope.launch {
+            store.save(config)
+            loadTiles()
+        }
+    }
+
     /** Removes a tile and persists the layout. */
     fun removeTile(typeName: String) {
         config = config.without(typeName)
@@ -272,9 +294,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * for the length of a read just to make one of them bigger.
      */
     fun resizeTile(typeName: String) {
+        val before = config.tiles.firstOrNull { it.typeName == typeName }
         config = config.resized(typeName)
+        val after = config.tiles.firstOrNull { it.typeName == typeName }
         _state.update { it.copy(tiles = withCurrentSizes(it.tiles)) }
-        viewModelScope.launch { store.save(config) }
+        viewModelScope.launch {
+            store.save(config)
+            // Except where the size decides *what* is shown: a tile growing into its stored
+            // week, or shrinking back to the day, needs that window read.
+            if (before != null && after != null && showsWindow(before) != showsWindow(after)) loadTiles()
+        }
     }
 
     /**
@@ -366,6 +395,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     curve = carried.curve,
                     sessions = carried.sessions,
                     trend = carried.trend,
+                    shownSpan = carried.shownSpan,
+                    chart = carried.chart,
                     loading = false,
                 )
             }
@@ -380,7 +411,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     if (!placeholder.granted) {
                         placeholder.copy(loading = false)
                     } else {
-                        gate.withPermit { load(placeholder, date) }
+                        gate.withPermit {
+                            load(placeholder, date, RecordRegistry.HISTORY_PERMISSION in granted)
+                        }
                     }
                 }
             }.awaitAll()
@@ -417,7 +450,65 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * reading of the day, which is a different statement -- a weight, not a sum -- and is the
      * only honest number available for them.
      */
-    private suspend fun load(placeholder: TileData, date: LocalDate): TileData {
+    private suspend fun load(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
+        val tile = placeholder.tile
+        if (!showsWindow(tile)) return loadDay(placeholder, date)
+
+        // The day's own path still supplies a day's number -- a carried weight, a ring, the
+        // floor under a running tally -- and the chart comes from the detail screen's loader,
+        // so the tile draws exactly the chart its tap opens.
+        val day = if (tile.span == Span.DAY) loadDay(placeholder, date) else null
+        val offset = tile.span.offsetOf(date)
+        val source = day?.source ?: resolveSource(
+            placeholder,
+            TimeRangeFilter.between(windowStart(tile.span, offset), windowEnd(tile.span, offset)),
+        )
+        val capped = tile.span.needsHistoryPermission(offset) && !historyGranted
+        val chart = runCatching {
+            TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source)
+        }.getOrNull()
+
+        return (day ?: placeholder.copy(source = source)).copy(
+            value = day?.value ?: chart?.total,
+            secondaryValue = day?.secondaryValue ?: chart?.secondaryTotal,
+            sessions = day?.sessions ?: chart?.sessions.orEmpty(),
+            shownSpan = tile.span,
+            chart = chart,
+            loading = false,
+        )
+    }
+
+    /**
+     * Whether [tile] is drawn with its own window or face, rather than as the day's value.
+     *
+     * Large tiles only, and so Pro only: without it every tile is drawn as one cell, and a
+     * single cell has room for neither a chart nor a label saying which window it covers.
+     */
+    private fun showsWindow(tile: Tile): Boolean =
+        AppEntitlements.current.pro.value.allows(Feature.TILE_SIZES) &&
+            tile.isLarge &&
+            (tile.span != Span.DAY || tile.face != TileFace.VALUE)
+
+    /**
+     * The per-type choice, else the preferred app where it wrote into [range].
+     *
+     * A per-type choice stands even when it comes up empty -- it was made deliberately for
+     * this type. A global preference is only a default, so a type the preferred app never
+     * writes falls back to all sources rather than showing an empty tile, which would read as
+     * missing data instead of as a filter matching nothing.
+     */
+    private suspend fun resolveSource(placeholder: TileData, range: TimeRangeFilter): String? {
+        val spec = placeholder.spec
+        return sources[spec.type.simpleName] ?: placeholder.source?.takeIf { pkg ->
+            runCatching {
+                repository.read(spec.type, range, maxRecords = LATEST_ONLY, origins = setOf(DataOrigin(pkg)))
+                    .isNotEmpty()
+            }.getOrDefault(false)
+        }
+    }
+
+    /** The tile for the dashboard's day, as every single cell shows it. */
+    private suspend fun loadDay(placeholder: TileData, date: LocalDate): TileData {
         val spec = placeholder.spec
 
         // A session tile counts spans rather than measuring a metric, so neither branch below
@@ -429,21 +520,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         val metric = spec.aggregate
 
-        // A per-type choice stands even when it comes up empty -- it was made deliberately
-        // for this type. A global preference is only a default, so a type the preferred app
-        // never writes falls back to all sources rather than showing an empty tile, which
-        // would read as missing data instead of as a filter matching nothing.
-        val chosen = sources[spec.type.simpleName]
-        val effective = chosen ?: placeholder.source?.takeIf { pkg ->
-            runCatching {
-                repository.read(
-                    spec.type,
-                    dayInstants(date),
-                    maxRecords = LATEST_ONLY,
-                    origins = setOf(DataOrigin(pkg)),
-                ).isNotEmpty()
-            }.getOrDefault(false)
-        }
+        val effective = resolveSource(placeholder, dayInstants(date))
         val tile = placeholder.copy(source = effective)
         val origins = effective?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
@@ -547,7 +624,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             tiles.map { data ->
                 async {
                     val metric = data.spec.aggregate
-                    if (!data.granted || metric == null || data.spec.tile.form == TileSpec.Form.SESSIONS) {
+                    // The arrow compares a day with the weeks before it, so it says nothing
+                    // about a tile showing a week or a year.
+                    if (!data.granted || metric == null || data.spec.tile.form == TileSpec.Form.SESSIONS ||
+                        data.shownSpan != Span.DAY
+                    ) {
                         return@async data
                     }
                     val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()

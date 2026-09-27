@@ -48,6 +48,14 @@
     <string name="tile_move_up">Nach oben</string>
     <string name="tile_move_down">Nach unten</string>
     <string name="tile_resize">Größe ändern</string>
+    <string name="tile_options">Kachel-Optionen</string>
+    <string name="tile_options_title">Auf dieser Kachel zeigen</string>
+    <string name="tile_options_span">Zeitraum</string>
+    <string name="tile_options_face">Anzeige</string>
+    <string name="tile_face_value">Wert</string>
+    <string name="tile_face_chart">Diagramm</string>
+    <string name="tile_face_both">Beides</string>
+    <string name="tile_title_span_capped">%1$s · %2$s, nur 30 Tage</string>
     <string name="tile_size">Größe %1$d × %2$d</string>
     <string name="tile_remove">Entfernen</string>
     <string name="tile_set_goal">Ziel festlegen</string>

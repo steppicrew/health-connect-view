@@ -29,10 +29,9 @@ open items below and `FEATURE-IDEAS.md`.
    the host.
 9. [x] **Blood pressure report** (PDF, Pro) -- merged 27.09.2026, see section 17.
 10. [x] **Imperial and metric units** -- merged 27.09.2026, see section 18.
-11. [ ] **More on large tiles.** A 2x1 or 2x2 tile has room the 1x1 face does not use: a scale
-    on its chart (axis values, the goal line), a default time range other than the day (a week
-    of steps, a month of weight), and a choice of what the face shows. Per tile, stored beside
-    the goal and zones in the tile config.
+11. [x] **More on large tiles** -- merged 27.09.2026, see "Built: large tiles choose their
+    window and face" in section 1. Seen on the emulator (the Xiaomi cannot be tapped into edit
+    mode); the phone shows the default layout unchanged.
 12. [x] **Blood glucose units** -- merged 27.09.2026, see section 18. Not seen with real
     readings: the phone has no glucose data.
 13. [x] **Weight chart legend** -- merged 27.09.2026. "Messwert" named the line and "Messung"
@@ -184,6 +183,34 @@ every face is a number with something under it, and width is what a curve needs.
   stays visible with a padlock and opens the purchase, as the locked export entries do.
 - Resizing updates the tiles in place rather than reloading them, and a load already running
   re-applies the current sizes when it publishes -- otherwise it snapped the tile back.
+
+### Built: large tiles choose their window and face
+
+A 2x1 or 2x2 tile has an options button in edit mode: a window (day, week, four weeks, year)
+and a face -- the value, the chart, or both. Per tile, stored beside the goal and zones
+(`span`, `face`, written only when chosen), so older layouts and backups read unchanged.
+
+- **The chart is the detail screen's chart.** `TileChartLoader` is the chart half of the
+  detail view model, moved out unchanged, and `DataLineChart` the one mapping onto
+  `LineChart`. A tile's chart cannot disagree with the one its tap opens -- the running total,
+  whole-day summaries and the curve stopping at now are one piece of code.
+- **The window is the one holding the dashboard's day**, counted as the detail screen counts
+  it (`Span.offsetOf`), and a tap opens the detail on that window, so the figure under the
+  finger is the one at the top of the screen it opens.
+- **The value over a window is the detail screen's headline**: the window's total, or its
+  average for a mean. No ring (a daily goal against a week's total would always read full)
+  and no trend arrow (it compares a day with the weeks before it).
+- **The title names the window** -- "Schritte · Woche" -- since a week's total read as today's
+  would mislead. Without the history permission it says "Jahr, nur 30 Tage", as the detail
+  screen's red note does.
+- **The chart ignores touch and fills the tile.** `interactive = false` leaves the tap to the
+  tile; `fillHeight` takes the height the grid gives. A one-row tile gets half the gridlines
+  (`compactAxis`), and "both" puts the number beside the chart on a wide tile and above it on
+  a tall one.
+- **Large only, so Pro only.** A single cell always shows the day's value; the stored window
+  and face survive shrinking or a lapsed purchase, like the size itself.
+- Found on the way: time labels overprinted each other after a gap between samples (15 and
+  16 Sept on the phone). A label that would overlap its neighbour is now left out.
 
 ### Still open
 
