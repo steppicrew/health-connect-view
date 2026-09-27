@@ -197,6 +197,9 @@ data class RecordTypeSpec<T : Record>(
     fun summaryResOf(record: Record): List<Int>? = summaryRes?.invoke(record as T)
 
     @Suppress("UNCHECKED_CAST")
+    /** Decimal places for this type's values in the shown unit; null goes by magnitude. */
+    val valueDecimals: Int? get() = quantity?.decimals()
+
     fun detailsOf(record: Record): List<Field> = details(record as T)
 }
 
