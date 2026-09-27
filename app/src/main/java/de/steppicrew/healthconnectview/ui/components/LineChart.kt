@@ -144,6 +144,18 @@ fun LineChart(
      */
     secondaryPoints: List<Point> = emptyList(),
     secondaryZones: ValueZones? = null,
+    /**
+     * Whether the chart answers touch: pinch to zoom, drag to read, press to highlight.
+     *
+     * Off on a dashboard tile, where a tap has to reach the tile and open the detail -- the
+     * chart there is a glance, and the gestures belong to the screen it opens.
+     */
+    interactive: Boolean = true,
+    /**
+     * Take whatever height the parent gives instead of the fixed plot height, for a tile whose
+     * size the grid decides. The parent must bound the height, as a tile cell does.
+     */
+    fillHeight: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -236,64 +248,74 @@ fun LineChart(
 
     Column(modifier = modifier.fillMaxWidth()) {
         // The readout occupies a fixed row whether or not anything is selected, so touching
-        // the chart does not shift the layout under the finger.
-        val selectedPoint = selected?.let(points::getOrNull)
-        SelectionReadout(
-            point = selectedPoint,
-            unitRes = unitRes,
-            // Matched by time: both values of a reading share its instant, as do both means
-            // of a day's bucket.
-            secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
-        )
+        // the chart does not shift the layout under the finger. Nothing can be selected on a
+        // chart that ignores touch, so there it would only be an empty row.
+        if (interactive) {
+            val selectedPoint = selected?.let(points::getOrNull)
+            SelectionReadout(
+                point = selectedPoint,
+                unitRes = unitRes,
+                // Matched by time: both values of a reading share its instant, as do both
+                // means of a day's bucket.
+                secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
+            )
+        }
 
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(CHART_HEIGHT.dp)
+                .then(if (fillHeight) Modifier.weight(1f) else Modifier.height(CHART_HEIGHT.dp))
                 // Room below the plot for the bottom gridline label, which is drawn under
                 // its own line rather than clamped up on top of the series.
                 .padding(top = 8.dp, bottom = AXIS_GAP.dp)
-                .pointerInput(points, extent) {
-                    // Pinch to zoom the time axis, drag to pan. Only the horizontal axis
-                    // scales: the vertical one already fits the values on screen, and
-                    // stretching it would make two charts of the same type incomparable.
-                    detectTransformGestures { centroid, panChange, zoomChange, _ ->
-                        val newZoom = (zoom * zoomChange).coerceIn(1f, MAX_ZOOM)
-                        // Zoom about the pinch centroid, so the stretch of chart under the
-                        // fingers stays under them rather than sliding away.
-                        val focus = pan + (centroid.x / size.width).coerceIn(0f, 1f) / zoom
-                        val afterZoom = focus - (centroid.x / size.width) / newZoom
-                        // Panning is in screen pixels, so it has to be divided by the zoom to
-                        // become a fraction of the whole series.
-                        zoom = newZoom
-                        pan = clampPan(
-                            afterZoom - panChange.x / size.width / newZoom,
-                            newZoom,
-                        )
-                    }
-                }
-                .pointerInput(points) {
-                    // Drag as well as tap: reading a series means sweeping along it, and
-                    // lifting clears so the chart does not keep a stale highlight.
-                    detectDragGesturesAfterLongPress(
-                        onDragStart = { offset -> selected = nearestIndex(offset.x, size.width) },
-                        onDrag = { change, _ ->
-                            selected = nearestIndex(change.position.x, size.width)
-                        },
-                        onDragEnd = { selected = null },
-                        onDragCancel = { selected = null },
-                    )
-                }
-                .pointerInput(points) {
-                    detectTapGestures(
-                        onPress = { offset ->
-                            selected = nearestIndex(offset.x, size.width)
-                            // Held highlight while the finger is down, cleared on release.
-                            tryAwaitRelease()
-                            selected = null
-                        },
-                    )
-                },
+                .then(
+                    if (!interactive) {
+                        Modifier
+                    } else {
+                        Modifier
+                            .pointerInput(points, extent) {
+                                // Pinch to zoom the time axis, drag to pan. Only the horizontal axis
+                                // scales: the vertical one already fits the values on screen, and
+                                // stretching it would make two charts of the same type incomparable.
+                                detectTransformGestures { centroid, panChange, zoomChange, _ ->
+                                    val newZoom = (zoom * zoomChange).coerceIn(1f, MAX_ZOOM)
+                                    // Zoom about the pinch centroid, so the stretch of chart under the
+                                    // fingers stays under them rather than sliding away.
+                                    val focus = pan + (centroid.x / size.width).coerceIn(0f, 1f) / zoom
+                                    val afterZoom = focus - (centroid.x / size.width) / newZoom
+                                    // Panning is in screen pixels, so it has to be divided by the zoom to
+                                    // become a fraction of the whole series.
+                                    zoom = newZoom
+                                    pan = clampPan(
+                                        afterZoom - panChange.x / size.width / newZoom,
+                                        newZoom,
+                                    )
+                                }
+                            }
+                            .pointerInput(points) {
+                                // Drag as well as tap: reading a series means sweeping along it, and
+                                // lifting clears so the chart does not keep a stale highlight.
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = { offset -> selected = nearestIndex(offset.x, size.width) },
+                                    onDrag = { change, _ ->
+                                        selected = nearestIndex(change.position.x, size.width)
+                                    },
+                                    onDragEnd = { selected = null },
+                                    onDragCancel = { selected = null },
+                                )
+                            }
+                            .pointerInput(points) {
+                                detectTapGestures(
+                                    onPress = { offset ->
+                                        selected = nearestIndex(offset.x, size.width)
+                                        // Held highlight while the finger is down, cleared on release.
+                                        tryAwaitRelease()
+                                        selected = null
+                                    },
+                                )
+                            }
+                    },
+                ),
         ) {
             // The plot's time origin, which is the extent where one is given and the first
             // reading otherwise. Bands, the goal marker and the line all measure from it, so
@@ -716,6 +738,8 @@ fun SessionTimeline(
     sessions: List<Session>,
     extent: ClosedRange<Instant>,
     modifier: Modifier = Modifier,
+    /** As on [LineChart]: take the parent's bounded height rather than the fixed one. */
+    fillHeight: Boolean = false,
 ) {
     val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
@@ -728,7 +752,7 @@ fun SessionTimeline(
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(TIMELINE_HEIGHT.dp),
+                .then(if (fillHeight) Modifier.weight(1f) else Modifier.height(TIMELINE_HEIGHT.dp)),
         ) {
             // The empty track is drawn first, so the hours with nothing in them read as part
             // of the same day rather than as blank page.

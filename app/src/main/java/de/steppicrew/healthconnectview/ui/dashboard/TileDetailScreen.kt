@@ -593,29 +593,7 @@ private fun SpanSummary(
         }
 
         if (data.points.isNotEmpty()) {
-            LineChart(
-                points = data.points,
-                // Safe to smooth now that each rise spans the interval the record actually
-                // covered: the curve rounds the corners of a real ramp rather than inventing
-                // a slope where the data says a vertical jump. The clamp keeps every segment
-                // within the two values it joins, so a plateau cannot bulge.
-                smooth = data.spec.tile.smoothChart && !data.bars,
-                bars = data.bars,
-                rangeBand = data.rangeBand,
-                stack = data.stack,
-                goal = data.goal,
-                goalCrossing = data.goalCrossing,
-                unitRes = data.spec.displayUnitRes,
-                emptyBuckets = data.emptyBuckets,
-                sessions = data.sessions,
-                zones = data.lineZones,
-                secondaryPoints = data.secondaryPoints,
-                secondaryZones = data.secondaryZones,
-                markReadings = data.spec.tile.markReadings,
-                integral = data.spec.tile.integralValues,
-                extent = data.extent,
-                modifier = Modifier.padding(top = 16.dp),
-            )
+            DataLineChart(data, Modifier.padding(top = 16.dp))
             Text(
                 text = stringResource(
                     when {
@@ -799,6 +777,46 @@ private fun ChartLegend(data: TileDetailData) {
             LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
         }
     }
+}
+
+/**
+ * The window's series as a chart, drawn the same wherever it appears.
+ *
+ * Shared by the detail screen and a large dashboard tile, so a tile's chart is the chart its
+ * tap opens -- same marks, same goal line, same bands -- only without the touch readout.
+ */
+@Composable
+internal fun DataLineChart(
+    data: TileDetailData,
+    modifier: Modifier = Modifier,
+    interactive: Boolean = true,
+    fillHeight: Boolean = false,
+) {
+    LineChart(
+        points = data.points,
+        // Safe to smooth now that each rise spans the interval the record actually
+        // covered: the curve rounds the corners of a real ramp rather than inventing
+        // a slope where the data says a vertical jump. The clamp keeps every segment
+        // within the two values it joins, so a plateau cannot bulge.
+        smooth = data.spec.tile.smoothChart && !data.bars,
+        bars = data.bars,
+        rangeBand = data.rangeBand,
+        stack = data.stack,
+        goal = data.goal,
+        goalCrossing = data.goalCrossing,
+        unitRes = data.spec.displayUnitRes,
+        emptyBuckets = data.emptyBuckets,
+        sessions = data.sessions,
+        zones = data.lineZones,
+        secondaryPoints = data.secondaryPoints,
+        secondaryZones = data.secondaryZones,
+        markReadings = data.spec.tile.markReadings,
+        integral = data.spec.tile.integralValues,
+        extent = data.extent,
+        interactive = interactive,
+        fillHeight = fillHeight,
+        modifier = modifier,
+    )
 }
 
 /** One swatch and its name. */
