@@ -108,6 +108,10 @@ share (786). Today's totals therefore end at now (`Span.totalFilter`, `dayTotalF
 floored at the fullest single writer's own records (`openTally`), and no curve is drawn past
 now.
 
+**Skin temperature's aggregate disagrees with its records.** `TEMPERATURE_DELTA_AVG` gave 0 °C
+for a day whose two records read +0.40 and +0.00, and nothing for a day with a record. The type
+is charted from its readings and has no aggregate; do not give it one without re-measuring.
+
 **Sessions are not linked to the readings taken during them.** There is no session id on a
 record; `ExerciseSessionRecord` carries only type, title, notes, segments, laps and route.
 Distance, power and calories are separate types over the same window, so session statistics

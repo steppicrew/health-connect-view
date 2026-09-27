@@ -56,9 +56,13 @@ open items below and `FEATURE-IDEAS.md`.
     the window holds, so a window with no data produces a file with only headers. Check
     first (`hasData` over the export's range and source) and say "nothing to export" instead
     of opening the dialog.
-19. [ ] **Daily spread for more types.** Mostly one registry line each (`rangeAggregates`):
-    weight, resting heart rate, speed, power, cycling and step cadence, skin temperature. Blood
-    pressure has two values and needs a band for each, which the chart does not yet draw. Today only heart rate gets the band behind its multi-day mean. Section 20.
+19. [x] **Daily spread for more types** -- merged 27.09.2026. Weight, resting heart rate,
+    speed, power and both cadences carry the min-max band heart rate had. A band is drawn only
+    where some day had a spread: one reading a day (a resting rate, most weigh-ins) makes it
+    zero wide, and the legend then named a range the chart did not draw. Not done: blood
+    pressure (two values need two bands, which the chart cannot draw yet) and skin temperature,
+    whose platform average disagreed with its own records on the phone (0 °C for a day of +0.40
+    and +0.00) -- see CLAUDE.md.
 20. [ ] **Say how and by what a record was made.** Metadata the app never reads: recording
     method (manual entry, active recording, automatic) and device type (watch, phone, scale).
     A record row could say "manually entered" or show a watch or phone icon; on the phone,
@@ -77,6 +81,17 @@ open items below and `FEATURE-IDEAS.md`.
     waits for someone who logs food, or the emulator.
 24. [ ] **Laps, segments, notes, planned sessions.** Exposed on exercise sessions, filled by no
     app on the phone. Lowest priority; revisit if a writer that fills them turns up.
+25. [ ] **Mindfulness sessions.** The one Health Connect type the app leaves out: connect-client
+    1.1.0 resolves its permission to `READ_MINDFULNESS_SESSION`, which the platform does not
+    define (it has `READ_MINDFULNESS`), so it can never be granted. Worth trying: request the
+    platform's string directly instead of `getReadPermission()`, and check on the phone whether
+    reads then succeed; otherwise wait for a library that has the names aligned. Moved up from
+    section 19.
+26. [ ] **The same type on several tiles** (Pro). Now that a large tile chooses its window and
+    face, one type can usefully appear twice -- today's steps as a ring beside a year of
+    weekly bars. Tiles are keyed by type name throughout (config, JSON, per-tile goal and zones,
+    the grid's keys), so each tile needs its own id first; the goal and zones then decide
+    whether they are per tile or per type.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
@@ -1251,6 +1266,9 @@ creates or updates it and is safe to rerun; change the price or the listing text
 - **Acknowledged on every listing,** not only after buying: Play refunds a purchase left
   unacknowledged for three days, and a purchase can complete while the app is not running.
 - **Pending payments** (cash, bank transfer) show as pending and unlock when Play confirms.
+- **Every export is Pro** -- the owner's rule, 27.09.2026. Both CSV kinds and the blood pressure
+  report already are; any new export (the reports of step 17 included) joins them. The
+  settings backup is not health data and stays free until decided otherwise.
 - **No network.** Billing talks to the Play Store app over IPC; `verifyNoNetworkPermission`
   still passes, and the privacy page's purchases paragraph already says this.
 - **What it unlocks:** CSV export (section 13), tile sizes (section 1) and the blood pressure
@@ -1375,9 +1393,7 @@ a cold start.
 
 ## 19. Deferred
 
-- **MindfulnessSession** — excluded from v1: the library requests
-  `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
-  permission can never be granted. Add once those names converge.
+Nothing at the moment. MindfulnessSession, deferred here until 27.09.2026, is plan step 25.
 
 ## 20. Data audit: what Health Connect holds that the app does not show
 
@@ -1388,7 +1404,7 @@ actually fill came from `FieldPresenceActivity`, a debug probe that logs per fie
 many records have it filled and how many distinct values it takes -- never a value.
 
 **Types.** The registry covers every record type in the library except `MindfulnessSession`,
-already excluded (section 19). No type is missing; the gaps are inside the types.
+left out for its permission (plan step 25). No other type is missing; the gaps are inside the types.
 
 **Fields and aggregates the app never reads, by what the phone holds:**
 
