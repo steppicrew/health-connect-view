@@ -2,6 +2,8 @@ package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import de.steppicrew.healthconnectview.dashboard.Tile
+import de.steppicrew.healthconnectview.dashboard.TileFace
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.TileSpec
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -103,6 +105,25 @@ class DashboardConfigTest {
     fun `a goal for an unpinned type changes nothing`() {
         val updated = config.withGoal("SleepSessionRecord", 8.0)
         assertEquals(config.tiles, updated.tiles)
+    }
+
+    @Test
+    fun `options change only their own tile`() {
+        val config = DashboardConfig(listOf(Tile("StepsRecord"), Tile("WeightRecord")))
+        val updated = config.withOptions("WeightRecord", Span.MONTH, TileFace.CHART)
+        assertEquals(Span.DAY, updated.tiles[0].span)
+        assertEquals(TileFace.VALUE, updated.tiles[0].face)
+        assertEquals(Span.MONTH, updated.tiles[1].span)
+        assertEquals(TileFace.CHART, updated.tiles[1].face)
+    }
+
+    @Test
+    fun `resizing keeps the options`() {
+        val tile = Tile("StepsRecord", width = 2, span = Span.WEEK, face = TileFace.BOTH)
+        val single = tile.nextSize().nextSize()
+        assertEquals(1 to 1, single.width to single.height)
+        assertEquals(Span.WEEK, single.span)
+        assertEquals(TileFace.BOTH, single.face)
     }
 
     @Test

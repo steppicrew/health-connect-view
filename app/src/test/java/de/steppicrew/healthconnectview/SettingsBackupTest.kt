@@ -2,8 +2,11 @@ package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import de.steppicrew.healthconnectview.dashboard.Tile
+import de.steppicrew.healthconnectview.dashboard.TileFace
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.settings.BackupError
+import de.steppicrew.healthconnectview.settings.GlucoseChoice
 import de.steppicrew.healthconnectview.settings.Settings
 import de.steppicrew.healthconnectview.settings.SettingsBackup
 import de.steppicrew.healthconnectview.settings.SettingsBackupCodec
@@ -23,7 +26,7 @@ class SettingsBackupTest {
             listOf(
                 Tile("StepsRecord", goal = 8000.0),
                 Tile("HeartRateRecord", zones = ValueZones(listOf(60.0, 100.0, 140.0))),
-                Tile("WeightRecord"),
+                Tile("WeightRecord", width = 2, span = Span.MONTH, face = TileFace.BOTH),
             ),
         ),
         sourceSelections = mapOf("StepsRecord" to "com.garmin.android.apps.connectmobile"),
@@ -33,6 +36,7 @@ class SettingsBackupTest {
             dynamicColor = false,
             expandedExplanations = setOf("trend"),
             units = UnitChoice.IMPERIAL,
+            glucose = GlucoseChoice.MG_PER_DL,
         ),
     )
 
@@ -69,11 +73,14 @@ class SettingsBackupTest {
         val restored = roundTrip(
             """
             {"kind": "health-connect-view-settings", "format": 1,
-             "dashboard": [{"type": "StepsRecord"}, {"type": "NoSuchRecord"}, {"w": 2}],
+             "dashboard": [{"type": "StepsRecord", "span": "DECADE", "face": "HOLOGRAM"},
+                           {"type": "NoSuchRecord"}, {"w": 2}],
              "settings": {"theme": "PURPLE", "dynamicColor": false}}
             """,
         )
         assertEquals(listOf("StepsRecord"), restored.dashboard.tiles.map { it.typeName })
+        assertEquals(Span.DAY, restored.dashboard.tiles.single().span)
+        assertEquals(TileFace.VALUE, restored.dashboard.tiles.single().face)
         assertEquals(ThemeChoice.SYSTEM, restored.settings.theme)
         assertEquals(false, restored.settings.dynamicColor)
         assertNull(restored.preferredSource)

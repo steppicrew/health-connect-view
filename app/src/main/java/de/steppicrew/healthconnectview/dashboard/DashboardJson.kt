@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.dashboard
 
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.ValueZones
 import org.json.JSONArray
 import org.json.JSONObject
@@ -25,6 +26,9 @@ internal object DashboardJson {
                     tile.zones?.let { zones ->
                         put(FIELD_ZONES, JSONArray().apply { zones.bounds.forEach { put(it) } })
                     }
+                    // Only when chosen, so a layout that never used them reads as it always did.
+                    if (tile.span != Span.DAY) put(FIELD_SPAN, tile.span.name)
+                    if (tile.face != TileFace.VALUE) put(FIELD_FACE, tile.face.name)
                 },
             )
         }
@@ -47,6 +51,12 @@ internal object DashboardJson {
                         .sanitised()
                         .takeIf { it.bounds.isNotEmpty() }
                 },
+                span = item.optString(FIELD_SPAN)
+                    .let { stored -> Span.entries.firstOrNull { it.name == stored } }
+                    ?: Span.DAY,
+                face = item.optString(FIELD_FACE)
+                    .let { stored -> TileFace.entries.firstOrNull { it.name == stored } }
+                    ?: TileFace.VALUE,
             )
         }
         return DashboardConfig(tiles)
@@ -57,4 +67,6 @@ internal object DashboardJson {
     private const val FIELD_HEIGHT = "h"
     private const val FIELD_GOAL = "goal"
     private const val FIELD_ZONES = "zones"
+    private const val FIELD_SPAN = "span"
+    private const val FIELD_FACE = "face"
 }
