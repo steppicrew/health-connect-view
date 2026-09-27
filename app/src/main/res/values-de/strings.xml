@@ -361,6 +361,7 @@
     <string name="legend_exercise">Aktivität</string>
     <string name="legend_range">Spanne des Tages</string>
     <string name="legend_goal">Ziel</string>
+    <string name="legend_range_weekly">Spanne der Woche</string>
     <string name="legend_value_bars">Tagessumme</string>
     <string name="legend_value_bars_weekly">Wochensumme</string>
     <string name="legend_value_sessions">Sitzungen pro Tag</string>
