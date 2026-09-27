@@ -327,6 +327,20 @@
 
     <!-- Feldbezeichnungen -->
     <string name="field_source_app">Quell-App</string>
+    <string name="field_recording">Aufzeichnung</string>
+    <string name="field_device">Gerät</string>
+    <string name="recording_manual">von Hand eingetragen</string>
+    <string name="recording_active">während einer Aktivität aufgezeichnet</string>
+    <string name="recording_automatic">automatisch gemessen</string>
+    <string name="recording_unknown">keine Angabe</string>
+    <string name="device_watch">Uhr</string>
+    <string name="device_phone">Telefon</string>
+    <string name="device_scale">Waage</string>
+    <string name="device_ring">Ring</string>
+    <string name="device_head_mounted">Headset</string>
+    <string name="device_fitness_band">Fitnessband</string>
+    <string name="device_chest_strap">Brustgurt</string>
+    <string name="device_smart_display">Smart Display</string>
     <string name="field_record_id">Datensatz-ID</string>
 
     <!-- Zeiträume -->

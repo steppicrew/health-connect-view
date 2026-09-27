@@ -23,6 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.DeviceKind
+import de.steppicrew.healthconnectview.registry.RecordingMethod
+import de.steppicrew.healthconnectview.registry.deviceName
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -81,6 +84,18 @@ fun RecordDetailScreen(
                 label = stringResource(R.string.field_source_app),
                 value = context.appLabelFor(record.metadata.dataOrigin.packageName),
             )
+            DetailRow(
+                label = stringResource(R.string.field_recording),
+                value = stringResource(RecordingMethod.of(record.metadata.recordingMethod).labelRes),
+            )
+            val device = record.metadata.device
+            val deviceText = listOfNotNull(
+                DeviceKind.of(device)?.let { stringResource(it.labelRes) },
+                deviceName(device),
+            ).joinToString(" · ")
+            if (deviceText.isNotEmpty()) {
+                DetailRow(label = stringResource(R.string.field_device), value = deviceText)
+            }
             DetailRow(
                 label = stringResource(R.string.field_record_id),
                 value = record.metadata.id,

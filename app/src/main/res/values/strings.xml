@@ -364,6 +364,20 @@
 
     <!-- Record detail field labels -->
     <string name="field_source_app">Source app</string>
+    <string name="field_recording">Recorded</string>
+    <string name="field_device">Device</string>
+    <string name="recording_manual">entered by hand</string>
+    <string name="recording_active">recorded during an activity</string>
+    <string name="recording_automatic">measured automatically</string>
+    <string name="recording_unknown">not stated</string>
+    <string name="device_watch">Watch</string>
+    <string name="device_phone">Phone</string>
+    <string name="device_scale">Scale</string>
+    <string name="device_ring">Ring</string>
+    <string name="device_head_mounted">Headset</string>
+    <string name="device_fitness_band">Fitness band</string>
+    <string name="device_chest_strap">Chest strap</string>
+    <string name="device_smart_display">Smart display</string>
     <string name="field_record_id">Record ID</string>
 
     <!-- Time ranges -->

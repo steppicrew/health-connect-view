@@ -1,6 +1,20 @@
 package de.steppicrew.healthconnectview.ui.detail
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material.icons.filled.MonitorWeight
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.filled.ViewInAr
+import androidx.compose.material.icons.filled.Watch
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.vector.ImageVector
+import de.steppicrew.healthconnectview.registry.DeviceKind
+import de.steppicrew.healthconnectview.registry.RecordingMethod
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -268,10 +282,48 @@ internal fun RecordRow(
         // Every row names its writer. Several apps commonly write the same type -- one
         // itemising as it goes, another posting a daily summary -- so without the source a
         // legitimate whole-day record is indistinguishable from a duplicate or an error.
-        Text(
-            text = LocalContext.current.appLabelFor(spec.originOf(record)),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // Beside it, what made the record: a watch and a phone counting the same steps, or a
+        // value typed in by hand among measured ones.
+        val method = RecordingMethod.of(record.metadata.recordingMethod)
+        val device = DeviceKind.of(record.metadata.device)
+        val parts = listOfNotNull(
+            LocalContext.current.appLabelFor(spec.originOf(record)),
+            device?.let { stringResource(it.labelRes) },
+            method.takeIf { it.shownInList }?.let { stringResource(it.labelRes) },
         )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            provenanceIcon(method, device)?.let { icon ->
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                )
+            }
+            Text(
+                text = parts.joinToString(" · "),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * A glyph for what made a record, so a list can be scanned for it: a pencil for a value typed
+ * in, which matters more than the device, otherwise the device's kind. None when neither is
+ * known -- a question mark on most rows would only be noise.
+ */
+internal fun provenanceIcon(method: RecordingMethod, device: DeviceKind?): ImageVector? = when {
+    method == RecordingMethod.MANUAL -> Icons.Default.EditNote
+    else -> when (device) {
+        DeviceKind.WATCH, DeviceKind.FITNESS_BAND -> Icons.Default.Watch
+        DeviceKind.PHONE -> Icons.Default.PhoneAndroid
+        DeviceKind.SCALE -> Icons.Default.MonitorWeight
+        DeviceKind.RING -> Icons.Default.RadioButtonUnchecked
+        DeviceKind.HEAD_MOUNTED -> Icons.Default.ViewInAr
+        DeviceKind.CHEST_STRAP -> Icons.Default.MonitorHeart
+        DeviceKind.SMART_DISPLAY -> Icons.Default.Tv
+        null -> null
     }
 }
