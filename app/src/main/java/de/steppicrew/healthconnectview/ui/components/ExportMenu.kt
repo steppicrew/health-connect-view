@@ -25,6 +25,7 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.export.ExportPeriod
+import de.steppicrew.healthconnectview.export.printPdf
 import kotlinx.coroutines.launch
 
 /** The files an export can produce; see `Exporter`, `PressureReportPdf` and `ReadingReportPdf`. */
@@ -32,6 +33,12 @@ enum class ExportKind(val suffix: String, val extension: String, val feature: Fe
     RECORDS("records", "csv", Feature.EXPORT_CSV),
     DAILY("daily", "csv", Feature.EXPORT_CSV),
     REPORT("report", "pdf", Feature.PDF_REPORTS),
+
+    /** The report in the system's print preview: seen, printed or saved there, no file of ours. */
+    PRINT("report", "pdf", Feature.PDF_REPORTS),
+    ;
+
+    val mimeType: String get() = if (extension == "pdf") "application/pdf" else "text/csv"
 }
 
 /**
@@ -56,6 +63,10 @@ fun ExportAction(
     /** Whether the file would hold anything; the dialog opens only if so. */
     canExport: suspend (ExportKind, ExportPeriod) -> Boolean,
     onExport: (ExportKind, ExportPeriod, Uri) -> Unit,
+    /** The report for a period in memory, for the print preview; null if it failed. */
+    renderReport: suspend (ExportPeriod) -> ByteArray?,
+    /** Said when the report could not be shown: no print service, or the report failed. */
+    onNoViewer: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val activity = LocalActivity.current
@@ -82,7 +93,7 @@ fun ExportAction(
                 when (kind) {
                     ExportKind.RECORDS -> true
                     ExportKind.DAILY -> dailyAvailable
-                    ExportKind.REPORT -> reportAvailable
+                    ExportKind.REPORT, ExportKind.PRINT -> reportAvailable
                 }
             }
             kinds.forEach { kind ->
@@ -92,6 +103,7 @@ fun ExportAction(
                         ExportKind.RECORDS -> R.string.export_records
                         ExportKind.DAILY -> R.string.export_daily
                         ExportKind.REPORT -> R.string.export_report
+                        ExportKind.PRINT -> R.string.export_print
                     },
                 )
                 DropdownMenuItem(
@@ -119,8 +131,14 @@ fun ExportAction(
                 choosing = null
                 scope.launch {
                     if (!canExport(kind, period)) return@launch
-                    pending = kind to period
                     val name = "${typeName}_${period.fileTag}_${kind.suffix}.${kind.extension}"
+                    if (kind == ExportKind.PRINT) {
+                        val pdf = renderReport(period)
+                        val shownNow = pdf != null && activity != null && printPdf(activity, name, pdf)
+                        if (!shownNow) onNoViewer()
+                        return@launch
+                    }
+                    pending = kind to period
                     if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
                 }
             },

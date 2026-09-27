@@ -157,6 +157,13 @@ open items below and `FEATURE-IDEAS.md`.
     step 18 runs on it, and a period reaching past 30 days without the history permission is
     warned about in the dialog. Pro through the exports themselves. Confirmed by the owner on the
     phone.
+34. [x] **View or print a report, open what was saved** -- merged 27.09.2026. "Ansehen oder
+    drucken (PDF)" beside "Bericht (PDF)" builds the report in memory -- while the app is in
+    front, since Health Connect refuses reads behind another screen -- and hands it to the
+    system print preview (`export/PdfPrint.kt`), where it is read, printed or saved as PDF. A
+    viewer app would have needed a file the user did not choose, which rule 3 forbids; the
+    preview does not. After any export the message offers "Öffnen" in the user's own viewer
+    for the file they saved. The privacy text names the print route. Not tapped on the phone.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
