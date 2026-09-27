@@ -716,6 +716,9 @@ fun LineChart(
 }
 
 private const val CHART_HEIGHT = 200
+
+/** Least space between two time labels, so neighbours read as two dates. */
+private const val LABEL_GAP = 6
 /**
  * Tick labels along the time axis.
  *
@@ -922,14 +925,23 @@ private fun TimeAxis(
         val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
         val height = placeables.maxOfOrNull { it.height } ?: 0
 
+        val gap = LABEL_GAP.dp.roundToPx()
         layout(constraints.maxWidth, height) {
+            // A label that would overprint the one before it is left out. Ticks snapped to
+            // samples can sit a day apart after a long gap -- 15 and 16 Sept on a month of
+            // weight, 28 and 31 Aug on a year -- and two dates printed over each other read
+            // as neither; on a narrow tile it happened on every chart.
+            var taken = Int.MIN_VALUE
             placeables.forEachIndexed { index, placeable ->
                 // Centred on the tick, then held inside the chart so the first and last
                 // labels are not half off the edge.
                 val centre = ticks[index].fraction * constraints.maxWidth
                 val x = (centre - placeable.width / 2f).toInt()
                     .coerceIn(0, (constraints.maxWidth - placeable.width).coerceAtLeast(0))
-                placeable.place(x, 0)
+                if (x >= taken) {
+                    placeable.place(x, 0)
+                    taken = x + placeable.width + gap
+                }
             }
         }
     }
