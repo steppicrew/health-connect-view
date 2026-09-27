@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.ui.components.DotText
+import androidx.annotation.StringRes
 import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
@@ -63,6 +64,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -725,20 +727,31 @@ private fun SessionCount(data: TileData) {
  */
 @Composable
 private fun TrendMark(trend: Trend) {
-    val (icon, description) = when (trend) {
-        Trend.UP -> Icons.AutoMirrored.Filled.TrendingUp to R.string.trend_up
-        Trend.FLAT -> Icons.AutoMirrored.Filled.TrendingFlat to R.string.trend_flat
-        Trend.DOWN -> Icons.AutoMirrored.Filled.TrendingDown to R.string.trend_down
-    }
     Icon(
-        imageVector = icon,
-        contentDescription = stringResource(description),
+        imageVector = trend.icon,
+        contentDescription = stringResource(trend.description),
         tint = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier
             .padding(start = 4.dp)
             .size(TREND_ICON.dp),
     )
 }
+
+/** The arrow for a trend, shared by the tile and the detail view so the two read alike. */
+internal val Trend.icon: ImageVector
+    get() = when (this) {
+        Trend.UP -> Icons.AutoMirrored.Filled.TrendingUp
+        Trend.FLAT -> Icons.AutoMirrored.Filled.TrendingFlat
+        Trend.DOWN -> Icons.AutoMirrored.Filled.TrendingDown
+    }
+
+@get:StringRes
+internal val Trend.description: Int
+    get() = when (this) {
+        Trend.UP -> R.string.trend_up
+        Trend.FLAT -> R.string.trend_flat
+        Trend.DOWN -> R.string.trend_down
+    }
 
 /**
  * A tile whose type is not granted, with the way to change that on the tile itself.

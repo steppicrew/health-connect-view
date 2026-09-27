@@ -364,6 +364,13 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
         // The headline and the averages always show: they are the data. The rule is behind the
         // "i", closed until asked for, so the numbers are what is seen at first glance.
         Row(verticalAlignment = Alignment.CenterVertically) {
+            // The tile's arrow, so the direction reads at a glance before the words do. The
+            // title beside it says the same, so the icon needs no description of its own.
+            Icon(
+                imageVector = trend.direction.icon,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp),
+            )
             Text(
                 text = stringResource(
                     when (trend.direction) {
