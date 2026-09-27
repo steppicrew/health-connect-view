@@ -34,6 +34,7 @@ fun PrivacyScreen(modifier: Modifier = Modifier) {
             R.string.privacy_read_only_title to R.string.privacy_read_only_body,
             R.string.privacy_storage_title to R.string.privacy_storage_body,
             R.string.privacy_sharing_title to R.string.privacy_sharing_body,
+            R.string.privacy_routes_title to R.string.privacy_routes_body,
             R.string.privacy_control_title to R.string.privacy_control_body,
             R.string.privacy_purchases_title to R.string.privacy_purchases_body,
             R.string.privacy_contact_title to R.string.privacy_contact_body,

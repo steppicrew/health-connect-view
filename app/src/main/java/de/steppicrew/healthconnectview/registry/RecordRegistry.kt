@@ -686,6 +686,18 @@ object RecordRegistry {
      */
     val HISTORY_PERMISSION: String = HealthPermission.PERMISSION_READ_HEALTH_DATA_HISTORY
 
+    /**
+     * Every exercise route at once, the standing form of the per-session consent. Like
+     * history, it belongs to no record type, and it is never part of "select all": location
+     * is the most sensitive thing Health Connect holds, so it is ticked on its own or not at
+     * all. Without it a route is still shown when asked for, one session at a time, through
+     * the system's own consent dialog.
+     *
+     * The library has no constant for it (it has only the write one); the platform defines
+     * it, and this is its value.
+     */
+    const val ROUTES_PERMISSION: String = "android.permission.health.READ_EXERCISE_ROUTES"
+
     val byCategory: Map<Category, List<RecordTypeSpec<*>>> =
         all.groupBy { it.category }.toSortedMap(compareBy { it.ordinal })
 

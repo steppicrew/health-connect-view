@@ -10,6 +10,10 @@ import java.io.ByteArrayOutputStream
 import android.provider.DocumentsContract
 import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.Exporter
+import de.steppicrew.healthconnectview.export.Gpx
+import de.steppicrew.healthconnectview.health.RoutePoint
+import de.steppicrew.healthconnectview.health.toPoints
+import androidx.health.connect.client.records.ExerciseRouteResult
 import de.steppicrew.healthconnectview.ui.components.ExportKind
 import de.steppicrew.healthconnectview.util.appLabelFor
 import kotlinx.coroutines.Dispatchers
@@ -529,6 +533,45 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
 
     /**
+     * The route of [session], read now that the session is open: its points, a note that the
+     * user must consent to this one first, or nothing. Held by the open sheet only.
+     */
+    suspend fun routeFor(session: Session): RouteLoad {
+        val ref = session.route ?: return RouteLoad.Missing
+        // Read now rather than trusting the list's note: consent given for this session
+        // earlier, or the standing permission granted since, makes the route readable.
+        return when (val result = runCatching { repository.routeOf(ref.recordId) }.getOrNull()) {
+            is ExerciseRouteResult.Data -> RouteLoad.Shown(result.exerciseRoute.toPoints())
+            is ExerciseRouteResult.ConsentRequired -> RouteLoad.NeedsConsent
+            null -> RouteLoad.Failed
+            else -> RouteLoad.Missing
+        }
+    }
+
+    /**
+     * Writes a route the user is looking at to [uri] as GPX. The points come from the open
+     * sheet, so nothing is read again; like every export, a failure removes the file.
+     */
+    fun exportRoute(points: List<RoutePoint>, name: String, uri: Uri) {
+        viewModelScope.launch {
+            val resolver = getApplication<Application>().contentResolver
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
+                        Gpx.write(points, name, out.bufferedWriter(Charsets.UTF_8))
+                    }
+                }
+                ExportResult.Written(points.size, uri, GPX_MIME)
+            }
+            result.onFailure {
+                Log.w(TAG, "route export failed: ${it.javaClass.simpleName}")
+                runCatching { DocumentsContract.deleteDocument(resolver, uri) }
+            }
+            _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
+        }
+    }
+
+    /**
      * Everything recorded during one session, assembled by time overlap.
      *
      * ExerciseSessionRecord itself carries no distance, power or calories -- only its type,
@@ -775,3 +818,14 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
 }
+
+/** An open session's route: its points, consent needed first, none recorded, or a failed read. */
+sealed interface RouteLoad {
+    data class Shown(val points: List<RoutePoint>) : RouteLoad
+    data object NeedsConsent : RouteLoad
+    data object Missing : RouteLoad
+    data object Failed : RouteLoad
+}
+
+/** GPX's registered type; save dialogs and track apps both know it. */
+const val GPX_MIME = "application/gpx+xml"

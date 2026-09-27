@@ -1,5 +1,21 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import android.net.Uri
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.billing.Feature
+import de.steppicrew.healthconnectview.health.RoutePoint
+import de.steppicrew.healthconnectview.health.toPoints
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,11 +54,29 @@ import de.steppicrew.healthconnectview.registry.Formatting
 fun SessionSheet(
     session: Session,
     loadStats: suspend (Session) -> List<SessionStat>,
+    loadRoute: suspend (Session) -> RouteLoad,
+    onExportRoute: (List<RoutePoint>, String, Uri) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var stats by remember(session) { mutableStateOf<List<SessionStat>?>(null) }
+    var route by remember(session) { mutableStateOf<RouteLoad?>(null) }
+    var declined by remember(session) { mutableStateOf(false) }
 
     LaunchedEffect(session) { stats = loadStats(session) }
+    LaunchedEffect(session) { if (session.route != null) route = loadRoute(session) }
+
+    // The system's own dialog for this one route. It hands the route straight back, so
+    // nothing is read again; declining leaves the session as it was.
+    val consent = rememberLauncherForActivityResult(ExerciseRouteRequestContract()) { granted ->
+        if (granted != null) route = RouteLoad.Shown(granted.toPoints()) else declined = true
+    }
+    val routeName = session.title ?: stringResource(R.string.route_title)
+    val saveGpx = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(GPX_MIME)) { uri ->
+        val shown = route as? RouteLoad.Shown
+        if (uri != null && shown != null) onExportRoute(shown.points, routeName, uri)
+    }
+    val activity = LocalActivity.current
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -59,7 +93,7 @@ fun SessionSheet(
             )
         },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 Text(
                     text = stringResource(
                         R.string.session_span,
@@ -110,6 +144,51 @@ fun SessionSheet(
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 12.dp),
+                        )
+                    }
+                }
+
+                session.route?.let { ref ->
+                    Text(
+                        text = stringResource(R.string.route_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                    )
+                    when (val current = route) {
+                        null -> Text(stringResource(R.string.session_loading), style = MaterialTheme.typography.bodySmall)
+                        is RouteLoad.Shown -> {
+                            RouteView(current.points)
+                            val unlocked = pro.allows(Feature.ROUTE_EXPORT)
+                            TextButton(
+                                onClick = {
+                                    if (unlocked) {
+                                        val stamp = session.start.atZone(ZoneId.systemDefault())
+                                            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmm"))
+                                        saveGpx.launch("Route_$stamp.gpx")
+                                    } else {
+                                        activity?.let(AppEntitlements.current::buy)
+                                    }
+                                },
+                            ) {
+                                if (!unlocked) Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.padding(end = 4.dp))
+                                val label = stringResource(R.string.route_export)
+                                Text(if (unlocked) label else stringResource(R.string.export_premium, label))
+                            }
+                        }
+                        RouteLoad.NeedsConsent -> {
+                            Text(
+                                text = stringResource(if (declined) R.string.route_declined else R.string.route_consent_body),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            TextButton(onClick = { consent.launch(ref.recordId) }) {
+                                Text(stringResource(R.string.route_show))
+                            }
+                        }
+                        RouteLoad.Missing, RouteLoad.Failed -> Text(
+                            text = stringResource(R.string.route_unavailable),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }

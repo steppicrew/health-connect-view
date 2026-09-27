@@ -26,6 +26,7 @@ SECTIONS = [
     ("privacy_read_only_title", "privacy_read_only_body"),
     ("privacy_storage_title", "privacy_storage_body"),
     ("privacy_sharing_title", "privacy_sharing_body"),
+    ("privacy_routes_title", "privacy_routes_body"),
     ("privacy_control_title", "privacy_control_body"),
     ("privacy_purchases_title", "privacy_purchases_body"),
     ("privacy_contact_title", "privacy_contact_body"),

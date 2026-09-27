@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.health
 
+import androidx.health.connect.client.records.ExerciseRouteResult
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -33,9 +34,21 @@ data class Session(
     val exerciseType: Int? = null,
     /** A night's stages where its writer recorded them; always empty for exercise. */
     val stages: List<SleepStage> = emptyList(),
+    /**
+     * The record holding this session's route, where one was recorded -- only a pointer: the
+     * route itself is read when the session is opened, since a year of tracks held for a list
+     * would be tens of megabytes of coordinates nobody asked to see.
+     */
+    val route: RouteRef? = null,
 ) {
     enum class Kind { SLEEP, EXERCISE }
 }
+
+/**
+ * Where a session's route is: the exercise record holding it. Whether reading it needs the
+ * user's consent first is asked when the session is opened, since that can change meanwhile.
+ */
+data class RouteRef(val recordId: String)
 
 /**
  * Picks one session per overlapping group, preferring the writer that named it.
@@ -56,15 +69,21 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
                 candidate.end > existing.start
         }
         val existing = kept.getOrNull(overlapping)
-        when {
-            existing == null -> kept += candidate
-            existing.title == null && candidate.title != null -> kept[overlapping] = candidate
+        if (existing == null) {
+            kept += candidate
+            return@forEach
+        }
+        val winner = when {
+            existing.title == null && candidate.title != null -> candidate
             // Among equally named copies of a night, the one with more stages: a re-sync can
             // lose detail but never add it. Measured on the phone, Health Sync's copy of a
             // Garmin night once carried one segment fewer than Garmin's own.
-            existing.title == candidate.title && candidate.stages.size > existing.stages.size ->
-                kept[overlapping] = candidate
+            existing.title == candidate.title && candidate.stages.size > existing.stages.size -> candidate
+            else -> existing
         }
+        // The copy that wins by its name need not be the one with the track: a machine's own
+        // app names the workout, the watch recorded where it went. Keep the route either way.
+        kept[overlapping] = if (winner.route == null) winner.copy(route = existing.route ?: candidate.route) else winner
     }
     return kept
 }
@@ -96,6 +115,10 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     kind = Session.Kind.EXERCISE,
     origin = metadata.dataOrigin.packageName,
     exerciseType = exerciseType,
+    route = when (exerciseRouteResult) {
+        is ExerciseRouteResult.Data, is ExerciseRouteResult.ConsentRequired -> RouteRef(metadata.id)
+        else -> null
+    },
 )
 
 fun SleepSessionRecord.toSession(): Session = Session(

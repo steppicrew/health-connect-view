@@ -21,4 +21,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** PDF logs for a doctor: blood pressure, weight, resting heart rate, blood glucose. */
     PDF_REPORTS(isPremium = true),
+
+    /** An exercise route as a GPX file, to open in a map or training app. */
+    ROUTE_EXPORT(isPremium = true),
 }
