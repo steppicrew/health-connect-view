@@ -1,3 +1,1 @@
-0.8.0 — New: nightly heart rate variability, with the 7-night mean against your usual range; blood glucose in mmol/L or mg/dL; a daily spread for more types; hyphenation. Pro: large tiles show a period as a value, chart or both. Fixed: today's totals now end at the current time.
-
-0.7.1 — New: metric or imperial units (Settings). Fixed: elevation and height totals, and a heart rate average far too high shortly after midnight.
+0.9.0 — New: a four-week mean as a dashed line; gaps drawn dotted; the list follows the zoom; a daily value instead of a chart for resting heart rate. Pro: PDF reports for weight, resting heart rate and blood glucose too; choose any period when exporting; view or print reports. Fixed: curves no longer overshoot readings; no more empty exports.

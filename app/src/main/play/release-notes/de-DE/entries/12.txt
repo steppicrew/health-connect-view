@@ -1,0 +1,1 @@
+0.9.0 — Neu: 4-Wochen-Mittel als gestrichelte Linie; Lücken gepunktet; die Liste folgt dem Zoom; Tageswert statt Diagramm beim Ruhepuls. Pro: PDF-Berichte auch für Gewicht, Ruhepuls und Blutzucker; Zeitraum beim Export frei wählbar; Berichte ansehen oder drucken. Behoben: Kurven schießen nicht mehr über Messwerte hinaus; kein leerer Export mehr.
