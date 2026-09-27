@@ -42,6 +42,9 @@ import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
+import de.steppicrew.healthconnectview.health.atLeast
+import de.steppicrew.healthconnectview.health.dayTotalFilter
+import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -625,13 +628,19 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // end. Emitting both unchanged sends the series backwards in time, which a running
         // total cannot do and which draws as a zigzag. Each point is therefore clamped to be
         // no earlier than the one before it.
+        //
+        // Nothing is drawn past now. A writer keeping a running tally posts today's record as
+        // 00:00-23:59 and raises its value through the day -- Garmin's total calories do -- so
+        // the record's end is a label, not a time anything happened by. Ending the ramp there
+        // drew the day's figure reached at midnight, a line through hours still to come.
+        val now = Instant.now()
         var sum = 0.0
         var lastTime = windowStart
         return buildList {
             add(Point(time = windowStart, value = 0.0))
             steps.forEach { step ->
-                val rampStart = maxOf(step.start, lastTime)
-                val rampEnd = maxOf(step.end, rampStart)
+                val rampStart = minOf(maxOf(step.start, lastTime), now)
+                val rampEnd = minOf(maxOf(step.end, rampStart), now)
                 // Hold the level up to the moment the rise begins, unless a previous record
                 // already carried the line past that point.
                 if (rampStart.isAfter(lastTime)) {
@@ -645,12 +654,35 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             // stop at the last recorded activity.
             val windowEnd = minOf(
                 span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
-                Instant.now(),
+                now,
             )
             if (windowEnd.isAfter(lastTime)) {
                 add(Point(time = windowEnd, value = sum))
             }
         }
+    }
+
+    /**
+     * [platform] with today's share raised to the fullest writer's own tally, where a record
+     * claims hours still to come. See [openTally].
+     *
+     * On a day span the window *is* today. On a wider one only today's part is short, so the
+     * shortfall against today's own total is added rather than the tally replacing the lot.
+     */
+    private suspend fun withOpenTally(
+        spec: RecordTypeSpec<*>,
+        metric: AggregateMetric<*>,
+        span: Span,
+        platform: Double?,
+        origins: Set<DataOrigin>,
+    ): Double? {
+        val tally = runCatching { repository.openTally(spec, origins) }.getOrNull() ?: return platform
+        if (span == Span.DAY) return atLeast(platform, tally)
+        val today = runCatching {
+            repository.total(metric, dayTotalFilter(LocalDate.now()), origins)
+        }.getOrNull() ?: 0.0
+        val shortfall = (tally - today).coerceAtLeast(0.0)
+        return (platform ?: 0.0) + shortfall
     }
 
     /**
@@ -1058,7 +1090,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
         stepDone() // the chart
         val aggregatedTotal = if (metric != null) {
-            runCatching { repository.total(metric, span.localFilter(offset), origins) }.getOrNull()
+            val platform = runCatching { repository.total(metric, span.totalFilter(offset), origins) }.getOrNull()
+            if (offset == 0) withOpenTally(spec, metric, span, platform, origins) else platform
         } else {
             null
         }
@@ -1080,7 +1113,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // each point is its own day's total and the goal would be a different comparison.
         val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
         val secondaryTotal = spec.secondaryAggregate?.let { second ->
-            runCatching { repository.total(second, span.localFilter(offset), origins) }.getOrNull()
+            runCatching { repository.total(second, span.totalFilter(offset), origins) }.getOrNull()
         }
         stepDone() // the total
         val goal = if (cumulative) goalFor(spec) else null

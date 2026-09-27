@@ -15,8 +15,10 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.Session
-import de.steppicrew.healthconnectview.health.dayFilter
+import de.steppicrew.healthconnectview.health.atLeast
+import de.steppicrew.healthconnectview.health.dayTotalFilter
 import de.steppicrew.healthconnectview.health.dayInstants
+import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.totalDuration
@@ -443,12 +445,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val origins = effective?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
         val value = if (metric != null) {
-            runCatching { repository.total(metric, dayFilter(date), origins) }.getOrNull()
+            val total = runCatching { repository.total(metric, dayTotalFilter(date), origins) }.getOrNull()
                 // Aggregation returns nothing for an interval as wide as its own bucket -- an
                 // app posting one whole-day summary record. Summing that one app's records is
                 // safe because a single writer cannot overlap itself; never for the combined
                 // view, where resolving overlap is the whole point.
                 ?: tile.source?.let { sumOwnRecords(spec, date, origins) }
+            // Today, a running tally labelled as the whole day is apportioned by the platform
+            // and reads low; the writer's own figure is the floor. See openTally.
+            if (date == LocalDate.now()) {
+                atLeast(total, runCatching { repository.openTally(spec, origins) }.getOrNull())
+            } else {
+                total
+            }
         } else {
             runCatching {
                 repository.read(
@@ -466,7 +475,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         // paired with a carried reading from another day, would be half of two readings.
         val secondaryValue = if (value != null) {
             spec.secondaryAggregate?.let { second ->
-                runCatching { repository.total(second, dayFilter(date), origins) }.getOrNull()
+                runCatching { repository.total(second, dayTotalFilter(date), origins) }.getOrNull()
             }
         } else {
             null
