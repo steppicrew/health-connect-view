@@ -457,4 +457,7 @@
     <string name="legend_hrv_week">7-night average</string>
     <string name="legend_hrv_usual">Usual range</string>
     <string name="tile_hrv_note">7-night average</string>
+    <string name="chart_source_hrv_nights">Line: average of the last 7 nights; dots: single nights; shaded: your usual range</string>
+    <string name="legend_hrv_night">Single night</string>
+    <string name="hrv_show_nights">Show single nights</string>
 </resources>

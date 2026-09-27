@@ -1,5 +1,10 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.compose.ui.unit.isSpecified
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
@@ -46,8 +51,27 @@ fun rememberExplanation(key: String): ExplanationState {
  * while open, so the icon also says which state it is in.
  */
 @Composable
-fun InfoToggle(state: ExplanationState, modifier: Modifier = Modifier) {
-    IconButton(onClick = state.toggle, enabled = state.expanded != null, modifier = modifier) {
+fun InfoToggle(
+    state: ExplanationState,
+    modifier: Modifier = Modifier,
+    /**
+     * The style of a text the icon sits beside, to centre the icon on that text's first line
+     * rather than on the 48dp touch target, whose middle falls between the lines of a text
+     * that wraps. The touch target keeps its size; only the drawing moves up.
+     */
+    firstLine: TextStyle? = null,
+) {
+    val lift = firstLine?.let { style ->
+        val lineHeight = with(LocalDensity.current) {
+            (if (style.lineHeight.isSpecified) style.lineHeight else style.fontSize * LINE_HEIGHT_FALLBACK).toDp()
+        }
+        ((TOUCH_TARGET - lineHeight) / 2).coerceAtLeast(0.dp)
+    } ?: 0.dp
+    IconButton(
+        onClick = state.toggle,
+        enabled = state.expanded != null,
+        modifier = modifier.offset(y = -lift),
+    ) {
         Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = stringResource(
@@ -61,3 +85,8 @@ fun InfoToggle(state: ExplanationState, modifier: Modifier = Modifier) {
         )
     }
 }
+
+/** Material's minimum touch target, which an [IconButton] fills and centres its icon in. */
+private val TOUCH_TARGET = 48.dp
+
+private const val LINE_HEIGHT_FALLBACK = 1.3f

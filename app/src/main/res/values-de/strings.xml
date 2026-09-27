@@ -424,4 +424,7 @@
     <string name="legend_hrv_week">Mittel 7 Nächte</string>
     <string name="legend_hrv_usual">Übliche Spanne</string>
     <string name="tile_hrv_note">Mittel 7 Nächte</string>
+    <string name="chart_source_hrv_nights">Linie: Mittel der letzten 7 Nächte; Punkte: einzelne Nächte; schattiert: deine übliche Spanne</string>
+    <string name="legend_hrv_night">Einzelne Nacht</string>
+    <string name="hrv_show_nights">Einzelne Nächte zeigen</string>
 </resources>

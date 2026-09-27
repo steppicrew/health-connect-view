@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
@@ -816,10 +817,15 @@ private fun TileValue(data: TileData, large: Boolean = false) {
         // The week's HRV: its standing as a dot, as the detail screen shows it, and a note
         // that the number is seven nights, not the latest reading.
         data.spec.tile.nightlyStatus -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                data.standing?.let { standing ->
-                    Box(Modifier.padding(end = 6.dp).size(10.dp).background(standing.color(), CircleShape))
-                }
+            val standing = data.standing
+            if (standing != null) {
+                DotText(
+                    color = standing.color(),
+                    text = Formatting.number(data.value),
+                    style = valueStyle,
+                    textColor = MaterialTheme.colorScheme.onSurface,
+                )
+            } else {
                 Text(
                     text = Formatting.number(data.value),
                     style = valueStyle,
@@ -834,22 +840,12 @@ private fun TileValue(data: TileData, large: Boolean = false) {
         }
 
         // Two values read as one: the grade's colour beside them, as on the detail screen.
-        data.secondaryValue != null -> Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                Modifier
-                    .padding(end = 6.dp)
-                    .size(10.dp)
-                    .background(
-                        ValueZones.ZONE_COLORS[pressureCategory(data.value, data.secondaryValue).ordinal],
-                        CircleShape,
-                    ),
-            )
-            Text(
-                text = tileValueText(data.value, data.secondaryValue),
-                style = valueStyle,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
+        data.secondaryValue != null -> DotText(
+            color = ValueZones.ZONE_COLORS[pressureCategory(data.value, data.secondaryValue).ordinal],
+            text = tileValueText(data.value, data.secondaryValue),
+            style = valueStyle,
+            textColor = MaterialTheme.colorScheme.onSurface,
+        )
 
         else -> Text(
             text = Formatting.number(data.value),

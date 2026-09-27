@@ -37,6 +37,7 @@ class SettingsBackupTest {
             expandedExplanations = setOf("trend"),
             units = UnitChoice.IMPERIAL,
             glucose = GlucoseChoice.MG_PER_DL,
+            showSingleNights = false,
         ),
     )
 

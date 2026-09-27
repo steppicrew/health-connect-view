@@ -64,6 +64,8 @@ data class Settings(
     val expandedExplanations: Set<String> = emptySet(),
     val units: UnitChoice = UnitChoice.SYSTEM,
     val glucose: GlucoseChoice = GlucoseChoice.SYSTEM,
+    /** Single nights as dots behind a multi-day HRV line. On until switched off on the chart. */
+    val showSingleNights: Boolean = true,
 )
 
 /**
@@ -89,6 +91,7 @@ class SettingsStore(private val context: Context) {
             glucose = prefs[KEY_GLUCOSE]
                 ?.let { stored -> runCatching { GlucoseChoice.valueOf(stored) }.getOrNull() }
                 ?: GlucoseChoice.SYSTEM,
+            showSingleNights = prefs[KEY_SINGLE_NIGHTS] ?: true,
         )
     }
 
@@ -102,6 +105,10 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setGlucose(glucose: GlucoseChoice) {
         context.settingsDataStore.edit { it[KEY_GLUCOSE] = glucose.name }
+    }
+
+    suspend fun setShowSingleNights(show: Boolean) {
+        context.settingsDataStore.edit { it[KEY_SINGLE_NIGHTS] = show }
     }
 
     suspend fun setDynamicColor(enabled: Boolean) {
@@ -123,6 +130,7 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_EXPANDED_EXPLANATIONS] = settings.expandedExplanations
             prefs[KEY_UNITS] = settings.units.name
             prefs[KEY_GLUCOSE] = settings.glucose.name
+            prefs[KEY_SINGLE_NIGHTS] = settings.showSingleNights
         }
     }
 
@@ -132,5 +140,6 @@ class SettingsStore(private val context: Context) {
         val KEY_EXPANDED_EXPLANATIONS = stringSetPreferencesKey("expanded_explanations")
         val KEY_UNITS = stringPreferencesKey("units")
         val KEY_GLUCOSE = stringPreferencesKey("glucose_unit")
+        val KEY_SINGLE_NIGHTS = booleanPreferencesKey("show_single_nights")
     }
 }
