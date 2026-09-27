@@ -239,6 +239,32 @@ open items below and `FEATURE-IDEAS.md`.
     without, like sizes. Picked from edit mode (paint bucket; padlock without Pro), applied in
     place without a reload. Seen on the phone with every colour at once from a throwaway
     build; picking needs a tap.
+37. [ ] **Body composition in one chart** -- the owner's idea, 27.09.2026, narrowing "two
+    metrics on one timeline". Weight with what it is made of, on one kilogram axis: body fat
+    (stored as a percentage, so as kilograms it is percentage times the same day's weight),
+    lean body mass, bone mass and body water. Health Connect has no muscle-mass type, so
+    muscle cannot be shown unless a writer's lean mass stands in for it, and the chart must
+    not call it muscle. Stacked or as lines to decide; a scale writes all of them at one
+    weigh-in, so the days line up. Pro.
+38. [ ] **Two metrics on one timeline** -- from `FEATURE-IDEAS.md`. Any two types over the same
+    window, e.g. weight and steps. Two y-axes read badly on a phone and invite cause-and-effect
+    readings the data cannot carry; worth doing only for pairs that share a unit (step 37) or
+    as two charts stacked on one time axis. Pro.
+39. [ ] **Goal streaks** -- from `FEATURE-IDEAS.md`. "12 Tage in Folge Schrittziel erreicht" on
+    a ring tile and its detail screen. A day with no data must break nothing it did not earn:
+    missing is not failed. Needs a year of daily totals per ring tile, so read lazily.
+40. [ ] **Insights** -- from `FEATURE-IDEAS.md`. A tile or a section naming notable changes,
+    "Ruhepuls diese Woche 8 % über dem 30-Tage-Mittel", built on the trend arrows' numbers.
+    Worded as a position, never a diagnosis, and never compared to a brand's score. Pro.
+41. [ ] **Blood pressure daily spread** -- left over from step 19: a min-max band for systolic
+    and one for diastolic, which needs the chart to draw two bands at once.
+42. [ ] **Local reminder** -- from `FEATURE-IDEAS.md`: "noch kein Blutdruck heute" in the
+    afternoon. Needs a notification permission and reading in the background
+    (`READ_HEALTH_DATA_IN_BACKGROUND`), so it changes what the privacy page promises; the
+    owner decides before any code.
+43. [ ] **Two display slips seen in step 22** -- glucose in mg/dL shows a decimal ("91,8 mg/dL"),
+    and the blood pressure chart's caption says "Tagessummen" for daily means.
+
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
 trend explained with its averages in the day view, and "Weiter" for the permission screen's
