@@ -315,6 +315,7 @@
     <string name="span_next">Later</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Value for the day</string>
+    <string name="legend_rolling_mean">4-week mean</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Choose what to show</string>

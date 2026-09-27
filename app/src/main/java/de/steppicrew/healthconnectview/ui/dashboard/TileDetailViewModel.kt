@@ -175,6 +175,8 @@ data class TileDetailData(
     val pointStandings: List<HrvStanding?> = emptyList(),
     /** The single nights behind an HRV week's mean, over a week or four; empty otherwise. */
     val nightPoints: List<Point> = emptyList(),
+    /** The four-week rolling mean behind the series, for a type with `rollingBaseline`. */
+    val baseline: List<Point> = emptyList(),
     /**
      * The writer whose records gave a multi-source curve its shape, when more than one app
      * contributed. The total stays deduplicated across all of them; only the path is one

@@ -509,6 +509,7 @@ object RecordRegistry {
                 markReadings = true,
                 integralValues = true,
                 dailyValue = true,
+                rollingBaseline = true,
             ),
         ),
         RecordTypeSpec(

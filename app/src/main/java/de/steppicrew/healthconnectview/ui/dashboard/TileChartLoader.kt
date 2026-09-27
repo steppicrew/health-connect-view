@@ -20,6 +20,9 @@ import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
 import de.steppicrew.healthconnectview.health.openTally
+import de.steppicrew.healthconnectview.health.ROLLING_DAYS
+import de.steppicrew.healthconnectview.health.rollingMean
+import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -31,6 +34,7 @@ import kotlinx.coroutines.flow.first
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.Period
 
 /**
  * Builds the chart for one type over one window: the series, its total, goal, bands and
@@ -435,9 +439,42 @@ internal class TileChartLoader(
             headline
         }
 
+        // The wearer's own level behind a noisy daily value, across days only: a day of a
+        // one-value-a-day type has no chart to put it on. Read from 27 days before the window,
+        // so its first day already has four weeks behind it; a failed read just leaves it out.
+        val shownPoints = perDayPoints.ifEmpty { scaledPoints }
+        val baseline = if (spec.tile.rollingBaseline && metric != null && span.bucket != null && shownPoints.isNotEmpty()) {
+            runCatching {
+                val zone = HealthRepository.DEFAULT_ZONE
+                val first = span.startDate(offset)
+                val daily = repository.bucketedTotals(
+                    metric,
+                    TimeRangeFilter.between(
+                        first.minusDays(ROLLING_DAYS - 1L).atStartOfDay(),
+                        span.endDate(offset).atStartOfDay(),
+                    ),
+                    Period.ofDays(1),
+                    origins,
+                ).mapNotNull { bucket ->
+                    val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
+                        ?: return@mapNotNull null
+                    bucket.startTime.toLocalDate() to value
+                }.toMap()
+                // Within the series' own span: a year's last point is its week's start, and a
+                // line running past it would leave the plot.
+                rollingMean(
+                    daily,
+                    shownPoints.first().time.atZone(zone).toLocalDate(),
+                    shownPoints.last().time.atZone(zone).toLocalDate(),
+                ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean) }
+            }.getOrDefault(emptyList())
+        } else {
+            emptyList()
+        }
+
         val chart = TileDetailData(
             spec = spec,
-            points = perDayPoints.ifEmpty { scaledPoints },
+            points = shownPoints,
             // Bars wherever a point is a whole bucket rather than a moment: a sessions window
             // counted per day, a total split into components that only read as parts when
             // drawn stacked, or a counted quantity bucketed across days.
@@ -489,6 +526,7 @@ internal class TileChartLoader(
             } else {
                 emptyList()
             },
+            baseline = baseline,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
