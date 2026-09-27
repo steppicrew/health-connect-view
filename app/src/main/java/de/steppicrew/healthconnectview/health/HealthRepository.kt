@@ -91,6 +91,7 @@ class HealthRepository(private val context: Context) {
         range: TimeRangeFilter,
         limit: Int = CHART_POINTS,
         origins: Set<DataOrigin> = emptySet(),
+        progress: PageProgress<in T>? = null,
     ): List<T> = withContext(Dispatchers.IO) {
         val kept = ArrayDeque<T>()
         var seen = 0
@@ -121,6 +122,7 @@ class HealthRepository(private val context: Context) {
                     stride *= 2
                 }
             }
+            progress?.afterPage(range, response.records)
             pageToken = response.pageToken
         } while (pageToken != null)
         kept.toList()
@@ -137,6 +139,7 @@ class HealthRepository(private val context: Context) {
         type: KClass<T>,
         range: TimeRangeFilter,
         origins: Set<DataOrigin> = emptySet(),
+        progress: PageProgress<in T>? = null,
         onPage: suspend (List<T>) -> Unit,
     ) = withContext(Dispatchers.IO) {
         var pageToken: String? = null
@@ -152,6 +155,7 @@ class HealthRepository(private val context: Context) {
                 ),
             )
             onPage(response.records)
+            progress?.afterPage(range, response.records)
             pageToken = response.pageToken
         } while (pageToken != null)
     }
