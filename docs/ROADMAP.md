@@ -250,9 +250,16 @@ open items below and `FEATURE-IDEAS.md`.
     window, e.g. weight and steps. Two y-axes read badly on a phone and invite cause-and-effect
     readings the data cannot carry; worth doing only for pairs that share a unit (step 37) or
     as two charts stacked on one time axis. Pro.
-39. [ ] **Goal streaks** -- from `FEATURE-IDEAS.md`. "12 Tage in Folge Schrittziel erreicht" on
-    a ring tile and its detail screen. A day with no data must break nothing it did not earn:
-    missing is not failed. Needs a year of daily totals per ring tile, so read lazily.
+39. [x] **Goal streaks** -- built 27.09.2026. A flame and the count on a ring tile, "Ziel an
+    12 Tagen hintereinander erreicht" on its screen, from two days up. A day with no data
+    bridges the run without counting: missing is not failed. A gap of more than 30 days ends
+    it, since what came before is another run; today short of the goal breaks nothing yet. The
+    tile reads back a month of daily buckets at a time after the values are on screen, so most
+    streaks cost one request; the screen reads the year once and adds the longest run of it
+    with its first and last day. The owner added a streak of days with an activity on the
+    Activities tile: there a day without a session ends the run, because Health Connect
+    cannot tell no activity from no recording, and the rule behind the "i" says so. Seen on
+    the emulator. Mindfulness could get the same streak with a string of its own.
 40. [ ] **Insights** -- from `FEATURE-IDEAS.md`. A tile or a section naming notable changes,
     "Ruhepuls diese Woche 8 % über dem 30-Tage-Mittel", built on the trend arrows' numbers.
     Worded as a position, never a diagnosis, and never compared to a brand's score. Pro.
