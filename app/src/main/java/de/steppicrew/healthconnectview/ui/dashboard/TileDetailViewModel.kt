@@ -240,6 +240,29 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     val exportResults: SharedFlow<ExportResult> = _exportResults.asSharedFlow()
 
     /**
+     * Whether [kind] over what is on screen would hold any data. Asked before the save dialog
+     * opens; when it would not, says so through [exportResults] and the dialog stays shut, so an
+     * empty window no longer leaves a file of headers. A failed check lets the export go ahead:
+     * the write reports its own failure.
+     */
+    suspend fun canExport(kind: ExportKind): Boolean {
+        val spec = _spec.value ?: return false
+        val span = _span.value
+        val offset = _offset.value
+        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val exporter = Exporter(getApplication(), repository)
+        val any = runCatching {
+            when (kind) {
+                ExportKind.RECORDS -> exporter.hasRecords(spec, windowStart(span, offset), windowEnd(span, offset), origins)
+                ExportKind.DAILY -> exporter.hasDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins)
+                ExportKind.REPORT -> exporter.hasPressureReadings(span.startDate(offset), span.endDate(offset).minusDays(1), origins)
+            }
+        }.getOrDefault(true)
+        if (!any) _exportResults.tryEmit(ExportResult.Empty)
+        return any
+    }
+
+    /**
      * Writes what is on screen -- this type, this window, this source filter -- to [uri].
      *
      * A failed export removes the file it started, so a half-written CSV is not left looking

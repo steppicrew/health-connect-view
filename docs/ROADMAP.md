@@ -57,10 +57,12 @@ open items below and `FEATURE-IDEAS.md`.
     over months). Worth it only where a report has a reader -- a doctor's appointment -- and
     a shape of its own beyond the CSV. A decision for the owner before any code; Pro like
     the pressure report.
-18. [ ] **No empty exports.** CSV and PDF both open the save dialog and then write whatever
-    the window holds, so a window with no data produces a file with only headers. Check
-    first (`hasData` over the export's range and source) and say "nothing to export" instead
-    of opening the dialog.
+18. [x] **No empty exports** -- merged 27.09.2026. Each file is checked before the save dialog
+    opens (`Exporter.hasRecords`, `hasDailyTotals`, `hasPressureReadings`, over the file's own
+    window and source): any record, a night kept by its end; any day with a total; any pressure
+    reading 04:00 to 04:00. Nothing there says "In diesem Zeitraum gibt es nichts zu
+    exportieren" and no file is made. A failed check lets the export go ahead, which reports
+    its own failure. Not tapped on the phone: the menu needs a person.
 19. [x] **Daily spread for more types** -- merged 27.09.2026. Weight, resting heart rate,
     speed, power and both cadences carry the min-max band heart rate had. A band is drawn only
     where some day had a spread: one reading a day (a resting rate, most weigh-ins) makes it
@@ -147,7 +149,8 @@ open items below and `FEATURE-IDEAS.md`.
     Zoomed, the list is re-read for the stretch on screen after the pinch settles, and zooming
     out restores the window's list. With the list capped, the source picker still names its
     writers from a page of the window. `read()` now stops at exactly its cap; pages of 1,000
-    had returned 626 or 1,000 for a cap of 500.
+    had returned 626 or 1,000 for a cap of 500. Following the zoom confirmed by the owner on
+    the phone, 27.09.2026.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

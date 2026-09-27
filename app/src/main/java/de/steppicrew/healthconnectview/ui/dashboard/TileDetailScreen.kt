@@ -156,6 +156,7 @@ fun TileDetailScreen(
                     is ExportResult.Report ->
                         resources.getQuantityString(R.plurals.export_report_done, result.readings, result.readings)
                     ExportResult.Failed -> resources.getString(R.string.export_failed)
+                    ExportResult.Empty -> resources.getString(R.string.export_empty)
                 },
             )
         }
@@ -185,6 +186,7 @@ fun TileDetailScreen(
                             dailyAvailable = current.aggregate != null &&
                                 current.tile.form != TileSpec.Form.SESSIONS,
                             reportAvailable = current.type == BloodPressureRecord::class,
+                            canExport = viewModel::canExport,
                             onExport = viewModel::export,
                         )
                     }

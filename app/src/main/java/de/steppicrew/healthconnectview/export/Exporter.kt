@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.health.dayPartWindow
 import de.steppicrew.healthconnectview.health.pressureReport
 import de.steppicrew.healthconnectview.health.SESSION_MARGIN
 import de.steppicrew.healthconnectview.health.numericAggregate
+import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import java.io.OutputStream
 import java.time.Instant
@@ -144,7 +145,32 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         return report.readings.size
     }
 
+    /**
+     * Whether [writeRecords] over the same window would write a row: any record, a night kept
+     * by its end as the file keeps it. Checked before the save dialog opens, so an empty window
+     * says so instead of leaving a file of headers.
+     */
+    suspend fun hasRecords(spec: RecordTypeSpec<*>, start: Instant, end: Instant, origins: Set<DataOrigin>): Boolean =
+        // A night's widened read can start with the one after the window, so look at a few.
+        repository.recordsIn(spec, start, end, origins, if (spec.type == SleepSessionRecord::class) SLEEP_PROBE else 1)
+            .isNotEmpty()
+
+    /** Whether [writeDailyTotals] would have a value on any day, rather than only empty ones. */
+    suspend fun hasDailyTotals(spec: RecordTypeSpec<*>, from: LocalDate, until: LocalDate, origins: Set<DataOrigin>): Boolean {
+        val metric = spec.aggregate ?: return false
+        return repository.total(metric, TimeRangeFilter.between(from.atStartOfDay(), until.atStartOfDay()), origins) != null
+    }
+
+    /** Whether [writePressureReport] would have a reading, over the report's own 04:00 window. */
+    suspend fun hasPressureReadings(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): Boolean {
+        val (start, end) = dayPartWindow(first, last, zone)
+        return repository.read(BloodPressureRecord::class, TimeRangeFilter.between(start, end), 1, origins).isNotEmpty()
+    }
+
     private companion object {
+        /** Nights read to find one kept by its end; more than a window's edges can hold. */
+        const val SLEEP_PROBE = 5
+
         /**
          * Marks the file as UTF-8. Without it Excel reads "Stärke" as "StÃ¤rke"; programs that
          * do not need it skip it.
