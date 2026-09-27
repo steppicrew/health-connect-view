@@ -30,6 +30,9 @@ data class PermissionsUiState(
 
     val historyGranted: Boolean get() = RecordRegistry.HISTORY_PERMISSION in granted
     val historySelected: Boolean get() = RecordRegistry.HISTORY_PERMISSION in selected
+
+    val routesGranted: Boolean get() = RecordRegistry.ROUTES_PERMISSION in granted
+    val routesSelected: Boolean get() = RecordRegistry.ROUTES_PERMISSION in selected
 }
 
 class PermissionsViewModel(application: Application) : AndroidViewModel(application) {
@@ -88,9 +91,13 @@ class PermissionsViewModel(application: Application) : AndroidViewModel(applicat
      * Without it Health Connect caps every read at the last 30 days and reports no error, so
      * long ranges silently return a month of data and look like missing history.
      */
-    fun toggleHistory() {
+    fun toggleHistory() = toggleExtra(RecordRegistry.HISTORY_PERMISSION)
+
+    /** Every route at once; see [RecordRegistry.ROUTES_PERMISSION]. Not part of [selectAll]. */
+    fun toggleRoutes() = toggleExtra(RecordRegistry.ROUTES_PERMISSION)
+
+    private fun toggleExtra(permission: String) {
         _state.update { current ->
-            val permission = RecordRegistry.HISTORY_PERMISSION
             val selected = if (permission in current.selected) {
                 current.selected - permission
             } else {

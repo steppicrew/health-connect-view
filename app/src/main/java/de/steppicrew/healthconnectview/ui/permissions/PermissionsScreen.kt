@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.permissions
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -85,6 +86,7 @@ fun PermissionsScreen(
                 state = state,
                 onToggle = viewModel::toggle,
                 onToggleHistory = viewModel::toggleHistory,
+                onToggleRoutes = viewModel::toggleRoutes,
                 onSelectAll = viewModel::selectAll,
                 onRequest = { onRequestPermissions(viewModel.permissionsToRequest()) },
                 onContinue = onContinue,
@@ -100,6 +102,7 @@ private fun PermissionList(
     state: PermissionsUiState,
     onToggle: (RecordTypeSpec<*>) -> Unit,
     onToggleHistory: () -> Unit,
+    onToggleRoutes: () -> Unit,
     onSelectAll: () -> Unit,
     onRequest: () -> Unit,
     onContinue: () -> Unit,
@@ -140,10 +143,19 @@ private fun PermissionList(
             }
 
             item(key = "history") {
-                HistoryRow(
+                ExtraPermissionRow(
+                    title = R.string.permission_history_title,
+                    body = R.string.permission_history_body,
                     granted = state.historyGranted,
                     selected = state.historySelected,
                     onToggle = onToggleHistory,
+                )
+                ExtraPermissionRow(
+                    title = R.string.permission_routes_title,
+                    body = R.string.permission_routes_body,
+                    granted = state.routesGranted,
+                    selected = state.routesSelected,
+                    onToggle = onToggleRoutes,
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
@@ -203,12 +215,16 @@ private fun CategoryHeader(category: Category) {
 }
 
 /**
- * History is a depth permission, not a record type, so it sits above the type list rather
- * than inside a category. Health Connect caps reads at 30 days without it and reports no
- * error, which reads as "there is no older data" instead of "the app may not see it".
+ * A permission that is not a record type, above the type list rather than inside a category.
+ *
+ * History is depth: Health Connect caps reads at 30 days without it and reports no error,
+ * which reads as "there is no older data" instead of "the app may not see it". Routes are
+ * every exercise track at once; without them each one is asked for on its own.
  */
 @Composable
-private fun HistoryRow(
+private fun ExtraPermissionRow(
+    @StringRes title: Int,
+    @StringRes body: Int,
     granted: Boolean,
     selected: Boolean,
     onToggle: () -> Unit,
@@ -227,14 +243,14 @@ private fun HistoryRow(
         )
         Column(Modifier.padding(start = 8.dp)) {
             Text(
-                text = stringResource(R.string.permission_history_title),
+                text = stringResource(title),
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
                 text = if (granted) {
                     stringResource(R.string.permission_already_granted)
                 } else {
-                    stringResource(R.string.permission_history_body)
+                    stringResource(body)
                 },
                 style = MaterialTheme.typography.labelSmall,
                 color = if (granted) {

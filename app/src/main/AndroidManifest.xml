@@ -52,6 +52,9 @@
 
     <!-- Older than 30 days; requested on demand, not at first launch. -->
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
+    <!-- All exercise routes at once; opt-in on the permission screen. Without it a route is
+         shown one session at a time through the system's consent dialog. -->
+    <uses-permission android:name="android.permission.health.READ_EXERCISE_ROUTES" />
 
     <!--
         Without this, getSdkStatus misreports and source-app labels cannot be resolved.

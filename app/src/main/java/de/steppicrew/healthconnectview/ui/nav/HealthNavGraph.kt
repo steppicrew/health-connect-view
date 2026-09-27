@@ -31,7 +31,7 @@ object Routes {
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
     const val TYPE_DETAIL = "type/{typeName}"
-    const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}"
+    const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}&session={session}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
     /** `fixture` draws synthetic cycles; only the debug build has any to draw. */
@@ -142,6 +142,13 @@ fun HealthNavGraph(
                     type = NavType.StringType
                     defaultValue = ""
                 },
+                // An instant (ISO-8601): the session running then opens once loaded; or "route":
+                // the first one with a route. For the same reason as span -- a session sheet
+                // otherwise needs a tap, and a route one needs finding first.
+                navArgument("session") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
             ),
         ) { entry ->
             val typeName = entry.arguments?.getString("typeName").orEmpty()
@@ -152,6 +159,7 @@ fun HealthNavGraph(
             TileDetailScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
+                openSession = entry.arguments?.getString("session").orEmpty(),
             )
         }
 

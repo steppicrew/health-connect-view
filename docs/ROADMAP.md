@@ -82,11 +82,26 @@ open items below and `FEATURE-IDEAS.md`.
     chip. Probed on 27.09.2026 (`FieldPresenceActivity`, per writer): no source on the phone
     names more than one device, and only the two step writers name one at all, so splitting
     chips by device would change nothing here.
-21. [ ] **Decide: exercise routes.** 26 of 114 sessions in a month carry a route, all behind
-    `READ_EXERCISE_ROUTES`, which the app never requests. With no network there is no map, so a
-    route would be a drawn path and an elevation profile. Location is the most sensitive data
-    in Health Connect; the privacy text and Data safety form would need to say so. A decision
-    for the owner before any code.
+21. [ ] **Exercise routes** -- decided by the owner 27.09.2026, built on branch
+    `exercise-routes`, **not merged until Play's pending review is through**: it declares
+    `READ_EXERCISE_ROUTES`, which needs the Health Connect declaration in the Console updated
+    and triggers a review of its own. Both ways of consent, the user's choice: "Alle
+    Trainingsrouten" on the permission screen (never part of "select all"), or per session
+    through the system's own dialog (`ExerciseRouteRequestContract`) from "Route anzeigen" in
+    the session sheet. The route is read when the session opens -- sessions carry only the
+    record id, a year of tracks would be tens of megabytes -- and survives the session dedupe
+    when the named copy is another app's. Drawn as its shape without a map (no network),
+    north up, proportions kept, start and end marked, elevation profile, length and height
+    range. Export as GPX (Pro, `ROUTE_EXPORT`), then "Öffnen" in any track app; Google Maps
+    opens no track format, so none was chosen for it. A privacy section on routes, in the app
+    and on the page. Seen on the phone: consent, drawing, slider.
+    Since: a slider through time marks the position on the route and a line through the
+    profile, with time, distance so far and height; the profile is the median of 120 time
+    slices, since single readings metres off drew a comb of vertical strokes (one route
+    measured: 874 points, 1-8 s apart, heights in 0.2 m steps, no repeated timestamps); a
+    route icon marks sessions with a route in the lists. Per-session consent hands the route
+    over once and is asked again on the next opening -- only the standing permission keeps
+    routes readable -- and the consent text says so.
 22. [ ] **Context on single readings.** Blood glucose's meal relation, meal type and specimen,
     and blood pressure's body position and arm, are never shown. None on the phone, so build
     against the emulator; worth doing before step 17's reports, which would use them.

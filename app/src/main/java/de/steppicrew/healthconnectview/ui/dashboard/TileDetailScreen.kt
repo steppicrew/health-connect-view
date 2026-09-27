@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.material.icons.filled.Route
 import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.registry.deviceName
 import de.steppicrew.healthconnectview.registry.DeviceKind
@@ -138,16 +139,31 @@ fun TileDetailScreen(
     viewModel: TileDetailViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    /** A session to open once loaded: an ISO instant it runs at, or "route"; see the nav route. */
+    openSession: String = "",
 ) {
+    val requested = openSession
     val state by viewModel.state.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
     val spec by viewModel.spec.collectAsStateWithLifecycle()
     var openSession by remember { mutableStateOf<Session?>(null) }
+    var opened by remember { mutableStateOf(false) }
+    LaunchedEffect(state, requested) {
+        if (requested.isEmpty() || opened) return@LaunchedEffect
+        val sessions = (state as? UiState.Data)?.value?.sessions ?: return@LaunchedEffect
+        val at = runCatching { Instant.parse(requested) }.getOrNull()
+        sessions.firstOrNull { if (at != null) at >= it.start && at < it.end else requested == "route" && it.route != null }?.let {
+            openSession = it
+            opened = true
+        }
+    }
 
     openSession?.let { session ->
         SessionSheet(
             session = session,
             loadStats = { viewModel.statisticsFor(it) },
+            loadRoute = { viewModel.routeFor(it) },
+            onExportRoute = viewModel::exportRoute,
             onDismiss = { openSession = null },
         )
     }
@@ -1105,8 +1121,26 @@ private fun SessionCaption(session: Session, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        RouteMark(session, size = SESSION_ICON)
     }
 }
+
+/**
+ * Says a session has a recorded route, so it can be found in a list before opening it -- the
+ * route itself is read, and asked for, only when the session is opened.
+ */
+@Composable
+private fun RouteMark(session: Session, size: Int = ROUTE_MARK) {
+    if (session.route == null) return
+    Icon(
+        imageVector = Icons.Default.Route,
+        contentDescription = stringResource(R.string.route_available),
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(size.dp),
+    )
+}
+
+private const val ROUTE_MARK = 20
 
 /**
  * One session as a row on a session type's own screen: what it was, when, how long, and the
@@ -1163,6 +1197,7 @@ private fun SessionRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            RouteMark(session)
             Text(
                 text = Formatting.duration(session.duration),
                 style = MaterialTheme.typography.labelLarge,

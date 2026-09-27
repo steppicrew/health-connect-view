@@ -5,6 +5,8 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByDuration
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
+import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.request.AggregateGroupByDurationRequest
@@ -271,6 +273,15 @@ class HealthRepository(private val context: Context) {
                 dataOriginFilter = origins,
             ),
         )
+    }
+
+    /**
+     * One exercise session's route, read when the session is opened rather than with the list:
+     * [ExerciseRouteResult.Data] with the standing permission, [ExerciseRouteResult.ConsentRequired]
+     * without it -- then the system's per-session dialog can grant this one.
+     */
+    suspend fun routeOf(recordId: String): ExerciseRouteResult = withContext(Dispatchers.IO) {
+        client.readRecord(ExerciseSessionRecord::class, recordId).record.exerciseRouteResult
     }
 
     /** Which apps contributed to a range, so a total can be explained to the user. */
