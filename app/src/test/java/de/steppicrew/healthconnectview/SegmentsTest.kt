@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.readingGap
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -109,5 +110,36 @@ class SegmentsTest {
             "no visible gap between segments",
             slices[1].first() > slices[0].last() + 0.1,
         )
+    }
+
+    private fun minutes(vararg at: Long): List<Point> = at.map { Point(day0.plusSeconds(it * 60), 60.0) }
+
+    @Test
+    fun `three hours without a reading break a day of heart rate`() {
+        // Every two minutes, then nothing from 20:30 to 23:40.
+        val evening = (0L..30L step 2).map { 20 * 60 + it } + (0L..10L step 2).map { 23 * 60 + 40 + it }
+        val series = minutes(*evening.toLongArray())
+        val segments = segmentAtGaps(series, emptyList(), readingGap(series))
+        assertEquals(2, segments.size)
+    }
+
+    @Test
+    fun `a change of pace is not a gap`() {
+        // Every 15 seconds by day, every two minutes at night: both are the watch working.
+        val series = (0L until 40L).map { Point(day0.plusSeconds(it * 15), 60.0) } +
+            (1L..20L).map { Point(day0.plusSeconds(600 + it * 120), 50.0) }
+        assertEquals(1, segmentAtGaps(series, emptyList(), readingGap(series)).size)
+    }
+
+    @Test
+    fun `weekly readings are a rhythm, a month without one is a gap`() {
+        val series = points(0, 7, 14, 21, 28, 63, 70)
+        val segments = segmentAtGaps(series, emptyList(), readingGap(series))
+        assertEquals(listOf(points(0, 7, 14, 21, 28), points(63, 70)), segments)
+    }
+
+    @Test
+    fun `two readings have no rhythm to judge by`() {
+        assertEquals(null, readingGap(points(0, 30)))
     }
 }

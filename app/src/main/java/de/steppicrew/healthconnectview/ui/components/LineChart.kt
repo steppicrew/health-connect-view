@@ -48,6 +48,7 @@ import de.steppicrew.healthconnectview.ui.dashboard.StackedBucket
 import de.steppicrew.healthconnectview.ui.dashboard.ValueBand
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.ValueZones
+import de.steppicrew.healthconnectview.registry.readingGap
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import java.time.Instant
 
@@ -283,7 +284,15 @@ fun LineChart(
         val end = plotExtent?.endInclusive ?: points.last().time
         (start..end).takeIf { end > start }
     }
-    val segments = remember(points, emptyBuckets) { segmentAtGaps(points, emptyBuckets) }
+    // Runs of the line with data in them. Between runs is a gap -- a day with no value, or a
+    // pause several times the readings' usual rhythm -- drawn dotted, and the band stops there.
+    val segments = remember(points, emptyBuckets, bars) {
+        segmentAtGaps(points, emptyBuckets, if (bars) null else readingGap(points))
+    }
+    // Each gap as the moments either side of it, for splitting the band at the same places.
+    val gaps = remember(segments) {
+        segments.zipWithNext { before, after -> before.last().time to after.first().time }
+    }
     val maxZoom = remember(fractions) { maxZoomFor(fractions) }
     if (onVisibleRange != null) {
         val report by rememberUpdatedState(onVisibleRange)
@@ -514,13 +523,25 @@ fun LineChart(
                     xForTime(band.time.toEpochMilli())?.let { Offset(it, yFor(band.high)) }
                 }
                 if (lows.size == highs.size && lows.size > 1) {
-                    val ribbon = Path().apply {
-                        moveTo(lows.first().x, lows.first().y)
-                        lows.drop(1).forEach { lineTo(it.x, it.y) }
-                        highs.reversed().forEach { lineTo(it.x, it.y) }
-                        close()
+                    // One ribbon per run between gaps. As a single shape it ran straight
+                    // across days nothing was recorded, sloping or pinching through them as
+                    // if the spread had been measured there.
+                    val runs = mutableListOf(mutableListOf(0))
+                    for (index in 1 until rangeBand.size) {
+                        val from = rangeBand[index - 1].time
+                        val to = rangeBand[index].time
+                        val broken = gaps.any { (before, after) -> from <= before && to >= after }
+                        if (broken) runs += mutableListOf(index) else runs.last() += index
                     }
-                    drawPath(ribbon, color = lineColor.copy(alpha = RANGE_BAND_ALPHA))
+                    runs.filter { it.size > 1 }.forEach { run ->
+                        val ribbon = Path().apply {
+                            moveTo(lows[run.first()].x, lows[run.first()].y)
+                            run.drop(1).forEach { lineTo(lows[it].x, lows[it].y) }
+                            run.reversed().forEach { lineTo(highs[it].x, highs[it].y) }
+                            close()
+                        }
+                        drawPath(ribbon, color = lineColor.copy(alpha = RANGE_BAND_ALPHA))
+                    }
                 }
             }
 
@@ -543,6 +564,26 @@ fun LineChart(
             // line meets the goal rather than at the nearest sample.
             val crossingX = goalCrossing?.let { crossing ->
                 xForTime(crossing.toEpochMilli())?.takeIf { it in 0f..size.width }
+            }
+
+            // A gap joined by a faint dotted line: the run continues, but nothing was recorded
+            // in between. Left blank, a gap read as the chart failing to draw; drawn solid, it
+            // claimed readings across hours without one.
+            if (!bars) {
+                val gapColor = lineColor.copy(alpha = GAP_ALPHA)
+                val dotted = PathEffect.dashPathEffect(floatArrayOf(GAP_DOT_ON.dp.toPx(), GAP_DOT_OFF.dp.toPx()))
+                var end = 0
+                segments.zipWithNext().forEach { (before, _) ->
+                    end += before.size
+                    drawLine(
+                        color = gapColor,
+                        start = offsets[end - 1],
+                        end = offsets[end],
+                        strokeWidth = GAP_WIDTH.dp.toPx(),
+                        pathEffect = dotted,
+                        cap = StrokeCap.Round,
+                    )
+                }
             }
 
             // Each run of consecutive points is stroked on its own, so a gap stays a gap.
@@ -1447,6 +1488,12 @@ private const val BAR_LONE_DIVISOR = 8f
  * between samples rather than the shape.
  */
 private const val MAX_ZOOM = 24f
+
+/** A gap's dotted join: faint, thin and round-dotted, so it reads as no data, not as a series. */
+private const val GAP_ALPHA = 0.55f
+private const val GAP_WIDTH = 1.5f
+private const val GAP_DOT_ON = 0.5f
+private const val GAP_DOT_OFF = 5f
 
 /** Fewest points a zoomed chart keeps on screen. */
 private const val MIN_VISIBLE_POINTS = 4
