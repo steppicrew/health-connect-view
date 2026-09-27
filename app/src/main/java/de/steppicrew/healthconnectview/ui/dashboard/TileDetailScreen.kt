@@ -618,7 +618,14 @@ private fun SpanSummary(
             val scope = rememberCoroutineScope()
             val showNights by remember(store) { store.settings.map { it.showSingleNights } }
                 .collectAsStateWithLifecycle(initialValue = true)
-            val shown = if (showNights) data else data.copy(nightPoints = emptyList())
+            // Likewise the four-week mean, off by default: a second line is clutter to anyone
+            // not looking for their own level.
+            val showMean by remember(store) { store.settings.map { it.showRollingMean } }
+                .collectAsStateWithLifecycle(initialValue = false)
+            val shown = data.copy(
+                nightPoints = if (showNights) data.nightPoints else emptyList(),
+                baseline = if (showMean) data.baseline else emptyList(),
+            )
             DataLineChart(shown, Modifier.padding(top = 16.dp))
             Text(
                 text = stringResource(
@@ -655,21 +662,13 @@ private fun SpanSummary(
             // rate was reported as simply unexplained.
             ChartLegend(data = shown)
             if (data.nightPoints.isNotEmpty()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .toggleable(
-                            value = showNights,
-                            role = Role.Checkbox,
-                            onValueChange = { scope.launch { store.setShowSingleNights(it) } },
-                        ),
-                ) {
-                    Checkbox(checked = showNights, onCheckedChange = null)
-                    Text(
-                        text = stringResource(R.string.hrv_show_nights),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                ChartToggle(showNights, R.string.hrv_show_nights) {
+                    scope.launch { store.setShowSingleNights(it) }
+                }
+            }
+            if (data.baseline.isNotEmpty()) {
+                ChartToggle(showMean, R.string.chart_show_rolling_mean) {
+                    scope.launch { store.setShowRollingMean(it) }
                 }
             }
 
@@ -965,6 +964,20 @@ private fun HrvStanding.labelRes(): Int = when (this) {
 }
 
 /** One swatch and its name; a round swatch for a mark drawn as dots. */
+/** A remembered on/off for an optional mark on the chart, the whole row tappable. */
+@Composable
+private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .toggleable(value = checked, role = Role.Checkbox, onValueChange = onChange),
+    ) {
+        Checkbox(checked = checked, onCheckedChange = null)
+        Text(text = stringResource(label), style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
 @Composable
 private fun LegendEntry(color: Color, @StringRes label: Int, round: Boolean = false) {
     DotText(

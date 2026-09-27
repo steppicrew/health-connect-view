@@ -66,6 +66,11 @@ data class Settings(
     val glucose: GlucoseChoice = GlucoseChoice.SYSTEM,
     /** Single nights as dots behind a multi-day HRV line. On until switched off on the chart. */
     val showSingleNights: Boolean = true,
+    /**
+     * The four-week rolling mean behind a resting heart rate. Off until switched on on the
+     * chart: a second line is clutter to anyone not looking for their own level.
+     */
+    val showRollingMean: Boolean = false,
 )
 
 /**
@@ -92,6 +97,7 @@ class SettingsStore(private val context: Context) {
                 ?.let { stored -> runCatching { GlucoseChoice.valueOf(stored) }.getOrNull() }
                 ?: GlucoseChoice.SYSTEM,
             showSingleNights = prefs[KEY_SINGLE_NIGHTS] ?: true,
+            showRollingMean = prefs[KEY_ROLLING_MEAN] ?: false,
         )
     }
 
@@ -109,6 +115,10 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setShowSingleNights(show: Boolean) {
         context.settingsDataStore.edit { it[KEY_SINGLE_NIGHTS] = show }
+    }
+
+    suspend fun setShowRollingMean(show: Boolean) {
+        context.settingsDataStore.edit { it[KEY_ROLLING_MEAN] = show }
     }
 
     suspend fun setDynamicColor(enabled: Boolean) {
@@ -131,6 +141,7 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_UNITS] = settings.units.name
             prefs[KEY_GLUCOSE] = settings.glucose.name
             prefs[KEY_SINGLE_NIGHTS] = settings.showSingleNights
+            prefs[KEY_ROLLING_MEAN] = settings.showRollingMean
         }
     }
 
@@ -141,5 +152,6 @@ class SettingsStore(private val context: Context) {
         val KEY_UNITS = stringPreferencesKey("units")
         val KEY_GLUCOSE = stringPreferencesKey("glucose_unit")
         val KEY_SINGLE_NIGHTS = booleanPreferencesKey("show_single_nights")
+        val KEY_ROLLING_MEAN = booleanPreferencesKey("show_rolling_mean")
     }
 }
