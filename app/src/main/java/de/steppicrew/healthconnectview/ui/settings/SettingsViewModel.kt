@@ -22,6 +22,7 @@ import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.settings.ThemeChoice
+import de.steppicrew.healthconnectview.settings.GlucoseChoice
 import de.steppicrew.healthconnectview.settings.UnitChoice
 import de.steppicrew.healthconnectview.registry.Units
 import java.util.Locale
@@ -141,6 +142,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         // to reloads on resume and must already read in the new units.
         Units.system = units.resolve(Locale.getDefault())
         viewModelScope.launch { store.setUnits(units) }
+    }
+
+    fun setGlucose(glucose: GlucoseChoice) {
+        // At once, for the same reason as setUnits.
+        Units.glucose = glucose.resolve(Locale.getDefault())
+        viewModelScope.launch { store.setGlucose(glucose) }
     }
 
     fun setDynamicColor(enabled: Boolean) {

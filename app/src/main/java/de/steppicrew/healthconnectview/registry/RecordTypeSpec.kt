@@ -142,13 +142,13 @@ data class RecordTypeSpec<T : Record>(
 
     /** The unit values are shown in: [unitRes], or its imperial counterpart. */
     @get:StringRes
-    val displayUnitRes: Int? get() = quantity?.unitRes(Units.system) ?: unitRes
+    val displayUnitRes: Int? get() = quantity?.unitRes() ?: unitRes
 
     /** A metric value -- a stored goal -- in the unit values are shown in. */
-    fun display(metric: Double): Double = quantity?.convert(metric, Units.system) ?: metric
+    fun display(metric: Double): Double = quantity?.convert(metric) ?: metric
 
     /** A value the user typed in the shown unit, back to metric for storing. */
-    fun toMetric(shown: Double): Double = quantity?.toMetric(shown, Units.system) ?: shown
+    fun toMetric(shown: Double): Double = quantity?.toBase(shown) ?: shown
 
     /**
      * Whether the aggregate is a mean rather than a sum, so a window's figure is its average.
@@ -186,8 +186,8 @@ data class RecordTypeSpec<T : Record>(
 
     private fun shown(points: List<Point>): List<Point> {
         val quantity = quantity ?: return points
-        val system = Units.system
-        return if (system == UnitSystem.METRIC) points else points.map { it.copy(value = quantity.convert(it.value, system)) }
+        if (!quantity.alternateShown) return points
+        return points.map { it.copy(value = quantity.convert(it.value, alternate = true)) }
     }
 
     @Suppress("UNCHECKED_CAST")

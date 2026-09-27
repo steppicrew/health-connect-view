@@ -33,9 +33,8 @@ open items below and `FEATURE-IDEAS.md`.
     on its chart (axis values, the goal line), a default time range other than the day (a week
     of steps, a month of weight), and a choice of what the face shows. Per tile, stored beside
     the goal and zones in the tile config.
-12. [ ] **Blood glucose units.** A setting for mg/dL or mmol/L, beside the metric/imperial
-    choice in section 18. The two regions do not line up with it -- Germany uses both -- so it
-    is its own choice rather than following the unit system.
+12. [x] **Blood glucose units** -- merged 27.09.2026, see section 18. Not seen with real
+    readings: the phone has no glucose data.
 13. [ ] **Weight chart legend.** It shows two identical entries, "Messwert" and "Messung", for
     what looks like one series. Find out where each comes from before removing either.
 14. [ ] **Audit what Health Connect offers against what is shown.** The first pass at the tiles
@@ -1286,8 +1285,14 @@ the US, Liberia and Myanmar and metric elsewhere; the UK mixes both and is left 
 - **What converts:** weight and body masses (lb), distance (mi), elevation (ft), height (in),
   speed (mph), temperature (°F; skin temperature is a *change*, scaled but never shifted by 32)
   and hydration (fl oz). Not blood pressure (mmHg everywhere), energy (US "Calories" are
-  kilocalories) or glucose -- mmol/L versus mg/dL follows a country's lab convention, not its
-  measuring system, and would need its own setting.
+  kilocalories). Glucose converts too, but by its own setting (below).
+- **Blood glucose has its own setting**: Region, mmol/L or mg/dL. mmol/L versus mg/dL
+  follows a country's lab convention, not its measuring system -- metric Germany and France
+  report mg/dL. Region means mg/dL in the US, much of continental Europe (Germany counted,
+  though it uses both), Japan, Korea, Taiwan, India, Israel, Egypt and parts of Latin
+  America, and mmol/L elsewhere. Factor 18, as the Health Connect library and most meters
+  use. `Quantity.GLUCOSE` reads `Units.glucose` instead of `Units.system`; nothing else had to
+  know. In the backup as `glucoseUnit`.
 - **Goals stay stored metric** and convert for the ring, the goal line and the dialog, which
   shows the unit beside the field. Switching units converts a goal instead of reinterpreting
   "5" as five of the new unit.

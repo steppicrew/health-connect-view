@@ -228,8 +228,8 @@ object RecordRegistry {
             points = { r -> r.samples.map { Point(it.time, it.speed.inKilometersPerHour) } },
             summary = { r ->
                 seriesSummary(
-                    r.samples.map { Quantity.SPEED.convert(it.speed.inKilometersPerHour, Units.system) },
-                    Quantity.SPEED.symbol(Units.system),
+                    r.samples.map { Quantity.SPEED.convert(it.speed.inKilometersPerHour) },
+                    Quantity.SPEED.symbol(),
                 )
             },
             aggregate = SpeedRecord.SPEED_AVG,
@@ -401,8 +401,9 @@ object RecordRegistry {
             unitRes = R.string.unit_mmoll,
             shape = Shape.INSTANT,
             startTime = { it.time },
+            quantity = Quantity.GLUCOSE,
             points = { listOf(Point(it.time, it.level.inMillimolesPerLiter)) },
-            summary = { Formatting.number(it.level.inMillimolesPerLiter) + " mmol/L" },
+            summary = { Units.format(Quantity.GLUCOSE, it.level.inMillimolesPerLiter) },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
         RecordTypeSpec(
@@ -521,8 +522,8 @@ object RecordRegistry {
                     baseline != null -> baseline
                     deltas.isEmpty() -> "—"
                     else -> "%+.2f %s".format(
-                        Quantity.TEMPERATURE_CHANGE.convert(deltas.average(), Units.system),
-                        Quantity.TEMPERATURE_CHANGE.symbol(Units.system),
+                        Quantity.TEMPERATURE_CHANGE.convert(deltas.average()),
+                        Quantity.TEMPERATURE_CHANGE.symbol(),
                     )
                 }
             },
