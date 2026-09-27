@@ -54,8 +54,14 @@ make_feature() {
 
 # Play rejects screenshots taller than 2:1. Most modern phones are taller than that,
 # so pad to a compliant ratio rather than cropping content away.
+#
+# The status bar is cut off first ($2, its height in pixels): the clock, the emulator's
+# network icons and its notifications say nothing about the app and date every screenshot.
 normalise() {
-    local file="$1"
+    local file="$1" top="${2:-0}"
+    if [ "$top" -gt 0 ]; then
+        magick "$file" -chop "0x${top}" +repage "$file"
+    fi
     local w h
     w=$(magick identify -format "%w" "$file")
     h=$(magick identify -format "%h" "$file")
@@ -128,6 +134,12 @@ take_shots() {
 
     adb -s "$device" shell cmd locale set-app-locales "$PACKAGE" --locales "$lang" >/dev/null 2>&1 || true
 
+    # The status bar's height as the device reports it, so the crop follows the device.
+    local status_bar
+    status_bar="$(adb -s "$device" shell dumpsys window \
+        | sed -n 's/.*type=statusBars frame=\[0,0\]\[[0-9]*,\([0-9]*\)\].*/\1/p' | head -1)"
+    status_bar="${status_bar:-0}"
+
     local out="$OUT_DIR/screenshots/$lang"
     mkdir -p "$out"
 
@@ -159,7 +171,7 @@ take_shots() {
         done
         [ "$settled" -eq 1 ] || echo "warning: $name did not settle; check it" >&2
 
-        normalise "$shot"
+        normalise "$shot" "$status_bar"
         echo "$shot"
     done
 }
