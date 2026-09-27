@@ -699,6 +699,10 @@ private fun SpanSummary(
  *
  * Only what is actually drawn is listed. A legend naming a mark the chart does not have is
  * worse than none -- it sends the reader looking for something that is not there.
+ *
+ * The dots on a marked-readings line are that line's own points, not a second series, so
+ * they get no entry of their own. They used to, as "Measurement" beside "Reading" with an
+ * identical swatch: two names for one thing, which read as a mark the chart did not have.
  */
 @Composable
 private fun ChartLegend(data: TileDetailData) {
@@ -726,6 +730,10 @@ private fun ChartLegend(data: TileDetailData) {
         data.bars -> R.string.legend_value_bars
         data.cumulative -> R.string.legend_value_cumulative
         data.rangeBand.isNotEmpty() -> R.string.legend_value_mean
+        // Named as the caption names it: across days a weight point is that day's mean, not a
+        // reading, and calling it "Reading" contradicted "Daily averages" printed above.
+        data.aggregated && data.weeklyBuckets && data.spec.isAveraged -> R.string.legend_value_mean_weekly
+        data.aggregated && data.spec.isAveraged -> R.string.legend_value_mean
         else -> R.string.legend_value_line
     }
 
@@ -745,7 +753,6 @@ private fun ChartLegend(data: TileDetailData) {
             sleepShown,
             exerciseShown,
             data.goal != null,
-            data.spec.tile.markReadings,
         ).count { it }
     if (entries < 2 && !bandShown) return
 
@@ -790,12 +797,6 @@ private fun ChartLegend(data: TileDetailData) {
         }
         if (data.goal != null) {
             LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
-        }
-        if (data.spec.tile.markReadings) {
-            LegendEntry(
-                color = MaterialTheme.colorScheme.primary,
-                label = R.string.legend_readings,
-            )
         }
     }
 }
