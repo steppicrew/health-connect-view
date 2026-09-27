@@ -419,7 +419,7 @@
     <string name="hrv_below">unter deinem üblichen Bereich</string>
     <string name="hrv_above">über deinem üblichen Bereich</string>
     <string name="hrv_no_range">Noch zu wenige Nächte für eine übliche Spanne: nötig sind 14 aus den 4 Wochen davor.</string>
-    <string name="hrv_explained">Das Mittel der letzten 7 Nächte, verglichen mit der mittleren Hälfte deiner Nächte in den 4 Wochen davor. Es zählen nur Messungen im Schlaf. Von dieser App aus den Messwerten der Uhr berechnet, nicht Garmins HRV-Status.</string>
+    <string name="hrv_explained">Das Mittel der letzten 7 Nächte, verglichen mit der mittleren Hälfte deiner Nächte in den 4 Wochen davor. Es zählen nur Messungen im Schlaf. Von dieser App aus den Messwerten deines Geräts berechnet; eine Bewertung, die dein Gerät oder seine App selbst anzeigt, kann davon abweichen.</string>
     <string name="chart_source_hrv">Mittel der letzten 7 Nächte; schattiert: deine übliche Spanne</string>
     <string name="legend_hrv_week">Mittel 7 Nächte</string>
     <string name="legend_hrv_usual">Übliche Spanne</string>

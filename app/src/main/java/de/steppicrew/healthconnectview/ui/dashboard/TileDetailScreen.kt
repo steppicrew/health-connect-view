@@ -877,8 +877,8 @@ internal fun DataLineChart(
  * The week's HRV against the usual range, in words and with a coloured dot.
  *
  * Worded as a position, never a verdict -- "below your usual range", not "poor recovery": the
- * range is this app's own arithmetic on the watch's readings, and the explanation beneath says
- * so, including that it is not Garmin's HRV status, whose method is not published.
+ * range is this app's own arithmetic on the device's readings, and the explanation beneath says
+ * so -- without naming a brand, since the readings may come from any wearable.
  */
 @Composable
 private fun HrvStatusLine(summary: HrvSummary, dayView: Boolean) {
