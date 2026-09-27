@@ -159,6 +159,45 @@ class AxisScaleTest {
         assertTrue("a flat zero needs a range", scale.max > scale.min)
     }
 
+    /**
+     * One weigh-in of 83.3 kg drew on an axis from -17 to 183: room of a whole step of the
+     * value's own magnitude, which put the dot on a flat line and a negative weight on the scale.
+     */
+    @Test
+    fun `a single reading gets room proportional to it`() {
+        val scale = AxisScale.of(83.3, 83.3)
+        assertTrue("83.3 should sit inside ${scale.min}..${scale.max}", scale.min < 83.3 && scale.max > 83.3)
+        assertTrue("no negative weight: ${scale.min}", scale.min >= 0.0)
+        assertTrue("room should be a few kg, not 100: ${scale.min}..${scale.max}", scale.max - scale.min <= 10.0)
+        scale.guides.forEach { guide ->
+            val multiples = guide / scale.step
+            assertTrue("$guide off-step", abs(multiples - Math.round(multiples)) < 1e-6)
+        }
+    }
+
+    @Test
+    fun `a single percentage near its ceiling stays under it`() {
+        val scale = AxisScale.of(97.0, 97.0, integral = true)
+        assertTrue("oxygen saturation axis passes 100: ${scale.max}", scale.max <= 100.0)
+        assertTrue(scale.min < 97.0)
+    }
+
+    @Test
+    fun `a small single reading never reaches below zero`() {
+        listOf(0.0, 0.4, 3.0).forEach { value ->
+            val scale = AxisScale.of(value, value)
+            assertTrue("$value: ${scale.min}", scale.min >= 0.0)
+            assertTrue("$value: ${scale.max}", scale.max > value)
+        }
+    }
+
+    @Test
+    fun `a single negative reading keeps its sign`() {
+        // A skin temperature delta.
+        val scale = AxisScale.of(-0.4, -0.4)
+        assertTrue(scale.min < -0.4 && scale.max > -0.4)
+    }
+
     @Test
     fun `negative ranges keep round ends`() {
         // Temperature deltas and elevation changes can go below zero.

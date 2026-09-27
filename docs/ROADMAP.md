@@ -40,9 +40,12 @@ open items below and `FEATURE-IDEAS.md`.
     already said. A plain line alone then has one entry, and a one-entry legend stays hidden.
 14. [x] **Audit what Health Connect offers against what is shown** -- done 27.09.2026, see
     section 20. It produced steps 19-24 below.
-15. [ ] **Day-view y-axis around a single reading.** Weight on 23.09.2026 has one reading
-    (83.3 kg) and the axis runs from -17 to 183: a flat range padded by +/-100 rather than
-    by something proportional to the value. Negative weight on the axis is plainly wrong.
+15. [x] **Day-view y-axis around a single reading** -- merged 27.09.2026. A flat series got
+    room of one round step of its own magnitude, so one weigh-in of 83.3 kg drew on -17..183.
+    It now gets 2 % of the value either side (at least 1 for whole-numbered types), rounded out
+    like any other range and never below zero for a positive value: 81..85 for that weigh-in,
+    44..46 for a resting rate of 45, and an oxygen saturation of 97 stays under 100. Seen on
+    the phone.
 16. [ ] **The smoothed line overshoots between close points.** Weight over 4 weeks dips
     below both dots between 15 and 16 Sept, where two daily means sit a day apart after a
     long gap. The curve invents a low no reading had; a monotone spline (or none) between
