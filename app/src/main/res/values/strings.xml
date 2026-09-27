@@ -87,6 +87,17 @@
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export failed. No file was kept.</string>
     <string name="export_empty">Nothing to export in this period.</string>
+    <string name="action_ok">OK</string>
+    <string name="export_period_title">Period</string>
+    <string name="export_period_shown">Shown on screen</string>
+    <string name="export_period_last_month">Last month</string>
+    <string name="export_period_this_month">This month</string>
+    <string name="export_period_last_year">Last year</string>
+    <string name="export_period_this_year">This year</string>
+    <string name="export_period_custom">Custom period</string>
+    <string name="export_period_custom_pick">Choose the first and last day</string>
+    <string name="export_period_next">Next</string>
+    <string name="export_period_history">Without access to older data, Health Connect returns only the last 30 days. The rest of this period will be missing from the file.</string>
     <string name="export_report">Report (PDF)</string>
     <string name="report_title">Blood pressure log</string>
     <string name="report_period">%1$s – %2$s</string>

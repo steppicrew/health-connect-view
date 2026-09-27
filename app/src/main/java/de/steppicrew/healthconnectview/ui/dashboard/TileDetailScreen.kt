@@ -31,6 +31,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.runtime.LaunchedEffect
+import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.components.ExportAction
@@ -145,6 +146,7 @@ fun TileDetailScreen(
     }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
     LaunchedEffect(viewModel) {
@@ -179,7 +181,9 @@ fun TileDetailScreen(
                 actions = {
                     spec?.let { current ->
                         ExportAction(
-                            fileBase = exportFileBase(current, span, offset),
+                            typeName = current.type.simpleName.orEmpty().removeSuffix("Record"),
+                            shown = ExportPeriod(span.startDate(offset), span.endDate(offset).minusDays(1)),
+                            historyGranted = historyGranted,
                             // Not for sessions: Health Connect's daily sleep total cuts nights at
                             // midnight, while the app credits a night to the morning it ended --
                             // a file would give a second answer to "how long did I sleep".
@@ -513,10 +517,6 @@ private fun DayPartRow(label: String, average: PartAverage?) {
 }
 
 /** "Steps_2026-09-20_2026-09-26": type and the window's first and last day. */
-private fun exportFileBase(spec: RecordTypeSpec<*>, span: Span, offset: Int): String =
-    spec.type.simpleName.orEmpty().removeSuffix("Record") + "_" + span.startDate(offset) + "_" +
-        span.endDate(offset).minusDays(1)
-
 @Composable
 private fun SpanSummary(
     data: TileDetailData,

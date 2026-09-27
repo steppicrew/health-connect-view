@@ -7,6 +7,7 @@ import android.util.Log
 import de.steppicrew.healthconnectview.export.ExportResult
 import android.net.Uri
 import android.provider.DocumentsContract
+import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.components.ExportKind
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -240,22 +241,20 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     val exportResults: SharedFlow<ExportResult> = _exportResults.asSharedFlow()
 
     /**
-     * Whether [kind] over what is on screen would hold any data. Asked before the save dialog
-     * opens; when it would not, says so through [exportResults] and the dialog stays shut, so an
-     * empty window no longer leaves a file of headers. A failed check lets the export go ahead:
+     * Whether [kind] over [period] would hold any data. Asked before the save dialog opens;
+     * when it would not, says so through [exportResults] and the dialog stays shut, so an empty
+     * period no longer leaves a file of headers. A failed check lets the export go ahead:
      * the write reports its own failure.
      */
-    suspend fun canExport(kind: ExportKind): Boolean {
+    suspend fun canExport(kind: ExportKind, period: ExportPeriod): Boolean {
         val spec = _spec.value ?: return false
-        val span = _span.value
-        val offset = _offset.value
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val exporter = Exporter(getApplication(), repository)
         val any = runCatching {
             when (kind) {
-                ExportKind.RECORDS -> exporter.hasRecords(spec, windowStart(span, offset), windowEnd(span, offset), origins)
-                ExportKind.DAILY -> exporter.hasDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins)
-                ExportKind.REPORT -> exporter.hasReportData(spec, span.startDate(offset), span.endDate(offset).minusDays(1), origins)
+                ExportKind.RECORDS -> exporter.hasRecords(spec, period.start(), period.end(), origins)
+                ExportKind.DAILY -> exporter.hasDailyTotals(spec, period.first, period.last.plusDays(1), origins)
+                ExportKind.REPORT -> exporter.hasReportData(spec, period.first, period.last, origins)
             }
         }.getOrDefault(true)
         if (!any) _exportResults.tryEmit(ExportResult.Empty)
@@ -263,15 +262,13 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /**
-     * Writes what is on screen -- this type, this window, this source filter -- to [uri].
+     * Writes this type, this source filter and [period] to [uri].
      *
      * A failed export removes the file it started, so a half-written CSV is not left looking
      * like a complete one.
      */
-    fun export(kind: ExportKind, uri: Uri) {
+    fun export(kind: ExportKind, period: ExportPeriod, uri: Uri) {
         val spec = _spec.value ?: return
-        val span = _span.value
-        val offset = _offset.value
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         viewModelScope.launch {
             val resolver = getApplication<Application>().contentResolver
@@ -281,16 +278,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
                         when (kind) {
                             ExportKind.RECORDS -> ExportResult.Written(
-                                exporter.writeRecords(spec, windowStart(span, offset), windowEnd(span, offset), origins, out),
+                                exporter.writeRecords(spec, period.start(), period.end(), origins, out),
                             )
                             ExportKind.DAILY -> ExportResult.Written(
-                                exporter.writeDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins, out),
+                                exporter.writeDailyTotals(spec, period.first, period.last.plusDays(1), origins, out),
                             )
                             ExportKind.REPORT -> ExportResult.Report(
                                 exporter.writeReport(
                                     spec,
-                                    span.startDate(offset),
-                                    span.endDate(offset).minusDays(1),
+                                    period.first,
+                                    period.last,
                                     origins,
                                     selectedSource?.let { getApplication<Application>().appLabelFor(it) },
                                     out,
@@ -307,6 +304,17 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
         }
     }
+
+    /**
+     * Whether data older than 30 days is readable, as of the last load; without it an export
+     * reaching further back is cut short, and the period dialog says so.
+     */
+    private val _historyGranted = MutableStateFlow(true)
+    val historyGranted: StateFlow<Boolean> = _historyGranted.asStateFlow()
+
+    private fun ExportPeriod.start(): Instant = first.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+
+    private fun ExportPeriod.end(): Instant = last.plusDays(1).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
 
     /**
      * Share of the current load's steps finished, 0 to 1, or null when not loading.
@@ -447,6 +455,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 return@launch
             }
 
+            _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted
             val span = _span.value
             val offset = _offset.value
             val capped = span.needsHistoryPermission(offset) &&
