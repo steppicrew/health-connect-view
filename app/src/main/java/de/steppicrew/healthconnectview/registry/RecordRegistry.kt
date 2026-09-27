@@ -255,6 +255,7 @@ object RecordRegistry {
                 cumulativeIntraday = true,
                 integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                rollingBaseline = true,
             ),
         ),
         RecordTypeSpec(
@@ -578,6 +579,7 @@ object RecordRegistry {
                 TileSpec.Form.SESSIONS,
                 smoothChart = false,
                 sessionKind = Session.Kind.SLEEP,
+                rollingBaseline = true,
             ),
             displayNameRes = R.string.type_sleep_session,
             category = Category.SLEEP,

@@ -493,28 +493,44 @@ internal class TileChartLoader(
             runCatching {
                 val zone = HealthRepository.DEFAULT_ZONE
                 val first = span.startDate(offset)
-                val daily = dailyReadings?.dailyMeans() ?: metric?.let { m ->
-                    repository.bucketedTotals(
-                        m,
-                        TimeRangeFilter.between(
-                            first.minusDays(ROLLING_DAYS - 1L).atStartOfDay(),
-                            span.endDate(offset).atStartOfDay(),
-                        ),
+                val lookback = first.minusDays(ROLLING_DAYS - 1L)
+                val daily = when {
+                    dailyReadings != null -> dailyReadings.dailyMeans()
+                    // Sleep's bars come from its sessions, so its weeks before the window do
+                    // too, credited like the bars to the morning each night ended on.
+                    sessionKind == Session.Kind.SLEEP -> {
+                        val before = repository.sessionsIn(
+                            lookback.atStartOfDay(zone).toInstant(),
+                            first.atStartOfDay(zone).toInstant(),
+                            setOf(Session.Kind.SLEEP),
+                        )
+                            .groupBy { it.end.atZone(zone).toLocalDate() }
+                            .filterKeys { it.isBefore(first) }
+                            .mapValues { (_, nights) -> numericAggregate(nights.totalDuration()) ?: 0.0 }
+                        before + perDayPoints.associate { it.time.atZone(zone).toLocalDate() to it.value }
+                    }
+                    metric != null -> repository.bucketedTotals(
+                        metric,
+                        TimeRangeFilter.between(lookback.atStartOfDay(), span.endDate(offset).atStartOfDay()),
                         Period.ofDays(1),
                         origins,
                     ).mapNotNull { bucket ->
-                        val value = bucket.result[m]?.let { numericAggregate(it, m) }
+                        val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
                             ?: return@mapNotNull null
                         bucket.startTime.toLocalDate() to value
                     }.toMap()
-                }.orEmpty()
+                    else -> emptyMap()
+                }
+                // A year of a counted quantity is drawn as weekly totals, so the mean is read
+                // in the same units -- a week's worth -- or it would lie along the bars' feet.
+                val perBucket = if (bucketedTotals) (span.bucket?.days ?: 1).toDouble() else 1.0
                 // Within the series' own span: a year's last point is its week's start, and a
                 // line running past it would leave the plot.
                 rollingMean(
                     daily,
                     shownPoints.first().time.atZone(zone).toLocalDate(),
                     shownPoints.last().time.atZone(zone).toLocalDate(),
-                ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean) }
+                ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean * perBucket) }
             }.getOrDefault(emptyList())
         } else {
             emptyList()

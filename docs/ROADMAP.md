@@ -118,7 +118,10 @@ open items below and `FEATURE-IDEAS.md`.
     Since: across days resting heart rate draws its four-week rolling mean dashed behind the
     daily values (`rollingMean`, at least 14 of the 28 days), so a few beats above the wearer's
     own level stand out from the night-to-night noise of +/-5 bpm. The detail view's trend now
-    carries the tile's arrow beside its words.
+    carries the tile's arrow beside its words. The four-week mean is behind a remembered
+    checkbox, off at first, and also drawn for steps (in weekly units over a year, where the
+    bars are weekly totals) and sleep (from the nights before the window, credited like the
+    bars), and for respiratory rate and oxygen saturation (step 31).
 30. [ ] **Range bands across gaps.** A shaded range is drawn as one ribbon through every point
     that has one, so where days are missing it runs straight across the gap and can look odd --
     a band sloping through days nothing was recorded, or narrowing to a point and widening
