@@ -15,7 +15,9 @@ import androidx.health.connect.client.aggregate.AggregateMetric
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.trendBefore
-import de.steppicrew.healthconnectview.health.goalStreak
+import de.steppicrew.healthconnectview.health.dailyActivities
+import de.steppicrew.healthconnectview.health.dailyTotalsOf
+import de.steppicrew.healthconnectview.health.streakSummary
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.atLeast
@@ -578,14 +580,18 @@ internal class TileChartLoader(
             } else {
                 null
             },
-            // Against the same total the goal line reads, so the count and the line agree.
-            streak = if (goal != null && metric != null && spec.tile.form == TileSpec.Form.RING) {
-                runCatching {
-                    repository.goalStreak(metric, goal, span.startDate(offset), headlineTotal, origins)
-                }.getOrNull() ?: 0
-            } else {
-                0
-            },
+            // Against the same total the goal line reads, so the count and the line agree; an
+            // activity day against the sessions listed under it.
+            streak = runCatching {
+                when {
+                    span != Span.DAY -> null
+                    goal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
+                        streakSummary(goal, span.startDate(offset), headlineTotal, repository.dailyTotalsOf(metric, origins))
+                    sessionKind == Session.Kind.EXERCISE ->
+                        streakSummary(1.0, span.startDate(offset), sessions.size.toDouble(), repository.dailyActivities())
+                    else -> null
+                }
+            }.getOrNull(),
             cumulative = cumulative,
             // Suppressed on an apportioned curve: "reached at 19:59" on a straight ramp is
             // reading a time off a line that was drawn, not measured.

@@ -21,7 +21,9 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.trendBefore
-import de.steppicrew.healthconnectview.health.goalStreak
+import de.steppicrew.healthconnectview.health.currentStreak
+import de.steppicrew.healthconnectview.health.dailyActivities
+import de.steppicrew.healthconnectview.health.dailyTotalsOf
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
@@ -109,8 +111,8 @@ data class TileData(
      */
     val standing: HrvStanding? = null,
     /**
-     * Days in a row the goal was met, up to the shown day, for a ring showing a day; zero
-     * where there is no run to speak of. See [goalStreak].
+     * Days in a row up to the shown day: of the goal met, for a ring showing a day, or with an
+     * activity, for the activities tile. Zero where there is no run. See [currentStreak].
      */
     val streak: Int = 0,
 ) {
@@ -685,32 +687,38 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         coroutineScope {
             tiles.map { data ->
                 async {
-                    val metric = data.spec.aggregate
                     // The arrow compares a day with the weeks before it, so it says nothing
-                    // about a tile showing a week or a year.
-                    if (!data.granted || metric == null || data.spec.tile.form == TileSpec.Form.SESSIONS ||
-                        data.shownSpan != Span.DAY
-                    ) {
-                        return@async data
-                    }
+                    // about a tile showing a week or a year; nor does a streak.
+                    if (!data.granted || data.shownSpan != Span.DAY) return@async data
                     val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
-                    val trend = gate.withPermit {
-                        runCatching { repository.trendBefore(metric, date, origins)?.direction }.getOrNull()
-                    }
-                    // A ring only: the streak is about the goal the ring fills towards.
-                    val goal = data.tile.effectiveGoal?.let(data.spec::display)?.takeIf {
-                        it > 0.0 && data.spec.tile.form == TileSpec.Form.RING
-                    }
-                    val streak = goal?.let {
+                    val metric = data.spec.aggregate?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
+                    val trend = metric?.let {
                         gate.withPermit {
-                            runCatching { repository.goalStreak(metric, it, date, data.value, origins) }.getOrNull()
+                            runCatching { repository.trendBefore(it, date, origins)?.direction }.getOrNull()
                         }
-                    } ?: 0
+                    }
+                    val streak = gate.withPermit { runCatching { streakOf(data, date, origins) }.getOrNull() } ?: 0
                     data.copy(trend = trend, streak = streak)
                 }
             }.awaitAll()
         }
 
+    /**
+     * The tile's current run: for a ring, of days its goal was met, against the value the
+     * ring shows; for the activities tile, of days with an activity. Zero for every other tile.
+     */
+    private suspend fun streakOf(data: TileData, date: LocalDate, origins: Set<DataOrigin>): Int {
+        val tile = data.spec.tile
+        val metric = data.spec.aggregate
+        val goal = data.tile.effectiveGoal?.let(data.spec::display)?.takeIf { it > 0.0 }
+        return when {
+            tile.form == TileSpec.Form.RING && metric != null && goal != null ->
+                currentStreak(goal, date, data.value, repository.dailyTotalsOf(metric, origins))
+            tile.form == TileSpec.Form.SESSIONS && tile.sessionKind == Session.Kind.EXERCISE ->
+                currentStreak(1.0, date, data.sessions.size.toDouble(), repository.dailyActivities())
+            else -> 0
+        }
+    }
 
     /**
      * The day's sessions of one kind.

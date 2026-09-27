@@ -70,7 +70,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -101,6 +101,7 @@ import kotlin.math.roundToInt
 import de.steppicrew.healthconnectview.health.PartAverage
 import de.steppicrew.healthconnectview.health.DayPartSplit
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.StreakSummary
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.Session
@@ -483,30 +484,54 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
 }
 
 /**
- * The tile's streak in words, with the rule behind the "i": that a day without data bridges the
- * run rather than breaking it is what a reader cannot guess, and what makes a count after a
- * forgotten watch believable.
+ * The tile's streak in words, with the year's longest run and the rule behind the "i": that a
+ * day without data bridges a goal's run rather than breaking it is what a reader cannot guess,
+ * and what makes a count after a forgotten watch believable. Nothing where neither run reaches
+ * two days.
  */
 @Composable
-private fun StreakExplanation(days: Int) {
+private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
+    val longest = summary.longest?.takeIf { it.count >= MIN_STREAK }
+    val current = summary.current.takeIf { it >= MIN_STREAK }
+    val title = when {
+        current != null -> pluralStringResource(streakPlural(active), current, current)
+        longest != null -> pluralStringResource(R.plurals.streak_longest_title, longest.count, longest.count)
+        else -> return
+    }
     val explanation = rememberExplanation("streak")
+    val zone = HealthRepository.DEFAULT_ZONE
+    val range = longest?.let {
+        stringResource(
+            R.string.streak_range,
+            Formatting.date(it.first.atStartOfDay(zone).toInstant(), zone),
+            Formatting.date(it.last.atStartOfDay(zone).toInstant(), zone),
+        )
+    }
     Column(Modifier.padding(top = 8.dp)) {
         Row(verticalAlignment = Alignment.Top) {
             Icon(
-                imageVector = Icons.Default.LocalFireDepartment,
+                imageVector = Icons.Default.EmojiEvents,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
             )
             Text(
-                text = pluralStringResource(R.plurals.streak_days, days, days),
+                text = title,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f),
             )
             InfoToggle(explanation)
         }
+        when {
+            // The current run is the year's longest: saying both would repeat the number.
+            current != null && (longest == null || current >= longest.count) ->
+                stringResource(R.string.streak_is_longest)
+            current != null && longest != null ->
+                pluralStringResource(R.plurals.streak_longest, longest.count, longest.count, range.orEmpty())
+            else -> range
+        }?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium) }
         if (explanation.expanded == true) {
             Text(
-                text = stringResource(R.string.streak_rule),
+                text = stringResource(if (active) R.string.streak_active_rule else R.string.streak_rule),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -695,7 +720,7 @@ private fun SpanSummary(
             )
         }
 
-        data.streak.takeIf { it >= MIN_STREAK && data.goal != null }?.let { StreakExplanation(it) }
+        data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
 
         // Beside the day's own total, which is what the tile's arrow was misread against.
         data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }

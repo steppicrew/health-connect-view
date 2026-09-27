@@ -565,7 +565,22 @@
         <item quantity="one">Goal met %d day in a row</item>
         <item quantity="other">Goal met %d days in a row</item>
     </plurals>
-    <string name="streak_rule">Counts the days in a row up to this day on which the goal was met. A day with nothing recorded neither breaks the run nor counts towards it; after a month with nothing recorded a new run begins. Today counts once the goal is reached, and until then breaks nothing.</string>
+    <string name="streak_rule">Counts the days in a row up to this day on which the goal was met. A day with nothing recorded neither breaks the run nor counts towards it; after a month with nothing recorded a new run begins. Today counts once the goal is reached, and until then breaks nothing. The longest run is looked for in the past year; without access to older data, in the last 30 days.</string>
+    <plurals name="streak_active_days">
+        <item quantity="one">Active %d day in a row</item>
+        <item quantity="other">Active %d days in a row</item>
+    </plurals>
+    <plurals name="streak_longest_title">
+        <item quantity="one">Longest run in the past year: %d day</item>
+        <item quantity="other">Longest run in the past year: %d days</item>
+    </plurals>
+    <plurals name="streak_longest">
+        <item quantity="one">Longest in the past year: %1$d day, %2$s</item>
+        <item quantity="other">Longest in the past year: %1$d days, %2$s</item>
+    </plurals>
+    <string name="streak_range">%1$s to %2$s</string>
+    <string name="streak_is_longest">The longest run in the past year.</string>
+    <string name="streak_active_rule">Counts the days in a row up to this day with at least one recorded activity. A day without one ends the run, even if your device was not worn that day: Health Connect cannot tell no activity from no recording. Today counts once an activity is recorded, and until then breaks nothing. The longest run is looked for in the past year; without access to older data, in the last 30 days.</string>
     <string name="chart_source_raw">Individual readings</string>
     <string name="chart_source_readings_daily">Daily averages of the readings, one app per day</string>
     <string name="chart_source_readings_weekly">Weekly averages of the readings, one app per day</string>

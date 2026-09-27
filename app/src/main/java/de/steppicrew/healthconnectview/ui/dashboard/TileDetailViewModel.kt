@@ -41,6 +41,7 @@ import de.steppicrew.healthconnectview.health.splitByDayPart
 import androidx.health.connect.client.records.BloodPressureRecord
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TrendResult
+import de.steppicrew.healthconnectview.health.StreakSummary
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
@@ -117,8 +118,11 @@ data class TileDetailData(
      * the tile shows a day, and a trend "before" a week or a year would be a different claim.
      */
     val trend: TrendResult? = null,
-    /** Days in a row the goal was met up to this day, beside [goal]; zero for none. */
-    val streak: Int = 0,
+    /**
+     * The run up to this day and the year's longest: of the goal met for a ring, of days with
+     * an activity for exercise. Null where the tile has no streak.
+     */
+    val streak: StreakSummary? = null,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
     /**

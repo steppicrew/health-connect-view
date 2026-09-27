@@ -43,8 +43,9 @@ import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.ui.res.pluralStringResource
+import androidx.annotation.PluralsRes
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.material.icons.filled.Palette
@@ -549,9 +550,13 @@ private fun TileCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                data.trend?.takeIf { data.granted && !data.loading }?.let { TrendMark(it) }
-                data.streak.takeIf { it >= MIN_STREAK && data.granted && !data.loading && data.progress != null }
-                    ?.let { StreakMark(it) }
+                val trend = data.trend?.takeIf { data.granted && !data.loading }
+                trend?.let { TrendMark(it) }
+                data.streak.takeIf { it >= MIN_STREAK && data.granted && !data.loading }?.let {
+                    val sessions = data.spec.tile.form == TileSpec.Form.SESSIONS
+                    val unitShown = data.spec.displayUnitRes != null && !sessions
+                    StreakMark(it, active = sessions, first = !unitShown && trend == null)
+                }
                 // An explicit spacer rather than SpaceBetween, because the unit above is
                 // conditional: with it absent -- every SESSIONS tile, so Sleep and Activities
                 // -- the source marker was the row's only child and SpaceBetween put it at
@@ -922,20 +927,24 @@ private fun TrendMark(trend: Trend) {
 }
 
 /**
- * How many days in a row the goal was met: a flame and the count, as streaks are usually
- * marked. In the tile's quiet colour like the arrow, so the ring stays the loudest thing on it.
+ * How many days in a row the goal was met, or an activity recorded where [active]: a trophy
+ * and the count. Not a flame, which beside "kcal" read as calories. In the tile's quiet
+ * colour like the arrow, so the ring stays the loudest thing on it.
+ *
+ * The gap before it only where something precedes it: on the activities tile it opens the
+ * line, and a gap there set it in from the tile's other text.
  */
 @Composable
-private fun StreakMark(days: Int) {
-    val description = pluralStringResource(R.plurals.streak_days, days, days)
+private fun StreakMark(days: Int, active: Boolean, first: Boolean) {
+    val description = pluralStringResource(streakPlural(active), days, days)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(start = 4.dp)
+            .padding(start = if (first) 0.dp else 4.dp)
             .clearAndSetSemantics { contentDescription = description },
     ) {
         Icon(
-            imageVector = Icons.Default.LocalFireDepartment,
+            imageVector = Icons.Default.EmojiEvents,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(TREND_ICON.dp),
@@ -1101,6 +1110,10 @@ private const val VALUE_SHARE = 0.35f
 /** Just enough to recognise the app; the tile has little room to spare. */
 private const val TILE_SOURCE_ICON = 16
 private const val TREND_ICON = 16
+
+/** The words for a run of [days]: of the goal met, or of days with an activity. */
+@PluralsRes
+internal fun streakPlural(active: Boolean): Int = if (active) R.plurals.streak_active_days else R.plurals.streak_days
 
 /** One day is not a run; the count shows from two. */
 internal const val MIN_STREAK = 2
