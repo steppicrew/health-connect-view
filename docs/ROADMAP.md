@@ -82,10 +82,10 @@ open items below and `FEATURE-IDEAS.md`.
     chip. Probed on 27.09.2026 (`FieldPresenceActivity`, per writer): no source on the phone
     names more than one device, and only the two step writers name one at all, so splitting
     chips by device would change nothing here.
-21. [ ] **Exercise routes** -- decided by the owner 27.09.2026, built on branch
-    `exercise-routes`, **not merged until Play's pending review is through**: it declares
-    `READ_EXERCISE_ROUTES`, which needs the Health Connect declaration in the Console updated
-    and triggers a review of its own. Both ways of consent, the user's choice: "Alle
+21. [x] **Exercise routes** -- decided by the owner 27.09.2026, merged the same day and
+    released with 0.10.0 (code 13), which the owner chose to put up for review in place of the
+    one pending. It declares `READ_EXERCISE_ROUTES`, which needs the Health Connect
+    declaration in the Console updated (with `READ_MINDFULNESS`, step 25). Both ways of consent, the user's choice: "Alle
     Trainingsrouten" on the permission screen (never part of "select all"), or per session
     through the system's own dialog (`ExerciseRouteRequestContract`) from "Route anzeigen" in
     the session sheet. The route is read when the session opens -- sessions carry only the
