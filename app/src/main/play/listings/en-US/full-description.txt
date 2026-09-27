@@ -36,7 +36,7 @@ Everything above is free and stays free. Pro is a single in-app purchase that un
 
 • CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
 • Blood pressure report — a PDF log for your doctor: morning and evening averages, every day and every reading, each graded.
-• Larger tiles — make any dashboard tile two cells wide, or two by two, for a bigger ring or curve.
+• Larger tiles — make any dashboard tile two cells wide, or two by two, and choose what it shows: today, the week, four weeks or the year, as a number, a chart or both.
 • Every future Pro feature, with no further charge.
 
 Purchases are handled entirely by Google Play. Your purchase follows your Google account to a new phone.

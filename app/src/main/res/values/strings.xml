@@ -132,9 +132,9 @@
     <string name="bp_parts_rule">Morning is 4:00 to 13:59, evening from 14:00. A reading after midnight but before 4:00 counts for the evening before. The same reading stored by several apps counts once.\n\nColours follow the European Society of Hypertension grades for readings taken at a practice: low below 90/60, normal below 130/85, high normal up to 139/89, grade 1 from 140/90, grade 2 from 160/100. The higher of the two values decides. At home, 135/85 and above already counts as raised. A guide, not a diagnosis.</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">Buy Pro · %1$s</string>
-    <string name="pro_body">One-time purchase, no subscription. Unlocks CSV export, the blood pressure report, larger dashboard tiles and every future Pro feature.</string>
+    <string name="pro_body">One-time purchase, no subscription. Unlocks CSV export, the blood pressure report, larger dashboard tiles that show a week, four weeks or a year as a number or a chart, and every future Pro feature.</string>
     <string name="pro_owned">Pro is unlocked</string>
-    <string name="pro_owned_body">Thank you for supporting the app. CSV export, the blood pressure report, larger tiles and every future Pro feature are yours.</string>
+    <string name="pro_owned_body">Thank you for supporting the app. CSV export, the blood pressure report, larger tiles with their own range and chart, and every future Pro feature are yours.</string>
     <string name="pro_pending">Purchase pending</string>
     <string name="pro_pending_body">Pro unlocks as soon as Google Play confirms the payment.</string>
     <string name="pro_unavailable_body">Google Play cannot be reached right now. Tap to try again.</string>
