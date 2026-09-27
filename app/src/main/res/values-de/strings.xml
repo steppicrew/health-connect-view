@@ -395,6 +395,11 @@
     <string name="calories_basal">Grundumsatz</string>
     <string name="calories_active">Aktiv</string>
     <string name="chart_source_aggregated_range">Tagesmittel mit Spanne des Tages, von Health Connect entdoppelt</string>
+    <plurals name="chart_gaps_dotted">
+        <item quantity="one">Gepunktet: ein Tag ohne Aufzeichnung – das ist nicht dasselbe wie ein Tag mit dem Wert null.</item>
+        <item quantity="other">Gepunktet: %1$d Tage ohne Aufzeichnung – das ist nicht dasselbe wie Tage mit dem Wert null.</item>
+    </plurals>
+    <string name="chart_reading_gaps">Gepunktet: Zeiten ohne Messung.</string>
     <plurals name="chart_gaps">
         <item quantity="one">Die Lücke ist ein Tag ohne Aufzeichnung – das ist nicht dasselbe wie ein Tag mit dem Wert null.</item>
         <item quantity="other">Die %1$d Lücken sind Tage ohne Aufzeichnung – das ist nicht dasselbe wie Tage mit dem Wert null.</item>

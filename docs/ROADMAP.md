@@ -122,13 +122,13 @@ open items below and `FEATURE-IDEAS.md`.
     checkbox, off at first, and also drawn for steps (in weekly units over a year, where the
     bars are weekly totals) and sleep (from the nights before the window, credited like the
     bars), and for respiratory rate and oxygen saturation (step 31).
-30. [ ] **Range bands across gaps.** A shaded range is drawn as one ribbon through every point
-    that has one, so where days are missing it runs straight across the gap and can look odd --
-    a band sloping through days nothing was recorded, or narrowing to a point and widening
-    again. Inspect every chart with a band (heart rate, speed, power, the cadences, HRV's usual
-    range) over sparse windows and decide: break the ribbon at gaps as the line already breaks,
-    or step it per bucket. Owner's request, 27.09.2026.
-
+30. [x] **Gaps, dotted** -- merged 27.09.2026. A gap is a day with no value, as before, or --
+    new -- a pause several times the readings' usual step and at least 30 minutes
+    (`readingGap`): a day of heart rate had run solid from 20:30 to 23:40 without one reading.
+    Each run with data is drawn solid and the runs are joined by a faint dotted line; the band
+    stops at a gap instead of sloping or pinching through it. The caption names it
+    ("Gepunktet: Zeiten ohne Messung", or the days without a record). A weekly weigh-in is a
+    rhythm, not a run of gaps. Bars keep a missing bar. Seen on the phone.
 31. [x] **Daily means for readings with no aggregate** -- merged 27.09.2026. Respiratory rate
     and oxygen saturation have no Health Connect aggregate, so across days they drew every
     reading: 5,000 in four weeks, a solid wall of strokes. `TileSpec.dailyMeans` reduces them

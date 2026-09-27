@@ -94,6 +94,8 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.registry.readingGap
+import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
@@ -711,15 +713,23 @@ private fun SpanSummary(
                 )
             }
 
-            // A break in the line is only unambiguous once it is named; without this it reads
-            // as a rendering artefact rather than as an absence of data.
-            if (data.emptyBuckets.isNotEmpty()) {
-                Text(
+            // A gap is only unambiguous once it is named; without this a dotted stretch reads as
+            // a style, and a missing bar as a rendering artefact, rather than as no data.
+            val readingGaps = remember(data.points, data.bars) {
+                if (data.bars) 0 else segmentAtGaps(data.points, emptyList(), readingGap(data.points)).size - 1
+            }
+            when {
+                data.emptyBuckets.isNotEmpty() -> Text(
                     text = pluralStringResource(
-                        R.plurals.chart_gaps,
+                        if (data.bars) R.plurals.chart_gaps else R.plurals.chart_gaps_dotted,
                         data.emptyBuckets.size,
                         data.emptyBuckets.size,
                     ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                readingGaps > 0 -> Text(
+                    text = stringResource(R.string.chart_reading_gaps),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
