@@ -202,7 +202,7 @@
     <string name="type_oxygen_saturation">Sauerstoffsättigung</string>
     <string name="type_respiratory_rate">Atemfrequenz</string>
     <string name="type_resting_heart_rate">Ruhepuls</string>
-    <string name="type_skin_temperature">Hauttemperatur-\u200BAbweichung</string>
+    <string name="type_skin_temperature">Hauttemperatur-Abweichung</string>
     <string name="type_hydration">Flüssigkeit</string>
     <string name="type_nutrition">Ernährung</string>
     <string name="type_sleep_session">Schlaf</string>

@@ -92,6 +92,18 @@ open items below and `FEATURE-IDEAS.md`.
     weekly bars. Tiles are keyed by type name throughout (config, JSON, per-tile goal and zones,
     the grid's keys), so each tile needs its own id first; the goal and zones then decide
     whether they are per tile or per type.
+27. [x] **Hyphenation** -- merged 27.09.2026. `Hyphens.Auto` with paragraph line breaking on
+    every style of the theme's type scale; Android carries the patterns, so no dictionary of
+    our own. Long German compounds no longer break mid-syllable wherever the line ran out.
+28. [ ] **HRV status, Garmin-style.** Health Connect holds only the raw readings (on the phone
+    about 95 a night, every 5 minutes, written by Health Sync); Garmin's own HRV status is not
+    in it. Build it from those: a nightly value (mean of the readings inside that night's sleep
+    session, one writer per night), the 7-day mean of nightly values, and a usual range from
+    the 28 nights before -- the middle half, robust to one odd night and explainable in a
+    sentence. The multi-day chart shows one point per night with the range shaded instead of
+    2,676 raw points; the tile and headline show the 7-day mean, coloured outside the range.
+    Worded neutrally ("below your usual range"), never as a verdict, and saying that the range
+    is this app's, not Garmin's. No platform aggregate exists for HRV, so this is computed.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
