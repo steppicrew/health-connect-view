@@ -31,8 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingFlat
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
@@ -60,6 +59,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.drag
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.zIndex
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,6 +82,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import de.steppicrew.healthconnectview.billing.AppEntitlements
@@ -129,6 +146,16 @@ fun DashboardScreen(
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
     var editing by remember { mutableStateOf(false) }
+    val scroll = rememberScrollState()
+    val drag = remember(scroll) { TileDragState(scroll) }
+    val density = LocalDensity.current
+    LaunchedEffect(drag.dragging) {
+        if (drag.dragging != null) {
+            with(density) { drag.autoScroll(DRAG_EDGE.dp.toPx(), DRAG_SCROLL_STEP.dp.toPx(), DRAG_GRIP_Y.dp.toPx()) }
+        }
+    }
+    // Leaving edit mode mid-drag keeps the order the drag had reached.
+    LaunchedEffect(editing) { if (!editing) drag.end()?.let(viewModel::reorder) }
 
     // Edit mode is a mode on this screen rather than a destination, so the system Back
     // gesture would otherwise pass straight through it and leave the dashboard while the
@@ -277,50 +304,84 @@ fun DashboardScreen(
                 modifier = Modifier.padding(padding),
             )
 
-            else -> TileGrid(
-                // Without Pro every tile is drawn as one cell, but the stored sizes are kept: a
-                // refund or a restored backup should not cost the layout, and buying Pro again
-                // brings it back as it was.
-                sizes = state.tiles.map { if (resizable) it.tile.width to it.tile.height else 1 to 1 },
-                spacing = 12.dp,
-                contentPadding = PaddingValues(12.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-            ) {
-                state.tiles.forEach { tile ->
-                    // Keyed so a tile keeps its own state when a move or resize reorders the
-                    // children, as the lazy grid's item keys did.
-                    key(tile.tile.id) {
-                        TileCard(
-                            data = tile,
-                            editing = editing,
-                            resizable = resizable,
-                            onClick = {
-                                // In edit mode a tap must not navigate away: the user is
-                                // arranging tiles, not reading them.
-                                // It opens on the window the tile shows, so the figure under
-                                // the finger is the one at the top of the screen it opens.
-                                if (!editing) onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+            else -> {
+                // During a drag, the order the drag has reached; the stored one otherwise.
+                val shownTiles = drag.order?.let { ids ->
+                    val byId = state.tiles.associateBy { it.tile.id }
+                    ids.mapNotNull(byId::get) + state.tiles.filterNot { it.tile.id in ids }
+                } ?: state.tiles
+                TileGrid(
+                    // Without Pro every tile is drawn as one cell, but the stored sizes are
+                    // kept: a refund or a restored backup should not cost the layout, and
+                    // buying Pro again brings it back as it was.
+                    sizes = shownTiles.map { if (resizable) it.tile.width to it.tile.height else 1 to 1 },
+                    spacing = 12.dp,
+                    contentPadding = PaddingValues(12.dp),
+                    scrollState = scroll,
+                    onMetrics = { drag.metrics = it },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .onSizeChanged { drag.viewport = it.height },
+                ) {
+                    shownTiles.forEach { tile ->
+                        // Keyed so a tile keeps its own state when a move or resize reorders the
+                        // children, as the lazy grid's item keys did.
+                        key(tile.tile.id) {
+                            val id = tile.tile.id
+                            val lifted = drag.dragging == id
+                            TileCard(
+                                modifier = Modifier
+                                    .onGloballyPositioned { drag.bounds[id] = it.boundsInParent() }
+                                    .zIndex(if (lifted) 1f else 0f)
+                                    .graphicsLayer {
+                                        val moved = drag.translation(id)
+                                        translationX = moved.x
+                                        translationY = moved.y
+                                        if (lifted) {
+                                            scaleX = LIFTED_SCALE
+                                            scaleY = LIFTED_SCALE
+                                            shadowElevation = LIFTED_ELEVATION.dp.toPx()
+                                        }
+                                    },
+                                onDragStart = {
+                                drag.start(
+                                    id,
+                                    shownTiles.map { it.tile.id },
+                                    shownTiles.associate { it.tile.id to if (resizable) it.tile.width to it.tile.height else 1 to 1 },
+                                )
                             },
-                            onLongClick = { editing = true },
-                            onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
-                            onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
-                            onResize = {
-                                // Locked, the button is where the purchase starts, as the
-                                // export menu's locked entries are.
-                                if (resizable) {
-                                    viewModel.resizeTile(tile.tile.id)
-                                } else {
-                                    activity?.let(AppEntitlements.current::buy)
-                                }
-                            },
-                            onRemove = { viewModel.removeTile(tile.tile.id) },
-                            onSetGoal = { editingGoalFor = tile },
-                            onSetZones = { editingZonesFor = tile },
-                            onSetOptions = { editingOptionsFor = tile },
-                            onGrantAccess = onGrantAccess,
-                        )
+                                onDrag = drag::drag,
+                                onDragEnd = { drag.end()?.let(viewModel::reorder) },
+                                data = tile,
+                                editing = editing,
+                                resizable = resizable,
+                                onClick = {
+                                    // In edit mode a tap must not navigate away: the user is
+                                    // arranging tiles, not reading them.
+                                    // It opens on the window the tile shows, so the figure under
+                                    // the finger is the one at the top of the screen it opens.
+                                    if (!editing) onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+                                },
+                                onLongClick = { editing = true },
+                                onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
+                                onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
+                                onResize = {
+                                    // Locked, the button is where the purchase starts, as the
+                                    // export menu's locked entries are.
+                                    if (resizable) {
+                                        viewModel.resizeTile(tile.tile.id)
+                                    } else {
+                                        activity?.let(AppEntitlements.current::buy)
+                                    }
+                                },
+                                onRemove = { viewModel.removeTile(tile.tile.id) },
+                                onSetGoal = { editingGoalFor = tile },
+                                onSetZones = { editingZonesFor = tile },
+                                onSetOptions = { editingOptionsFor = tile },
+                                onGrantAccess = onGrantAccess,
+                            )
+                        }
                     }
                 }
             }
@@ -336,6 +397,10 @@ fun DashboardScreen(
 @Composable
 private fun TileCard(
     data: TileData,
+    modifier: Modifier,
+    onDragStart: () -> Unit,
+    onDrag: (Offset) -> Unit,
+    onDragEnd: () -> Unit,
     editing: Boolean,
     resizable: Boolean,
     onClick: () -> Unit,
@@ -349,11 +414,22 @@ private fun TileCard(
     onSetOptions: () -> Unit,
     onGrantAccess: () -> Unit,
 ) {
+    val moveUp = stringResource(R.string.tile_move_up)
+    val moveDown = stringResource(R.string.tile_move_down)
     // The grid hands every tile its exact size, square or spanning; the card only fills it.
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            // A drag needs a finger; a screen reader moves a tile by these instead.
+            .semantics {
+                if (editing) {
+                    customActions = listOf(
+                        CustomAccessibilityAction(moveUp) { onMoveUp(); true },
+                        CustomAccessibilityAction(moveDown) { onMoveDown(); true },
+                    )
+                }
+            },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
         ),
@@ -367,25 +443,38 @@ private fun TileCard(
             // A tile showing more than the day says which window: "Schritte" over a week's
             // total would otherwise read as today's.
             val name = stringResource(data.spec.displayNameRes)
-            Text(
-                text = when {
-                    data.shownSpan == Span.DAY -> name
-                    // Without the history permission a year holds 30 days; the detail screen
-                    // warns in red, and a tile titled "Year" over a month would not.
-                    data.chart?.historyCapped == true ->
-                        stringResource(R.string.tile_title_span_capped, name, stringResource(data.shownSpan.labelRes))
-                    else -> stringResource(R.string.tile_title_span, name, stringResource(data.shownSpan.labelRes))
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-            )
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = when {
+                        data.shownSpan == Span.DAY -> name
+                        // Without the history permission a year holds 30 days; the detail screen
+                        // warns in red, and a tile titled "Year" over a month would not.
+                        data.chart?.historyCapped == true ->
+                            stringResource(R.string.tile_title_span_capped, name, stringResource(data.shownSpan.labelRes))
+                        else -> stringResource(R.string.tile_title_span, name, stringResource(data.shownSpan.labelRes))
+                    },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                )
+                if (editing) DragHandle(onDragStart, onDrag, onDragEnd)
+            }
 
             Box(
                 modifier = Modifier.fillMaxWidth().weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
                 if (editing) {
+                    // The tile's own content stays, faded, under the controls: arranging
+                    // tiles is easier seeing what each one shows. Its "grant access" button
+                    // does nothing here, where a tap belongs to the controls above it.
+                    Box(
+                        modifier = Modifier.matchParentSize().alpha(EDITING_CONTENT_ALPHA),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        TileBody(data, large = resizable && data.tile.height > 1, onGrantAccess = {})
+                    }
                     TileEditControls(
                         canSetGoal = data.spec.tile.form == TileSpec.Form.RING,
                         // Only where a curve is actually coloured by them; a ring or a plain
@@ -397,8 +486,6 @@ private fun TileCard(
                         resizable = resizable,
                         width = data.tile.width,
                         height = data.tile.height,
-                        onMoveUp = onMoveUp,
-                        onMoveDown = onMoveDown,
                         onResize = onResize,
                         onRemove = onRemove,
                         onSetGoal = onSetGoal,
@@ -461,14 +548,70 @@ private fun TileCard(
 }
 
 /**
+ * The grip a tile is dragged by in edit mode. Only the grip starts a drag, so the rest of the
+ * dashboard still scrolls under a finger.
+ */
+@Composable
+private fun DragHandle(onDragStart: () -> Unit, onDrag: (Offset) -> Unit, onDragEnd: () -> Unit) {
+    // The gesture outlives recompositions, so it calls whatever the latest callbacks are.
+    val start by rememberUpdatedState(onDragStart)
+    val move by rememberUpdatedState(onDrag)
+    val end by rememberUpdatedState(onDragEnd)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(DRAG_HANDLE.dp)
+            .pointerInput(Unit) {
+                // The press is consumed at once, so it never reaches the card: left to the
+                // card, its long-press took the gesture and a grip held a moment before moving
+                // did nothing. The tile lifts after a short hold, or as soon as the finger
+                // moves, so a quick drag is not held up; a brief touch leaves it alone.
+                awaitEachGesture {
+                    val down = awaitFirstDown()
+                    down.consume()
+                    var early = Offset.Zero
+                    val moved = withTimeoutOrNull(LIFT_DELAY_MS) {
+                        var pressed = true
+                        while (pressed && early.getDistance() <= viewConfiguration.touchSlop) {
+                            val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id }
+                            pressed = change?.pressed == true
+                            if (change != null && pressed) {
+                                early += change.positionChange()
+                                change.consume()
+                            }
+                        }
+                        pressed
+                    }
+                    // False: let go before the hold was over. Null: held long enough.
+                    if (moved == false) return@awaitEachGesture
+                    start()
+                    move(early)
+                    drag(down.id) { change ->
+                        move(change.positionChange())
+                        change.consume()
+                    }
+                    end()
+                }
+            },
+    ) {
+        Icon(
+            imageVector = Icons.Default.DragIndicator,
+            // The card's accessibility actions move it; the grip itself is for a finger.
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
  * Edit affordances shown in place of a tile's value.
  *
- * Reordering is by single steps rather than drag-and-drop: it needs no gesture to discover,
- * works with accessibility services, and cannot drop a tile into an unintended slot. Ordering
- * is the whole layout, so a mis-drop is not a trivial mistake to undo.
+ * Reordering is not here: a tile moves by the handle beside its title (see [DragHandle]).
+ * Up and down buttons stepped one place per tap, which took many taps across a full dashboard
+ * and could not show where a tile would land.
  *
- * Resizing is a button for the same reasons, stepping through the sizes rather than dragging
- * a corner. It also works where a drag cannot be tested: the Xiaomi refuses injected input.
+ * Resizing is a button, stepping through the sizes rather than dragging a corner: a size is
+ * one of three, and a button reaches each without aiming.
  *
  * A flowing row, because a resized tile has room for all of them on one line while a square
  * one needs two -- and on the narrowest phones, three.
@@ -482,8 +625,6 @@ private fun TileEditControls(
     resizable: Boolean,
     width: Int,
     height: Int,
-    onMoveUp: () -> Unit,
-    onMoveDown: () -> Unit,
     onResize: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
@@ -493,18 +634,6 @@ private fun TileEditControls(
     val size = stringResource(R.string.tile_size, width, height)
     val resize = stringResource(R.string.tile_resize)
     FlowRow(horizontalArrangement = Arrangement.Center, verticalArrangement = Arrangement.Center) {
-        IconButton(onClick = onMoveUp) {
-            Icon(
-                imageVector = Icons.Default.ArrowUpward,
-                contentDescription = stringResource(R.string.tile_move_up),
-            )
-        }
-        IconButton(onClick = onMoveDown) {
-            Icon(
-                imageVector = Icons.Default.ArrowDownward,
-                contentDescription = stringResource(R.string.tile_move_down),
-            )
-        }
         IconButton(
             onClick = onResize,
             modifier = if (resizable) Modifier.semantics { stateDescription = size } else Modifier,
@@ -902,3 +1031,24 @@ private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
 private const val TILE_ICON_SIZE = 14
+
+/** The grip's touch target, in dp; its icon is the default 24. */
+private const val DRAG_HANDLE = 36
+
+/**
+ * How close to the top or bottom the finger starts scrolling, its fastest step per frame, and
+ * where the grip sits below a tile's top edge: the card's padding plus half the grip.
+ */
+private const val DRAG_EDGE = 56
+private const val DRAG_GRIP_Y = 12 + DRAG_HANDLE / 2
+private const val DRAG_SCROLL_STEP = 12
+
+/** How long the grip is held before its tile lifts, unless the finger moves first. */
+private const val LIFT_DELAY_MS = 200L
+
+/** How much of a tile's content shows under its edit controls. */
+private const val EDITING_CONTENT_ALPHA = 0.3f
+
+/** A lifted tile stands slightly out of the grid, so it reads as held. */
+private const val LIFTED_SCALE = 1.04f
+private const val LIFTED_ELEVATION = 8

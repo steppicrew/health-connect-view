@@ -230,16 +230,23 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /**
+     * Reads the tiles again, cancelling a read still running, as [refresh] does: two loads
+     * racing publish in the order they finish, not the order they started.
+     */
+    private fun reload() {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch { loadTiles() }
+    }
+
+    /**
      * Changes a tile's goal and persists it. A goal of zero or less would make the ring
      * meaningless, so it clears the override rather than storing an unusable value.
      */
     fun setGoal(typeName: String, goal: Double?) {
         val sanitised = goal?.takeIf { it > 0.0 }
         config = config.withGoal(typeName, sanitised)
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        viewModelScope.launch { store.save(config) }
+        reload()
     }
 
     /**
@@ -247,28 +254,22 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     fun setZones(typeName: String, zones: ValueZones?) {
         config = config.withZones(typeName, zones?.takeIf { it.bounds.isNotEmpty() })
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        viewModelScope.launch { store.save(config) }
+        reload()
     }
 
     /** Sets a large tile's window and face, and persists them. */
     fun setOptions(id: String, span: Span, face: TileFace) {
         config = config.withOptions(id, span, face)
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        viewModelScope.launch { store.save(config) }
+        reload()
     }
 
     /** Removes a tile and persists the layout. */
     fun removeTile(id: String) {
         config = config.without(id)
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        viewModelScope.launch { store.save(config) }
+        reload()
     }
 
     /**
@@ -278,28 +279,37 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun addTile(typeName: String) {
         if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
         config = config.adding(typeName)
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        viewModelScope.launch { store.save(config) }
+        reload()
     }
 
     /**
-     * Moves a tile one place. Reordering by single steps rather than drag-and-drop: it is
-     * reachable without a gesture the user has to discover, and it cannot drop a tile in an
-     * unintended slot.
+     * Moves a tile one place: the accessibility actions' way to reorder, where a drag is not
+     * available.
      */
     fun moveTile(id: String, forward: Boolean) {
         val from = config.tiles.indexOfFirst { it.id == id }
         if (from < 0) return
-        val to = if (forward) from + 1 else from - 1
-        val moved = config.moved(from, to)
-        if (moved === config) return
-        config = moved
-        viewModelScope.launch {
-            store.save(config)
-            loadTiles()
-        }
+        val moved = config.moved(from, if (forward) from + 1 else from - 1)
+        if (moved !== config) reorder(moved.tiles.map { it.id })
+    }
+
+    /**
+     * Puts the tiles in the order of [ids], as a drag leaves them, and persists it.
+     *
+     * In place, like a resize, and with no reload: the data does not change. Each move used
+     * to save and reload, and a reload publishes the order it started with, so tapping "up"
+     * a few times had a slow earlier reload land after a later one and send the tile back.
+     */
+    fun reorder(ids: List<String>) {
+        val byId = config.tiles.associateBy { it.id }
+        val ordered = ids.mapNotNull(byId::get)
+        // Anything the caller did not name keeps its place at the end rather than vanishing.
+        val reordered = DashboardConfig(ordered + config.tiles.filterNot { it.id in ids })
+        if (reordered == config) return
+        config = reordered
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        viewModelScope.launch { store.save(config) }
     }
 
     /**
@@ -311,25 +321,25 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val before = config.tiles.firstOrNull { it.id == id }
         config = config.resized(id)
         val after = config.tiles.firstOrNull { it.id == id }
-        _state.update { it.copy(tiles = withCurrentSizes(it.tiles)) }
-        viewModelScope.launch {
-            store.save(config)
-            // Except where the size decides *what* is shown: a tile growing into its stored
-            // week, or shrinking back to the day, needs that window read.
-            if (before != null && after != null && showsWindow(before) != showsWindow(after)) loadTiles()
-        }
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        viewModelScope.launch { store.save(config) }
+        // Except where the size decides *what* is shown: a tile growing into its stored week,
+        // or shrinking back to the day, needs that window read.
+        if (before != null && after != null && showsWindow(before) != showsWindow(after)) reload()
     }
 
     /**
-     * [tiles] with the sizes the config holds now. A load reads the config when it starts, so
-     * a tile resized while it runs would otherwise snap back when the load publishes.
+     * [tiles] with the sizes and order the config holds now. A load reads the config when it
+     * starts, so a tile resized or moved while it runs would otherwise snap back when the load
+     * publishes.
      */
-    private fun withCurrentSizes(tiles: List<TileData>): List<TileData> {
+    private fun withCurrentLayout(tiles: List<TileData>): List<TileData> {
+        val position = config.tiles.withIndex().associate { (index, tile) -> tile.id to index }
         val current = config.tiles.associateBy { it.id }
         return tiles.map { data ->
             val tile = current[data.tile.id] ?: return@map data
             data.copy(tile = data.tile.copy(width = tile.width, height = tile.height))
-        }
+        }.sortedBy { position[it.tile.id] ?: Int.MAX_VALUE }
     }
 
     /**
@@ -343,13 +353,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun showPreviousDay() {
         _state.update { it.copy(date = it.date.minusDays(1)) }
-        viewModelScope.launch { loadTiles() }
+        reload()
     }
 
     fun showNextDay() {
         if (!_state.value.canStepForward) return
         _state.update { it.copy(date = it.date.plusDays(1)) }
-        viewModelScope.launch { loadTiles() }
+        reload()
     }
 
     /**
@@ -439,12 +449,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             val carried = previous[tile.tile.id]
             if (carried != null && carried.source == tile.source) tile.copy(trend = carried.trend) else tile
         }
-        _state.update { it.copy(tiles = withCurrentSizes(withCarried)) }
+        _state.update { it.copy(tiles = withCurrentLayout(withCarried)) }
         // Timing and count only, never a value: how long the dashboard takes to fill is the
         // cost every per-tile read adds to, so it is worth being able to measure from adb.
         Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
 
-        val trended = withCurrentSizes(loadTrends(loaded, date, gate))
+        val trended = withCurrentLayout(loadTrends(loaded, date, gate))
         // Only if nothing has replaced these tiles in the meantime -- a day step or a source
         // change starts a new load, and its tiles must not receive this load's arrows.
         _state.update { state ->
