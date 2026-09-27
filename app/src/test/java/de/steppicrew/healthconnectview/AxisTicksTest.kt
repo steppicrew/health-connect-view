@@ -1,88 +1,84 @@
 package de.steppicrew.healthconnectview
 
-import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.ui.components.calendarTicks
+import de.steppicrew.healthconnectview.ui.components.maxZoomFor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Instant
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 /**
- * Axis ticks are snapped to real points rather than placed at arbitrary times.
- *
- * A label reading a moment no sample was taken at invites the reader to believe the series was
- * measured there, which on a chart of health data is a claim the app should not make.
+ * Across days the axis is a calendar ruler over the *visible* window, so zooming makes it
+ * finer. It used to be ticks snapped to points of the whole series, only stretched by the
+ * zoom: zoomed between two of them there was no label left to say where the chart was.
  */
 class AxisTicksTest {
 
-    private val base: Instant = Instant.parse("2026-08-28T00:00:00Z")
+    private val zone = ZoneOffset.UTC
+    private fun day(d: LocalDate) = d.atStartOfDay(zone).toInstant()
+    private val sep1 = LocalDate.of(2026, 9, 1)
 
-    private fun series(vararg hours: Long): List<Point> =
-        hours.map { Point(base.plusSeconds(it * 3600), it.toDouble()) }
-
-    /** Mirrors the production helper; the assertions below pin its contract. */
-    private fun ticks(points: List<Point>, count: Int = 4): List<Pair<Float, Instant>> {
-        if (points.size < 2) return emptyList()
-        val first = points.first().time.toEpochMilli()
-        val span = points.last().time.toEpochMilli() - first
-        val fractions =
-            if (span <= 0L) points.indices.map { it / (points.size - 1).toFloat() }
-            else points.map { (it.time.toEpochMilli() - first).toDouble().div(span).toFloat() }
-
-        return (0..count).map { step ->
-            val target = step / count.toFloat()
-            val index = fractions.indices.minByOrNull { kotlin.math.abs(fractions[it] - target) }!!
-            fractions[index] to points[index].time
-        }.distinctBy { it.second }
+    @Test
+    fun `a week is ticked by day`() {
+        val ticks = calendarTicks(day(sep1), day(sep1.plusDays(3)), zone)
+        assertEquals(4, ticks.size)
+        assertEquals(day(sep1), ticks.first().time)
     }
 
     @Test
-    fun `every tick names a time that exists in the series`() {
-        val points = series(0, 3, 6, 9, 12, 15, 18, 21)
-        val times = points.map { it.time }.toSet()
-        ticks(points).forEach { (_, time) ->
-            assertTrue("tick at $time is not a real sample", time in times)
-        }
+    fun `four weeks are ticked on Mondays`() {
+        val ticks = calendarTicks(day(sep1), day(sep1.plusDays(27)), zone)
+        assertTrue(ticks.isNotEmpty())
+        ticks.forEach { assertEquals(DayOfWeek.MONDAY, it.time.atZone(zone).dayOfWeek) }
     }
 
     @Test
-    fun `ticks span the whole series`() {
-        val points = series(0, 6, 12, 18, 24)
-        val result = ticks(points)
-        assertEquals(points.first().time, result.first().second)
-        assertEquals(points.last().time, result.last().second)
+    fun `a year is ticked on the first of months`() {
+        val ticks = calendarTicks(day(sep1.minusYears(1)), day(sep1), zone)
+        assertTrue(ticks.size in 3..6)
+        ticks.forEach { assertEquals(1, it.time.atZone(zone).dayOfMonth) }
     }
 
     @Test
-    fun `ticks are ordered left to right`() {
-        val result = ticks(series(0, 4, 8, 12, 16, 20, 24))
-        result.zipWithNext().forEach { (a, b) ->
-            assertTrue("ticks out of order: ${a.first} then ${b.first}", b.first >= a.first)
-        }
+    fun `zooming into a year ends at single days`() {
+        // A tenth of a year, as a pinch into the year view leaves on screen.
+        val ticks = calendarTicks(day(sep1), day(sep1.plusDays(4)), zone)
+        assertTrue("got ${ticks.size}", ticks.size >= 3)
     }
 
     @Test
-    fun `a sparse series shows fewer ticks rather than repeating one`() {
-        // Three points cannot fill five ticks; duplicates are dropped, not repeated.
-        val result = ticks(series(0, 12, 24))
-        assertEquals(result.map { it.second }.distinct().size, result.size)
-        assertTrue("expected at most 3 ticks, got ${result.size}", result.size <= 3)
+    fun `ticks sit where their time falls and in order`() {
+        val start = day(sep1).plusSeconds(6 * 3600)
+        val end = day(sep1.plusDays(4)).plusSeconds(6 * 3600)
+        val ticks = calendarTicks(start, end, zone)
+        ticks.forEach { assertTrue(it.fraction in 0f..1f) }
+        assertEquals(ticks.sortedBy { it.fraction }, ticks)
+        val expected = 18f / 96f
+        assertEquals(expected, ticks.first().fraction, 1e-4f)
     }
 
     @Test
-    fun `a two-point series still yields its endpoints`() {
-        val result = ticks(series(0, 24))
-        assertEquals(2, result.size)
+    fun `an empty window has no ticks`() {
+        assertTrue(calendarTicks(day(sep1), day(sep1), zone).isEmpty())
     }
 
     @Test
-    fun `a series with no elapsed time does not divide by zero`() {
-        val same = listOf(Point(base, 1.0), Point(base, 2.0))
-        val result = ticks(same)
-        assertTrue("expected a single distinct time", result.size <= 1)
+    fun `zoom stops with four points on screen`() {
+        // A week of bars: seven evenly spaced points, four of them fill half the width.
+        val week = (0..6).map { it / 6f }
+        assertEquals(2f, maxZoomFor(week), 1e-4f)
     }
 
     @Test
-    fun `a single point yields no ticks`() {
-        assertEquals(emptyList<Pair<Float, Instant>>(), ticks(series(0)))
+    fun `a dense day keeps the full zoom range`() {
+        val day = (0..2000).map { it / 2000f }
+        assertEquals(24f, maxZoomFor(day), 1e-4f)
+    }
+
+    @Test
+    fun `three points or fewer cannot be zoomed`() {
+        assertEquals(1f, maxZoomFor(listOf(0f, 0.5f, 1f)), 1e-4f)
     }
 }
