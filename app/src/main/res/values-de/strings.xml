@@ -45,6 +45,8 @@
     <string name="settings_version">Version %1$s</string>
     <string name="dashboard_done">Fertig</string>
     <string name="dashboard_add_tile">Kachel hinzufügen</string>
+    <string name="dashboard_add_again">Schon auf der Übersicht – noch einmal, mit eigenem Zeitraum und eigener Ansicht</string>
+    <string name="dashboard_add_none">Alle Typen sind schon auf der Übersicht.</string>
     <string name="tile_move_up">Nach oben</string>
     <string name="tile_move_down">Nach unten</string>
     <string name="tile_resize">Größe ändern</string>

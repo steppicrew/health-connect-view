@@ -13,6 +13,10 @@ import de.steppicrew.healthconnectview.registry.ValueZones
  * navigation argument already used for the detail screen -- a stored KClass would not survive
  * serialisation, and the simple name is already the app's stable identifier for a type.
  *
+ * [id] tells tiles apart once a type may be pinned more than once -- today's steps as a ring
+ * beside a year of weekly bars. The first tile of a type keeps the type name as its id, so a
+ * layout stored before ids existed reads back unchanged; later ones get "name#2" and up.
+ *
  * [width] and [height] are grid spans: 1x1, 2x1 or 2x2, in [SIZES] order. They were stored
  * from the start, before any other size was offered, so offering them needed no migration.
  */
@@ -20,10 +24,18 @@ data class Tile(
     val typeName: String,
     val width: Int = 1,
     val height: Int = 1,
-    /** Overrides the type's [TileSpec.defaultGoal]; null means use the default. */
+    /**
+     * Overrides the type's [TileSpec.defaultGoal]; null means use the default.
+     *
+     * Per type, not per tile, though stored on each: a step goal is the person's, and the
+     * detail screen draws one goal line whichever of two step tiles opened it. Every tile of
+     * a type carries the same value; [DashboardConfig.withGoal] and
+     * [DashboardConfig.sanitised] keep it so.
+     */
     val goal: Double? = null,
     /**
-     * Overrides the type's [TileSpec.defaultZones]; null means use the default.
+     * Overrides the type's [TileSpec.defaultZones]; null means use the default. Per type,
+     * like [goal].
      *
      * Beside the goal because it is the same kind of thing: a per-type number the user sets
      * because only they know what it should be. A resting rate of 48 and one of 70 do not
@@ -42,6 +54,7 @@ data class Tile(
     val span: Span = Span.DAY,
     /** What a large tile draws; see [TileFace]. Stored whatever the size, like [span]. */
     val face: TileFace = TileFace.VALUE,
+    val id: String = typeName,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -84,34 +97,60 @@ val SIZES: List<Pair<Int, Int>> = listOf(1 to 1, 2 to 1, 2 to 2)
  */
 data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
-    /** Drops tiles whose type no longer exists, so a removed type cannot break the screen. */
-    fun sanitised(): DashboardConfig = DashboardConfig(tiles.filter { it.spec != null })
+    /**
+     * Drops tiles whose type no longer exists, so a removed type cannot break the screen;
+     * gives a repeated id a fresh one, and each type's goal and zones to all its tiles, so a
+     * hand-edited or merged layout cannot break the rules the edits keep.
+     */
+    fun sanitised(): DashboardConfig {
+        val known = tiles.filter { it.spec != null }
+        val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
+        val seen = mutableSetOf<String>()
+        val fixed = known.map { tile ->
+            val lead = first.getValue(tile.typeName)
+            val id = if (seen.add(tile.id)) tile.id else freeId(tile.typeName, seen).also { seen += it }
+            tile.copy(id = id, goal = lead.goal, zones = lead.zones)
+        }
+        return DashboardConfig(fixed)
+    }
 
-    fun without(typeName: String): DashboardConfig =
-        DashboardConfig(tiles.filterNot { it.typeName == typeName })
+    fun without(id: String): DashboardConfig = DashboardConfig(tiles.filterNot { it.id == id })
 
-    /** Appends unless already present; pinning the same type twice is never intended. */
-    fun plus(tile: Tile): DashboardConfig =
-        if (tiles.any { it.typeName == tile.typeName }) this else DashboardConfig(tiles + tile)
+    /**
+     * Appends a tile of [typeName]. A type already pinned gets another tile with an id of its
+     * own and the type's goal and zones; whether that is allowed is the caller's to decide.
+     */
+    fun adding(typeName: String): DashboardConfig {
+        val sibling = tiles.firstOrNull { it.typeName == typeName }
+        val tile = Tile(
+            typeName = typeName,
+            goal = sibling?.goal,
+            zones = sibling?.zones,
+            id = freeId(typeName, tiles.map { it.id }.toSet()),
+        )
+        return DashboardConfig(tiles + tile)
+    }
 
-    /** Sets one tile's goal; null clears the override back to the type's default. */
+    fun has(typeName: String): Boolean = tiles.any { it.typeName == typeName }
+
+    /** Sets the goal of every tile of a type; null clears it back to the type's default. */
     fun withGoal(typeName: String, goal: Double?): DashboardConfig = DashboardConfig(
         tiles.map { if (it.typeName == typeName) it.copy(goal = goal) else it },
     )
 
-    /** Sets one tile's value bands; null clears the override back to the type's default. */
+    /** Sets the value bands of every tile of a type; null restores the type's default. */
     fun withZones(typeName: String, zones: ValueZones?): DashboardConfig = DashboardConfig(
         tiles.map { if (it.typeName == typeName) it.copy(zones = zones) else it },
     )
 
     /** Sets one tile's window and face. */
-    fun withOptions(typeName: String, span: Span, face: TileFace): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.typeName == typeName) it.copy(span = span, face = face) else it },
+    fun withOptions(id: String, span: Span, face: TileFace): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.copy(span = span, face = face) else it },
     )
 
     /** Steps one tile to its next size. */
-    fun resized(typeName: String): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.typeName == typeName) it.nextSize() else it },
+    fun resized(id: String): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.nextSize() else it },
     )
 
     /** Moves the tile at [from] to [to], for drag-to-reorder in edit mode. */
@@ -123,6 +162,12 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     }
 
     companion object {
+        /** The type name itself if unused, else the first free "name#2", "name#3" ... */
+        private fun freeId(typeName: String, taken: Set<String>): String =
+            generateSequence(1) { it + 1 }
+                .map { if (it == 1) typeName else "$typeName#$it" }
+                .first { it !in taken }
+
         /**
          * First-run dashboard: the types most people check daily, in the order they are
          * usually wanted. Only types that are actually granted and hold data will render, so

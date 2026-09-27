@@ -45,6 +45,8 @@
     <string name="settings_version">Version %1$s</string>
     <string name="dashboard_done">Done</string>
     <string name="dashboard_add_tile">Add tile</string>
+    <string name="dashboard_add_again">Already on the dashboard – add again with its own window and view</string>
+    <string name="dashboard_add_none">Every type is already on the dashboard.</string>
     <string name="tile_move_up">Move up</string>
     <string name="tile_move_down">Move down</string>
     <string name="tile_resize">Resize</string>

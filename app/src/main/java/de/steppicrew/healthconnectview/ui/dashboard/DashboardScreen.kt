@@ -124,6 +124,7 @@ fun DashboardScreen(
     // owner's large tiles do not open as single cells and then jump.
     val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
     val resizable = pro.allows(Feature.TILE_SIZES)
+    val repeatable = pro.allows(Feature.TILE_REPEAT)
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
@@ -138,8 +139,10 @@ fun DashboardScreen(
     if (addingTile) {
         AddTileDialog(
             candidates = viewModel.addableTypes(),
+            repeatUnlocked = repeatable,
             onDismiss = { addingTile = false },
             onAdd = viewModel::addTile,
+            onBuy = { activity?.let(AppEntitlements.current::buy) },
         )
     }
 
@@ -175,7 +178,7 @@ fun DashboardScreen(
             currentSpan = editing.tile.span,
             currentFace = editing.tile.face,
             onDismiss = { editingOptionsFor = null },
-            onSave = { span, face -> viewModel.setOptions(editing.tile.typeName, span, face) },
+            onSave = { span, face -> viewModel.setOptions(editing.tile.id, span, face) },
         )
     }
 
@@ -288,7 +291,7 @@ fun DashboardScreen(
                 state.tiles.forEach { tile ->
                     // Keyed so a tile keeps its own state when a move or resize reorders the
                     // children, as the lazy grid's item keys did.
-                    key(tile.tile.typeName) {
+                    key(tile.tile.id) {
                         TileCard(
                             data = tile,
                             editing = editing,
@@ -301,18 +304,18 @@ fun DashboardScreen(
                                 if (!editing) onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
                             },
                             onLongClick = { editing = true },
-                            onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },
-                            onMoveDown = { viewModel.moveTile(tile.tile.typeName, forward = true) },
+                            onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
+                            onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
                             onResize = {
                                 // Locked, the button is where the purchase starts, as the
                                 // export menu's locked entries are.
                                 if (resizable) {
-                                    viewModel.resizeTile(tile.tile.typeName)
+                                    viewModel.resizeTile(tile.tile.id)
                                 } else {
                                     activity?.let(AppEntitlements.current::buy)
                                 }
                             },
-                            onRemove = { viewModel.removeTile(tile.tile.typeName) },
+                            onRemove = { viewModel.removeTile(tile.tile.id) },
                             onSetGoal = { editingGoalFor = tile },
                             onSetZones = { editingZonesFor = tile },
                             onSetOptions = { editingOptionsFor = tile },
