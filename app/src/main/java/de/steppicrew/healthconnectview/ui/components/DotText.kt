@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.isSpecified
  * A coloured mark before a text, centred on the text's *first* line.
  *
  * Centring on the whole text put the mark between the lines as soon as the text wrapped --
- * "Übliche Spanne 34,1-49,3 ms · in deinem üblichen / Bereich" had its dot floating beside the
+ * "Übliche Spanne 34,1-49,3 ms · in Ihrem üblichen / Bereich" had its dot floating beside the
  * gap -- so it no longer read as belonging to the first word. Used for every mark-and-label
  * pair, so they all line up the same way.
  */
