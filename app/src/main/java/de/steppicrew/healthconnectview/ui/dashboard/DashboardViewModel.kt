@@ -133,6 +133,9 @@ data class DashboardUiState(
     val canStepForward: Boolean get() = date.isBefore(LocalDate.now())
 }
 
+/** A type the add picker offers, and whether a tile of it is already pinned. */
+data class AddCandidate(val spec: RecordTypeSpec<*>, val pinned: Boolean)
+
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = HealthRepository(application)
@@ -251,8 +254,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /** Sets a large tile's window and face, and persists them. */
-    fun setOptions(typeName: String, span: Span, face: TileFace) {
-        config = config.withOptions(typeName, span, face)
+    fun setOptions(id: String, span: Span, face: TileFace) {
+        config = config.withOptions(id, span, face)
         viewModelScope.launch {
             store.save(config)
             loadTiles()
@@ -260,17 +263,21 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /** Removes a tile and persists the layout. */
-    fun removeTile(typeName: String) {
-        config = config.without(typeName)
+    fun removeTile(id: String) {
+        config = config.without(id)
         viewModelScope.launch {
             store.save(config)
             loadTiles()
         }
     }
 
-    /** Pins a type. Ignored if already present, so double-adding cannot duplicate a tile. */
+    /**
+     * Pins a type. A type already on the dashboard gets another tile only with Pro; the picker
+     * offers it locked otherwise, so this refuses rather than trusting the caller.
+     */
     fun addTile(typeName: String) {
-        config = config.plus(Tile(typeName))
+        if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
+        config = config.adding(typeName)
         viewModelScope.launch {
             store.save(config)
             loadTiles()
@@ -282,8 +289,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * reachable without a gesture the user has to discover, and it cannot drop a tile in an
      * unintended slot.
      */
-    fun moveTile(typeName: String, forward: Boolean) {
-        val from = config.tiles.indexOfFirst { it.typeName == typeName }
+    fun moveTile(id: String, forward: Boolean) {
+        val from = config.tiles.indexOfFirst { it.id == id }
         if (from < 0) return
         val to = if (forward) from + 1 else from - 1
         val moved = config.moved(from, to)
@@ -300,10 +307,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * reloaded: nothing about the data changes, and a reload would blank every tile to a dash
      * for the length of a read just to make one of them bigger.
      */
-    fun resizeTile(typeName: String) {
-        val before = config.tiles.firstOrNull { it.typeName == typeName }
-        config = config.resized(typeName)
-        val after = config.tiles.firstOrNull { it.typeName == typeName }
+    fun resizeTile(id: String) {
+        val before = config.tiles.firstOrNull { it.id == id }
+        config = config.resized(id)
+        val after = config.tiles.firstOrNull { it.id == id }
         _state.update { it.copy(tiles = withCurrentSizes(it.tiles)) }
         viewModelScope.launch {
             store.save(config)
@@ -318,20 +325,21 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * a tile resized while it runs would otherwise snap back when the load publishes.
      */
     private fun withCurrentSizes(tiles: List<TileData>): List<TileData> {
-        val current = config.tiles.associateBy { it.typeName }
+        val current = config.tiles.associateBy { it.id }
         return tiles.map { data ->
-            val tile = current[data.tile.typeName] ?: return@map data
+            val tile = current[data.tile.id] ?: return@map data
             data.copy(tile = data.tile.copy(width = tile.width, height = tile.height))
         }
     }
 
-    /** Types that may be pinned but are not yet: the add picker's contents. */
-    fun addableTypes(): List<RecordTypeSpec<*>> {
-        val pinned = config.tiles.map { it.typeName }.toSet()
-        return RecordRegistry.all
-            .filter { it.isPinnable && it.type.simpleName !in pinned }
-            .sortedBy { it.type.simpleName }
-    }
+    /**
+     * Every pinnable type for the add picker, each marked whether it is on the dashboard
+     * already: then it is offered again, as a further tile for a different window or face.
+     */
+    fun addableTypes(): List<AddCandidate> = RecordRegistry.all
+        .filter { it.isPinnable }
+        .sortedBy { it.type.simpleName }
+        .map { AddCandidate(it, pinned = config.has(it.type.simpleName.orEmpty())) }
 
     fun showPreviousDay() {
         _state.update { it.copy(date = it.date.minusDays(1)) }
@@ -366,7 +374,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             return
         }
 
-        val previous = _state.value.tiles.associateBy { it.tile.typeName }
+        val previous = _state.value.tiles.associateBy { it.tile.id }
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
             TileData(
@@ -385,7 +393,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         // only hides that for as long as its TTL lasts. A stale number for a moment is a
         // better answer than no number, since it is what the tile showed a second ago.
         val shown = placeholders.map { placeholder ->
-            val carried = previous[placeholder.tile.typeName] ?: return@map placeholder
+            val carried = previous[placeholder.tile.id] ?: return@map placeholder
             // Source included: a value read under one filter must not be shown against
             // another, or changing the preferred app leaves the old app's number on screen
             // under the new app's name until the read returns.
@@ -428,7 +436,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
         // Keep the previous arrows until the new ones arrive, as with the values above.
         val withCarried = loaded.map { tile ->
-            val carried = previous[tile.tile.typeName]
+            val carried = previous[tile.tile.id]
             if (carried != null && carried.source == tile.source) tile.copy(trend = carried.trend) else tile
         }
         _state.update { it.copy(tiles = withCurrentSizes(withCarried)) }

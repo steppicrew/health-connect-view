@@ -124,11 +124,14 @@ open items below and `FEATURE-IDEAS.md`.
     refused ("Unsupported aggregation type MindfulnessSession_duration") and which had failed
     the whole screen. The totals come from the sessions, as for sleep. Not seen with data: no
     app on the phone writes mindfulness sessions.
-26. [ ] **The same type on several tiles** (Pro). Now that a large tile chooses its window and
-    face, one type can usefully appear twice -- today's steps as a ring beside a year of
-    weekly bars. Tiles are keyed by type name throughout (config, JSON, per-tile goal and zones,
-    the grid's keys), so each tile needs its own id first; the goal and zones then decide
-    whether they are per tile or per type.
+26. [x] **The same type on several tiles** (Pro, `TILE_REPEAT`) -- built 27.09.2026. Each
+    tile has an id: the first of a type keeps the type name, so stored layouts and backups read
+    back unchanged (seen on the phone), later ones are "StepsRecord#2" and up and store it in
+    the JSON. Size, window, face, position and removal address the tile; goal and zones stay
+    per type, set on one tile for all of them, because the detail screen draws one goal line
+    whichever tile opened it and a step goal is the person's. The source filter is per type as
+    before. The add picker lists types already pinned under their own heading, locked without
+    Pro. Not tapped on the phone: adding needs edit mode.
 27. [x] **Hyphenation** -- merged 27.09.2026. `Hyphens.Auto` with paragraph line breaking on
     every style of the theme's type scale; Android carries the patterns, so no dictionary of
     our own. Long German compounds no longer break mid-syllable wherever the line ran out.

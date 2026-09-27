@@ -20,6 +20,8 @@ internal object DashboardJson {
             put(
                 JSONObject().apply {
                     put(FIELD_TYPE, tile.typeName)
+                    // Only a repeated type's later tiles need one; see [Tile.id].
+                    if (tile.id != tile.typeName) put(FIELD_ID, tile.id)
                     put(FIELD_WIDTH, tile.width)
                     put(FIELD_HEIGHT, tile.height)
                     tile.goal?.let { put(FIELD_GOAL, it) }
@@ -57,12 +59,14 @@ internal object DashboardJson {
                 face = item.optString(FIELD_FACE)
                     .let { stored -> TileFace.entries.firstOrNull { it.name == stored } }
                     ?: TileFace.VALUE,
+                id = item.optString(FIELD_ID).takeIf { it.isNotEmpty() } ?: typeName,
             )
         }
         return DashboardConfig(tiles)
     }
 
     private const val FIELD_TYPE = "type"
+    private const val FIELD_ID = "id"
     private const val FIELD_WIDTH = "w"
     private const val FIELD_HEIGHT = "h"
     private const val FIELD_GOAL = "goal"

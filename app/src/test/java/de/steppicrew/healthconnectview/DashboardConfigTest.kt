@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
+import de.steppicrew.healthconnectview.dashboard.DashboardJson
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
@@ -60,11 +61,59 @@ class DashboardConfigTest {
     }
 
     @Test
-    fun `adding the same type twice is ignored`() {
-        val once = config.plus(Tile("SleepSessionRecord"))
-        val twice = once.plus(Tile("SleepSessionRecord"))
-        assertEquals(4, once.tiles.size)
-        assertEquals(4, twice.tiles.size)
+    fun `adding a pinned type again gives the new tile an id of its own`() {
+        val twice = config.adding("StepsRecord").adding("StepsRecord")
+        assertEquals(listOf("StepsRecord", "HeartRateRecord", "WeightRecord", "StepsRecord#2", "StepsRecord#3"),
+            twice.tiles.map { it.id })
+        assertEquals(3, twice.tiles.count { it.typeName == "StepsRecord" })
+    }
+
+    @Test
+    fun `a new tile of a pinned type takes the type's goal`() {
+        val added = config.withGoal("StepsRecord", 7_500.0).adding("StepsRecord")
+        assertEquals(7_500.0, added.tiles.last().goal!!, 0.0)
+    }
+
+    @Test
+    fun `a goal applies to every tile of its type`() {
+        val updated = config.adding("StepsRecord").withGoal("StepsRecord", 6_000.0)
+        assertEquals(listOf(6_000.0, null, null, 6_000.0), updated.tiles.map { it.goal })
+    }
+
+    @Test
+    fun `options, size and removal address one tile of a repeated type`() {
+        val two = config.adding("StepsRecord")
+        val changed = two.withOptions("StepsRecord#2", Span.YEAR, TileFace.CHART).resized("StepsRecord#2")
+        assertEquals(Span.DAY, changed.tiles.first().span)
+        assertEquals(1, changed.tiles.first().width)
+        assertEquals(Span.YEAR, changed.tiles.last().span)
+        assertEquals(2, changed.tiles.last().width)
+        assertEquals(listOf("StepsRecord", "HeartRateRecord", "WeightRecord"),
+            changed.without("StepsRecord#2").tiles.map { it.id })
+    }
+
+    @Test
+    fun `a freed id is reused`() {
+        val back = config.adding("StepsRecord").without("StepsRecord").adding("StepsRecord")
+        assertEquals(setOf("StepsRecord", "StepsRecord#2"), back.tiles.filter { it.typeName == "StepsRecord" }.map { it.id }.toSet())
+    }
+
+    @Test
+    fun `sanitising repairs repeated ids and differing goals`() {
+        val broken = DashboardConfig(
+            listOf(Tile("StepsRecord", goal = 5_000.0), Tile("StepsRecord", goal = 9_000.0)),
+        ).sanitised()
+        assertEquals(listOf("StepsRecord", "StepsRecord#2"), broken.tiles.map { it.id })
+        assertEquals(listOf(5_000.0, 5_000.0), broken.tiles.map { it.goal })
+    }
+
+    @Test
+    fun `ids survive the stored json, and a layout without them reads as before`() {
+        val two = config.adding("StepsRecord").withOptions("StepsRecord#2", Span.WEEK, TileFace.BOTH)
+        assertEquals(two, DashboardJson.decode(DashboardJson.encode(two)))
+        val old = org.json.JSONArray("""[{"type":"StepsRecord","w":1,"h":1}]""")
+        assertEquals("StepsRecord", DashboardJson.decode(old).tiles.single().id)
+        assertTrue("first tile needs no stored id", !DashboardJson.encode(config).getJSONObject(0).has("id"))
     }
 
     @Test
@@ -87,7 +136,7 @@ class DashboardConfigTest {
     }
 
     @Test
-    fun `setting a goal overrides only that tile`() {
+    fun `setting a goal overrides only that type`() {
         val updated = config.withGoal("StepsRecord", 7_500.0)
         assertEquals(7_500.0, updated.tiles.first().effectiveGoal!!, 0.0)
         assertNull(updated.tiles[1].goal)

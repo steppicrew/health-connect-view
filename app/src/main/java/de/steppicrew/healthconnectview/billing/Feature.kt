@@ -19,6 +19,12 @@ enum class Feature(val isPremium: Boolean) {
     /** Dashboard tiles larger than one cell. */
     TILE_SIZES(isPremium = true),
 
+    /**
+     * A type on more than one tile, each with its own window and face. Beside [TILE_SIZES]:
+     * without a large tile's window two tiles of a type would show the same number.
+     */
+    TILE_REPEAT(isPremium = true),
+
     /** PDF logs for a doctor: blood pressure, weight, resting heart rate, blood glucose. */
     PDF_REPORTS(isPremium = true),
 
