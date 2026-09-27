@@ -113,8 +113,8 @@ fun DashboardScreen(
     /** Type, the dashboard's date, and the window the tile describes. */
     onOpenType: (String, String, Span) -> Unit,
     onOpenCatalog: () -> Unit,
-    onOpenPermissions: () -> Unit,
-    /** The permission list itself, one step closer than [onOpenPermissions]'s settings. */
+    onOpenSettings: () -> Unit,
+    /** The permission list itself, one step closer than [onOpenSettings]. */
     onGrantAccess: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -240,10 +240,10 @@ fun DashboardScreen(
                                 contentDescription = stringResource(R.string.dashboard_edit),
                             )
                         }
-                        IconButton(onClick = onOpenPermissions) {
+                        IconButton(onClick = onOpenSettings) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = stringResource(R.string.permissions_title),
+                                contentDescription = stringResource(R.string.settings_title),
                             )
                         }
                     }

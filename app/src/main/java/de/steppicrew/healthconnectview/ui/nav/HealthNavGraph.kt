@@ -70,7 +70,7 @@ fun HealthNavGraph(
                     navController.navigate(Routes.tileDetail(type, date, span))
                 },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
-                onOpenPermissions = { navController.navigate(Routes.SETTINGS) },
+                onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onGrantAccess = { navController.navigate(Routes.PERMISSIONS) },
             )
         }
