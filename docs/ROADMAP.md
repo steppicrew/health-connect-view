@@ -163,7 +163,8 @@ open items below and `FEATURE-IDEAS.md`.
     system print preview (`export/PdfPrint.kt`), where it is read, printed or saved as PDF. A
     viewer app would have needed a file the user did not choose, which rule 3 forbids; the
     preview does not. After any export the message offers "Öffnen" in the user's own viewer
-    for the file they saved. The privacy text names the print route. Not tapped on the phone.
+    for the file they saved. The privacy text names the print route. Printing confirmed by the
+    owner on the phone.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
