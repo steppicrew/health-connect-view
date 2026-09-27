@@ -13,9 +13,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.RemoveCircleOutline
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,8 +72,10 @@ fun CatalogScreen(
                 },
                 actions = {
                     IconButton(onClick = onOpenPermissions) {
+                        // Not a gear: the dashboard's gear opens the settings, and two gears
+                        // leading to different places read as one.
                         Icon(
-                            imageVector = Icons.Default.Settings,
+                            imageVector = Icons.Default.HealthAndSafety,
                             contentDescription = stringResource(R.string.permissions_title),
                         )
                     }
