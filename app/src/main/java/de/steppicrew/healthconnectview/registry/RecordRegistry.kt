@@ -478,7 +478,7 @@ object RecordRegistry {
             // list still shows it, as what the app stored.
             points = { listOfNotNull(Point(it.time, it.percentage.value).takeIf { p -> p.value > 0.0 }) },
             summary = { Formatting.number(it.percentage.value) + " %" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, dailyMeans = true, rollingBaseline = true),
         ),
         RecordTypeSpec(
             type = RespiratoryRateRecord::class,
@@ -496,6 +496,8 @@ object RecordRegistry {
                 TileSpec.Form.NUMBER,
                 markReadings = true,
                 integralValues = true,
+                dailyMeans = true,
+                rollingBaseline = true,
             ),
         ),
         RecordTypeSpec(

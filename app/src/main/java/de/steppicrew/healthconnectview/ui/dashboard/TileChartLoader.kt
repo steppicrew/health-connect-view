@@ -21,6 +21,7 @@ import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
 import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.health.PageProgress
+import de.steppicrew.healthconnectview.health.DailyReadings
 import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.health.ROLLING_DAYS
 import de.steppicrew.healthconnectview.health.rollingMean
@@ -118,6 +119,8 @@ internal class TileChartLoader(
 
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
+        // Filled where readings with no aggregate are reduced to daily means.
+        var dailyReadings: DailyReadings? = null
         val points = if (hrvSeries != null) {
             seriesAggregated = false
             val zone = HealthRepository.DEFAULT_ZONE
@@ -277,6 +280,36 @@ internal class TileChartLoader(
 
                 else -> emptyList()
             }
+        } else if (spec.tile.dailyMeans && span.bucket != null) {
+            val bucketDays = span.bucket?.days ?: 1
+            // Readings with no aggregate, across days: one mean per bucket with its spread,
+            // not every reading -- see DailyReadings. Read from four weeks earlier where a
+            // rolling mean is drawn, so its first day already has its weeks behind it.
+            seriesAggregated = false
+            val zone = HealthRepository.DEFAULT_ZONE
+            val first = span.startDate(offset)
+            val readFrom = if (spec.tile.rollingBaseline) first.minusDays(ROLLING_DAYS - 1L) else first
+            val daily = DailyReadings(zone, first, bucketDays)
+            runCatching {
+                repository.forEachPage(
+                    spec.type,
+                    TimeRangeFilter.between(readFrom.atStartOfDay(zone).toInstant(), windowEnd),
+                    origins,
+                    readProgress,
+                ) { page ->
+                    page.forEach { record ->
+                        val origin = record.metadata.dataOrigin.packageName
+                        spec.pointsOf(record).forEach { daily.add(it.time, it.value, origin) }
+                    }
+                }
+            }
+            dailyReadings = daily
+            val buckets = daily.buckets()
+            rangeBand = buckets
+                .map { ValueBand(it.start.atStartOfDay(zone).toInstant(), it.low, it.high) }
+                .takeIf { bands -> bands.any { it.high > it.low } }
+                .orEmpty()
+            buckets.map { Point(it.start.atStartOfDay(zone).toInstant(), it.mean) }
         } else {
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
@@ -321,7 +354,8 @@ internal class TileChartLoader(
                 if (cumulativeCandidate(spec, span)) pts.last().value else spec.combine(pts.map { it.value })
             }
         } else {
-            null
+            // Readings reduced to daily means: the window's mean of the same counted readings.
+            dailyReadings?.overallMean()
         }
         // HRV has no aggregate, so its headline is computed: the night's own value on a day,
         // the week's mean at the window's end across days -- the figure the chart ends on.
@@ -455,23 +489,25 @@ internal class TileChartLoader(
         // one-value-a-day type has no chart to put it on. Read from 27 days before the window,
         // so its first day already has four weeks behind it; a failed read just leaves it out.
         val shownPoints = perDayPoints.ifEmpty { scaledPoints }
-        val baseline = if (spec.tile.rollingBaseline && metric != null && span.bucket != null && shownPoints.isNotEmpty()) {
+        val baseline = if (spec.tile.rollingBaseline && span.bucket != null && shownPoints.isNotEmpty()) {
             runCatching {
                 val zone = HealthRepository.DEFAULT_ZONE
                 val first = span.startDate(offset)
-                val daily = repository.bucketedTotals(
-                    metric,
-                    TimeRangeFilter.between(
-                        first.minusDays(ROLLING_DAYS - 1L).atStartOfDay(),
-                        span.endDate(offset).atStartOfDay(),
-                    ),
-                    Period.ofDays(1),
-                    origins,
-                ).mapNotNull { bucket ->
-                    val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
-                        ?: return@mapNotNull null
-                    bucket.startTime.toLocalDate() to value
-                }.toMap()
+                val daily = dailyReadings?.dailyMeans() ?: metric?.let { m ->
+                    repository.bucketedTotals(
+                        m,
+                        TimeRangeFilter.between(
+                            first.minusDays(ROLLING_DAYS - 1L).atStartOfDay(),
+                            span.endDate(offset).atStartOfDay(),
+                        ),
+                        Period.ofDays(1),
+                        origins,
+                    ).mapNotNull { bucket ->
+                        val value = bucket.result[m]?.let { numericAggregate(it, m) }
+                            ?: return@mapNotNull null
+                        bucket.startTime.toLocalDate() to value
+                    }.toMap()
+                }.orEmpty()
                 // Within the series' own span: a year's last point is its week's start, and a
                 // line running past it would leave the plot.
                 rollingMean(
@@ -539,6 +575,7 @@ internal class TileChartLoader(
                 emptyList()
             },
             baseline = baseline,
+            dailyFromReadings = dailyReadings != null,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,

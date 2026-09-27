@@ -390,6 +390,8 @@
     <string name="chart_goal_reached">Ziel von %1$s erreicht</string>
     <string name="chart_goal_remaining">%1$s von %2$s</string>
     <string name="chart_source_raw">Einzelmessungen</string>
+    <string name="chart_source_readings_daily">Tagesmittel der Messungen, je Tag eine App</string>
+    <string name="chart_source_readings_weekly">Wochenmittel der Messungen, je Tag eine App</string>
     <string name="chart_source_sampled">Einzelmessungen, über den Zeitraum verteilt</string>
 
     <!-- Datenschutz -->

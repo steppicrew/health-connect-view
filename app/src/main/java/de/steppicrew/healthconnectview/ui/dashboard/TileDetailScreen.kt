@@ -528,7 +528,7 @@ private fun SpanSummary(
                         data.hrv != null -> R.string.hrv_night_label
                         // One value a day: a day of it has nothing to average.
                         data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
-                        data.spec.isAveraged -> R.string.span_average
+                        data.spec.isAveraged || data.dailyFromReadings -> R.string.span_average
                         else -> R.string.span_total
                     },
                 ),
@@ -649,6 +649,8 @@ private fun SpanSummary(
                             R.string.chart_source_aggregated_split
                         data.aggregated && data.spec.isAveraged -> R.string.chart_source_aggregated_mean
                         data.aggregated -> R.string.chart_source_aggregated
+                        data.dailyFromReadings && data.weeklyBuckets -> R.string.chart_source_readings_weekly
+                        data.dailyFromReadings -> R.string.chart_source_readings_daily
                         else -> R.string.chart_source_raw
                     },
                 ),
@@ -760,6 +762,8 @@ private fun ChartLegend(data: TileDetailData) {
         // reading, and calling it "Reading" contradicted "Daily averages" printed above.
         data.aggregated && data.weeklyBuckets && data.spec.isAveraged -> R.string.legend_value_mean_weekly
         data.aggregated && data.spec.isAveraged -> R.string.legend_value_mean
+        data.dailyFromReadings && data.weeklyBuckets -> R.string.legend_value_mean_weekly
+        data.dailyFromReadings -> R.string.legend_value_mean
         else -> R.string.legend_value_line
     }
 

@@ -177,6 +177,8 @@ data class TileDetailData(
     val nightPoints: List<Point> = emptyList(),
     /** The four-week rolling mean behind the series, for a type with `rollingBaseline`. */
     val baseline: List<Point> = emptyList(),
+    /** The series is each bucket's mean of readings the platform cannot aggregate. */
+    val dailyFromReadings: Boolean = false,
     /**
      * The writer whose records gave a multi-source curve its shape, when more than one app
      * contributed. The total stays deduplicated across all of them; only the path is one
