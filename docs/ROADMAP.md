@@ -126,6 +126,14 @@ open items below and `FEATURE-IDEAS.md`.
     range) over sparse windows and decide: break the ribbon at gaps as the line already breaks,
     or step it per bucket. Owner's request, 27.09.2026.
 
+31. [ ] **Daily means for readings with no aggregate.** Respiratory rate and oxygen saturation
+    have no Health Connect aggregate, so across days they chart every reading: 5,000 in four
+    weeks, drawn as a solid wall of vertical strokes with nothing to read. Across days show one
+    point a day -- the mean of that day's readings, one writer per day as HRV does -- with the
+    day's spread as a band, computed while `readForChart` pages. Readings of 0 are already left
+    out (27.09.2026). Then consider the four-week mean (step 29's) for them too. Owner's
+    report, 27.09.2026.
+
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
 trend explained with its averages in the day view, and "Weiter" for the permission screen's
