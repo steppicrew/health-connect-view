@@ -214,6 +214,16 @@ open items below and `FEATURE-IDEAS.md`.
     the first line. The jump into Health Connect confirmed by the owner; it lands on the app's
     page, not the permission -- the intent takes only a package -- so a hint on leaving names
     the permission tapped, saying Health Connect may word it differently.
+36. [ ] **Tile colours** (Pro) -- the owner's idea, 27.09.2026. A tile picks its colour, which
+    with step 26 tells two tiles of one type apart at a glance. Proposed: a small palette of
+    tonal pairs (the theme's primary, secondary, tertiary and error containers plus a few
+    hues of our own), each defined for light and dark with its text colour, rather than free
+    pickers for background and font. Free colours break in the other theme, can make text
+    unreadable, and fight what already carries meaning on a tile: the zone colours of a curve,
+    the goal ring, the trend arrow and the source icon. So the tile's content keeps its colours
+    and only the card and its plain text change; zone colours must stay distinguishable on
+    every palette entry, which a test can check by contrast ratio. Stored per tile in the
+    layout JSON like the face, so backups carry it.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
