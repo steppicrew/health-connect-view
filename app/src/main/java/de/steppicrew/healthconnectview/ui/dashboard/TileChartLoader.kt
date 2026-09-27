@@ -20,6 +20,8 @@ import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
 import de.steppicrew.healthconnectview.health.openTally
+import de.steppicrew.healthconnectview.health.PageProgress
+import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.health.ROLLING_DAYS
 import de.steppicrew.healthconnectview.health.rollingMean
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -66,11 +68,21 @@ internal class TileChartLoader(
         val hasSessions = spec.tile.form == TileSpec.Form.SESSIONS ||
             (span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty())
         // Only what comes before the chart can be shown: the list and picker follow it.
-        val steps = 2 + if (hasSessions) 1 else 0
+        // Weighted by where the time goes: the chart's read is the long one -- a year of
+        // respiratory rate pages for a minute or more -- and the total and sessions are single
+        // requests. Counted equally, the chart's progress filled half the bar and the rest
+        // jumped.
+        val steps = CHART_WEIGHT + 1 + if (hasSessions) 1 else 0
         val done = java.util.concurrent.atomic.AtomicInteger(0)
-        fun stepDone() {
-            onProgress(done.incrementAndGet().toFloat() / steps)
+        fun stepDone(weight: Int = 1) {
+            onProgress(done.addAndGet(weight).toFloat() / steps)
         }
+        // Progress within the chart's read, so the bar moves while it pages instead of sitting
+        // at 0 and then jumping to the end.
+        fun stepPart(fraction: Float) {
+            onProgress((done.get() + fraction * CHART_WEIGHT) / steps)
+        }
+        val readProgress = PageProgress<Record>(spec::timeOf, ::stepPart)
         onProgress(0f)
 
         val windowStart = windowStart(span, offset)
@@ -97,7 +109,7 @@ internal class TileChartLoader(
         // as one zigzag. Within a day the readings themselves stay, as for any reading.
         val hrv = if (spec.tile.nightlyStatus) {
             runCatching {
-                repository.hrvWindow(span.startDate(offset), span.endDate(offset).minusDays(1), origins)
+                repository.hrvWindow(span.startDate(offset), span.endDate(offset).minusDays(1), origins, onProgress = ::stepPart)
             }.getOrNull()
         } else {
             null
@@ -129,7 +141,7 @@ internal class TileChartLoader(
                 // records carry the actual moment and amount, so the line steps exactly where
                 // the activity was and stays flat in between -- which is what the data says.
                 duration != null && spec.tile.cumulativeIntraday ->
-                    cumulativeFromRecords(spec, span, offset, origins)
+                    cumulativeFromRecords(spec, span, offset, origins, readProgress)
 
                 // A day of an instantaneous type is charted from the readings themselves.
                 //
@@ -144,7 +156,7 @@ internal class TileChartLoader(
                 // raw records would double-count.
                 duration != null && spec.shape != RecordTypeSpec.Shape.INTERVAL -> {
                     seriesAggregated = false
-                    val readings = repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+                    val readings = repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
                     secondaryPoints = readings.flatMap { spec.secondaryPointsOf(it) }.sortedBy { it.time }
                     readings.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
                 }
@@ -268,7 +280,7 @@ internal class TileChartLoader(
         } else {
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
-            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
                 .flatMap { spec.pointsOf(it) }
                 .sortedBy { it.time }
         }
@@ -282,7 +294,7 @@ internal class TileChartLoader(
         val chartPoints = points.ifEmpty {
             if (metric != null && source != null) {
                 runCatching {
-                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
                         .flatMap { spec.pointsOf(it) }
                         .sortedBy { it.time }
                 }.getOrDefault(emptyList())
@@ -291,7 +303,7 @@ internal class TileChartLoader(
             }
         }
 
-        stepDone() // the chart
+        stepDone(CHART_WEIGHT) // the chart
         val aggregatedTotal = if (metric != null) {
             val platform = runCatching { repository.total(metric, span.totalFilter(offset), origins) }.getOrNull()
             if (offset == 0) withOpenTally(spec, metric, span, platform, origins) else platform
@@ -558,11 +570,12 @@ internal class TileChartLoader(
         span: Span,
         offset: Int,
         origins: Set<DataOrigin>,
+        progress: PageProgress<Record>,
     ): List<Point> {
         val windowStart = span.startDate(offset)
             .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
         val allRecords = runCatching {
-            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins)
+            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = progress)
         }.getOrDefault(emptyList())
 
         // Several writers describing the same activity interleave: measured on a real device,
@@ -869,6 +882,9 @@ private fun List<Point>.runningTotal(): List<Point> {
 }
 
 /** The window's first instant, for reading raw records. */
+/** The chart's share of the progress bar, against one for each single-request step. */
+private const val CHART_WEIGHT = 8
+
 internal fun windowStart(span: Span, offset: Int): Instant =
     span.startDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
 

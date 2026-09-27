@@ -117,11 +117,13 @@ suspend fun HealthRepository.hrvWindow(
     last: LocalDate,
     origins: Set<DataOrigin>,
     zone: ZoneId = HealthRepository.DEFAULT_ZONE,
+    onProgress: (Float) -> Unit = {},
 ): HrvWindow {
     val from = first.minusDays(HRV_LOOKBACK_DAYS).atStartOfDay(zone).toInstant()
     val until = last.plusDays(1).atStartOfDay(zone).toInstant()
     val readings = mutableListOf<HrvReading>()
-    forEachPage(HeartRateVariabilityRmssdRecord::class, TimeRangeFilter.between(from, until), origins) { page ->
+    val progress = PageProgress<HeartRateVariabilityRmssdRecord>({ it.time }, onProgress)
+    forEachPage(HeartRateVariabilityRmssdRecord::class, TimeRangeFilter.between(from, until), origins, progress) { page ->
         page.forEach {
             readings += HrvReading(it.time, it.heartRateVariabilityMillis, it.metadata.dataOrigin.packageName)
         }
