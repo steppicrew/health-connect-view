@@ -1,6 +1,9 @@
 package de.steppicrew.healthconnectview
 
+import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.SexualActivityRecord
+import androidx.health.connect.client.units.Percentage
 import androidx.health.connect.client.records.metadata.Metadata
 import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -129,6 +132,18 @@ class RecordRegistryTest {
             assertEquals("$name low end", RecordRegistry.quantityOfMetric[spec.aggregate], RecordRegistry.quantityOfMetric[low])
             assertEquals("$name high end", RecordRegistry.quantityOfMetric[spec.aggregate], RecordRegistry.quantityOfMetric[high])
         }
+    }
+
+    /** A writer stores "no reading" as 0; charted, it dived to the axis several times a day. */
+    @Test
+    fun `a reading of zero breaths or zero saturation is not charted`() {
+        val breaths = RecordRegistry.spec(RespiratoryRateRecord::class)
+        assertTrue(breaths.pointsOf(RespiratoryRateRecord(Instant.EPOCH, null, 0.0, Metadata.manualEntry())).isEmpty())
+        assertEquals(1, breaths.pointsOf(RespiratoryRateRecord(Instant.EPOCH, null, 12.9, Metadata.manualEntry())).size)
+
+        val oxygen = RecordRegistry.spec(OxygenSaturationRecord::class)
+        assertTrue(oxygen.pointsOf(OxygenSaturationRecord(Instant.EPOCH, null, Percentage(0.0), Metadata.manualEntry())).isEmpty())
+        assertEquals(1, oxygen.pointsOf(OxygenSaturationRecord(Instant.EPOCH, null, Percentage(96.0), Metadata.manualEntry())).size)
     }
 
     @Test

@@ -473,7 +473,10 @@ object RecordRegistry {
             unitRes = R.string.unit_percent,
             shape = Shape.INSTANT,
             startTime = { it.time },
-            points = { listOf(Point(it.time, it.percentage.value)) },
+            // A saturation of 0 is a moment the sensor could not measure, written as a number
+            // by some writers; charted, it is a plunge to the axis nobody survived. The record
+            // list still shows it, as what the app stored.
+            points = { listOfNotNull(Point(it.time, it.percentage.value).takeIf { p -> p.value > 0.0 }) },
             summary = { Formatting.number(it.percentage.value) + " %" },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
         ),
@@ -485,7 +488,9 @@ object RecordRegistry {
             unitRes = R.string.unit_rpm_breath,
             shape = Shape.INSTANT,
             startTime = { it.time },
-            points = { listOf(Point(it.time, it.rate)) },
+            // As for oxygen saturation: on the phone Health Sync wrote several 0 breaths/min a
+            // day where the watch had no reading, and the chart dived to the axis at each one.
+            points = { listOfNotNull(Point(it.time, it.rate).takeIf { p -> p.value > 0.0 }) },
             summary = { Formatting.number(it.rate) },
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
