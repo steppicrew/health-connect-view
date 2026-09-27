@@ -463,7 +463,7 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f),
             )
-            InfoToggle(explanation)
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
         }
         Text(
             text = stringResource(
@@ -519,7 +519,7 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f),
             )
-            InfoToggle(explanation)
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
         }
         when {
             // The current run is the year's longest: saying both would repeat the number.
@@ -581,13 +581,13 @@ private fun DayPartsSection(split: DayPartSplit) {
     val explanation = rememberExplanation("dayparts")
 
     Column(Modifier.padding(top = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.Top) {
             Text(
                 text = stringResource(R.string.bp_parts_title),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f),
             )
-            InfoToggle(explanation)
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
         }
         DayPartRow(stringResource(R.string.bp_part_morning), split.morning)
         DayPartRow(stringResource(R.string.bp_part_evening), split.evening)

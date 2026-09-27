@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.layout
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
@@ -57,7 +57,9 @@ fun InfoToggle(
     /**
      * The style of a text the icon sits beside, to centre the icon on that text's first line
      * rather than on the 48dp touch target, whose middle falls between the lines of a text
-     * that wraps. The touch target keeps its size; only the drawing moves up.
+     * that wraps. The touch target keeps its size, but the row is told only the line's height:
+     * shifting the drawing alone left the row 48dp tall, and a gap under a one-line title
+     * before the text that followed it.
      */
     firstLine: TextStyle? = null,
 ) {
@@ -70,7 +72,13 @@ fun InfoToggle(
     IconButton(
         onClick = state.toggle,
         enabled = state.expanded != null,
-        modifier = modifier.offset(y = -lift),
+        modifier = modifier.layout { measurable, constraints ->
+            val placeable = measurable.measure(constraints)
+            val trim = lift.roundToPx()
+            layout(placeable.width, (placeable.height - 2 * trim).coerceAtLeast(0)) {
+                placeable.place(0, -trim)
+            }
+        },
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
