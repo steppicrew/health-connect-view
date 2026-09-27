@@ -80,6 +80,14 @@ class FieldPresenceActivity : ComponentActivity() {
             "  $name.metadata recordingMethod=$methods device=$devices/${records.size} " +
                 "deviceType=$deviceTypes clientRecordId=$clientIds",
         )
+        // Per writer, how many distinct devices it names: can one source chip hide two phones
+        // or two watches? Counts and package names only -- never a device's name.
+        metadata.groupBy { it.dataOrigin.packageName }.forEach { (origin, ofOrigin) ->
+            val named = ofOrigin.mapNotNull { it.device }.filter { !it.model.isNullOrBlank() || !it.manufacturer.isNullOrBlank() }
+            val distinct = named.map { it.manufacturer.orEmpty() + "|" + it.model.orEmpty() }.distinct().size
+            val kinds = ofOrigin.mapNotNull { it.device?.type }.distinct().sorted()
+            Log.i(TAG, "  $name.source $origin records=${ofOrigin.size} named=${named.size} distinctDevices=$distinct kinds=$kinds")
+        }
     }
 
     /** The record's own data getters: not its times, offsets, metadata or Java plumbing. */
