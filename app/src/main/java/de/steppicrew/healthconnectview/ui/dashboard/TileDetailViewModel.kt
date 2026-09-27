@@ -6,6 +6,7 @@ import android.app.Application
 import android.util.Log
 import de.steppicrew.healthconnectview.export.ExportResult
 import android.net.Uri
+import java.io.ByteArrayOutputStream
 import android.provider.DocumentsContract
 import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.Exporter
@@ -254,7 +255,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             when (kind) {
                 ExportKind.RECORDS -> exporter.hasRecords(spec, period.start(), period.end(), origins)
                 ExportKind.DAILY -> exporter.hasDailyTotals(spec, period.first, period.last.plusDays(1), origins)
-                ExportKind.REPORT -> exporter.hasReportData(spec, period.first, period.last, origins)
+                ExportKind.REPORT, ExportKind.PRINT -> exporter.hasReportData(spec, period.first, period.last, origins)
             }
         }.getOrDefault(true)
         if (!any) _exportResults.tryEmit(ExportResult.Empty)
@@ -279,10 +280,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                         when (kind) {
                             ExportKind.RECORDS -> ExportResult.Written(
                                 exporter.writeRecords(spec, period.start(), period.end(), origins, out),
+                                uri,
+                                kind.mimeType,
                             )
                             ExportKind.DAILY -> ExportResult.Written(
                                 exporter.writeDailyTotals(spec, period.first, period.last.plusDays(1), origins, out),
+                                uri,
+                                kind.mimeType,
                             )
+                            // Printing never reaches a file; see renderReport.
+                            ExportKind.PRINT -> error("print is not saved")
                             ExportKind.REPORT -> ExportResult.Report(
                                 exporter.writeReport(
                                     spec,
@@ -292,6 +299,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                                     selectedSource?.let { getApplication<Application>().appLabelFor(it) },
                                     out,
                                 ),
+                                uri,
+                                kind.mimeType,
                             )
                         }
                     }
@@ -311,6 +320,28 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      */
     private val _historyGranted = MutableStateFlow(true)
     val historyGranted: StateFlow<Boolean> = _historyGranted.asStateFlow()
+
+    /**
+     * The report for [period] as PDF bytes in memory, for the print preview; null if it failed.
+     * Read now, while the app is in front: Health Connect refuses reads once the preview covers
+     * it. Held only until the preview has taken it -- never written anywhere by the app.
+     */
+    suspend fun renderReport(period: ExportPeriod): ByteArray? {
+        val spec = _spec.value ?: return null
+        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val source = selectedSource?.let { getApplication<Application>().appLabelFor(it) }
+        return runCatching {
+            withContext(Dispatchers.IO) {
+                ByteArrayOutputStream().also { out ->
+                    Exporter(getApplication(), repository).writeReport(spec, period.first, period.last, origins, source, out)
+                }.toByteArray()
+            }
+        }.onFailure { Log.w(TAG, "report failed: ${it.javaClass.simpleName}") }.getOrNull()
+    }
+
+    fun reportNoViewer() {
+        _exportResults.tryEmit(ExportResult.NoViewer)
+    }
 
     private fun ExportPeriod.start(): Instant = first.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
 

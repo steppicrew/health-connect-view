@@ -97,6 +97,9 @@
     <string name="export_period_next">Weiter</string>
     <string name="export_period_history">Ohne Zugriff auf ältere Daten liefert Health Connect nur die letzten 30 Tage. Der Rest dieses Zeitraums fehlt dann in der Datei.</string>
     <string name="export_report">Bericht (PDF)</string>
+    <string name="export_print">Ansehen oder drucken (PDF)</string>
+    <string name="export_open">Öffnen</string>
+    <string name="export_no_viewer">Auf diesem Gerät kann keine App diese Datei anzeigen.</string>
     <string name="report_title">Blutdruck-Protokoll</string>
     <string name="report_period">%1$s – %2$s</string>
     <string name="report_created">Erstellt am %1$s aus den Messungen in Health Connect.</string>
@@ -481,7 +484,7 @@
     <string name="privacy_read_only_title">Nur Lesezugriff</string>
     <string name="privacy_read_only_body">Es werden ausschließlich Leseberechtigungen angefragt. Die App kann Ihre Gesundheitsdaten weder ändern noch löschen. Sie wählen einzeln aus, welche Datentypen freigegeben werden; nichts ist vorausgewählt.</string>
     <string name="privacy_storage_title">Die App speichert nichts</string>
-    <string name="privacy_storage_body">Gesundheitsdaten liegen nur im Arbeitsspeicher, solange Sie sie ansehen, und die App schreibt sie nie von sich aus auf den Datenträger. Die einzige Ausnahme ist ein Export: Wenn Sie einen anfordern, wird die Datei dort gespeichert, wo Sie es im Speicherdialog von Android wählen, und die App behält keine Kopie. Ansonsten speichert die App nur Ihre Anzeigeeinstellungen. Backup und Geräteübertragung sind deaktiviert, es wird also nichts in die Cloud kopiert.</string>
+    <string name="privacy_storage_body">Gesundheitsdaten liegen nur im Arbeitsspeicher, solange Sie sie ansehen, und die App schreibt sie nie von sich aus auf den Datenträger. Die einzige Ausnahme ist ein Export: Wenn Sie einen anfordern, wird die Datei dort gespeichert, wo Sie es im Speicherdialog von Android wählen, und die App behält keine Kopie. Ein Bericht, den Sie ansehen oder drucken, geht direkt aus dem Arbeitsspeicher in die Druckvorschau von Android und von dort nur dorthin, wohin Sie ihn schicken. Ansonsten speichert die App nur Ihre Anzeigeeinstellungen. Backup und Geräteübertragung sind deaktiviert, es wird also nichts in die Cloud kopiert.</string>
     <string name="privacy_sharing_title">Keine Weitergabe</string>
     <string name="privacy_sharing_body">Ihre Gesundheitsdaten werden an niemanden weitergegeben, auch nicht an den Entwickler. Keine Drittanbieter-SDKs erhalten sie. Eine exportierte Datei gehört Ihnen: Was danach mit ihr geschieht, entscheiden Sie.</string>
     <string name="privacy_control_title">Sie behalten die Kontrolle</string>

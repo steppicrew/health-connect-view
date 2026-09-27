@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarDuration
+import android.content.Intent
+import android.content.ActivityNotFoundException
 import java.time.Instant
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.runtime.rememberCoroutineScope
@@ -149,18 +153,43 @@ fun TileDetailScreen(
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
+    val context = LocalContext.current
     LaunchedEffect(viewModel) {
         viewModel.exportResults.collect { result ->
-            snackbar.showSnackbar(
-                when (result) {
-                    is ExportResult.Written ->
-                        resources.getQuantityString(R.plurals.export_done, result.rows, result.rows)
-                    is ExportResult.Report ->
-                        resources.getQuantityString(R.plurals.export_report_done, result.readings, result.readings)
-                    ExportResult.Failed -> resources.getString(R.string.export_failed)
-                    ExportResult.Empty -> resources.getString(R.string.export_empty)
-                },
-            )
+            val message = when (result) {
+                is ExportResult.Written ->
+                    resources.getQuantityString(R.plurals.export_done, result.rows, result.rows)
+                is ExportResult.Report ->
+                    resources.getQuantityString(R.plurals.export_report_done, result.readings, result.readings)
+                ExportResult.Failed -> resources.getString(R.string.export_failed)
+                ExportResult.Empty -> resources.getString(R.string.export_empty)
+                ExportResult.NoViewer -> resources.getString(R.string.export_no_viewer)
+            }
+            // Where the file went, so it can be opened straight away in the user's own viewer.
+            val saved = when (result) {
+                is ExportResult.Written -> result.uri to result.mimeType
+                is ExportResult.Report -> result.uri to result.mimeType
+                else -> null
+            }
+            if (saved == null) {
+                snackbar.showSnackbar(message)
+            } else {
+                val choice = snackbar.showSnackbar(
+                    message,
+                    actionLabel = resources.getString(R.string.export_open),
+                    duration = SnackbarDuration.Long,
+                )
+                if (choice == SnackbarResult.ActionPerformed) {
+                    val view = Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(saved.first, saved.second)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    try {
+                        context.startActivity(view)
+                    } catch (_: ActivityNotFoundException) {
+                        snackbar.showSnackbar(resources.getString(R.string.export_no_viewer))
+                    }
+                }
+            }
         }
     }
 
@@ -192,6 +221,8 @@ fun TileDetailScreen(
                             reportAvailable = current.type in Exporter.REPORT_TYPES,
                             canExport = viewModel::canExport,
                             onExport = viewModel::export,
+                            renderReport = viewModel::renderReport,
+                            onNoViewer = viewModel::reportNoViewer,
                         )
                     }
                 },
