@@ -30,6 +30,16 @@ class RecordRegistryTest {
      * strings, and a permission the platform does not define is never granted — it fails
      * silently at runtime and merely looks like missing data. Catch it at build time.
      */
+    /**
+     * A resting heart rate is one value a day, so its day view drew a lone dot on a 24-hour
+     * axis. Types flagged here show the value alone on a day and chart only across days.
+     */
+    @Test
+    fun `one-value-a-day types are flagged and nothing else is`() {
+        val daily = RecordRegistry.all.filter { it.tile.dailyValue }.map { it.type.simpleName }.toSet()
+        assertEquals(setOf("RestingHeartRateRecord", "BasalMetabolicRateRecord"), daily)
+    }
+
     @Test
     fun `every permission is a real platform constant`() {
         val platform = Class.forName("android.health.connect.HealthPermissions").fields

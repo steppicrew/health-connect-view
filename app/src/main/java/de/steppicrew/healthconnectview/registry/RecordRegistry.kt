@@ -108,7 +108,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.basalMetabolicRate.inKilocaloriesPerDay)) },
             summary = { Formatting.number(it.basalMetabolicRate.inKilocaloriesPerDay) + " kcal/day" },
             aggregate = BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, dailyValue = true),
         ),
         RecordTypeSpec(
             type = CyclingPedalingCadenceRecord::class,
@@ -508,6 +508,7 @@ object RecordRegistry {
                 TileSpec.Form.NUMBER,
                 markReadings = true,
                 integralValues = true,
+                dailyValue = true,
             ),
         ),
         RecordTypeSpec(
