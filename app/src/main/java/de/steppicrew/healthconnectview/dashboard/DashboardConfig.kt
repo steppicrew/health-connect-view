@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.dashboard
 
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
@@ -29,6 +30,18 @@ data class Tile(
      * share a scale, and maximum heart rate falls with age.
      */
     val zones: ValueZones? = null,
+    /**
+     * The window the tile describes: the dashboard's day, or the week, four weeks or year
+     * that day falls in -- the same windows the detail screen steps through, so a tap opens
+     * on exactly the figure the tile showed.
+     *
+     * Only offered on a large tile. A single cell has room for one number and nothing to say
+     * which window it covers, and a week of steps read at a glance as today's would mislead.
+     * Stored whatever the size, like the size itself, so shrinking a tile loses nothing.
+     */
+    val span: Span = Span.DAY,
+    /** What a large tile draws; see [TileFace]. Stored whatever the size, like [span]. */
+    val face: TileFace = TileFace.VALUE,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -43,7 +56,19 @@ data class Tile(
 
     /** The value bands actually in force: the user's override, else the type's default. */
     val effectiveZones: ValueZones? get() = zones ?: spec?.tile?.defaultZones
+
+    /** Whether the tile spans more than one cell, which is what the options need room for. */
+    val isLarge: Boolean get() = width > 1 || height > 1
 }
+
+/**
+ * What a large tile draws.
+ *
+ * [VALUE] is the single-cell face at a larger size: the number, its ring or its curve. [CHART]
+ * gives the whole tile to the window's chart, with its axis values and goal line, for someone
+ * who reads the shape rather than the figure. [BOTH] puts the number above a smaller chart.
+ */
+enum class TileFace { VALUE, CHART, BOTH }
 
 /**
  * The sizes a tile cycles through, as width to height. No 1x2: a tall narrow tile has room for
@@ -77,6 +102,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     /** Sets one tile's value bands; null clears the override back to the type's default. */
     fun withZones(typeName: String, zones: ValueZones?): DashboardConfig = DashboardConfig(
         tiles.map { if (it.typeName == typeName) it.copy(zones = zones) else it },
+    )
+
+    /** Sets one tile's window and face. */
+    fun withOptions(typeName: String, span: Span, face: TileFace): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.typeName == typeName) it.copy(span = span, face = face) else it },
     )
 
     /** Steps one tile to its next size. */
