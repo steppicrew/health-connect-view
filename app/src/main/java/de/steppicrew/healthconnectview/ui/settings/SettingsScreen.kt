@@ -57,6 +57,7 @@ import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.ProState
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.settings.ThemeChoice
+import de.steppicrew.healthconnectview.settings.GlucoseChoice
 import de.steppicrew.healthconnectview.settings.UnitChoice
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -231,6 +232,30 @@ fun SettingsScreen(
                         FilterChip(
                             selected = settings.units == choice,
                             onClick = { viewModel.setUnits(choice) },
+                            label = { Text(stringResource(choice.labelRes())) },
+                        )
+                    }
+                }
+            }
+
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Text(
+                    text = stringResource(R.string.settings_glucose),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = stringResource(R.string.settings_glucose_body),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    GlucoseChoice.entries.forEach { choice ->
+                        FilterChip(
+                            selected = settings.glucose == choice,
+                            onClick = { viewModel.setGlucose(choice) },
                             label = { Text(stringResource(choice.labelRes())) },
                         )
                     }
@@ -515,6 +540,12 @@ private fun UnitChoice.labelRes(): Int = when (this) {
     UnitChoice.SYSTEM -> R.string.settings_units_system
     UnitChoice.METRIC -> R.string.settings_units_metric
     UnitChoice.IMPERIAL -> R.string.settings_units_imperial
+}
+
+private fun GlucoseChoice.labelRes(): Int = when (this) {
+    GlucoseChoice.SYSTEM -> R.string.settings_units_system
+    GlucoseChoice.MMOL_PER_L -> R.string.unit_mmoll
+    GlucoseChoice.MG_PER_DL -> R.string.unit_mgdl
 }
 
 private fun ThemeChoice.labelRes(): Int = when (this) {

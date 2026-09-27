@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import de.steppicrew.healthconnectview.registry.GlucoseUnit
 import de.steppicrew.healthconnectview.registry.UnitSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -34,6 +35,20 @@ enum class UnitChoice {
     }
 }
 
+/** Which unit to show blood glucose in; SYSTEM follows the phone's region. */
+enum class GlucoseChoice {
+    SYSTEM,
+    MMOL_PER_L,
+    MG_PER_DL,
+    ;
+
+    fun resolve(locale: Locale): GlucoseUnit = when (this) {
+        SYSTEM -> GlucoseUnit.forLocale(locale)
+        MMOL_PER_L -> GlucoseUnit.MMOL_PER_L
+        MG_PER_DL -> GlucoseUnit.MG_PER_DL
+    }
+}
+
 data class Settings(
     val theme: ThemeChoice = ThemeChoice.SYSTEM,
     /**
@@ -48,6 +63,7 @@ data class Settings(
      */
     val expandedExplanations: Set<String> = emptySet(),
     val units: UnitChoice = UnitChoice.SYSTEM,
+    val glucose: GlucoseChoice = GlucoseChoice.SYSTEM,
 )
 
 /**
@@ -70,6 +86,9 @@ class SettingsStore(private val context: Context) {
             units = prefs[KEY_UNITS]
                 ?.let { stored -> runCatching { UnitChoice.valueOf(stored) }.getOrNull() }
                 ?: UnitChoice.SYSTEM,
+            glucose = prefs[KEY_GLUCOSE]
+                ?.let { stored -> runCatching { GlucoseChoice.valueOf(stored) }.getOrNull() }
+                ?: GlucoseChoice.SYSTEM,
         )
     }
 
@@ -79,6 +98,10 @@ class SettingsStore(private val context: Context) {
 
     suspend fun setUnits(units: UnitChoice) {
         context.settingsDataStore.edit { it[KEY_UNITS] = units.name }
+    }
+
+    suspend fun setGlucose(glucose: GlucoseChoice) {
+        context.settingsDataStore.edit { it[KEY_GLUCOSE] = glucose.name }
     }
 
     suspend fun setDynamicColor(enabled: Boolean) {
@@ -99,6 +122,7 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_DYNAMIC_COLOR] = settings.dynamicColor
             prefs[KEY_EXPANDED_EXPLANATIONS] = settings.expandedExplanations
             prefs[KEY_UNITS] = settings.units.name
+            prefs[KEY_GLUCOSE] = settings.glucose.name
         }
     }
 
@@ -107,5 +131,6 @@ class SettingsStore(private val context: Context) {
         val KEY_DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
         val KEY_EXPANDED_EXPLANATIONS = stringSetPreferencesKey("expanded_explanations")
         val KEY_UNITS = stringPreferencesKey("units")
+        val KEY_GLUCOSE = stringPreferencesKey("glucose_unit")
     }
 }

@@ -27,12 +27,17 @@ class HealthConnectViewApp : Application() {
         // when drawn, so a first screen loaded before the stored choice arrived would label
         // metric numbers "lb". One small preferences file, read once per process.
         val store = SettingsStore(this)
-        Units.system = runBlocking { store.settings.first() }.units.resolve(Locale.getDefault())
+        val initial = runBlocking { store.settings.first() }
+        Units.system = initial.units.resolve(Locale.getDefault())
+        Units.glucose = initial.glucose.resolve(Locale.getDefault())
         scope.launch {
             store.settings
-                .map { it.units }
+                .map { it.units to it.glucose }
                 .distinctUntilChanged()
-                .collect { Units.system = it.resolve(Locale.getDefault()) }
+                .collect { (units, glucose) ->
+                    Units.system = units.resolve(Locale.getDefault())
+                    Units.glucose = glucose.resolve(Locale.getDefault())
+                }
         }
     }
 }

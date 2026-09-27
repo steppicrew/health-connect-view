@@ -31,6 +31,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import de.steppicrew.healthconnectview.registry.GlucoseUnit
 import de.steppicrew.healthconnectview.registry.UnitSystem
 import de.steppicrew.healthconnectview.registry.Units
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -160,6 +161,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val loadedAt: Long,
         /** Values are converted as they are read, so a change of units needs a fresh read. */
         val units: UnitSystem = Units.system,
+        val glucose: GlucoseUnit = Units.glucose,
     ) {
         fun isFresh(now: Long, other: CacheKey): Boolean =
             date == other.date &&
@@ -167,6 +169,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 sources == other.sources &&
                 preferred == other.preferred &&
                 units == other.units &&
+                glucose == other.glucose &&
                 granted == other.granted &&
                 now - loadedAt < CACHE_TTL_MS
     }

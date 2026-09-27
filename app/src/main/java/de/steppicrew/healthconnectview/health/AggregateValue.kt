@@ -5,7 +5,6 @@ import androidx.health.connect.client.records.ElevationGainedRecord
 import androidx.health.connect.client.records.HeightRecord
 import androidx.health.connect.client.units.Energy
 import de.steppicrew.healthconnectview.registry.RecordRegistry
-import de.steppicrew.healthconnectview.registry.Units
 import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Percentage
@@ -32,7 +31,7 @@ fun numericAggregate(value: Any, metric: AggregateMetric<*>? = null): Double? {
     val metricValue = metricAggregate(value, metric) ?: return null
     // In the unit the type's records are shown in, so a total matches the rows beside it.
     val quantity = metric?.let(RecordRegistry.quantityOfMetric::get) ?: return metricValue
-    return quantity.convert(metricValue, Units.system)
+    return quantity.convert(metricValue)
 }
 
 private fun metricAggregate(value: Any, metric: AggregateMetric<*>?): Double? = when (value) {
