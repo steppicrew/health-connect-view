@@ -95,15 +95,14 @@ open items below and `FEATURE-IDEAS.md`.
 27. [x] **Hyphenation** -- merged 27.09.2026. `Hyphens.Auto` with paragraph line breaking on
     every style of the theme's type scale; Android carries the patterns, so no dictionary of
     our own. Long German compounds no longer break mid-syllable wherever the line ran out.
-28. [ ] **HRV status, Garmin-style.** Health Connect holds only the raw readings (on the phone
-    about 95 a night, every 5 minutes, written by Health Sync); Garmin's own HRV status is not
-    in it. Build it from those: a nightly value (mean of the readings inside that night's sleep
-    session, one writer per night), the 7-day mean of nightly values, and a usual range from
-    the 28 nights before -- the middle half, robust to one odd night and explainable in a
-    sentence. The multi-day chart shows one point per night with the range shaded instead of
-    2,676 raw points; the tile and headline show the 7-day mean, coloured outside the range.
-    Worded neutrally ("below your usual range"), never as a verdict, and saying that the range
-    is this app's, not Garmin's. No platform aggregate exists for HRV, so this is computed.
+28. [x] **HRV status, Garmin-style** -- merged 27.09.2026. A night's value is the mean of the
+    readings inside its sleep session (one writer per night); the week's mean of nightly
+    values is judged against the middle half of the 28 nights before it (`HrvStatus.kt`).
+    Across days the chart is that 7-night mean with the usual range shaded, instead of 2,676
+    raw points; a day shows the night's mean with the week's standing beneath; the tile shows
+    the 7-night mean with a green or orange dot. Worded as a position, and saying it is this
+    app's arithmetic, not Garmin's HRV status. On the phone: 40.2 ms against 34.1-49.3,
+    within; a year loads in well under 25 s. The dashboard tile is not yet seen on a device.
 29. [ ] **One value, no chart.** Where a window can only hold one value -- resting heart rate on
     the day view is one reading a day -- the chart draws a lone dot on an empty 24-hour axis.
     Show the value itself instead (the headline already has it) and drop the chart, or shrink

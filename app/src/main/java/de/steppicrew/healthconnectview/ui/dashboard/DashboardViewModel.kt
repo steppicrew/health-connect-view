@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.hrvWindow
+import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.dashboard.TileFace
@@ -99,6 +101,11 @@ data class TileData(
     val shownSpan: Span = Span.DAY,
     /** The window's chart, for a large tile showing one; null for every other tile. */
     val chart: TileDetailData? = null,
+    /**
+     * For a type judged night by night: where the week's mean in [value] sits against the
+     * usual range. Null for every other type, and where there are too few nights to say.
+     */
+    val standing: HrvStanding? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -396,6 +403,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     sessions = carried.sessions,
                     trend = carried.trend,
                     shownSpan = carried.shownSpan,
+                    standing = carried.standing,
                     chart = carried.chart,
                     loading = false,
                 )
@@ -472,6 +480,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             value = day?.value ?: chart?.total,
             secondaryValue = day?.secondaryValue ?: chart?.secondaryTotal,
             sessions = day?.sessions ?: chart?.sessions.orEmpty(),
+            standing = day?.standing ?: chart?.hrv?.day?.standing,
             shownSpan = tile.span,
             chart = chart,
             loading = false,
@@ -523,6 +532,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val effective = resolveSource(placeholder, dayInstants(date))
         val tile = placeholder.copy(source = effective)
         val origins = effective?.let { setOf(DataOrigin(it)) } ?: emptySet()
+
+        // HRV's tile number is the week's mean of nightly values, coloured against the usual
+        // range -- the latest five-minute reading said nothing about how the week went.
+        if (spec.tile.nightlyStatus) {
+            val day = runCatching { repository.hrvWindow(date, date, origins).days.singleOrNull() }.getOrNull()
+            return tile.copy(value = day?.weekMean, standing = day?.standing, loading = false)
+        }
 
         val value = if (metric != null) {
             val total = runCatching { repository.total(metric, dayTotalFilter(date), origins) }.getOrNull()

@@ -1,5 +1,8 @@
 package de.steppicrew.healthconnectview.health
 
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
+import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -91,6 +94,42 @@ fun hrvDays(nights: List<HrvNight>, dates: List<LocalDate>): List<HrvDay> {
             usualHigh = if (enoughBaseline) baseline.percentile(HIGH_QUANTILE) else null,
         )
     }
+}
+
+/** A window's HRV: its nights, and each day's week against the usual range. */
+data class HrvWindow(val nights: List<HrvNight>, val days: List<HrvDay>)
+
+/**
+ * What a screen says about a window's HRV: the night's own value on a day, and the week ending
+ * on the window's last day against its usual range.
+ */
+data class HrvSummary(val night: Double?, val day: HrvDay?)
+
+/**
+ * HRV for the days [first] to [last], read far enough back for each day's baseline.
+ *
+ * Every reading is read, page by page, rather than through the chart's thinning read: the
+ * nightly mean needs all of a night's readings, and a thinned year kept one in twenty. A year
+ * is about 40,000 readings, reduced to a few hundred nights before anything is drawn.
+ */
+suspend fun HealthRepository.hrvWindow(
+    first: LocalDate,
+    last: LocalDate,
+    origins: Set<DataOrigin>,
+    zone: ZoneId = HealthRepository.DEFAULT_ZONE,
+): HrvWindow {
+    val from = first.minusDays(HRV_LOOKBACK_DAYS).atStartOfDay(zone).toInstant()
+    val until = last.plusDays(1).atStartOfDay(zone).toInstant()
+    val readings = mutableListOf<HrvReading>()
+    forEachPage(HeartRateVariabilityRmssdRecord::class, TimeRangeFilter.between(from, until), origins) { page ->
+        page.forEach {
+            readings += HrvReading(it.time, it.heartRateVariabilityMillis, it.metadata.dataOrigin.packageName)
+        }
+    }
+    val sleeps = sessionsIn(from, until, setOf(Session.Kind.SLEEP))
+    val nights = nightlyHrv(readings, sleeps, zone)
+    val dates = generateSequence(first) { it.plusDays(1) }.takeWhile { !it.isAfter(last) }.toList()
+    return HrvWindow(nights, hrvDays(nights, dates))
 }
 
 /** Linear interpolation between ranks, on an already sorted list. */

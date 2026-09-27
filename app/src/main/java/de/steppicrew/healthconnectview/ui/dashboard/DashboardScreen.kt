@@ -813,6 +813,26 @@ private fun TileValue(data: TileData, large: Boolean = false) {
             )
         }
 
+        // The week's HRV: its standing as a dot, as the detail screen shows it, and a note
+        // that the number is seven nights, not the latest reading.
+        data.spec.tile.nightlyStatus -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                data.standing?.let { standing ->
+                    Box(Modifier.padding(end = 6.dp).size(10.dp).background(standing.color(), CircleShape))
+                }
+                Text(
+                    text = Formatting.number(data.value),
+                    style = valueStyle,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Text(
+                text = stringResource(R.string.tile_hrv_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
         // Two values read as one: the grade's colour beside them, as on the detail screen.
         data.secondaryValue != null -> Row(verticalAlignment = Alignment.CenterVertically) {
             Box(

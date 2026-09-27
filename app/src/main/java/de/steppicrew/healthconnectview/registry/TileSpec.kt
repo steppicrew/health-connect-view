@@ -109,6 +109,12 @@ data class TileSpec(
      * it cannot pass for a reading taken on the day shown.
      */
     val carryLastReading: Boolean = false,
+    /**
+     * Judged night by night against the wearer's own usual range, as HRV is: a night's value
+     * is the mean of the readings taken asleep, a week's is the mean of its nights, and the
+     * usual range comes from the four weeks before. See `nightlyHrv` and `hrvDays`.
+     */
+    val nightlyStatus: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

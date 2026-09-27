@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.HrvSummary
+import de.steppicrew.healthconnectview.health.HrvStanding
 import androidx.annotation.StringRes
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.compose.foundation.shape.CircleShape
@@ -515,7 +517,15 @@ private fun SpanSummary(
         data.total?.let { total ->
             Text(
                 // A mean is not a total: "Total 129 mmHg" read as blood pressures added up.
-                text = stringResource(if (data.spec.isAveraged) R.string.span_average else R.string.span_total),
+                text = stringResource(
+                    when {
+                        // HRV's figure is computed, and says which: a night, or a week of them.
+                        data.hrv != null && data.extent == null -> R.string.hrv_week_label
+                        data.hrv != null -> R.string.hrv_night_label
+                        data.spec.isAveraged -> R.string.span_average
+                        else -> R.string.span_total
+                    },
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -536,6 +546,8 @@ private fun SpanSummary(
                 if (data.secondaryZones != null) CategoryBadge(pressureCategory(total, second))
             }
         }
+
+        data.hrv?.let { HrvStatusLine(it, dayView = data.extent != null) }
 
         // Reading a dashed line against a curve is fiddly; say the answer in words too.
         data.goal?.let { goal ->
@@ -600,6 +612,7 @@ private fun SpanSummary(
                         // Counting sessions is not summing a metric, so "daily totals" would
                         // name the wrong operation.
                         data.sessionCounts -> R.string.chart_source_sessions_per_day
+                        data.hrv != null && data.extent == null -> R.string.chart_source_hrv
                         data.approximated -> R.string.chart_source_cumulative_scaled
                         data.cumulative -> R.string.chart_source_cumulative
                         data.aggregated && data.weeklyBuckets && data.spec.isAveraged ->
@@ -707,6 +720,7 @@ private fun ChartLegend(data: TileDetailData) {
         data.bars && data.weeklyBuckets -> R.string.legend_value_bars_weekly
         data.bars -> R.string.legend_value_bars
         data.cumulative -> R.string.legend_value_cumulative
+        data.hrv != null && data.extent == null -> R.string.legend_hrv_week
         data.rangeBand.isNotEmpty() -> R.string.legend_value_mean
         // Named as the caption names it: across days a weight point is that day's mean, not a
         // reading, and calling it "Reading" contradicted "Daily averages" printed above.
@@ -761,7 +775,7 @@ private fun ChartLegend(data: TileDetailData) {
         if (data.rangeBand.isNotEmpty()) {
             LegendEntry(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
-                label = R.string.legend_range,
+                label = if (data.hrv != null) R.string.legend_hrv_usual else R.string.legend_range,
             )
         }
         if (sleepShown) {
@@ -819,6 +833,75 @@ internal fun DataLineChart(
         compactAxis = compactAxis,
         modifier = modifier,
     )
+}
+
+/**
+ * The week's HRV against the usual range, in words and with a coloured dot.
+ *
+ * Worded as a position, never a verdict -- "below your usual range", not "poor recovery": the
+ * range is this app's own arithmetic on the watch's readings, and the explanation beneath says
+ * so, including that it is not Garmin's HRV status, whose method is not published.
+ */
+@Composable
+private fun HrvStatusLine(summary: HrvSummary, dayView: Boolean) {
+    val day = summary.day
+    Column(Modifier.padding(top = 4.dp)) {
+        // On a day the headline is the night; the week it is judged by is named here.
+        if (dayView) {
+            day?.weekMean?.let { mean ->
+                Text(
+                    text = stringResource(R.string.hrv_week_mean, Formatting.number(mean)),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+        val low = day?.usualLow
+        val high = day?.usualHigh
+        val standing = day?.standing
+        if (low != null && high != null && standing != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier
+                        .padding(end = 6.dp)
+                        .size(10.dp)
+                        .background(standing.color(), CircleShape),
+                )
+                Text(
+                    text = stringResource(
+                        R.string.hrv_usual,
+                        Formatting.number(low),
+                        Formatting.number(high),
+                        stringResource(standing.labelRes()),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        } else {
+            Text(
+                text = stringResource(R.string.hrv_no_range),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            text = stringResource(R.string.hrv_explained),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
+    }
+}
+
+/** Green inside the usual range, orange outside it on either side -- as the watch colours it. */
+internal fun HrvStanding.color(): Color = when (this) {
+    HrvStanding.WITHIN -> ValueZones.ZONE_COLORS[1]
+    HrvStanding.BELOW, HrvStanding.ABOVE -> ValueZones.ZONE_COLORS[3]
+}
+
+private fun HrvStanding.labelRes(): Int = when (this) {
+    HrvStanding.WITHIN -> R.string.hrv_within
+    HrvStanding.BELOW -> R.string.hrv_below
+    HrvStanding.ABOVE -> R.string.hrv_above
 }
 
 /** One swatch and its name. */

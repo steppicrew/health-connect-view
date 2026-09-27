@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.HrvSummary
 import android.app.Application
 import android.util.Log
 import de.steppicrew.healthconnectview.export.ExportResult
@@ -167,6 +168,8 @@ data class TileDetailData(
      * total. The end value and the timing are right; the points between are apportioned.
      */
     val approximated: Boolean,
+    /** The night and the week against its usual range, for a type judged night by night. */
+    val hrv: HrvSummary? = null,
     /**
      * The writer whose records gave a multi-source curve its shape, when more than one app
      * contributed. The total stays deduplicated across all of them; only the path is one
