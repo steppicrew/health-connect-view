@@ -197,6 +197,19 @@ open items below and `FEATURE-IDEAS.md`.
     preview does not. After any export the message offers "Öffnen" in the user's own viewer
     for the file they saved. The privacy text names the print route. Printing confirmed by the
     owner on the phone.
+35. [x] **Every permission explains itself** -- merged 27.09.2026, the owner's idea: asking for
+    40 permissions reads greedy unless each says why. An "i" on every row opens what the data
+    is, where the app shows it, and a closing line shared by all (read only, leaves the device
+    only by an export); the sensitive ones say more (routes, history, glucose, cycle, sexual
+    activity). Texts per type in `registry/PermissionInfo.kt`, types sharing a permission
+    point at one text that names both, and `PermissionInfoTest` fails for a type without one.
+    Rows whose permission is shared say so on the row ("Wird zusammen mit Trainings
+    freigegeben"), since ticking one ticks the other. Revoking: Android lets an app give back
+    only all its access at once, so a granted row opens this app's page in Health Connect
+    (`MANAGE_HEALTH_PERMISSIONS` with the package; the general settings before Android 14),
+    and the list re-reads on return; a line under the intro says so. Box, name and "i" sit on
+    the first line. Seen on the phone, except the jump into Health Connect, which the shell
+    cannot open for the app.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
