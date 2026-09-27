@@ -111,8 +111,12 @@ private val SEEDED_WORKOUTS = listOf(
         // is what makes the dashboard show a day in progress rather than a grid of dashes.
         fun past(vararg moments: Instant): Boolean = moments.none { it.isAfter(now) }
 
+        // Heart rate is one walk through the whole fixture, oldest day first, so a night does
+        // not restart at midnight where one seeded day hands over to the next.
+        var bpm = 51
         val records = buildList<Record> {
-            repeat(DAYS) { dayOffset ->
+            repeat(DAYS) { index ->
+                val dayOffset = DAYS - 1 - index
                 val dayStart = today.minus(dayOffset.toLong(), ChronoUnit.DAYS)
 
                 // Steps: many short intervals through waking hours, as a phone or watch
@@ -148,6 +152,10 @@ private val SEEDED_WORKOUTS = listOf(
                 // which looks like wild variation and is really just two fixtures overlapping.
                 val workoutToday = SEEDED_WORKOUTS[dayOffset % SEEDED_WORKOUTS.size]
                     .takeIf { dayOffset % 3 != 2 }
+                // One walk rather than a fresh start in every record (see `bpm` above):
+                // restarting each 50-second record at a random value made neighbouring records
+                // jump against each other, and on the narrow axis of a night those jumps drew
+                // as a comb in the store screenshot of sleep.
                 repeat(HEART_RATE_RECORDS_PER_DAY) { i ->
                     val minuteOfDay = i * (MINUTES_PER_DAY / HEART_RATE_RECORDS_PER_DAY)
                     val start = dayStart.plus(minuteOfDay.toLong(), ChronoUnit.MINUTES)
@@ -173,32 +181,41 @@ private val SEEDED_WORKOUTS = listOf(
                     // wander further than asleep ones, which is most of what makes a night
                     // look like a night.
                     val asleep = hour < 7 || hour >= 23
-                    val spread = if (asleep) 2 else 7
-                    // How far one sample may move, and how far the walk may stray from the
-                    // level. Asleep both are tighter than `spread` alone made them: a step of
-                    // +-2 against a ceiling of resting + 3 * spread let the night cross an 8
-                    // bpm range and swing 4 bpm inside a single 50-second record, which drew
-                    // as a restless night rather than a sleeping one. A real night drifts
-                    // slowly, so the step is halved and the band kept close to the level.
-                    val step = if (asleep) 1 else spread
+                    // Asleep within a beat of the level: the chart keeps each stretch's lowest
+                    // and highest reading, so a night wandering over four beats drew as a row
+                    // of vertical strokes on an axis only that wide.
+                    val spread = if (asleep) 1 else 7
+                    // How far one reading may move, and how far the walk may stray from the
+                    // level. Asleep both stay close: a real night drifts slowly, and a wider
+                    // band drew as a restless night rather than a sleeping one.
+                    val step = if (asleep) 1 else AWAKE_STEP
                     val ceiling = if (asleep) resting + spread else resting + spread * 3
-                    var bpm = resting + random.nextInt(spread + 1)
-                    val samples = (0 until 11).map { sample ->
-                        bpm = (bpm + random.nextInt(-step, step + 1))
-                            .coerceIn(resting - spread, ceiling)
-                        HeartRateRecord.Sample(
-                            time = start.plus((sample * 5).toLong(), ChronoUnit.SECONDS),
-                            beatsPerMinute = bpm.toLong(),
-                        )
+                    // Waking, the level rises faster than a step can follow; move there.
+                    bpm = bpm.coerceIn(resting - spread, ceiling)
+                    val noise = if (asleep) 1 else 2
+                    // Asleep, the level mostly holds: a sleeping heart drifts over many minutes.
+                    if (!asleep || random.nextInt(SLEEP_HOLD) == 0) {
+                        bpm = (bpm + random.nextInt(-step, step + 1)).coerceIn(resting - spread, ceiling)
                     }
-                    if (!past(samples.last().time.plus(1, ChronoUnit.SECONDS))) return@repeat
+                    // One reading per record, every two minutes, as a watch on the test phone
+                    // writes them; the fixture used to write a burst of eleven every quarter
+                    // hour, which charted a night at a resolution no device has.
+                    if (!past(start.plus(1, ChronoUnit.SECONDS))) return@repeat
                     add(
                         HeartRateRecord(
-                            startTime = samples.first().time,
+                            startTime = start,
                             startZoneOffset = offset,
-                            endTime = samples.last().time.plus(1, ChronoUnit.SECONDS),
+                            endTime = start.plus(1, ChronoUnit.SECONDS),
                             endZoneOffset = offset,
-                            samples = samples,
+                            // The walk is the level; each reading scatters a beat or two around
+                            // it. The level alone held for minutes and then stepped, and a
+                            // night drew as a row of rectangles.
+                            samples = listOf(
+                                HeartRateRecord.Sample(
+                                    time = start,
+                                    beatsPerMinute = (bpm + random.nextInt(-noise, noise + 1)).toLong(),
+                                ),
+                            ),
                             metadata = metadata(),
                         ),
                     )
@@ -291,6 +308,7 @@ private val SEEDED_WORKOUTS = listOf(
                         startZoneOffset = offset,
                         endTime = sleepEnd,
                         endZoneOffset = offset,
+                        stages = sleepStages(sleepStart, sleepEnd, random),
                         metadata = metadata(),
                     ),
                 )
@@ -464,11 +482,42 @@ private val SEEDED_WORKOUTS = listOf(
             .onFailure { Log.w("SampleDataSeeder", "cycle seed skipped: ${it.javaClass.simpleName}") }
     }
 
+    /**
+     * A night as cycles of about 90 minutes -- light, deep, light, REM, now and then a moment
+     * awake -- with deep sleep front-loaded and REM growing towards morning, as real nights
+     * run. The fixture wrote no stages, so the stage chart never showed in a screenshot.
+     */
+    private fun sleepStages(start: Instant, end: Instant, random: Random): List<SleepSessionRecord.Stage> =
+        buildList {
+            var at = start
+            var cycle = 0
+            fun stage(type: Int, minutes: Int) {
+                if (!at.isBefore(end)) return
+                val until = minOf(at.plus(minutes.toLong(), ChronoUnit.MINUTES), end)
+                add(SleepSessionRecord.Stage(at, until, type))
+                at = until
+            }
+            while (at.isBefore(end)) {
+                stage(SleepSessionRecord.STAGE_TYPE_LIGHT, 20 + random.nextInt(15))
+                stage(SleepSessionRecord.STAGE_TYPE_DEEP, if (cycle < 2) 30 + random.nextInt(15) else 5 + random.nextInt(10))
+                stage(SleepSessionRecord.STAGE_TYPE_LIGHT, 10 + random.nextInt(10))
+                stage(SleepSessionRecord.STAGE_TYPE_REM, 10 + cycle * 8 + random.nextInt(8))
+                if (random.nextInt(3) == 0) stage(SleepSessionRecord.STAGE_TYPE_AWAKE, 2 + random.nextInt(5))
+                cycle++
+            }
+        }
+
     /** Half-hourly through the waking day, which is how a watch reports these. */
     private const val ACTIVITY_RECORDS_PER_DAY = 30
 
     private const val STEP_RECORDS_PER_DAY = 120
-    private const val HEART_RATE_RECORDS_PER_DAY = 96
+
+    /** Asleep, one heart-rate reading in this many moves. */
+    private const val SLEEP_HOLD = 4
+
+    /** Awake, the most a heart-rate reading moves from the one two minutes before. */
+    private const val AWAKE_STEP = 3
+    private const val HEART_RATE_RECORDS_PER_DAY = 720
 
     /** Used to spread the day's heart-rate records evenly across all 24 hours. */
     private const val MINUTES_PER_DAY = 24 * 60
