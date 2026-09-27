@@ -31,6 +31,7 @@ internal object DashboardJson {
                     // Only when chosen, so a layout that never used them reads as it always did.
                     if (tile.span != Span.DAY) put(FIELD_SPAN, tile.span.name)
                     if (tile.face != TileFace.VALUE) put(FIELD_FACE, tile.face.name)
+                    if (tile.color != TileColor.DEFAULT) put(FIELD_COLOR, tile.color.name)
                 },
             )
         }
@@ -60,6 +61,10 @@ internal object DashboardJson {
                     .let { stored -> TileFace.entries.firstOrNull { it.name == stored } }
                     ?: TileFace.VALUE,
                 id = item.optString(FIELD_ID).takeIf { it.isNotEmpty() } ?: typeName,
+                // A colour this version does not know falls back to the theme's.
+                color = item.optString(FIELD_COLOR)
+                    .let { stored -> TileColor.entries.firstOrNull { it.name == stored } }
+                    ?: TileColor.DEFAULT,
             )
         }
         return DashboardConfig(tiles)
@@ -73,4 +78,5 @@ internal object DashboardJson {
     private const val FIELD_ZONES = "zones"
     private const val FIELD_SPAN = "span"
     private const val FIELD_FACE = "face"
+    private const val FIELD_COLOR = "color"
 }

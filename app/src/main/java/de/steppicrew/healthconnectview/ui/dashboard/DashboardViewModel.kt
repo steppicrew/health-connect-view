@@ -4,6 +4,7 @@ import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.dashboard.TileColor
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 import android.app.Application
@@ -265,6 +266,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         reload()
     }
 
+    /**
+     * Sets a tile's colour and persists it. In place, like a resize: nothing read changes, so
+     * a reload would only blank the tiles for the length of a read.
+     */
+    fun setColor(id: String, color: TileColor) {
+        config = config.withColor(id, color)
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        viewModelScope.launch { store.save(config) }
+    }
+
     /** Removes a tile and persists the layout. */
     fun removeTile(id: String) {
         config = config.without(id)
@@ -329,16 +340,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     /**
-     * [tiles] with the sizes and order the config holds now. A load reads the config when it
-     * starts, so a tile resized or moved while it runs would otherwise snap back when the load
-     * publishes.
+     * [tiles] with the sizes, colours and order the config holds now. A load reads the config
+     * when it starts, so a tile resized, coloured or moved while it runs would otherwise snap
+     * back when the load publishes.
      */
     private fun withCurrentLayout(tiles: List<TileData>): List<TileData> {
         val position = config.tiles.withIndex().associate { (index, tile) -> tile.id to index }
         val current = config.tiles.associateBy { it.id }
         return tiles.map { data ->
             val tile = current[data.tile.id] ?: return@map data
-            data.copy(tile = data.tile.copy(width = tile.width, height = tile.height))
+            data.copy(tile = data.tile.copy(width = tile.width, height = tile.height, color = tile.color))
         }.sortedBy { position[it.tile.id] ?: Int.MAX_VALUE }
     }
 
@@ -375,7 +386,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
 
         val now = System.currentTimeMillis()
-        val key = CacheKey(date, config.tiles, sources, preferred, granted, now)
+        // Colour left out: it changes nothing read, and a new colour must not cost a reload.
+        val key = CacheKey(date, config.tiles.map { it.copy(color = TileColor.DEFAULT) }, sources, preferred, granted, now)
         val loadedTiles = _state.value.tiles.takeIf { it.none(TileData::loading) }
         if (loadedTiles != null && cache?.isFresh(now, key) == true) {
             // Nothing the values depend on has changed and they are still fresh, so the reads

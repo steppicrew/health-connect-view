@@ -51,6 +51,17 @@
     <string name="tile_move_down">Nach unten</string>
     <string name="tile_resize">Größe ändern</string>
     <string name="tile_options">Kachel-Optionen</string>
+    <string name="tile_color">Kachelfarbe</string>
+    <string name="tile_color_title">Farbe für %1$s</string>
+    <string name="tile_color_default">Farbe des Designs</string>
+    <string name="tile_color_blue">Blau</string>
+    <string name="tile_color_teal">Petrol</string>
+    <string name="tile_color_green">Grün</string>
+    <string name="tile_color_amber">Bernstein</string>
+    <string name="tile_color_coral">Koralle</string>
+    <string name="tile_color_rose">Rosé</string>
+    <string name="tile_color_purple">Violett</string>
+    <string name="tile_color_grey">Grau</string>
     <string name="tile_options_title">Auf dieser Kachel zeigen</string>
     <string name="tile_options_span">Zeitraum</string>
     <string name="tile_options_face">Anzeige</string>

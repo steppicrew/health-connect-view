@@ -25,6 +25,9 @@ enum class Feature(val isPremium: Boolean) {
      */
     TILE_REPEAT(isPremium = true),
 
+    /** A tile's own colour from the palette in [de.steppicrew.healthconnectview.dashboard.TileColor]. */
+    TILE_COLORS(isPremium = true),
+
     /** PDF logs for a doctor: blood pressure, weight, resting heart rate, blood glucose. */
     PDF_REPORTS(isPremium = true),
 
