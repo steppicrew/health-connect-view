@@ -83,19 +83,14 @@ fun Hypnogram(stages: List<SleepStage>, start: Instant, end: Instant, modifier: 
             modifier = Modifier.padding(top = 4.dp),
         ) {
             totals.forEach { (kind, total) ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        Modifier
-                            .size(8.dp)
-                            .background(colorOf(kind), CircleShape),
-                    )
-                    Text(
-                        text = names.getValue(kind) + " " + Formatting.duration(total),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 4.dp),
-                    )
-                }
+                DotText(
+                    color = colorOf(kind),
+                    text = names.getValue(kind) + " " + Formatting.duration(total),
+                    style = MaterialTheme.typography.labelSmall,
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    dotSize = 8.dp,
+                    gap = 4.dp,
+                )
             }
         }
     }

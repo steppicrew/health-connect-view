@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
 import android.app.Application
 import android.util.Log
@@ -170,6 +171,10 @@ data class TileDetailData(
     val approximated: Boolean,
     /** The night and the week against its usual range, for a type judged night by night. */
     val hrv: HrvSummary? = null,
+    /** Per point of [points], where it sits against its usual range; empty for other types. */
+    val pointStandings: List<HrvStanding?> = emptyList(),
+    /** The single nights behind an HRV week's mean, over a week or four; empty otherwise. */
+    val nightPoints: List<Point> = emptyList(),
     /**
      * The writer whose records gave a multi-source curve its shape, when more than one app
      * contributed. The total stays deduplicated across all of them; only the path is one

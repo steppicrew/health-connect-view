@@ -103,11 +103,20 @@ open items below and `FEATURE-IDEAS.md`.
     the 7-night mean with a green or orange dot. Worded as a position, and saying it is this
     app's arithmetic, not Garmin's HRV status. On the phone: 40.2 ms against 34.1-49.3,
     within; a year loads in well under 25 s. The dashboard tile is not yet seen on a device.
+    Since: points outside the range are orange; on a week or four, the single nights sit behind
+    the line as faint dots joined by a dotted line (broken where a night is missing), behind a
+    remembered "Einzelne Nächte zeigen" checkbox; the explanation is behind an "i".
 29. [ ] **One value, no chart.** Where a window can only hold one value -- resting heart rate on
     the day view is one reading a day -- the chart draws a lone dot on an empty 24-hour axis.
     Show the value itself instead (the headline already has it) and drop the chart, or shrink
     it to a line of text. Decide per window, not per type: the same resting rate over four
     weeks is a real series. Owner's request, 27.09.2026.
+30. [ ] **Range bands across gaps.** A shaded range is drawn as one ribbon through every point
+    that has one, so where days are missing it runs straight across the gap and can look odd --
+    a band sloping through days nothing was recorded, or narrowing to a point and widening
+    again. Inspect every chart with a band (heart rate, speed, power, the cadences, HRV's usual
+    range) over sparse windows and decide: break the ribbon at gaps as the line already breaks,
+    or step it per bucket. Owner's request, 27.09.2026.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

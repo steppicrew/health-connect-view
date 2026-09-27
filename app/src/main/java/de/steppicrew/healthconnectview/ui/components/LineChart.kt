@@ -161,6 +161,20 @@ fun LineChart(
      * neighbouring lines touched and read as one number.
      */
     compactAxis: Boolean = false,
+    /**
+     * A colour per point, overriding [zones] where set; null keeps the point's usual colour.
+     *
+     * For a yardstick that moves along the series rather than fixed bands: HRV's usual range
+     * is recomputed for every day, so whether a point is unusual is decided per point by the
+     * caller, not by a value boundary the chart could apply itself.
+     */
+    pointColors: List<Color?> = emptyList(),
+    /**
+     * Loose values drawn as faint dots behind the line, placed by time: the single nights a
+     * 7-night mean is made of, so a dip in the line can be traced to the nights that caused
+     * it. They take part in the scale, or an unusual night would fall off the chart.
+     */
+    scatter: List<Point> = emptyList(),
 ) {
     if (points.isEmpty()) return
 
@@ -180,8 +194,10 @@ fun LineChart(
     // to the upper line alone would cut the lower one off entirely.
     val secondLow = secondaryPoints.minOfOrNull { it.value }
     val secondHigh = secondaryPoints.maxOfOrNull { it.value }
-    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min())
-    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max())
+    val scatterLow = scatter.minOfOrNull { it.value } ?: values.min()
+    val scatterHigh = scatter.maxOfOrNull { it.value } ?: values.max()
+    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow)
+    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh)
 
     // The ends are rounded outward onto multiples of a round step, so every gridline lands on
     // a number a reader can use. Taking them straight from the data instead labelled a heart
@@ -203,6 +219,10 @@ fun LineChart(
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
 
     val lineColor = MaterialTheme.colorScheme.primary
+
+    /** A point's colour: the caller's where it gave one, else by zone, else the theme's. */
+    fun colorAt(index: Int): Color =
+        pointColors.getOrNull(index) ?: zones?.colorFor(points[index].value) ?: lineColor
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     val goalColor = MaterialTheme.colorScheme.tertiary
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -429,7 +449,7 @@ fun LineChart(
                     if (parts == null) {
                         val top = offset.y.coerceAtMost(baseline)
                         drawRect(
-                            color = zones?.colorFor(points[index].value) ?: lineColor,
+                            color = colorAt(index),
                             topLeft = Offset(left, top),
                             size = androidx.compose.ui.geometry.Size(
                                 barWidth,
@@ -554,6 +574,7 @@ fun LineChart(
             // Each run of consecutive points is stroked on its own, so a gap stays a gap.
             var drawn = 0
             if (!bars) segments.forEach { segment ->
+                val start = drawn
                 val segmentOffsets = offsets.subList(drawn, drawn + segment.size)
                 drawn += segment.size
                 if (segmentOffsets.isEmpty()) return@forEach
@@ -562,7 +583,7 @@ fun LineChart(
                     // A lone point between two gaps has no line to draw, so it is marked
                     // instead -- otherwise a day surrounded by empty days vanishes entirely.
                     segmentOffsets.size == 1 -> drawCircle(
-                        color = zones?.colorFor(segment.first().value) ?: lineColor,
+                        color = colorAt(start),
                         radius = 3.dp.toPx(),
                         center = segmentOffsets.first(),
                     )
@@ -576,10 +597,10 @@ fun LineChart(
                     // depending on which way the line was going. A gradient has no such
                     // asymmetry -- every point on the line carries the colour of the value at
                     // that point.
-                    zones != null -> segmentOffsets.zipWithNext()
+                    zones != null || pointColors.isNotEmpty() -> segmentOffsets.zipWithNext()
                         .forEachIndexed { index, (from, to) ->
-                            val fromColor = zones.colorFor(segment[index].value)
-                            val toColor = zones.colorFor(segment[index + 1].value)
+                            val fromColor = colorAt(start + index)
+                            val toColor = colorAt(start + index + 1)
                             drawLine(
                                 brush = if (fromColor == toColor) {
                                     SolidColor(fromColor)
@@ -694,10 +715,38 @@ fun LineChart(
             // specks scattered over a coloured curve, which looks like a defect rather than
             // like the measurements the line is made of. The count cap still applies, since
             // even discrete readings crowd once a long span holds enough of them.
+            // Behind the line's own dots, and faint, so the line stays the answer and the
+            // nights read as what it was made from. Joined by a dotted line so night-to-night
+            // swings can be followed, broken where a night is missing: a line through a
+            // missing night would draw a value nobody measured.
+            val scatterColor = lineColor.copy(alpha = SCATTER_ALPHA)
+            val dotted = PathEffect.dashPathEffect(floatArrayOf(2.dp.toPx(), 4.dp.toPx()))
+            scatter.sortedBy { it.time }.zipWithNext().forEach { (from, to) ->
+                if (Duration.between(from.time, to.time) > SCATTER_MAX_GAP) return@forEach
+                val x1 = xForTime(from.time.toEpochMilli()) ?: return@forEach
+                val x2 = xForTime(to.time.toEpochMilli()) ?: return@forEach
+                drawLine(
+                    color = scatterColor,
+                    start = Offset(x1, yFor(from.value)),
+                    end = Offset(x2, yFor(to.value)),
+                    strokeWidth = 1.dp.toPx(),
+                    pathEffect = dotted,
+                    cap = StrokeCap.Round,
+                )
+            }
+            scatter.forEach { point ->
+                val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
+                drawCircle(
+                    color = scatterColor,
+                    radius = SCATTER_RADIUS.dp.toPx(),
+                    center = Offset(x, yFor(point.value)),
+                )
+            }
+
             if (markReadings && points.size <= MAX_DOTS) {
                 points.forEachIndexed { index, point ->
                     drawCircle(
-                        color = zones?.colorFor(point.value) ?: lineColor,
+                        color = colorAt(index),
                         radius = 3.dp.toPx(),
                         center = Offset(xFor(index), yFor(point.value)),
                     )
@@ -1229,6 +1278,13 @@ private const val AXIS_ICON = 14
 private const val TIMELINE_HEIGHT = 40
 
 private const val MAX_DOTS = 60
+
+/** Faint enough to read as background to the line, still findable one by one. */
+private const val SCATTER_ALPHA = 0.35f
+private const val SCATTER_RADIUS = 2.5f
+
+/** Consecutive nights are a day apart; anything wider is a night with no value. */
+private val SCATTER_MAX_GAP: Duration = Duration.ofHours(36)
 
 /**
  * Thin enough that a dense day reads as a trace rather than a ribbon. At full resolution a

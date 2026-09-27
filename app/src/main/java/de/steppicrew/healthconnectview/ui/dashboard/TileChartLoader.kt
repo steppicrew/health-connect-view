@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvSummary
 import androidx.health.connect.client.records.metadata.DataOrigin
@@ -85,6 +86,7 @@ internal class TileChartLoader(
         shapeFromWholeDayOnly = false
         rangeBand = emptyList()
         stack = emptyList()
+        pointStandings = emptyList()
 
         // A type judged night by night: across days its series is the week's mean of nightly
         // values with the usual range behind it, not thousands of five-minute readings drawn
@@ -108,9 +110,9 @@ internal class TileChartLoader(
                 val high = day.usualHigh ?: return@mapNotNull null
                 ValueBand(day.date.atStartOfDay(zone).toInstant(), low, high)
             }
-            hrvSeries.days.mapNotNull { day ->
-                day.weekMean?.let { Point(day.date.atStartOfDay(zone).toInstant(), it) }
-            }
+            val shown = hrvSeries.days.filter { it.weekMean != null }
+            pointStandings = shown.map { it.standing }
+            shown.map { day -> Point(day.date.atStartOfDay(zone).toInstant(), day.weekMean!!) }
         } else if (metric != null) {
             val period = span.bucket
             val duration = span.intradayBucket
@@ -476,6 +478,17 @@ internal class TileChartLoader(
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             hrv = hrvSummary,
+            pointStandings = pointStandings,
+            // Each night behind the weekly line, over a week or four. A year would be 365 dots
+            // burying the line they explain.
+            nightPoints = if (hrvSeries != null && span != Span.YEAR) {
+                val first = span.startDate(offset)
+                hrvSeries.nights
+                    .filter { !it.date.isBefore(first) }
+                    .map { Point(it.date.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(), it.mean) }
+            } else {
+                emptyList()
+            },
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
@@ -689,6 +702,9 @@ internal class TileChartLoader(
 
     /** Set while building the points, read straight afterwards on the same coroutine. */
     private var stack: List<StackedBucket> = emptyList()
+
+    /** Set with an HRV series, one per point; read straight afterwards like [stack]. */
+    private var pointStandings: List<HrvStanding?> = emptyList()
 
     /** One record reduced to the span it covered and the amount it contributed. */
     private data class Interval(val start: Instant, val end: Instant, val value: Double)

@@ -54,6 +54,7 @@ object SettingsBackupCodec {
                 put(FIELD_DYNAMIC, backup.settings.dynamicColor)
                 put(FIELD_UNITS, backup.settings.units.name)
                 put(FIELD_GLUCOSE, backup.settings.glucose.name)
+                put(FIELD_SINGLE_NIGHTS, backup.settings.showSingleNights)
                 put(FIELD_EXPLANATIONS, JSONArray().apply { backup.settings.expandedExplanations.sorted().forEach { put(it) } })
             },
         )
@@ -97,6 +98,7 @@ object SettingsBackupCodec {
                 glucose = settings?.optString(FIELD_GLUCOSE)
                     ?.let { runCatching { GlucoseChoice.valueOf(it) }.getOrNull() }
                     ?: GlucoseChoice.SYSTEM,
+                showSingleNights = settings?.optBoolean(FIELD_SINGLE_NIGHTS, true) ?: true,
                 expandedExplanations = explanations
                     ?.let { list -> (0 until list.length()).mapNotNull { list.optString(it).takeIf(String::isNotEmpty) } }
                     ?.toSet()
@@ -120,5 +122,6 @@ object SettingsBackupCodec {
     private const val FIELD_DYNAMIC = "dynamicColor"
     private const val FIELD_UNITS = "units"
     private const val FIELD_GLUCOSE = "glucoseUnit"
+    private const val FIELD_SINGLE_NIGHTS = "showSingleNights"
     private const val FIELD_EXPLANATIONS = "openExplanations"
 }

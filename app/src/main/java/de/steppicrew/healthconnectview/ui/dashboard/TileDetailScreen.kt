@@ -1,5 +1,12 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.DotText
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+import de.steppicrew.healthconnectview.settings.SettingsStore
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
 import de.steppicrew.healthconnectview.health.HrvSummary
 import de.steppicrew.healthconnectview.health.HrvStanding
 import androidx.annotation.StringRes
@@ -394,26 +401,14 @@ private fun pressureText(first: Double, second: Double?): String =
 
 private val PressureCategory.color: Color get() = ValueZones.ZONE_COLORS[ordinal]
 
-@Composable
-private fun CategoryDot(category: PressureCategory) {
-    Box(
-        Modifier
-            .padding(end = 6.dp)
-            .size(10.dp)
-            .background(category.color, CircleShape),
-    )
-}
-
 /** The grade in words beside its colour, so the colour is never the only signal. */
 @Composable
 private fun CategoryBadge(category: PressureCategory) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        CategoryDot(category)
-        Text(
-            text = stringResource(category.labelRes()),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
+    DotText(
+        color = category.color,
+        text = stringResource(category.labelRes()),
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
 
 @Composable
@@ -464,30 +459,32 @@ private fun DayPartsSection(split: DayPartSplit) {
 
 @Composable
 private fun DayPartRow(label: String, average: PartAverage?) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
         )
-        average?.let { CategoryDot(pressureCategory(it.systolic, it.diastolic)) }
-        Text(
-            text = average?.let {
-                pluralStringResource(
+        if (average == null) {
+            Text(
+                text = stringResource(R.string.bp_part_none),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else {
+            DotText(
+                color = pressureCategory(average.systolic, average.diastolic).color,
+                text = pluralStringResource(
                     R.plurals.bp_part_value,
-                    it.count,
+                    average.count,
                     // Whole numbers, as every cuff and every doctor gives them.
-                    "${it.systolic.roundToInt()}/${it.diastolic.roundToInt()}",
-                    it.count,
-                )
-            } ?: stringResource(R.string.bp_part_none),
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (average == null) {
-                MaterialTheme.colorScheme.onSurfaceVariant
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            },
-        )
+                    "${average.systolic.roundToInt()}/${average.diastolic.roundToInt()}",
+                    average.count,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                textColor = MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
@@ -605,13 +602,22 @@ private fun SpanSummary(
         }
 
         if (data.points.isNotEmpty()) {
-            DataLineChart(data, Modifier.padding(top = 16.dp))
+            // The single nights are optional: some want the week's line alone, some want to
+            // see which nights moved it. Remembered, as a display choice, not per screen.
+            val context = LocalContext.current
+            val store = remember(context) { SettingsStore(context) }
+            val scope = rememberCoroutineScope()
+            val showNights by remember(store) { store.settings.map { it.showSingleNights } }
+                .collectAsStateWithLifecycle(initialValue = true)
+            val shown = if (showNights) data else data.copy(nightPoints = emptyList())
+            DataLineChart(shown, Modifier.padding(top = 16.dp))
             Text(
                 text = stringResource(
                     when {
                         // Counting sessions is not summing a metric, so "daily totals" would
                         // name the wrong operation.
                         data.sessionCounts -> R.string.chart_source_sessions_per_day
+                        shown.nightPoints.isNotEmpty() -> R.string.chart_source_hrv_nights
                         data.hrv != null && data.extent == null -> R.string.chart_source_hrv
                         data.approximated -> R.string.chart_source_cumulative_scaled
                         data.cumulative -> R.string.chart_source_cumulative
@@ -638,7 +644,25 @@ private fun SpanSummary(
             // produced the series; this says which *mark* is which, which is a different
             // question and the one a shaded band raises -- the sleep ribbon behind a heart
             // rate was reported as simply unexplained.
-            ChartLegend(data = data)
+            ChartLegend(data = shown)
+            if (data.nightPoints.isNotEmpty()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .toggleable(
+                            value = showNights,
+                            role = Role.Checkbox,
+                            onValueChange = { scope.launch { store.setShowSingleNights(it) } },
+                        ),
+                ) {
+                    Checkbox(checked = showNights, onCheckedChange = null)
+                    Text(
+                        text = stringResource(R.string.hrv_show_nights),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            }
 
             // The bands are context; naming them is what turns a shaded region into
             // "that peak was the bike ride". Only where the sessions sit *behind* a chart --
@@ -745,6 +769,7 @@ private fun ChartLegend(data: TileDetailData) {
             sleepShown,
             exerciseShown,
             data.goal != null,
+            data.nightPoints.isNotEmpty(),
         ).count { it }
     if (entries < 2 && !bandShown) return
 
@@ -785,6 +810,13 @@ private fun ChartLegend(data: TileDetailData) {
             LegendEntry(
                 color = MaterialTheme.colorScheme.tertiary.copy(alpha = LEGEND_BAND_ALPHA),
                 label = R.string.legend_exercise,
+            )
+        }
+        if (data.nightPoints.isNotEmpty()) {
+            LegendEntry(
+                color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
+                label = R.string.legend_hrv_night,
+                round = true,
             )
         }
         if (data.goal != null) {
@@ -831,6 +863,12 @@ internal fun DataLineChart(
         interactive = interactive,
         fillHeight = fillHeight,
         compactAxis = compactAxis,
+        // Only the departures are coloured: a week inside its range keeps the line's own
+        // colour, so an orange stretch is the one thing that stands out.
+        pointColors = data.pointStandings.map { standing ->
+            standing?.takeIf { it != HrvStanding.WITHIN }?.color()
+        },
+        scatter = data.nightPoints,
         modifier = modifier,
     )
 }
@@ -845,6 +883,7 @@ internal fun DataLineChart(
 @Composable
 private fun HrvStatusLine(summary: HrvSummary, dayView: Boolean) {
     val day = summary.day
+    val explanation = rememberExplanation("hrv")
     Column(Modifier.padding(top = 4.dp)) {
         // On a day the headline is the night; the week it is judged by is named here.
         if (dayView) {
@@ -858,37 +897,38 @@ private fun HrvStatusLine(summary: HrvSummary, dayView: Boolean) {
         val low = day?.usualLow
         val high = day?.usualHigh
         val standing = day?.standing
-        if (low != null && high != null && standing != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    Modifier
-                        .padding(end = 6.dp)
-                        .size(10.dp)
-                        .background(standing.color(), CircleShape),
-                )
-                Text(
-                    text = stringResource(
-                        R.string.hrv_usual,
-                        Formatting.number(low),
-                        Formatting.number(high),
-                        stringResource(standing.labelRes()),
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+        // The standing always shows: it is the data. How it is worked out is behind the "i",
+        // closed until asked for, as the trend's rule is.
+        Row(verticalAlignment = Alignment.Top) {
+            Box(Modifier.weight(1f)) {
+                if (low != null && high != null && standing != null) {
+                    DotText(
+                        color = standing.color(),
+                        text = stringResource(
+                            R.string.hrv_usual,
+                            Formatting.number(low),
+                            Formatting.number(high),
+                            stringResource(standing.labelRes()),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.hrv_no_range),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
-        } else {
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.bodyMedium)
+        }
+        if (explanation.expanded == true) {
             Text(
-                text = stringResource(R.string.hrv_no_range),
+                text = stringResource(R.string.hrv_explained),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Text(
-            text = stringResource(R.string.hrv_explained),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
-        )
     }
 }
 
@@ -904,24 +944,17 @@ private fun HrvStanding.labelRes(): Int = when (this) {
     HrvStanding.ABOVE -> R.string.hrv_above
 }
 
-/** One swatch and its name. */
+/** One swatch and its name; a round swatch for a mark drawn as dots. */
 @Composable
-private fun LegendEntry(color: Color, @StringRes label: Int) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(10.dp)
-                .background(color, RoundedCornerShape(2.dp)),
-        )
-        Text(
-            text = stringResource(label),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+private fun LegendEntry(color: Color, @StringRes label: Int, round: Boolean = false) {
+    DotText(
+        color = color,
+        text = stringResource(label),
+        style = MaterialTheme.typography.labelSmall,
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        gap = 4.dp,
+        shape = if (round) CircleShape else RoundedCornerShape(2.dp),
+    )
 }
 
 /**
