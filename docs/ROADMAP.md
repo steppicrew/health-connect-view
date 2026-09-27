@@ -38,12 +38,8 @@ open items below and `FEATURE-IDEAS.md`.
     the dots on it, with identical swatches; the dots are the line's own points, so they lost
     their entry. Across days the line is now named "Tagesmittel"/"Wochenmittel", as the caption
     already said. A plain line alone then has one entry, and a one-entry legend stays hidden.
-14. [ ] **Audit what Health Connect offers against what is shown.** The first pass at the tiles
-    missed data that was there all along -- sleep stages sat in `SleepSessionRecord.stages`
-    until step 4. Go through every registered type's record fields (segments, laps, routes,
-    metadata such as recording method and device, per-sample series) and every aggregate
-    metric, check each against a real device's data, and list what is available but not
-    shown. The output is a ranked list for this plan, not code.
+14. [x] **Audit what Health Connect offers against what is shown** -- done 27.09.2026, see
+    section 20. It produced steps 19-24 below.
 15. [ ] **Day-view y-axis around a single reading.** Weight on 23.09.2026 has one reading
     (83.3 kg) and the axis runs from -17 to 183: a flat range padded by +/-100 rather than
     by something proportional to the value. Negative weight on the axis is plainly wrong.
@@ -60,6 +56,27 @@ open items below and `FEATURE-IDEAS.md`.
     the window holds, so a window with no data produces a file with only headers. Check
     first (`hasData` over the export's range and source) and say "nothing to export" instead
     of opening the dialog.
+19. [ ] **Daily spread for more types.** Mostly one registry line each (`rangeAggregates`):
+    weight, resting heart rate, speed, power, cycling and step cadence, skin temperature. Blood
+    pressure has two values and needs a band for each, which the chart does not yet draw. Today only heart rate gets the band behind its multi-day mean. Section 20.
+20. [ ] **Say how and by what a record was made.** Metadata the app never reads: recording
+    method (manual entry, active recording, automatic) and device type (watch, phone, scale).
+    A record row could say "manually entered" or show a watch or phone icon; on the phone,
+    steps come from a watch (3,463) and a phone (1,509) in one month, which is exactly the
+    overlap the source picker explains. Section 20.
+21. [ ] **Decide: exercise routes.** 26 of 114 sessions in a month carry a route, all behind
+    `READ_EXERCISE_ROUTES`, which the app never requests. With no network there is no map, so a
+    route would be a drawn path and an elevation profile. Location is the most sensitive data
+    in Health Connect; the privacy text and Data safety form would need to say so. A decision
+    for the owner before any code.
+22. [ ] **Context on single readings.** Blood glucose's meal relation, meal type and specimen,
+    and blood pressure's body position and arm, are never shown. None on the phone, so build
+    against the emulator; worth doing before step 17's reports, which would use them.
+23. [ ] **Nutrition beyond energy.** Protein, carbohydrate, fat, sugar, fibre, sodium and
+    caffeine have aggregates; only energy is shown. No nutrition data on the phone, so this
+    waits for someone who logs food, or the emulator.
+24. [ ] **Laps, segments, notes, planned sessions.** Exposed on exercise sessions, filled by no
+    app on the phone. Lowest priority; revisit if a writer that fills them turns up.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
@@ -1361,3 +1378,38 @@ a cold start.
 - **MindfulnessSession** — excluded from v1: the library requests
   `READ_MINDFULNESS_SESSION` while the platform defines only `READ_MINDFULNESS`, so the
   permission can never be granted. Add once those names converge.
+
+## 20. Data audit: what Health Connect holds that the app does not show
+
+Done 27.09.2026 against connect-client 1.1.0 and a month of the phone's data. Three passes:
+every record class in the library against the registry, every data getter against what the
+code reads, and every aggregate metric against what the registry uses. What the phone's apps
+actually fill came from `FieldPresenceActivity`, a debug probe that logs per field only how
+many records have it filled and how many distinct values it takes -- never a value.
+
+**Types.** The registry covers every record type in the library except `MindfulnessSession`,
+already excluded (section 19). No type is missing; the gaps are inside the types.
+
+**Fields and aggregates the app never reads, by what the phone holds:**
+
+| What | On the phone (30 days) | Cost | Plan step |
+|------|------------------------|------|-----------|
+| Min/max aggregates for weight, resting HR, blood pressure, speed, power, cadence, skin temp | every one of those types with data | mostly one registry line each | 19 |
+| Recording method, device type | device on 60-100% of records for most types; manual entries on power, speed, active calories | a row label and an icon | 20 |
+| Exercise routes | 26 of 114 sessions, all `ConsentRequired` | new permission, drawing, privacy text | 21 (decision) |
+| Glucose meal relation, meal type, specimen; blood pressure position and arm | none (no glucose; 2 BP readings with neither) | record summary | 22 |
+| Nutrition macros | no nutrition data | chart or stack | 23 |
+| Laps, segments, notes, planned sessions | none filled | session sheet | 24 |
+| Skin temperature baseline | 0 of 30 | -- | not worth doing |
+| Heart rate measurement count | available | -- | not worth doing |
+
+Already shown and confirmed filled: sleep stages on every night (21.7 segments on average),
+exercise titles on 45 of 114 sessions, speed samples (about 900 per record), skin temperature
+deltas.
+
+**How to rerun it** (keep the phone's screen on; reads stop when the activity backgrounds):
+
+    adb shell am start -n de.steppicrew.healthconnectview.debug/de.steppicrew.healthconnectview.debug.FieldPresenceActivity
+    adb logcat -d -s FieldPresence:I
+
+A newer connect-client may add types or fields; rerun the three passes when upgrading it.
