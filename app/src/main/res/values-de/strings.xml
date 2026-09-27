@@ -361,6 +361,7 @@
     <string name="permissions_title">Auswählen, was angezeigt wird</string>
     <string name="permissions_intro">Wählen Sie die Daten, die Sie sehen möchten. Sie können so wenig oder so viel freigeben, wie Sie möchten, und das jederzeit ändern.</string>
     <string name="permissions_revoke_hint">Um eine Freigabe zu entziehen, tippen Sie auf eine freigegebene Zeile: Android erlaubt das nur in Health Connect, und die Zeile öffnet dort die Seite dieser App.</string>
+    <string name="permissions_revoke_toast">Schalten Sie dort „%1$s“ aus. Health Connect nennt es eventuell etwas anders.</string>
     <plurals name="permissions_granted_count">
         <item quantity="one">%1$d von %2$d Typ freigegeben</item>
         <item quantity="other">%1$d von %2$d Typen freigegeben</item>

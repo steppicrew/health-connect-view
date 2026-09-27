@@ -208,8 +208,9 @@ open items below and `FEATURE-IDEAS.md`.
     only all its access at once, so a granted row opens this app's page in Health Connect
     (`MANAGE_HEALTH_PERMISSIONS` with the package; the general settings before Android 14),
     and the list re-reads on return; a line under the intro says so. Box, name and "i" sit on
-    the first line. Seen on the phone, except the jump into Health Connect, which the shell
-    cannot open for the app.
+    the first line. The jump into Health Connect confirmed by the owner; it lands on the app's
+    page, not the permission -- the intent takes only a package -- so a hint on leaving names
+    the permission tapped, saying Health Connect may word it differently.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

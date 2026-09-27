@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.health.connect.client.HealthConnectClient
 import androidx.compose.ui.platform.LocalContext
 import android.content.Intent
+import android.widget.Toast
 import android.content.Context
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.ExplanationState
@@ -305,7 +306,7 @@ private fun PermissionRowLayout(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = if (granted) context::openOwnHealthPermissions else onToggle)
+                .clickable(onClick = if (granted) { { context.openOwnHealthPermissions(title) } } else onToggle)
                 .padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             // Box and "i" on the name's line, not in the middle of a row that grew a second
             // and third line beneath it.
@@ -363,8 +364,12 @@ private const val CHECKBOX_LINE_OFFSET = 12
 /**
  * This app's own page in Health Connect, where each permission has its switch; the general
  * settings where that page does not exist (Health Connect before Android 14).
+ *
+ * Health Connect takes no permission to open at, only the app, so a hint names the one tapped
+ * -- by this app's name for it, which Health Connect may word differently, and the hint says so.
  */
-private fun Context.openOwnHealthPermissions() {
+private fun Context.openOwnHealthPermissions(permissionName: String) {
+    Toast.makeText(this, getString(R.string.permissions_revoke_toast, permissionName), Toast.LENGTH_LONG).show()
     // The literal rather than HealthConnectManager.ACTION_MANAGE_HEALTH_PERMISSIONS, which is
     // inlined at compile time and trips minSdk lint even behind a version check.
     val own = Intent("android.health.connect.action.MANAGE_HEALTH_PERMISSIONS")
