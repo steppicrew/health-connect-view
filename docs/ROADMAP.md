@@ -110,12 +110,20 @@ open items below and `FEATURE-IDEAS.md`.
     waits for someone who logs food, or the emulator.
 24. [ ] **Laps, segments, notes, planned sessions.** Exposed on exercise sessions, filled by no
     app on the phone. Lowest priority; revisit if a writer that fills them turns up.
-25. [ ] **Mindfulness sessions.** The one Health Connect type the app leaves out: connect-client
-    1.1.0 resolves its permission to `READ_MINDFULNESS_SESSION`, which the platform does not
-    define (it has `READ_MINDFULNESS`), so it can never be granted. Worth trying: request the
-    platform's string directly instead of `getReadPermission()`, and check on the phone whether
-    reads then succeed; otherwise wait for a library that has the names aligned. Moved up from
-    section 19.
+25. [x] **Mindfulness sessions** -- built 27.09.2026. The reason for leaving it out was wrong:
+    the library constant is *named* `READ_MINDFULNESS_SESSION` but its value, and what
+    `getReadPermission()` returns in connect-client 1.1.0, is `READ_MINDFULNESS`, the
+    platform's own name (`RecordRegistryTest` checks it against `android.jar`). The type is
+    experimental in the library (`@OptIn`, kept to its registry entry and session reads) and an
+    optional Health Connect feature; where missing, the read throws and the list is empty, as
+    for skin temperature and planned exercise. Shown as a third kind of session beside sleep
+    and exercise, under its own category "Achtsamkeit": the list, a day's total as a
+    duration, hours per day across days. Adds a permission, so it ships with the routes after
+    the pending review. On the phone: the permission is granted and the screen says "Nichts
+    aufgezeichnet" -- after dropping `MINDFULNESS_DURATION_TOTAL`, which Health Connect there
+    refused ("Unsupported aggregation type MindfulnessSession_duration") and which had failed
+    the whole screen. The totals come from the sessions, as for sleep. Not seen with data: no
+    app on the phone writes mindfulness sessions.
 26. [ ] **The same type on several tiles** (Pro). Now that a large tile chooses its window and
     face, one type can usefully appear twice -- today's steps as a ring beside a year of
     weekly bars. Tiles are keyed by type name throughout (config, JSON, per-tile goal and zones,

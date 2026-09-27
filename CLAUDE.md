@@ -59,8 +59,12 @@ missing data. `RecordRegistryTest` checks every resolved string against `android
 Track granted-ness **per permission, not per type**, or the shared ones leave rows wrongly
 locked.
 
-**MindfulnessSession is excluded.** The library emits `READ_MINDFULNESS_SESSION`; the platform
-defines only `READ_MINDFULNESS`. Revisit when they converge.
+**MindfulnessSession is experimental and optional.** Its library constant is *named*
+`READ_MINDFULNESS_SESSION` but its value is `READ_MINDFULNESS`, the platform's own name -- an
+earlier note here read the name and kept the type out for weeks. The record type needs
+`@OptIn(ExperimentalMindfulnessSessionApi::class)`, and Health Connect offers it only as a
+feature (`FEATURE_MINDFULNESS_SESSION`); where it is missing the read throws and the list is
+empty, as for skin temperature and planned exercise.
 
 **`read()` is capped and newest-first.** It stops at `MAX_RECORDS`, so on a high-frequency
 type the cap lands within days: on a real device the oldest reachable `HeartRateRecord` was 6
@@ -162,7 +166,7 @@ rate turned five readings of 51 bpm into a day's "average" of 256.
 ## Architecture
 
 `registry/` is the heart: one generic `RecordTypeSpec` holding lambdas, keyed by `KClass`, so
-one code path serves all 40 types rather than 40 branches per screen. Adding a type is a
+one code path serves all 41 types rather than 41 branches per screen. Adding a type is a
 registry entry, not a UI change. The four unchecked casts in the spec bridges are safe by
 construction — a spec is only ever applied to records read via `ReadRecordsRequest(spec.type)`
 — and are the only suppressions in the codebase.

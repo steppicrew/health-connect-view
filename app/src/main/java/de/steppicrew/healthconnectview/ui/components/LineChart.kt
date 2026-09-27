@@ -442,7 +442,7 @@ fun LineChart(
                     drawRect(
                         color = when (session.kind) {
                             Session.Kind.SLEEP -> sleepColor
-                            Session.Kind.EXERCISE -> exerciseColor
+                            Session.Kind.EXERCISE, Session.Kind.MINDFULNESS -> exerciseColor
                         },
                         topLeft = Offset(from, 0f),
                         size = androidx.compose.ui.geometry.Size(to - from, size.height),
@@ -920,7 +920,7 @@ fun SessionTimeline(
                 drawRect(
                     color = when (session.kind) {
                         Session.Kind.SLEEP -> sleepColor
-                        Session.Kind.EXERCISE -> exerciseColor
+                        Session.Kind.EXERCISE, Session.Kind.MINDFULNESS -> exerciseColor
                     },
                     topLeft = Offset(from, 0f),
                     size = androidx.compose.ui.geometry.Size(to - from, size.height),

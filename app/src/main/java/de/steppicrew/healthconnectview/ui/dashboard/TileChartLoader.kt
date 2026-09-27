@@ -471,7 +471,9 @@ internal class TileChartLoader(
                         value = when (sessionKind) {
                             // Sleep is asked in hours; an exercise day is asked as a count,
                             // since two rides of unequal length are still two rides.
-                            Session.Kind.SLEEP -> numericAggregate(ofDay.totalDuration()) ?: 0.0
+                            // Mindfulness is asked like sleep: how long, not how often.
+                            Session.Kind.SLEEP, Session.Kind.MINDFULNESS ->
+                                numericAggregate(ofDay.totalDuration()) ?: 0.0
                             else -> ofDay.size.toDouble()
                         },
                     )
@@ -562,7 +564,7 @@ internal class TileChartLoader(
             rangeBand = rangeBand,
             stack = stack,
             stackLabels = spec.stackComponents.map { it.first },
-            sessionCounts = perDayPoints.isNotEmpty() && sessionKind != Session.Kind.SLEEP,
+            sessionCounts = perDayPoints.isNotEmpty() && sessionKind == Session.Kind.EXERCISE,
             total = headlineTotal,
             secondaryPoints = secondaryPoints,
             secondaryTotal = secondaryTotal,

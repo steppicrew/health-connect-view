@@ -228,6 +228,7 @@
     <string name="category_body">Körper</string>
     <string name="category_vitals">Vitalwerte</string>
     <string name="category_nutrition">Ernährung</string>
+    <string name="category_mindfulness">Achtsamkeit</string>
     <string name="category_sleep">Schlaf</string>
     <string name="category_cycle">Zyklus</string>
 
@@ -265,6 +266,7 @@
     <string name="type_skin_temperature">Hauttemperatur-Abweichung</string>
     <string name="type_hydration">Flüssigkeit</string>
     <string name="type_nutrition">Ernährung</string>
+    <string name="type_mindfulness_session">Achtsamkeit</string>
     <string name="type_sleep_session">Schlaf</string>
     <string name="type_cervical_mucus">Zervixschleim</string>
     <string name="type_intermenstrual_bleeding">Zwischenblutung</string>

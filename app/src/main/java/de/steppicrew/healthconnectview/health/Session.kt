@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.health
 
+import androidx.health.connect.client.feature.ExperimentalMindfulnessSessionApi
 import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.MindfulnessSessionRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -41,7 +43,7 @@ data class Session(
      */
     val route: RouteRef? = null,
 ) {
-    enum class Kind { SLEEP, EXERCISE }
+    enum class Kind { SLEEP, EXERCISE, MINDFULNESS }
 }
 
 /**
@@ -121,6 +123,29 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     },
 )
 
+/**
+ * A mindfulness session: meditation, breathing, a guided track. Named like exercise, from its
+ * title or its type. The record type is marked experimental in the library; its permission
+ * resolves to the platform's `READ_MINDFULNESS`, so it can be granted.
+ */
+@OptIn(ExperimentalMindfulnessSessionApi::class)
+fun MindfulnessSessionRecord.toSession(): Session = Session(
+    start = startTime,
+    end = endTime,
+    title = title ?: MINDFULNESS_TYPE_NAMES[mindfulnessSessionType],
+    kind = Session.Kind.MINDFULNESS,
+    origin = metadata.dataOrigin.packageName,
+)
+
+@OptIn(ExperimentalMindfulnessSessionApi::class)
+private val MINDFULNESS_TYPE_NAMES: Map<Int, String> = mapOf(
+    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MEDITATION to "Meditation",
+    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_BREATHING to "Breathing",
+    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MUSIC to "Music",
+    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MOVEMENT to "Movement",
+    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_UNGUIDED to "Unguided",
+)
+
 fun SleepSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
@@ -172,6 +197,17 @@ suspend fun HealthRepository.sessionsIn(
         emptyList()
     }
 
+    // Mindfulness is an optional Health Connect feature; where the device lacks it the read
+    // throws and the list simply has none, as with any type the platform does not offer.
+    val mindfulness = if (Session.Kind.MINDFULNESS in kinds) {
+        runCatching {
+            @OptIn(ExperimentalMindfulnessSessionApi::class)
+            read(MindfulnessSessionRecord::class, range).map { it.toSession() }
+        }.getOrDefault(emptyList())
+    } else {
+        emptyList()
+    }
+
     val sleep = if (Session.Kind.SLEEP in kinds) {
         runCatching {
             read(SleepSessionRecord::class, range).map { it.toSession() }
@@ -191,7 +227,7 @@ suspend fun HealthRepository.sessionsIn(
     //
     // The end is tested against the window rather than the start, so a night beginning at
     // 22:48 the previous evening still counts here, which is the whole reason for the margin.
-    val (sleepSessions, otherSessions) = dedupeSessions(exercise + sleep)
+    val (sleepSessions, otherSessions) = dedupeSessions(exercise + mindfulness + sleep)
         .partition { it.kind == Session.Kind.SLEEP }
 
     val kept = otherSessions.filter { it.start < end && it.end > start } +
