@@ -74,11 +74,10 @@ data class AxisScale(
             val bottom = if (includeZero) minOf(0.0, low) else low
             val top = if (includeZero) maxOf(0.0, high) else high
 
-            // A flat series has no range to divide. Give it a unit of room so it draws as a
-            // centre line rather than dividing by zero, and so its one value still gets a
-            // label that names it.
+            // A flat series has no range to divide: one reading, or a value that never moved.
+            // Give it room around the value and scale that like any other range.
             val rawSpan = (top - bottom).takeIf { it > 0.0 }
-                ?: return flat(bottom, integral)
+                ?: return flat(bottom, targetSteps, integral)
 
             val step = niceStep(rawSpan / targetSteps, integral)
             var min = floor(bottom / step) * step
@@ -103,16 +102,27 @@ data class AxisScale(
             return AxisScale(min, max, step, decimalsFor(step, integral))
         }
 
-        /** A scale for a series that never moves, centred so the line sits mid-plot. */
-        private fun flat(value: Double, integral: Boolean): AxisScale {
-            val step = if (integral) 1.0 else niceStep(abs(value).takeIf { it > 0.0 } ?: 1.0, false)
-            return AxisScale(
-                min = value - step,
-                max = value + step,
-                step = step,
-                decimals = decimalsFor(step, integral),
-            )
+        /**
+         * A scale for a series that never moves, a little either side of its value.
+         *
+         * The room is proportional to the value. It used to be one round step of the value's
+         * own magnitude, so a single weigh-in of 83.3 kg drew on an axis from -17 to 183: the
+         * dot a flat line in the middle, and a negative weight on the scale. A value that
+         * cannot be negative never gets a negative axis either.
+         */
+        private fun flat(value: Double, targetSteps: Int, integral: Boolean): AxisScale {
+            val proportional = abs(value) * FLAT_ROOM
+            val room = if (integral || value == 0.0) maxOf(proportional, 1.0) else proportional
+            val low = if (value >= 0.0) maxOf(0.0, value - room) else value - room
+            return of(low, value + room, targetSteps, integral)
         }
+
+        /**
+         * How far either side of a flat value the axis reaches, as a share of it. Small enough
+         * that a percentage near its ceiling stays under 100 -- an oxygen saturation of 97 is
+         * drawn on 95..99 -- and wide enough that the value is not pinned to an edge.
+         */
+        private const val FLAT_ROOM = 0.02
 
         /**
          * The smallest round step at or above [rough].
