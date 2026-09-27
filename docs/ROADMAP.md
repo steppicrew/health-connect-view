@@ -104,6 +104,11 @@ open items below and `FEATURE-IDEAS.md`.
     2,676 raw points; the tile and headline show the 7-day mean, coloured outside the range.
     Worded neutrally ("below your usual range"), never as a verdict, and saying that the range
     is this app's, not Garmin's. No platform aggregate exists for HRV, so this is computed.
+29. [ ] **One value, no chart.** Where a window can only hold one value -- resting heart rate on
+    the day view is one reading a day -- the chart draws a lone dot on an empty 24-hour axis.
+    Show the value itself instead (the headline already has it) and drop the chart, or shrink
+    it to a line of text. Decide per window, not per type: the same resting rate over four
+    weeks is a real series. Owner's request, 27.09.2026.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
