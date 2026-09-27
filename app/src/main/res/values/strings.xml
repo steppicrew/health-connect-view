@@ -561,6 +561,11 @@
     <string name="chart_goal_reached_at">Goal of %1$s reached at %2$s</string>
     <string name="chart_goal_reached">Goal of %1$s reached</string>
     <string name="chart_goal_remaining">%1$s of %2$s</string>
+    <plurals name="streak_days">
+        <item quantity="one">Goal met %d day in a row</item>
+        <item quantity="other">Goal met %d days in a row</item>
+    </plurals>
+    <string name="streak_rule">Counts the days in a row up to this day on which the goal was met. A day with nothing recorded neither breaks the run nor counts towards it; after a month with nothing recorded a new run begins. Today counts once the goal is reached, and until then breaks nothing.</string>
     <string name="chart_source_raw">Individual readings</string>
     <string name="chart_source_readings_daily">Daily averages of the readings, one app per day</string>
     <string name="chart_source_readings_weekly">Weekly averages of the readings, one app per day</string>

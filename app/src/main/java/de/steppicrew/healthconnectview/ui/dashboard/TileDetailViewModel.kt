@@ -117,6 +117,8 @@ data class TileDetailData(
      * the tile shows a day, and a trend "before" a week or a year would be a different claim.
      */
     val trend: TrendResult? = null,
+    /** Days in a row the goal was met up to this day, beside [goal]; zero for none. */
+    val streak: Int = 0,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
     /**

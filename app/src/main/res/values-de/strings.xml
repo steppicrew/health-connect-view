@@ -521,6 +521,11 @@
     <string name="chart_goal_reached_at">Ziel von %1$s um %2$s erreicht</string>
     <string name="chart_goal_reached">Ziel von %1$s erreicht</string>
     <string name="chart_goal_remaining">%1$s von %2$s</string>
+    <plurals name="streak_days">
+        <item quantity="one">Ziel an %d Tag hintereinander erreicht</item>
+        <item quantity="other">Ziel an %d Tagen hintereinander erreicht</item>
+    </plurals>
+    <string name="streak_rule">Gezählt werden die aufeinanderfolgenden Tage bis zu diesem Tag, an denen das Ziel erreicht wurde. Ein Tag ohne Aufzeichnung unterbricht die Serie nicht und zählt nicht mit; nach einem Monat ohne Aufzeichnung beginnt eine neue. Heute zählt, sobald das Ziel erreicht ist, und unterbricht bis dahin nichts.</string>
     <string name="chart_source_raw">Einzelmessungen</string>
     <string name="chart_source_readings_daily">Tagesmittel der Messungen, je Tag eine App</string>
     <string name="chart_source_readings_weekly">Wochenmittel der Messungen, je Tag eine App</string>
