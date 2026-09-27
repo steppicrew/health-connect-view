@@ -44,6 +44,14 @@ name brands.
 the release notes alike, including imperatives ("Geben Sie ... frei", not "Gib ... frei"). An
 infinitive ("Tippen, um ...") is fine.
 
+**Icons sit on the first line of the text beside them** -- row icons, source marks,
+checkboxes, radio buttons, switches, a lock -- never centred on the whole block. Text that fits
+one line today wraps on a narrow phone or in German, and a centred icon then drops between the
+lines. `Row(verticalAlignment = Alignment.Top)` with `firstLineInset(style, iconSize)` on the
+icon, or `firstLineTextInset(style, controlHeight)` on the text where the control is taller
+than a line (`ui/components/FirstLine.kt`). Single-line rows that cannot wrap -- the window
+stepper, a tile's bottom line -- are exempt.
+
 ## Health Connect API traps
 
 Each of these cost time to find.
