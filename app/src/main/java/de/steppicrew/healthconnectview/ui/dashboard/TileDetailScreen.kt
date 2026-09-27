@@ -1,5 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.health.connect.client.records.Record
+import de.steppicrew.healthconnectview.registry.deviceName
+import de.steppicrew.healthconnectview.registry.DeviceKind
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarDuration
 import android.content.Intent
@@ -1379,6 +1382,35 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                     )
                 }
 
+                // Expanded, each chip is spelled out: the app's name, and the devices its records
+                // say they came from -- a watch, the phone, "Garmin Forerunner 265" where the writer
+                // stored one. Too long for a chip; worth reading once the box is opened.
+                if (sources.size > 1 && explanation.expanded == true) {
+                    val devices = remember(data.records) { devicesBySource(data.records) }
+                    Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        sources.forEach { packageName ->
+                            val deviceText = devices[packageName].orEmpty().map { (kind, name) ->
+                                val kindText = kind?.let { stringResource(it.labelRes) }
+                                when {
+                                    kindText != null && name != null -> "$kindText ($name)"
+                                    else -> kindText ?: name.orEmpty()
+                                }
+                            }.distinct().joinToString(", ")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX) {}
+                                Text(
+                                    text = listOf(context.appLabelFor(packageName), deviceText)
+                                        .filter { it.isNotEmpty() }
+                                        .joinToString(" · "),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(start = 8.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+
                 // The overlap winner is Health Connect's own priority setting, not ours to define.
                 // Only for the combined view: with one app selected nothing is deduplicated, so
                 // which app would win an overlap says nothing about the figure shown.
@@ -1403,6 +1435,21 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
         )
     }
 }
+
+/**
+ * Per writing app, the devices its records name: kind and, where stored, maker and model. From
+ * the records the list holds, so a source whose records all lie beyond the list's cap names
+ * none -- the line then shows the app alone.
+ */
+private fun devicesBySource(records: List<Record>): Map<String, List<Pair<DeviceKind?, String?>>> =
+    records.groupBy { it.metadata.dataOrigin.packageName }.mapValues { (_, ofSource) ->
+        ofSource.mapNotNull { record ->
+            val device = record.metadata.device
+            val kind = DeviceKind.of(device)
+            val name = deviceName(device)
+            if (kind == null && name == null) null else kind to name
+        }.distinct()
+    }
 
 private const val SESSION_ICON = 16
 private const val SESSION_CURVE_HEIGHT = 40
