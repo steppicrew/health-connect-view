@@ -29,6 +29,15 @@ These are enforced by build checks, not just convention. Breaking one fails `./g
 4. **No health values in logs**, including debug builds. The debug reporters log counts,
    package names and rounded percentiles — never a reading.
 
+## User-facing text
+
+**Never name or compare to a brand** -- a device maker, a fitness app, their scores or statuses
+-- unless the data on screen comes from a device of that brand. The readings may come from any
+wearable, so "not Garmin's HRV status" is wrong for everyone else; say "your device" / "dein
+Gerät". App names that come from the data itself (source chips, "Geschrieben von ...") are the
+user's own data and fine. Docs, commit messages and code comments recording measurements may
+name brands.
+
 ## Health Connect API traps
 
 Each of these cost time to find.
