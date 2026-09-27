@@ -1322,6 +1322,7 @@ private fun SessionRow(
                 markReadings = false,
                 // The curve is heart rate whatever type opened the session.
                 integral = true,
+                minSpan = SESSION_CURVE_MIN_SPAN,
                 extent = session.start..session.end,
             )
 
@@ -1599,3 +1600,6 @@ private const val MINUTES_PER_HOUR = 60
 @Composable
 private fun titleFor(spec: RecordTypeSpec<*>?): String =
     spec?.let { stringResource(it.displayNameRes) } ?: ""
+
+/** A session's heart-rate axis spans at least this many bpm, so a steady night reads flat. */
+private const val SESSION_CURVE_MIN_SPAN = 20.0

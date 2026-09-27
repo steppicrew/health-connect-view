@@ -102,6 +102,13 @@ fun LineChart(
      */
     integral: Boolean = false,
     /**
+     * The narrowest range the axis may show, widened around the data's middle. A tight scale
+     * keeps a small movement visible, but a night holding at 50 to 52 bpm filled the whole
+     * height and each single beat drew as a cliff; a floor on the range lets a steady series
+     * read as steady. Null for no floor.
+     */
+    minSpan: Double? = null,
+    /**
      * Per-bucket low/high drawn as a shaded ribbon behind the line.
      *
      * Each point of a multi-day line is a whole day's mean, and a mean is the one number that
@@ -215,8 +222,12 @@ fun LineChart(
     val scatterHigh = scatter.maxOfOrNull { it.value } ?: values.max()
     val baselineLow = baseline.minOfOrNull { it.value } ?: values.min()
     val baselineHigh = baseline.maxOfOrNull { it.value } ?: values.max()
-    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow)
-    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh)
+    val fittedLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow)
+    val fittedHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh)
+    val widen = minSpan?.let { ((it - (fittedHigh - fittedLow)) / 2).coerceAtLeast(0.0) } ?: 0.0
+    // Not below zero: a floor on the range must not invent negative heart rates.
+    val dataLow = (fittedLow - widen).let { if (fittedLow >= 0.0) it.coerceAtLeast(0.0) else it }
+    val dataHigh = fittedHigh + widen
 
     // The ends are rounded outward onto multiples of a round step, so every gridline lands on
     // a number a reader can use. Taking them straight from the data instead labelled a heart
