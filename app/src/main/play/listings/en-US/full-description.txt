@@ -4,21 +4,23 @@ WHAT IT DOES
 
 • A dashboard of the figures you care about, one day at a time
 • Browse every data type Health Connect supports, from steps and sleep to blood pressure and VO₂ max
-• See individual records with exact timestamps, values and units
-• Find out which app wrote each record
+• Individual records with exact timestamps, values, units and the app that wrote them
 • Chart trends by day, week, four weeks or year
 • Sleep and workouts shaded behind the day's charts, so a peak or a trough has an explanation
-• Each workout with the heart rate recorded during it
+• Each workout with the heart rate recorded during it, and its route as a shape with an elevation profile, if you allow it
 • Sleep stages — deep, light, REM and awake — for every night your watch records them
 • A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature — only what was recorded, nothing predicted
 • Trend arrows on the dashboard, comparing the last week with your 30-day average
+• Streaks: how many days in a row you met your goal or were active, and the year's longest
+• How each reading was taken: blood glucose fasting or after a meal, blood pressure seated or at the wrist, and with which device
+• Arrange tiles by dragging, metric or imperial units, blood glucose in mmol/L or mg/dL
 • Back up your dashboard and settings to a file and restore them on a new phone
 
 YOUR DATA STAYS ON YOUR PHONE
 
 This app has no internet permission. Not "we promise not to upload anything" — Android itself prevents it from making any network connection at all. There is no account, no server, no analytics, no advertising and no tracking.
 
-It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk unless you export it yourself, so uninstalling removes everything.
+It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk unless you export it yourself, so uninstalling removes everything. Routes are read only if you allow it, and drawn without a map — a map would need the internet.
 
 YOU CHOOSE WHAT TO SHARE
 
@@ -35,8 +37,10 @@ PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
 • CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
-• PDF reports for your doctor — blood pressure with morning and evening averages, every day and every reading, each graded; weight with its course by week; resting heart rate against its four-week mean; blood glucose by relation to meals and by target range.
+• PDF reports for your doctor — blood pressure with morning and evening averages, every day and every reading, each graded; weight with its course by week; resting heart rate against its four-week mean; blood glucose by relation to meals and by target range. Any period, saved or viewed and printed directly.
 • Larger tiles — make any dashboard tile two cells wide, or two by two, and choose what it shows: today, the week, four weeks or the year, as a number, a chart or both.
+• Several tiles for the same figure, such as steps today and over the year, and a colour of your own for each tile.
+• Workout routes as GPX files, to open in a map or training app.
 • Every future Pro feature, with no further charge.
 
 Purchases are handled entirely by Google Play. Your purchase follows your Google account to a new phone.

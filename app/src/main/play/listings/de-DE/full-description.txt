@@ -1,45 +1,49 @@
-Health Connect speichert die Daten, die Uhr, Waage und Fitness-Apps schreiben — aber es gibt keine einfache Möglichkeit, sie anzusehen. Diese App ist genau dieser fehlende Betrachter.
+Health Connect speichert, was Uhr, Waage und Fitness-Apps schreiben — aber es gibt keine einfache Möglichkeit, es anzusehen. Diese App ist dieser fehlende Betrachter.
 
 WAS SIE KANN
 
 • Ein Dashboard mit den Werten, die Sie interessieren, Tag für Tag
 • Alle von Health Connect unterstützten Datentypen durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
-• Einzelne Datensätze mit genauen Zeitstempeln, Werten und Einheiten ansehen
-• Erkennen, welche App welchen Datensatz geschrieben hat
+• Einzelne Datensätze mit genauen Zeitstempeln, Werten, Einheiten und der App, die sie geschrieben hat
 • Trends nach Tag, Woche, vier Wochen oder Jahr grafisch darstellen
 • Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
-• Jedes Training mit der dabei aufgezeichneten Herzfrequenz
+• Jedes Training mit der dabei aufgezeichneten Herzfrequenz, und seine Route als Form mit Höhenprofil, wenn Sie sie freigeben
 • Schlafphasen — Tief-, Leicht-, REM-Schlaf und Wachphasen — für jede Nacht, in der Ihre Uhr sie erfasst
-• Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, am ersten Tag ausgerichtet, mit Blutung, Ovulationstests und Temperatur — nur was erfasst wurde, keine Vorhersagen
+• Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, mit Blutung, Ovulationstests und Temperatur — nur was erfasst wurde, keine Vorhersagen
 • Trendpfeile im Dashboard, die die letzte Woche mit Ihrem 30-Tage-Durchschnitt vergleichen
+• Serien: an wie vielen Tagen hintereinander Sie Ihr Ziel erreicht haben oder aktiv waren, und die längste des Jahres
+• Zu jeder Messung, wie sie entstand: Blutzucker nüchtern oder nach dem Essen, Blutdruck im Sitzen oder am Handgelenk, und mit welchem Gerät
+• Kacheln per Ziehen anordnen, Einheiten metrisch oder imperial, Blutzucker in mmol/L oder mg/dL
 • Dashboard und Einstellungen als Datei sichern und auf einem neuen Handy wiederherstellen
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
-Diese App hat keine Internet-Berechtigung. Das ist kein Versprechen, nichts hochzuladen — Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
+Diese App hat keine Internet-Berechtigung. Kein bloßes Versprechen — Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
 
-Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben, außer Sie exportieren es selbst.
+Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben, außer Sie exportieren es selbst. Routen werden nur gelesen, wenn Sie sie freigeben, und ohne Karte gezeichnet — für eine Karte müsste die App ins Internet.
 
 SIE ENTSCHEIDEN, WAS SIE TEILEN
 
-Berechtigungen werden einzeln pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten, und ändern Sie das jederzeit in den Health-Connect-Einstellungen.
+Berechtigungen werden einzeln pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten; ändern können Sie das jederzeit in Health Connect.
 
 KORREKTE SUMMEN
 
-Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte — überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, sodass Tagessummen korrekt sind und nicht doppelt gezählt werden.
+Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte —, überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, damit nichts doppelt zählt.
 
-Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo diese App Statistiken zu einer Sitzung zeigt, sagt sie klar, dass sie über die Zeit zugeordnet sind — statt eine Sicherheit vorzugeben, die die Daten nicht hergeben.
+Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo diese App Statistiken zu einer Sitzung zeigt, sagt sie klar, dass sie über die Zeit zugeordnet sind.
 
 PRO — EINMALKAUF, KEIN ABO
 
 Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
 
-• CSV-Export — jeden Datentyp aus Ihrem Dashboard als Tabellendatei speichern: alle einzelnen Datensätze mit der schreibenden App oder die entdoppelten Tagessummen von Health Connect. Sie wählen, wo die Datei gespeichert wird; die App behält keine Kopie.
-• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck mit Durchschnitten morgens und abends, jedem Tag und jeder Messung, jeweils eingestuft; Gewicht mit dem Verlauf nach Wochen; Ruhepuls gegen sein Vier-Wochen-Mittel; Blutzucker nach Bezug zur Mahlzeit und nach Zielbereich.
-• Größere Kacheln — jede Kachel im Dashboard doppelt so breit oder doppelt so groß, mit freier Wahl, was sie zeigt: heute, die Woche, vier Wochen oder das Jahr, als Zahl, als Diagramm oder beides.
+• CSV-Export — jeden Datentyp als Tabellendatei: alle Datensätze mit der schreibenden App oder die entdoppelten Tagessummen. Sie wählen, wo die Datei landet; die App behält keine Kopie.
+• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck mit Durchschnitten morgens und abends, jedem Tag und jeder Messung, jeweils eingestuft; Gewicht mit dem Verlauf nach Wochen; Ruhepuls gegen sein Vier-Wochen-Mittel; Blutzucker nach Bezug zur Mahlzeit und nach Zielbereich. Zeitraum frei wählbar, zum Speichern oder direkt ansehen und drucken.
+• Größere Kacheln — doppelt so breit oder doppelt so groß, mit freier Wahl, was sie zeigen: heute, Woche, vier Wochen oder Jahr, als Zahl, Diagramm oder beides.
+• Mehrere Kacheln für denselben Wert, etwa Schritte heute und im Jahr, und eine eigene Farbe für jede Kachel.
+• Trainingsrouten als GPX-Datei, zum Öffnen in einer Karten- oder Trainings-App.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
-Der Kauf wird vollständig über Google Play abgewickelt und begleitet Ihr Google-Konto auf ein neues Handy.
+Der Kauf läuft über Google Play und zieht mit Ihrem Google-Konto auf ein neues Handy um.
 
 OPEN SOURCE
 

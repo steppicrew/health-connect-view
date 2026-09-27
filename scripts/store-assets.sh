@@ -79,7 +79,8 @@ SHOT_ROUTES=(
     "3-activities:tile/ExerciseSessionRecord?date=DATE"
     "4-sleep:tile/SleepSessionRecord?date=DATE"
     "5-heart-rate:tile/HeartRateRecord?date=DATE"
-    "6-catalog:catalog"
+    "6-blood-pressure:tile/BloodPressureRecord?date=DATE"
+    "7-catalog:catalog"
 )
 
 # The debug build labels itself "✻ Health Connect View" so it can be told apart from the Play
