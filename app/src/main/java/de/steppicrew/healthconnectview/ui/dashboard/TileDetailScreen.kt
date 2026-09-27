@@ -791,6 +791,7 @@ internal fun DataLineChart(
     modifier: Modifier = Modifier,
     interactive: Boolean = true,
     fillHeight: Boolean = false,
+    compactAxis: Boolean = false,
 ) {
     LineChart(
         points = data.points,
@@ -815,6 +816,7 @@ internal fun DataLineChart(
         extent = data.extent,
         interactive = interactive,
         fillHeight = fillHeight,
+        compactAxis = compactAxis,
         modifier = modifier,
     )
 }

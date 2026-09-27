@@ -48,6 +48,15 @@
     <string name="tile_move_up">Move up</string>
     <string name="tile_move_down">Move down</string>
     <string name="tile_resize">Resize</string>
+    <string name="tile_options">Tile options</string>
+    <string name="tile_options_title">Show on this tile</string>
+    <string name="tile_options_span">Range</string>
+    <string name="tile_options_face">Show</string>
+    <string name="tile_face_value">Value</string>
+    <string name="tile_face_chart">Chart</string>
+    <string name="tile_face_both">Both</string>
+    <string name="tile_title_span" translatable="false">%1$s · %2$s</string>
+    <string name="tile_title_span_capped">%1$s · %2$s, last 30 days only</string>
     <string name="tile_size">Size %1$d × %2$d</string>
     <string name="tile_remove">Remove</string>
     <string name="tile_set_goal">Set goal</string>

@@ -347,25 +347,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         return sourceStore.effective(typeName, selections, preferred, writers)
     }
 
-    /**
-     * How many [span]-sized steps back the window holding [date] sits.
-     *
-     * Counted in the span's own periods, not in days: an offset is fed to [Span.endDate],
-     * which steps by a week, four weeks or a year as well as by a day, so a day count used
-     * directly sent a month view 28 times too far back. Stepping until the window contains
-     * the date keeps one definition of "which window is this", whatever the period.
-     */
-    private fun offsetForDate(date: String, span: Span = _span.value): Int {
-        val parsed = runCatching { LocalDate.parse(date) }.getOrNull() ?: return 0
-        val today = LocalDate.now()
-        if (!parsed.isBefore(today)) return 0
-
-        var offset = 0
-        while (offset < MAX_OFFSET_STEPS && parsed.isBefore(span.startDate(offset, today))) {
-            offset++
-        }
-        return offset
-    }
+    /** The window holding [date], or the current one when it is empty or unparseable. */
+    private fun offsetForDate(date: String, span: Span = _span.value): Int =
+        runCatching { LocalDate.parse(date) }.getOrNull()?.let(span::offsetOf) ?: 0
 
     /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
     fun setSpan(span: Span) {
@@ -644,9 +628,6 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
          * nothing about when within the day it happened.
          */
         const val MAX_CONCURRENT_STATS = 4
-
-        /** Ceiling on the offset search, so an absurd date cannot spin. Years at a day each. */
-        const val MAX_OFFSET_STEPS = 4000
     }
 
 }

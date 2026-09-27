@@ -1,5 +1,10 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.SessionTimeline
+import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.dashboard.TileFace
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material.icons.filled.Tune
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -100,7 +105,8 @@ import java.time.format.FormatStyle
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel,
-    onOpenType: (String, String) -> Unit,
+    /** Type, the dashboard's date, and the window the tile describes. */
+    onOpenType: (String, String, Span) -> Unit,
     onOpenCatalog: () -> Unit,
     onOpenPermissions: () -> Unit,
     /** The permission list itself, one step closer than [onOpenPermissions]'s settings. */
@@ -115,6 +121,7 @@ fun DashboardScreen(
     val resizable = pro.allows(Feature.TILE_SIZES)
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
+    var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
     var editing by remember { mutableStateOf(false) }
 
     // Edit mode is a mode on this screen rather than a destination, so the system Back
@@ -154,6 +161,16 @@ fun DashboardScreen(
             defaultZones = editing.spec.tile.defaultZones,
             onDismiss = { editingZonesFor = null },
             onSave = viewModel::setZones,
+        )
+    }
+
+    editingOptionsFor?.let { editing ->
+        TileOptionsDialog(
+            displayName = stringResource(editing.spec.displayNameRes),
+            currentSpan = editing.tile.span,
+            currentFace = editing.tile.face,
+            onDismiss = { editingOptionsFor = null },
+            onSave = { span, face -> viewModel.setOptions(editing.tile.typeName, span, face) },
         )
     }
 
@@ -274,7 +291,9 @@ fun DashboardScreen(
                             onClick = {
                                 // In edit mode a tap must not navigate away: the user is
                                 // arranging tiles, not reading them.
-                                if (!editing) onOpenType(tile.tile.typeName, state.date.toString())
+                                // It opens on the window the tile shows, so the figure under
+                                // the finger is the one at the top of the screen it opens.
+                                if (!editing) onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
                             },
                             onLongClick = { editing = true },
                             onMoveUp = { viewModel.moveTile(tile.tile.typeName, forward = false) },
@@ -291,6 +310,7 @@ fun DashboardScreen(
                             onRemove = { viewModel.removeTile(tile.tile.typeName) },
                             onSetGoal = { editingGoalFor = tile },
                             onSetZones = { editingZonesFor = tile },
+                            onSetOptions = { editingOptionsFor = tile },
                             onGrantAccess = onGrantAccess,
                         )
                     }
@@ -318,6 +338,7 @@ private fun TileCard(
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
+    onSetOptions: () -> Unit,
     onGrantAccess: () -> Unit,
 ) {
     // The grid hands every tile its exact size, square or spanning; the card only fills it.
@@ -335,8 +356,18 @@ private fun TileCard(
                 .padding(12.dp),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
+            // A tile showing more than the day says which window: "Schritte" over a week's
+            // total would otherwise read as today's.
+            val name = stringResource(data.spec.displayNameRes)
             Text(
-                text = stringResource(data.spec.displayNameRes),
+                text = when {
+                    data.shownSpan == Span.DAY -> name
+                    // Without the history permission a year holds 30 days; the detail screen
+                    // warns in red, and a tile titled "Year" over a month would not.
+                    data.chart?.historyCapped == true ->
+                        stringResource(R.string.tile_title_span_capped, name, stringResource(data.shownSpan.labelRes))
+                    else -> stringResource(R.string.tile_title_span, name, stringResource(data.shownSpan.labelRes))
+                },
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
@@ -352,6 +383,9 @@ private fun TileCard(
                         // Only where a curve is actually coloured by them; a ring or a plain
                         // number has nothing for zones to change.
                         canSetZones = data.spec.tile.defaultZones != null,
+                        // Only where there is room to use them; a single cell always shows
+                        // the day's value.
+                        canSetOptions = resizable && data.tile.isLarge,
                         resizable = resizable,
                         width = data.tile.width,
                         height = data.tile.height,
@@ -361,6 +395,7 @@ private fun TileCard(
                         onRemove = onRemove,
                         onSetGoal = onSetGoal,
                         onSetZones = onSetZones,
+                        onSetOptions = onSetOptions,
                     )
                 } else {
                     TileBody(data, large = resizable && data.tile.height > 1, onGrantAccess)
@@ -435,6 +470,7 @@ private fun TileCard(
 private fun TileEditControls(
     canSetGoal: Boolean,
     canSetZones: Boolean,
+    canSetOptions: Boolean,
     resizable: Boolean,
     width: Int,
     height: Int,
@@ -444,6 +480,7 @@ private fun TileEditControls(
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
+    onSetOptions: () -> Unit,
 ) {
     val size = stringResource(R.string.tile_size, width, height)
     val resize = stringResource(R.string.tile_resize)
@@ -498,6 +535,14 @@ private fun TileEditControls(
                 )
             }
         }
+        if (canSetOptions) {
+            IconButton(onClick = onSetOptions) {
+                Icon(
+                    imageVector = Icons.Default.Tune,
+                    contentDescription = stringResource(R.string.tile_options),
+                )
+            }
+        }
         IconButton(onClick = onRemove) {
             Icon(
                 imageVector = Icons.Default.Delete,
@@ -519,8 +564,14 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
     // The user's bands where they set them; the type's defaults otherwise.
     val zones = data.tile.effectiveZones
 
+    val chart = data.chart?.takeIf { it.points.isNotEmpty() || it.sessions.isNotEmpty() }
     when {
         !data.granted -> LockedTile(onGrantAccess)
+
+        chart != null && data.tile.face == TileFace.CHART ->
+            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1)
+
+        chart != null && data.tile.face == TileFace.BOTH -> TileValueAndChart(data, chart)
 
         // Before the loading and null-value checks: a session tile never has a value, and
         // zero sessions is a real answer rather than an absence of data.
@@ -553,6 +604,42 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
             }
 
         else -> TileValue(data, large)
+    }
+}
+
+/**
+ * The window's chart filling the tile: the detail screen's chart, with its axis values and
+ * goal line, minus the touch readout -- a tap here opens that screen.
+ */
+@Composable
+private fun TileChart(chart: TileDetailData, modifier: Modifier, compactAxis: Boolean = false) {
+    val extent = chart.extent
+    if (chart.spec.tile.form == TileSpec.Form.SESSIONS && extent != null) {
+        // A session type's day has no series; its sessions on the timeline are the chart.
+        SessionTimeline(sessions = chart.sessions, extent = extent, fillHeight = true, modifier = modifier)
+    } else {
+        DataLineChart(chart, modifier, interactive = false, fillHeight = true, compactAxis = compactAxis)
+    }
+}
+
+/**
+ * The number beside the chart on a wide tile, above it on a tall one: a 2x1 tile is too short
+ * to stack both and leave the chart anything to show.
+ */
+@Composable
+private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
+    if (data.tile.height > 1) {
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+            TileValue(data)
+            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp))
+        }
+    } else {
+        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.weight(VALUE_SHARE), contentAlignment = Alignment.Center) {
+                TileValue(data)
+            }
+            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true)
+        }
     }
 }
 
@@ -751,6 +838,9 @@ private fun dayLabel(date: LocalDate): String =
     }
 
 private const val CURVE_HEIGHT = 28
+
+/** How much of a wide tile's width the number takes beside its chart. */
+private const val VALUE_SHARE = 0.35f
 
 /** How many activity icons fit on a tile face beside the count without crowding it. */
 /** Just enough to recognise the app; the tile has little room to spare. */

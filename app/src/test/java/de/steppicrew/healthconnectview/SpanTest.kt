@@ -51,6 +51,20 @@ class SpanTest {
     }
 
     @Test
+    fun `a date finds the window that holds it`() {
+        Span.entries.forEach { span ->
+            listOf(0L, 1L, 6L, 7L, 30L, 400L).forEach { back ->
+                val date = today.minusDays(back)
+                val offset = span.offsetOf(date, today)
+                assertTrue(
+                    "${span.name}: $date not in window $offset",
+                    !date.isBefore(span.startDate(offset, today)) && date.isBefore(span.endDate(offset, today)),
+                )
+            }
+        }
+    }
+
+    @Test
     fun `a year step lands on the same calendar date`() {
         assertEquals(LocalDate.of(2025, 8, 30), Span.YEAR.endDate(1, today))
         assertEquals(LocalDate.of(2024, 8, 30), Span.YEAR.endDate(2, today))
