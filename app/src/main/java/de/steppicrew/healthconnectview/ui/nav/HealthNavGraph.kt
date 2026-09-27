@@ -173,7 +173,6 @@ fun HealthNavGraph(
             TypeDetailScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
-                onOpenRecord = { },
             )
         }
     }

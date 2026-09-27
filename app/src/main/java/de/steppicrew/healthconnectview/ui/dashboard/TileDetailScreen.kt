@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material.icons.filled.Route
 import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.registry.deviceName
@@ -148,6 +150,7 @@ fun TileDetailScreen(
     val spec by viewModel.spec.collectAsStateWithLifecycle()
     var openSession by remember { mutableStateOf<Session?>(null) }
     var opened by remember { mutableStateOf(false) }
+    var openRecord by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(state, requested) {
         if (requested.isEmpty() || opened) return@LaunchedEffect
         val sessions = (state as? UiState.Data)?.value?.sessions ?: return@LaunchedEffect
@@ -291,10 +294,13 @@ fun TileDetailScreen(
                     onOpenSession = { openSession = it },
                     loadCurve = viewModel::curveFor,
                     onVisibleRange = viewModel::showListFor,
+                    onOpenRecord = { openRecord = it },
                 )
             }
         }
     }
+    val data = (state as? UiState.Data)?.value
+    RecordDetailOverlay(data?.spec, data?.records.orEmpty(), openRecord) { openRecord = null }
 }
 
 @Composable
@@ -304,6 +310,7 @@ private fun SpanContent(
     onOpenSession: (Session) -> Unit,
     loadCurve: suspend (Session) -> List<Point>?,
     onVisibleRange: (ClosedRange<Instant>?) -> Unit,
+    onOpenRecord: (String) -> Unit,
 ) {
     LazyColumn {
         item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession, onVisibleRange) }
@@ -414,7 +421,7 @@ private fun SpanContent(
         }
 
         items(data.records, key = { it.metadata.id }) { record ->
-            RecordRow(spec = data.spec, record = record, onClick = {})
+            RecordRow(spec = data.spec, record = record, onClick = { onOpenRecord(record.metadata.id) })
         }
     }
 }

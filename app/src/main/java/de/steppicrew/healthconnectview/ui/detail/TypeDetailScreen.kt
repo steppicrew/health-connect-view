@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.detail
 
+import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -60,10 +64,11 @@ import de.steppicrew.healthconnectview.ui.components.windowLabel
 fun TypeDetailScreen(
     viewModel: TypeDetailViewModel,
     onBack: () -> Unit,
-    onOpenRecord: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var openRecord by rememberSaveable { mutableStateOf<String?>(null) }
+    val onOpenRecord: (String) -> Unit = { openRecord = it }
     val span by viewModel.span.collectAsStateWithLifecycle()
     val offset by viewModel.offset.collectAsStateWithLifecycle()
 
@@ -127,6 +132,8 @@ fun TypeDetailScreen(
             }
         }
     }
+    val data = (state as? UiState.Data)?.value
+    RecordDetailOverlay(data?.spec, data?.records.orEmpty(), openRecord) { openRecord = null }
 }
 
 @Composable
