@@ -1,15 +1,33 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+
+/**
+ * The grid's measured geometry in pixels: column starts and widths, the square cell's side,
+ * the gap and the top padding. Enough to say where any placement lands without laying it out.
+ */
+internal data class GridMetrics(val starts: List<Int>, val widths: List<Int>, val cell: Int, val gap: Int, val top: Int) {
+    val columns: Int get() = widths.size
+
+    fun rectOf(at: TilePlacement): Rect {
+        val w = (at.column until at.column + at.width).sumOf { widths[it] } + gap * (at.width - 1)
+        val h = cell * at.height + gap * (at.height - 1)
+        val x = starts[at.column].toFloat()
+        val y = (top + at.row * (cell + gap)).toFloat()
+        return Rect(x, y, x + w, y + h)
+    }
+}
 
 /** Where one tile sits, in grid cells. */
 internal data class TilePlacement(val column: Int, val row: Int, val width: Int, val height: Int)
@@ -63,12 +81,16 @@ internal fun TileGrid(
     spacing: Dp,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
+    /** Passed in where a drag has to scroll the grid as it nears an edge. */
+    scrollState: ScrollState = rememberScrollState(),
+    /** Told the geometry on every measure; a plain callback, not state, since it runs in layout. */
+    onMetrics: (GridMetrics) -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val cells = remember { BoundedTileCells(TILE_MIN_WIDTH, TILE_COLUMNS_MIN, TILE_COLUMNS_MAX) }
     Layout(
         content = content,
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier.verticalScroll(scrollState),
     ) { measurables, constraints ->
         val gap = spacing.roundToPx()
         val left = contentPadding.calculateLeftPadding(LayoutDirection.Ltr).roundToPx()
@@ -81,11 +103,12 @@ internal fun TileGrid(
         // Square cells; widths differ by at most a pixel, and the narrowest keeps rows even.
         val cell = widths.min()
 
+        val metrics = GridMetrics(starts, widths, cell, gap, top)
+        onMetrics(metrics)
         val placements = placeTiles(sizes, widths.size)
-        val placeables = measurables.zip(placements) { measurable, at ->
-            val w = (at.column until at.column + at.width).sumOf { widths[it] } + gap * (at.width - 1)
-            val h = cell * at.height + gap * (at.height - 1)
-            measurable.measure(Constraints.fixed(w, h))
+        val rects = placements.map(metrics::rectOf)
+        val placeables = measurables.zip(rects) { measurable, rect ->
+            measurable.measure(Constraints.fixed(rect.width.toInt(), rect.height.toInt()))
         }
         val rows = placements.maxOfOrNull { it.row + it.height } ?: 0
         val height = top + bottom + rows * cell + (rows - 1).coerceAtLeast(0) * gap
@@ -93,8 +116,8 @@ internal fun TileGrid(
         // At least the minimum: a grid shorter than the screen is otherwise centred in it
         // rather than starting at the top.
         layout(constraints.maxWidth, height.coerceAtLeast(constraints.minHeight)) {
-            placeables.zip(placements) { placeable, at ->
-                placeable.placeRelative(starts[at.column], top + at.row * (cell + gap))
+            placeables.zip(rects) { placeable, rect ->
+                placeable.placeRelative(rect.left.toInt(), rect.top.toInt())
             }
         }
     }
