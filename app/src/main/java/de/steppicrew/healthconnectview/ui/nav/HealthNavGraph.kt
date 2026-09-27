@@ -124,7 +124,7 @@ fun HealthNavGraph(
         }
 
         composable(Routes.PRIVACY) {
-            PrivacyScreen()
+            PrivacyScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

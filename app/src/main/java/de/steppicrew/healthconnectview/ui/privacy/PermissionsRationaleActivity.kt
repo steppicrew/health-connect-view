@@ -18,7 +18,7 @@ class PermissionsRationaleActivity : ComponentActivity() {
         setContent {
             HealthConnectViewTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PrivacyScreen()
+                    PrivacyScreen(onBack = ::finish)
                 }
             }
         }
