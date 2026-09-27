@@ -51,6 +51,17 @@
     <string name="tile_move_down">Move down</string>
     <string name="tile_resize">Resize</string>
     <string name="tile_options">Tile options</string>
+    <string name="tile_color">Tile colour</string>
+    <string name="tile_color_title">Colour for %1$s</string>
+    <string name="tile_color_default">Theme colour</string>
+    <string name="tile_color_blue">Blue</string>
+    <string name="tile_color_teal">Teal</string>
+    <string name="tile_color_green">Green</string>
+    <string name="tile_color_amber">Amber</string>
+    <string name="tile_color_coral">Coral</string>
+    <string name="tile_color_rose">Rose</string>
+    <string name="tile_color_purple">Purple</string>
+    <string name="tile_color_grey">Grey</string>
     <string name="tile_options_title">Show on this tile</string>
     <string name="tile_options_span">Range</string>
     <string name="tile_options_face">Show</string>

@@ -214,17 +214,20 @@ open items below and `FEATURE-IDEAS.md`.
     the first line. The jump into Health Connect confirmed by the owner; it lands on the app's
     page, not the permission -- the intent takes only a package -- so a hint on leaving names
     the permission tapped, saying Health Connect may word it differently.
-36. [ ] **Tile colours** (Pro) -- the owner's idea, 27.09.2026. A tile picks its colour, which
-    with step 26 tells two tiles of one type apart at a glance. Proposed: a small palette of
-    tonal pairs (the theme's primary, secondary, tertiary and error containers plus a few
-    hues of our own), each defined for light and dark with its text colour, rather than free
-    pickers for background and font. Free colours break in the other theme, can make text
-    unreadable, and fight what already carries meaning on a tile: the zone colours of a curve,
-    the goal ring, the trend arrow and the source icon. So the tile's content keeps its colours
-    and only the card and its plain text change; zone colours must stay distinguishable on
-    every palette entry, which a test can check by contrast ratio. Stored per tile in the
-    layout JSON like the face, so backups carry it.
-
+36. [x] **Tile colours** (Pro, `TILE_COLORS`) -- built 27.09.2026, the owner's idea. With step
+    26, colour tells two tiles of one type apart at a glance. A palette, not free pickers: the
+    theme's colour plus eight fixed hues (`dashboard/TileColor.kt`), each a pair of background
+    and text for light and dark (Material tones 90/10 and 30/90), so text reads in both themes
+    and a colour chosen by day still works at night. Fixed rather than the theme's containers,
+    which follow the wallpaper and so could not be checked: `TileColorTest` holds every pair
+    to 7:1 for text and 4.5:1 for the muted labels, and every zone colour to a CIE76 distance
+    of at least 30 from every background (nearest: the yellow zone on amber, 35; the theme's
+    own tile sits above 70). The tile's theme is tinted (`TileColored`), so title, value,
+    unit, axis values and a ring's track follow; accents and the zones keep their colours.
+    Per tile, stored in the layout JSON when not the theme's; drawn only with Pro and kept
+    without, like sizes. Picked from edit mode (paint bucket; padlock without Pro), applied in
+    place without a reload. Seen on the phone with every colour at once from a throwaway
+    build; picking needs a tap.
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
 trend explained with its averages in the day view, and "Weiter" for the permission screen's

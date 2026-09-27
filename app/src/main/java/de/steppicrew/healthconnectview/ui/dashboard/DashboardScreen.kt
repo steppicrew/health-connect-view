@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.dashboard.TileColor
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.filled.Tune
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.automirrored.filled.TrendingFlat
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.filled.FormatColorFill
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
@@ -142,6 +144,8 @@ fun DashboardScreen(
     val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
     val resizable = pro.allows(Feature.TILE_SIZES)
     val repeatable = pro.allows(Feature.TILE_REPEAT)
+    val colorsUnlocked = pro.allows(Feature.TILE_COLORS)
+    var editingColorFor by remember { mutableStateOf<TileData?>(null) }
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
@@ -196,6 +200,15 @@ fun DashboardScreen(
             defaultZones = editing.spec.tile.defaultZones,
             onDismiss = { editingZonesFor = null },
             onSave = viewModel::setZones,
+        )
+    }
+
+    editingColorFor?.let { editing ->
+        TileColorDialog(
+            displayName = stringResource(editing.spec.displayNameRes),
+            current = editing.tile.color,
+            onDismiss = { editingColorFor = null },
+            onPick = { viewModel.setColor(editing.tile.id, it) },
         )
     }
 
@@ -310,11 +323,12 @@ fun DashboardScreen(
                     val byId = state.tiles.associateBy { it.tile.id }
                     ids.mapNotNull(byId::get) + state.tiles.filterNot { it.tile.id in ids }
                 } ?: state.tiles
+                // Without Pro every tile is drawn as one cell, but the stored sizes are kept: a
+                // refund or a restored backup should not cost the layout, and buying Pro again
+                // brings it back as it was.
+                fun drawnSize(tile: TileData) = if (resizable) tile.tile.width to tile.tile.height else 1 to 1
                 TileGrid(
-                    // Without Pro every tile is drawn as one cell, but the stored sizes are
-                    // kept: a refund or a restored backup should not cost the layout, and
-                    // buying Pro again brings it back as it was.
-                    sizes = shownTiles.map { if (resizable) it.tile.width to it.tile.height else 1 to 1 },
+                    sizes = shownTiles.map(::drawnSize),
                     spacing = 12.dp,
                     contentPadding = PaddingValues(12.dp),
                     scrollState = scroll,
@@ -330,57 +344,71 @@ fun DashboardScreen(
                         key(tile.tile.id) {
                             val id = tile.tile.id
                             val lifted = drag.dragging == id
-                            TileCard(
-                                modifier = Modifier
-                                    .onGloballyPositioned { drag.bounds[id] = it.boundsInParent() }
-                                    .zIndex(if (lifted) 1f else 0f)
-                                    .graphicsLayer {
-                                        val moved = drag.translation(id)
-                                        translationX = moved.x
-                                        translationY = moved.y
-                                        if (lifted) {
-                                            scaleX = LIFTED_SCALE
-                                            scaleY = LIFTED_SCALE
-                                            shadowElevation = LIFTED_ELEVATION.dp.toPx()
+                            // Without Pro drawn in the theme's colour, the chosen one kept, as
+                            // sizes are.
+                            TileColored(if (colorsUnlocked) tile.tile.color else TileColor.DEFAULT) {
+                                TileCard(
+                                    modifier = Modifier
+                                        .onGloballyPositioned { drag.bounds[id] = it.boundsInParent() }
+                                        .zIndex(if (lifted) 1f else 0f)
+                                        .graphicsLayer {
+                                            val moved = drag.translation(id)
+                                            translationX = moved.x
+                                            translationY = moved.y
+                                            if (lifted) {
+                                                scaleX = LIFTED_SCALE
+                                                scaleY = LIFTED_SCALE
+                                                shadowElevation = LIFTED_ELEVATION.dp.toPx()
+                                            }
+                                        },
+                                    onDragStart = {
+                                    drag.start(
+                                        id,
+                                        shownTiles.map { it.tile.id },
+                                        shownTiles.associate { it.tile.id to drawnSize(it) },
+                                    )
+                                },
+                                    onDrag = drag::drag,
+                                    onDragEnd = { drag.end()?.let(viewModel::reorder) },
+                                    data = tile,
+                                    editing = editing,
+                                    resizable = resizable,
+                                    onClick = {
+                                        // In edit mode a tap must not navigate away: the user is
+                                        // arranging tiles, not reading them.
+                                        // It opens on the window the tile shows, so the figure under
+                                        // the finger is the one at the top of the screen it opens.
+                                        if (!editing) {
+                                            onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
                                         }
                                     },
-                                onDragStart = {
-                                drag.start(
-                                    id,
-                                    shownTiles.map { it.tile.id },
-                                    shownTiles.associate { it.tile.id to if (resizable) it.tile.width to it.tile.height else 1 to 1 },
+                                    onLongClick = { editing = true },
+                                    onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
+                                    onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
+                                    onResize = {
+                                        // Locked, the button is where the purchase starts, as the
+                                        // export menu's locked entries are.
+                                        if (resizable) {
+                                            viewModel.resizeTile(tile.tile.id)
+                                        } else {
+                                            activity?.let(AppEntitlements.current::buy)
+                                        }
+                                    },
+                                    colorsUnlocked = colorsUnlocked,
+                                    onSetColor = {
+                                        if (colorsUnlocked) {
+                                            editingColorFor = tile
+                                        } else {
+                                            activity?.let(AppEntitlements.current::buy)
+                                        }
+                                    },
+                                    onRemove = { viewModel.removeTile(tile.tile.id) },
+                                    onSetGoal = { editingGoalFor = tile },
+                                    onSetZones = { editingZonesFor = tile },
+                                    onSetOptions = { editingOptionsFor = tile },
+                                    onGrantAccess = onGrantAccess,
                                 )
-                            },
-                                onDrag = drag::drag,
-                                onDragEnd = { drag.end()?.let(viewModel::reorder) },
-                                data = tile,
-                                editing = editing,
-                                resizable = resizable,
-                                onClick = {
-                                    // In edit mode a tap must not navigate away: the user is
-                                    // arranging tiles, not reading them.
-                                    // It opens on the window the tile shows, so the figure under
-                                    // the finger is the one at the top of the screen it opens.
-                                    if (!editing) onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
-                                },
-                                onLongClick = { editing = true },
-                                onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
-                                onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
-                                onResize = {
-                                    // Locked, the button is where the purchase starts, as the
-                                    // export menu's locked entries are.
-                                    if (resizable) {
-                                        viewModel.resizeTile(tile.tile.id)
-                                    } else {
-                                        activity?.let(AppEntitlements.current::buy)
-                                    }
-                                },
-                                onRemove = { viewModel.removeTile(tile.tile.id) },
-                                onSetGoal = { editingGoalFor = tile },
-                                onSetZones = { editingZonesFor = tile },
-                                onSetOptions = { editingOptionsFor = tile },
-                                onGrantAccess = onGrantAccess,
-                            )
+                            }
                         }
                     }
                 }
@@ -408,6 +436,8 @@ private fun TileCard(
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onResize: () -> Unit,
+    colorsUnlocked: Boolean,
+    onSetColor: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
@@ -430,8 +460,10 @@ private fun TileCard(
                     )
                 }
             },
+        // From the theme in force, which [TileColored] tints for a tile with its own colour.
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ),
     ) {
         Column(
@@ -486,7 +518,9 @@ private fun TileCard(
                         resizable = resizable,
                         width = data.tile.width,
                         height = data.tile.height,
+                        colorsUnlocked = colorsUnlocked,
                         onResize = onResize,
+                        onSetColor = onSetColor,
                         onRemove = onRemove,
                         onSetGoal = onSetGoal,
                         onSetZones = onSetZones,
@@ -604,6 +638,34 @@ private fun DragHandle(onDragStart: () -> Unit, onDrag: (Offset) -> Unit, onDrag
 }
 
 /**
+ * An edit control's icon, with a padlock where the feature needs Pro. Locked, it stays in
+ * place: a control that silently vanishes cannot be asked about. The padlock sits in a filled
+ * disc and the icon is dimmed: drawn bare, the lock landed on the resize arrowhead and read as
+ * part of the arrow, so nobody saw a lock at all.
+ */
+@Composable
+private fun LockableIcon(imageVector: ImageVector, label: String, locked: Boolean) {
+    BadgedBox(
+        badge = {
+            if (locked) {
+                Badge(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary,
+                ) {
+                    Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(LOCK_BADGE.dp))
+                }
+            }
+        },
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = if (locked) stringResource(R.string.export_premium, label) else label,
+            tint = if (locked) LocalContentColor.current.copy(alpha = LOCKED_ALPHA) else LocalContentColor.current,
+        )
+    }
+}
+
+/**
  * Edit affordances shown in place of a tile's value.
  *
  * Reordering is not here: a tile moves by the handle beside its title (see [DragHandle]).
@@ -625,7 +687,9 @@ private fun TileEditControls(
     resizable: Boolean,
     width: Int,
     height: Int,
+    colorsUnlocked: Boolean,
     onResize: () -> Unit,
+    onSetColor: () -> Unit,
     onRemove: () -> Unit,
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
@@ -641,32 +705,14 @@ private fun TileEditControls(
             // The arrows point the way the next tap goes: outwards until the largest
             // size, then inwards back to a single cell.
             val largest = resizable && (width to height) == SIZES.last()
-            // Locked, it stays in place with a padlock: a control that silently vanishes
-            // cannot be asked about. The padlock sits in a filled disc and the arrow is dimmed:
-            // drawn bare, the lock landed on the arrowhead and read as part of the arrow, so
-            // nobody saw a lock at all.
-            BadgedBox(
-                badge = {
-                    if (!resizable) {
-                        Badge(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                            contentColor = MaterialTheme.colorScheme.onTertiary,
-                        ) {
-                            Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(LOCK_BADGE.dp))
-                        }
-                    }
-                },
-            ) {
-                Icon(
-                    imageVector = if (largest) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
-                    contentDescription = if (resizable) resize else stringResource(R.string.export_premium, resize),
-                    tint = if (resizable) {
-                        LocalContentColor.current
-                    } else {
-                        LocalContentColor.current.copy(alpha = LOCKED_ALPHA)
-                    },
-                )
-            }
+            LockableIcon(
+                imageVector = if (largest) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
+                label = resize,
+                locked = !resizable,
+            )
+        }
+        IconButton(onClick = onSetColor) {
+            LockableIcon(Icons.Default.FormatColorFill, stringResource(R.string.tile_color), locked = !colorsUnlocked)
         }
         if (canSetGoal) {
             IconButton(onClick = onSetGoal) {

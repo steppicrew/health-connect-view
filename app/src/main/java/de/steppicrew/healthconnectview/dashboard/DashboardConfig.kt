@@ -55,6 +55,11 @@ data class Tile(
     /** What a large tile draws; see [TileFace]. Stored whatever the size, like [span]. */
     val face: TileFace = TileFace.VALUE,
     val id: String = typeName,
+    /**
+     * The card's colour, per tile: with a type on several tiles, colour is what tells them
+     * apart at a glance. Stored without Pro like the size, and drawn only with it.
+     */
+    val color: TileColor = TileColor.DEFAULT,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -146,6 +151,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     /** Sets one tile's window and face. */
     fun withOptions(id: String, span: Span, face: TileFace): DashboardConfig = DashboardConfig(
         tiles.map { if (it.id == id) it.copy(span = span, face = face) else it },
+    )
+
+    /** Sets one tile's colour. */
+    fun withColor(id: String, color: TileColor): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.copy(color = color) else it },
     )
 
     /** Steps one tile to its next size. */
