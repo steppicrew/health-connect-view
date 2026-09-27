@@ -46,10 +46,12 @@ open items below and `FEATURE-IDEAS.md`.
     like any other range and never below zero for a positive value: 81..85 for that weigh-in,
     44..46 for a resting rate of 45, and an oxygen saturation of 97 stays under 100. Seen on
     the phone.
-16. [ ] **The smoothed line overshoots between close points.** Weight over 4 weeks dips
-    below both dots between 15 and 16 Sept, where two daily means sit a day apart after a
-    long gap. The curve invents a low no reading had; a monotone spline (or none) between
-    points that close would not.
+16. [x] **The smoothed line overshoots between close points** -- merged 27.09.2026. By now
+    the clamp on the Catmull-Rom control points kept the curve inside, but it bent the two
+    sides of a dot differently: weight on 15/16 Sept drew flat, a sudden drop, flat again.
+    Replaced by Steffen's monotone cubic on the real time spacing (`MonotoneCurve.kt`): one
+    slope per point, capped so no piece leaves its two values, flat beside a level stretch or
+    at a peak. Seen on the phone.
 17. [ ] **Decide: PDF reports for other types.** Only blood pressure has one (section 17).
     Candidates are blood glucose (readings by meal relation, time in range) and weight (trend
     over months). Worth it only where a report has a reader -- a doctor's appointment -- and

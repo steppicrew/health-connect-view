@@ -1343,45 +1343,22 @@ private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary:
 
 /**
  * A cubic curve through every point, for series where the underlying quantity varies
- * continuously rather than in steps.
- *
- * Control points are placed from each neighbour pair (a Catmull-Rom spline converted to
- * Bezier), then clamped so a segment can never leave the range of the two values it joins.
- * Without that clamp an overshoot invents readings that were never recorded -- dipping below
- * zero between two step counts, for instance -- which for health data is not a cosmetic
- * problem but a false statement.
+ * continuously rather than in steps. Monotone between neighbours ([monotoneControls]): an
+ * overshoot would invent readings that were never recorded -- dipping below zero between two
+ * step counts, for instance -- which for health data is not a cosmetic problem but a false
+ * statement.
  */
 private fun smoothPath(offsets: List<Offset>): Path = Path().apply {
+    val controls = monotoneControls(
+        FloatArray(offsets.size) { offsets[it].x },
+        FloatArray(offsets.size) { offsets[it].y },
+    )
     moveTo(offsets.first().x, offsets.first().y)
-
-    offsets.zipWithNext().forEachIndexed { index, (current, next) ->
-        val previous = offsets.getOrElse(index - 1) { current }
-        val following = offsets.getOrElse(index + 2) { next }
-
-        val lowY = minOf(current.y, next.y)
-        val highY = maxOf(current.y, next.y)
-
-        // Control points stay inside the segment horizontally as well as vertically. With
-        // points placed by timestamp the neighbours can be far apart in x, and an unclamped
-        // control point would reach past the segment and double the line back on itself.
-        val lowX = minOf(current.x, next.x)
-        val highX = maxOf(current.x, next.x)
-
-        val control1 = Offset(
-            x = (current.x + (next.x - previous.x) / CATMULL_ROM_TENSION).coerceIn(lowX, highX),
-            y = (current.y + (next.y - previous.y) / CATMULL_ROM_TENSION).coerceIn(lowY, highY),
-        )
-        val control2 = Offset(
-            x = (next.x - (following.x - current.x) / CATMULL_ROM_TENSION).coerceIn(lowX, highX),
-            y = (next.y - (following.y - current.y) / CATMULL_ROM_TENSION).coerceIn(lowY, highY),
-        )
-
-        cubicTo(control1.x, control1.y, control2.x, control2.y, next.x, next.y)
+    controls.forEachIndexed { index, c ->
+        val next = offsets[index + 1]
+        cubicTo(c.x1, c.y1, c.x2, c.y2, next.x, next.y)
     }
 }
-
-/** Standard Catmull-Rom conversion factor; larger values give a tighter curve. */
-private const val CATMULL_ROM_TENSION = 6f
 
 private const val GOAL_DASH_ON = 6f
 private const val GOAL_DASH_OFF = 4f
