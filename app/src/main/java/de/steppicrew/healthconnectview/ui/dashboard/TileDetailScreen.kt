@@ -754,6 +754,8 @@ private fun ChartLegend(data: TileDetailData) {
         data.bars -> R.string.legend_value_bars
         data.cumulative -> R.string.legend_value_cumulative
         data.hrv != null && data.extent == null -> R.string.legend_hrv_week
+        // A year is bucketed by week, as the caption says; "daily" here contradicted it.
+        data.rangeBand.isNotEmpty() && data.weeklyBuckets -> R.string.legend_value_mean_weekly
         data.rangeBand.isNotEmpty() -> R.string.legend_value_mean
         // Named as the caption names it: across days a weight point is that day's mean, not a
         // reading, and calling it "Reading" contradicted "Daily averages" printed above.
@@ -809,7 +811,11 @@ private fun ChartLegend(data: TileDetailData) {
         if (data.rangeBand.isNotEmpty()) {
             LegendEntry(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
-                label = if (data.hrv != null) R.string.legend_hrv_usual else R.string.legend_range,
+                label = when {
+                    data.hrv != null -> R.string.legend_hrv_usual
+                    data.weeklyBuckets -> R.string.legend_range_weekly
+                    else -> R.string.legend_range
+                },
             )
         }
         if (sleepShown) {
