@@ -68,11 +68,13 @@ open items below and `FEATURE-IDEAS.md`.
     pressure (two values need two bands, which the chart cannot draw yet) and skin temperature,
     whose platform average disagreed with its own records on the phone (0 °C for a day of +0.40
     and +0.00) -- see CLAUDE.md.
-20. [ ] **Say how and by what a record was made.** Metadata the app never reads: recording
-    method (manual entry, active recording, automatic) and device type (watch, phone, scale).
-    A record row could say "manually entered" or show a watch or phone icon; on the phone,
-    steps come from a watch (3,463) and a phone (1,509) in one month, which is exactly the
-    overlap the source picker explains. Section 20.
+20. [x] **Say how and by what a record was made** -- merged 27.09.2026 (`registry/Provenance.kt`).
+    A record row adds the device kind and, when it is not the automatic norm, the recording
+    method -- "Garmin Connect · Uhr · während einer Aktivität aufgezeichnet" -- with an icon
+    for scanning: a pencil for a value typed in by hand (it outranks the device), else the
+    device's kind. The record screen shows the method always and the device with its own
+    maker and model (the user's data, like the app name). The records CSV gains
+    `recording_method` and `device` at the end, in stable English words. Seen on the phone.
 21. [ ] **Decide: exercise routes.** 26 of 114 sessions in a month carry a route, all behind
     `READ_EXERCISE_ROUTES`, which the app never requests. With no network there is no map, so a
     route would be a drawn path and an elevation profile. Location is the most sensitive data

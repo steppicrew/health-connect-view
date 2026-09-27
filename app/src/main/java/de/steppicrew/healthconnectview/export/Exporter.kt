@@ -22,7 +22,9 @@ import de.steppicrew.healthconnectview.health.pressureReport
 import de.steppicrew.healthconnectview.health.SESSION_MARGIN
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.recordsIn
+import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.RecordingMethod
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
@@ -64,7 +66,8 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         var rows = 0
         val writer = out.bufferedWriter(Charsets.UTF_8)
         writer.write(BOM)
-        writer.write(Csv.line(listOf("start", "end", "time", "value", "unit", "text", "source")))
+        // How and by what each record was made, appended so earlier columns keep their places.
+        writer.write(Csv.line(listOf("start", "end", "time", "value", "unit", "text", "source", "recording_method", "device")))
         repository.forEachPage(spec.type, range, origins) { page ->
             page.forEach { record ->
                 val recordStart = spec.timeOf(record)
@@ -77,16 +80,20 @@ class Exporter(private val context: Context, private val repository: HealthRepos
                     recordEnd?.let { Csv.time(it, zone) }.orEmpty(),
                 )
                 val source = record.metadata.dataOrigin.packageName
+                val provenance = listOf(
+                    RecordingMethod.of(record.metadata.recordingMethod).csv,
+                    DeviceKind.of(record.metadata.device)?.csv.orEmpty(),
+                )
                 if (points.isEmpty()) {
                     // A record with no number -- a cycle observation -- is one row of words.
-                    writer.write(Csv.line(fixed + listOf(Csv.time(recordStart, zone), "", "", words ?: spec.summaryOf(record), source)))
+                    writer.write(Csv.line(fixed + listOf(Csv.time(recordStart, zone), "", "", words ?: spec.summaryOf(record), source) + provenance))
                     rows++
                 } else {
                     // One row per reading, so a heart-rate series is a column of samples rather
                     // than a record's average.
                     points.forEach { point ->
                         writer.write(
-                            Csv.line(fixed + listOf(Csv.time(point.time, zone), Csv.number(point.value), unit, words.orEmpty(), source)),
+                            Csv.line(fixed + listOf(Csv.time(point.time, zone), Csv.number(point.value), unit, words.orEmpty(), source) + provenance),
                         )
                         rows++
                     }
