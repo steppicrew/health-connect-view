@@ -17,12 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
+import kotlinx.coroutines.launch
 
 /** The files an export can produce; see `Exporter` and `PressureReportPdf`. */
 enum class ExportKind(val suffix: String, val extension: String, val feature: Feature) {
@@ -45,8 +47,11 @@ fun ExportAction(
     dailyAvailable: Boolean,
     /** Blood pressure only: the log for a doctor. */
     reportAvailable: Boolean,
+    /** Whether the file would hold anything; the dialog opens only if so. */
+    canExport: suspend (ExportKind) -> Boolean,
     onExport: (ExportKind, Uri) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     val activity = LocalActivity.current
     val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
     var open by remember { mutableStateOf(false) }
@@ -87,9 +92,12 @@ fun ExportAction(
                     onClick = {
                         open = false
                         if (unlocked) {
-                            pending = kind
-                            val name = "${fileBase}_${kind.suffix}.${kind.extension}"
-                            if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
+                            scope.launch {
+                                if (!canExport(kind)) return@launch
+                                pending = kind
+                                val name = "${fileBase}_${kind.suffix}.${kind.extension}"
+                                if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
+                            }
                         } else {
                             activity?.let(AppEntitlements.current::buy)
                         }

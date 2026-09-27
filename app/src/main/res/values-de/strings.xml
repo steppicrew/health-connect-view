@@ -84,6 +84,7 @@
     <string name="export_daily">Tageswerte (CSV)</string>
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export fehlgeschlagen. Es wurde keine Datei behalten.</string>
+    <string name="export_empty">In diesem Zeitraum gibt es nichts zu exportieren.</string>
     <string name="export_report">Bericht (PDF)</string>
     <string name="report_title">Blutdruck-Protokoll</string>
     <string name="report_period">%1$s – %2$s</string>

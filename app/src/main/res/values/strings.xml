@@ -86,6 +86,7 @@
     <string name="export_daily">Daily totals (CSV)</string>
     <string name="export_premium">%1$s · Pro</string>
     <string name="export_failed">Export failed. No file was kept.</string>
+    <string name="export_empty">Nothing to export in this period.</string>
     <string name="export_report">Report (PDF)</string>
     <string name="report_title">Blood pressure log</string>
     <string name="report_period">%1$s – %2$s</string>
