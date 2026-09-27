@@ -1,3 +1,1 @@
 0.8.0 — Neu: Herzfrequenzvariabilität der Nacht, das Mittel von 7 Nächten gegen Ihre übliche Spanne; Blutzucker in mmol/L oder mg/dL; Tagesspanne bei weiteren Werten; Silbentrennung. Pro: große Kacheln zeigen einen Zeitraum als Wert, Diagramm oder beides. Behoben: Tagessummen enden jetzt bei der aktuellen Uhrzeit.
-
-0.7.1 — Neu: Einheiten metrisch oder imperial (Einstellungen). Behoben: Höhenmeter- und Körpergrößen-Summen, ein zu hoher Herzfrequenz-Durchschnitt kurz nach Mitternacht.
