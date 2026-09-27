@@ -138,6 +138,13 @@ open items below and `FEATURE-IDEAS.md`.
     still reads every reading -- about two minutes on the phone -- with the progress bar moving
     throughout. Seen on the phone.
 
+32. [ ] **A record list that follows the chart.** The list holds the newest 5,000 records,
+    which nobody reads through. Cap it at 500, say how many records the window really holds
+    where the chart's read already counted them, and when the chart is zoomed, list the
+    records of the visible stretch instead (debounced, re-read for that range, same cap). The
+    capped `read()` also feeds sums, so the list needs its own cap, not a smaller
+    `MAX_RECORDS`. Owner's request, 27.09.2026.
+
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
 trend explained with its averages in the day view, and "Weiter" for the permission screen's
