@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
 
@@ -179,6 +180,13 @@ data class TileDetailData(
     val baseline: List<Point> = emptyList(),
     /** The series is each bucket's mean of readings the platform cannot aggregate. */
     val dailyFromReadings: Boolean = false,
+    /**
+     * How many records the window holds, where the chart's read counted them all; null where
+     * counting would take a read of its own -- a year of heart rate is minutes of paging.
+     */
+    val recordCount: Int? = null,
+    /** The stretch the list covers while the chart is zoomed; null for the whole window. */
+    val listRange: ClosedRange<Instant>? = null,
     /**
      * The writer whose records gave a multi-source curve its shape, when more than one app
      * contributed. The total stays deduplicated across all of them; only the path is one
@@ -537,6 +545,43 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private val curveCache = java.util.concurrent.ConcurrentHashMap<Session, CachedCurve>()
     private val curveGate = Semaphore(MAX_CONCURRENT_STATS)
 
+    /** The whole window's list, kept to restore when the chart is zoomed back out. */
+    private var windowList: List<Record>? = null
+    private var listJob: Job? = null
+
+    /**
+     * Lists the records of the stretch the chart shows while zoomed, or the whole window's
+     * again for null. Debounced, since a pinch reports every frame: the read starts once the
+     * fingers have settled, and a newer range cancels an older read.
+     */
+    fun showListFor(range: ClosedRange<Instant>?) {
+        val current = (_state.value as? UiState.Data)?.value ?: return
+        if (current.listRange == range) return
+        val spec = current.spec
+        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        listJob?.cancel()
+        listJob = viewModelScope.launch {
+            delay(LIST_DEBOUNCE_MS)
+            val records = if (range == null) {
+                windowList ?: return@launch
+            } else {
+                runCatching {
+                    repository.recordsIn(spec, range.start, range.endInclusive, origins, HealthRepository.LIST_RECORDS)
+                }.getOrElse { return@launch }
+            }
+            _state.update { state ->
+                val data = (state as? UiState.Data)?.value ?: return@update state
+                UiState.Data(
+                    data.copy(
+                        records = records,
+                        truncated = records.size >= HealthRepository.LIST_RECORDS,
+                        listRange = range,
+                    ),
+                )
+            }
+        }
+    }
+
     private suspend fun loadData(
         spec: RecordTypeSpec<*>,
         span: Span,
@@ -562,8 +607,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         onChartReady(chart)
 
         val recordsRead = async {
-            runCatching { repository.recordsIn(spec, windowStart, windowEnd, origins) }
-                .getOrDefault(emptyList())
+            runCatching {
+                repository.recordsIn(spec, windowStart, windowEnd, origins, HealthRepository.LIST_RECORDS)
+            }.getOrDefault(emptyList())
         }
         // Only to name the other writers when one is selected, so one page is enough: the
         // aggregate's origins below already name every writer that reaches a total, and this
@@ -628,12 +674,25 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // left the picker hid itself, so the user saw two writers listed and no way to choose
         // between them. Origins still contribute because some types aggregate without storing
         // records at all, where the records alone would name nobody.
-        val writers = otherWritersRead?.await() ?: records.map { spec.originOf(it) }.toSet()
+        // A capped list names too few: the newest 500 readings of a respiratory rate are ten
+        // hours, and a writer from the morning would drop out of the picker. Then one page
+        // of the window names them, as the unfiltered list of 5,000 used to.
+        val writers = otherWritersRead?.await()
+            ?: if (records.size >= HealthRepository.LIST_RECORDS) {
+                runCatching {
+                    repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
+                        .map { spec.originOf(it) }
+                        .toSet()
+                }.getOrDefault(emptySet()) + records.map { spec.originOf(it) }
+            } else {
+                records.map { spec.originOf(it) }.toSet()
+            }
         val contributors = writers + (aggregateOriginsRead?.await() ?: emptySet())
 
+        windowList = records
         chart.copy(
             records = records,
-            truncated = records.size >= HealthRepository.MAX_RECORDS,
+            truncated = records.size >= HealthRepository.LIST_RECORDS,
             contributingApps = contributors,
             dayParts = dayPartsRead?.await()?.takeIf { it.morning != null || it.evening != null },
             listPending = false,
@@ -642,6 +701,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     private companion object {
         const val TAG = "TileDetail"
+        /** How long a zoom must settle before the list is re-read for it. */
+        const val LIST_DEBOUNCE_MS = 400L
         /**
          * A record at least this long is a whole-day summary rather than an event, and says
          * nothing about when within the day it happened.

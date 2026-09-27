@@ -59,14 +59,16 @@ class HealthRepository(private val context: Context) {
                     timeRangeFilter = range,
                     dataOriginFilter = origins,
                     ascendingOrder = false,
-                    pageSize = PAGE_SIZE,
+                    // No more than the cap still needs: pages are a thousand, and a list
+                    // capped at 500 came back with 626 or a full 1,000.
+                    pageSize = minOf(PAGE_SIZE, maxRecords - collected.size),
                     pageToken = pageToken,
                 ),
             )
             collected += response.records
             pageToken = response.pageToken
         } while (pageToken != null && collected.size < maxRecords)
-        collected
+        collected.take(maxRecords)
     }
 
     /**
@@ -285,6 +287,13 @@ class HealthRepository(private val context: Context) {
     companion object {
         const val PAGE_SIZE = 1000
         const val MAX_RECORDS = 5000
+
+        /**
+         * Records a detail screen lists. Nobody reads through 5,000 rows, and the list is for
+         * inspecting what was stored, not for totals -- those come from aggregation. Separate
+         * from [MAX_RECORDS], which bounds reads that feed sums.
+         */
+        const val LIST_RECORDS = 500
 
         /** Chart sample size. Far beyond the pixel width of any phone chart. */
         const val CHART_POINTS = 2000

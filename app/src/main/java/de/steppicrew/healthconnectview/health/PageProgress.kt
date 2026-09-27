@@ -18,7 +18,12 @@ class PageProgress<T : Record>(
     private val timeOf: (T) -> Instant,
     private val report: (Float) -> Unit,
 ) {
+    /** Records read so far: for a read of the whole window, how many the window holds. */
+    var records: Int = 0
+        private set
+
     fun afterPage(range: TimeRangeFilter, page: List<T>) {
+        records += page.size
         val last = page.lastOrNull() ?: return
         val fraction = fractionOf(range, timeOf(last)) ?: return
         report(fraction)
