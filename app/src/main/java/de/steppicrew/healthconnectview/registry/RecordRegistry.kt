@@ -464,7 +464,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.heartRateVariabilityMillis)) },
             summary = { Formatting.number(it.heartRateVariabilityMillis) + " ms" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, nightlyStatus = true),
         ),
         RecordTypeSpec(
             type = OxygenSaturationRecord::class,

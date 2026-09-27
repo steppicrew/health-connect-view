@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.hrvWindow
+import de.steppicrew.healthconnectview.health.HrvSummary
 import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.health.Session
@@ -84,9 +86,32 @@ internal class TileChartLoader(
         rangeBand = emptyList()
         stack = emptyList()
 
+        // A type judged night by night: across days its series is the week's mean of nightly
+        // values with the usual range behind it, not thousands of five-minute readings drawn
+        // as one zigzag. Within a day the readings themselves stay, as for any reading.
+        val hrv = if (spec.tile.nightlyStatus) {
+            runCatching {
+                repository.hrvWindow(span.startDate(offset), span.endDate(offset).minusDays(1), origins)
+            }.getOrNull()
+        } else {
+            null
+        }
+        val hrvSeries = hrv?.takeIf { span.intradayBucket == null }
+
         // Totals and bucketed series both come from aggregation wherever the type supports
         // it: several apps can write the same metric, so summing raw records double-counts.
-        val points = if (metric != null) {
+        val points = if (hrvSeries != null) {
+            seriesAggregated = false
+            val zone = HealthRepository.DEFAULT_ZONE
+            rangeBand = hrvSeries.days.mapNotNull { day ->
+                val low = day.usualLow ?: return@mapNotNull null
+                val high = day.usualHigh ?: return@mapNotNull null
+                ValueBand(day.date.atStartOfDay(zone).toInstant(), low, high)
+            }
+            hrvSeries.days.mapNotNull { day ->
+                day.weekMean?.let { Point(day.date.atStartOfDay(zone).toInstant(), it) }
+            }
+        } else if (metric != null) {
             val period = span.bucket
             val duration = span.intradayBucket
             when {
@@ -280,6 +305,15 @@ internal class TileChartLoader(
         } else {
             null
         }
+        // HRV has no aggregate, so its headline is computed: the night's own value on a day,
+        // the week's mean at the window's end across days -- the figure the chart ends on.
+        val hrvSummary = hrv?.let { window ->
+            HrvSummary(
+                night = window.nights.lastOrNull { it.date == span.endDate(offset).minusDays(1) }?.mean,
+                day = window.days.lastOrNull(),
+            )
+        }
+        val headline = total ?: hrvSummary?.let { if (hrvSeries != null) it.day?.weekMean else it.night }
 
         // A goal line only means something against a running total for one day; across days
         // each point is its own day's total and the goal would be a different comparison.
@@ -396,7 +430,7 @@ internal class TileChartLoader(
         val headlineTotal = if (spec.tile.form == TileSpec.Form.SESSIONS && sessions.isNotEmpty()) {
             numericAggregate(sessions.totalDuration())
         } else {
-            total
+            headline
         }
 
         val chart = TileDetailData(
@@ -441,6 +475,7 @@ internal class TileChartLoader(
             extent = dayExtent(span, offset, sessions),
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
+            hrv = hrvSummary,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,
