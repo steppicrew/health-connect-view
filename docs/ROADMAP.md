@@ -45,6 +45,22 @@ open items below and `FEATURE-IDEAS.md`.
     metadata such as recording method and device, per-sample series) and every aggregate
     metric, check each against a real device's data, and list what is available but not
     shown. The output is a ranked list for this plan, not code.
+15. [ ] **Day-view y-axis around a single reading.** Weight on 23.09.2026 has one reading
+    (83.3 kg) and the axis runs from -17 to 183: a flat range padded by +/-100 rather than
+    by something proportional to the value. Negative weight on the axis is plainly wrong.
+16. [ ] **The smoothed line overshoots between close points.** Weight over 4 weeks dips
+    below both dots between 15 and 16 Sept, where two daily means sit a day apart after a
+    long gap. The curve invents a low no reading had; a monotone spline (or none) between
+    points that close would not.
+17. [ ] **Decide: PDF reports for other types.** Only blood pressure has one (section 17).
+    Candidates are blood glucose (readings by meal relation, time in range) and weight (trend
+    over months). Worth it only where a report has a reader -- a doctor's appointment -- and
+    a shape of its own beyond the CSV. A decision for the owner before any code; Pro like
+    the pressure report.
+18. [ ] **No empty exports.** CSV and PDF both open the save dialog and then write whatever
+    the window holds, so a window with no data produces a file with only headers. Check
+    first (`hasData` over the export's range and source) and say "nothing to export" instead
+    of opening the dialog.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
