@@ -255,7 +255,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             when (kind) {
                 ExportKind.RECORDS -> exporter.hasRecords(spec, windowStart(span, offset), windowEnd(span, offset), origins)
                 ExportKind.DAILY -> exporter.hasDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins)
-                ExportKind.REPORT -> exporter.hasPressureReadings(span.startDate(offset), span.endDate(offset).minusDays(1), origins)
+                ExportKind.REPORT -> exporter.hasReportData(spec, span.startDate(offset), span.endDate(offset).minusDays(1), origins)
             }
         }.getOrDefault(true)
         if (!any) _exportResults.tryEmit(ExportResult.Empty)
@@ -287,7 +287,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                                 exporter.writeDailyTotals(spec, span.startDate(offset), span.endDate(offset), origins, out),
                             )
                             ExportKind.REPORT -> ExportResult.Report(
-                                exporter.writePressureReport(
+                                exporter.writeReport(
+                                    spec,
                                     span.startDate(offset),
                                     span.endDate(offset).minusDays(1),
                                     origins,

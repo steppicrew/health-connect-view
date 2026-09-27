@@ -52,11 +52,9 @@ open items below and `FEATURE-IDEAS.md`.
     Replaced by Steffen's monotone cubic on the real time spacing (`MonotoneCurve.kt`): one
     slope per point, capped so no piece leaves its two values, flat beside a level stretch or
     at a peak. Seen on the phone.
-17. [ ] **Decide: PDF reports for other types.** Only blood pressure has one (section 17).
-    Candidates are blood glucose (readings by meal relation, time in range) and weight (trend
-    over months). Worth it only where a report has a reader -- a doctor's appointment -- and
-    a shape of its own beyond the CSV. A decision for the owner before any code; Pro like
-    the pressure report.
+17. [x] **PDF reports for weight, resting heart rate and blood glucose** -- merged
+    27.09.2026, the owner chose all three. See section 17. Seen as PDFs rendered from made-up
+    readings on the phone; not yet exported from real data, which needs a tap.
 18. [x] **No empty exports** -- merged 27.09.2026. Each file is checked before the save dialog
     opens (`Exporter.hasRecords`, `hasDailyTotals`, `hasPressureReadings`, over the file's own
     window and source): any record, a night kept by its end; any day with a total; any pressure
@@ -1411,6 +1409,29 @@ for the drawing).
 
 Verified on the emulator with seeded data: four weeks gave 53 readings on 3 pages, the averages
 matching the detail view (morning 134/86 from 27, evening 126/75 from 26).
+
+**Since 27.09.2026: weight, resting heart rate and blood glucose** (`health/ReadingReports.kt`,
+`export/ReadingReportPdf.kt`; page mechanics shared in `export/ReportPdf.kt`). All four are Pro
+as `Feature.PDF_REPORTS`.
+
+- **One writer a day.** Two apps copying one scale listed every weigh-in twice; each day's
+  readings come from the app with the most of them that day, as for HRV and the daily means.
+  The report says so above its reading list.
+- **Weight:** first and last weigh-in, change, mean, range, a chart of the course, a table by
+  week from Monday (the question at an appointment is months, not a day's half kilo), every
+  weigh-in. One decimal throughout.
+- **Resting heart rate:** a value a day beside the four-week mean ending on it (read from 27
+  days before the window), drawn solid and dashed; the first and last four weeks compared when
+  the window holds both apart; weeks as well as days past five weeks.
+- **Blood glucose:** summary by relation to a meal, fasting first -- a fasting value and one
+  after eating must not be averaged together; readings per band of the international time in
+  range consensus (below 54, 54-69, 70-180, 181-250, above 250 mg/dL; 3.0/3.9/10.0/13.9
+  mmol/L), stated as a share of readings, not of time; dots only in the chart, since a line
+  zigzagged between fasting and after-meal values; a line per day; every reading with its meal
+  relation and meal. At the factor of 18 the two units' limits do not meet (70 mg/dL is 3.889
+  mmol/L), so the range starts at 3.85 and both 70 and 3.9 count as in range.
+- **A plain chart** in ink with a round value axis, printable in black and white; a target
+  range shaded green.
 
 ## 18. Units — built
 

@@ -35,7 +35,7 @@ PRO — EINMALKAUF, KEIN ABO
 Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
 
 • CSV-Export — jeden Datentyp aus Ihrem Dashboard als Tabellendatei speichern: alle einzelnen Datensätze mit der schreibenden App oder die entdoppelten Tagessummen von Health Connect. Sie wählen, wo die Datei gespeichert wird; die App behält keine Kopie.
-• Blutdruck-Bericht — ein PDF-Protokoll für Ihre Ärztin oder Ihren Arzt: Durchschnitte morgens und abends, jeder Tag und jede Messung, jeweils eingestuft.
+• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck mit Durchschnitten morgens und abends, jedem Tag und jeder Messung, jeweils eingestuft; Gewicht mit dem Verlauf nach Wochen; Ruhepuls gegen sein Vier-Wochen-Mittel; Blutzucker nach Bezug zur Mahlzeit und nach Zielbereich.
 • Größere Kacheln — jede Kachel im Dashboard doppelt so breit oder doppelt so groß, mit freier Wahl, was sie zeigt: heute, die Woche, vier Wochen oder das Jahr, als Zahl, als Diagramm oder beides.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
