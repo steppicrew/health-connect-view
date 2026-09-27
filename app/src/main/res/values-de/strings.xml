@@ -351,6 +351,23 @@
         <item quantity="one">%1$d Datensatz</item>
         <item quantity="other">%1$d Datensätze</item>
     </plurals>
+    <plurals name="detail_records_of">
+        <item quantity="one">%1$s von %2$s Datensatz</item>
+        <item quantity="other">%1$s von %2$s Datensätzen</item>
+    </plurals>
+    <plurals name="detail_records_of_more">
+        <item quantity="one">Die neuesten %1$d von mehr Datensätzen</item>
+        <item quantity="other">Die neuesten %1$d von mehr als %1$d Datensätzen</item>
+    </plurals>
+    <plurals name="detail_records_in_range">
+        <item quantity="one">%1$d Datensatz im gezeigten Ausschnitt</item>
+        <item quantity="other">%1$d Datensätze im gezeigten Ausschnitt</item>
+    </plurals>
+    <plurals name="detail_records_in_range_capped">
+        <item quantity="one">Der neueste Datensatz im gezeigten Ausschnitt</item>
+        <item quantity="other">Die neuesten %1$d Datensätze im gezeigten Ausschnitt</item>
+    </plurals>
+    <string name="detail_list_zoom_hint">Vergrößern Sie das Diagramm, um die Datensätze eines Ausschnitts zu sehen.</string>
     <plurals name="detail_truncated">
         <item quantity="one">Die Liste zeigt nur den neuesten Datensatz. Das Diagramm umfasst weiterhin den gesamten Zeitraum.</item>
         <item quantity="other">Die Liste zeigt nur die neuesten %1$d Datensätze. Das Diagramm umfasst weiterhin den gesamten Zeitraum.</item>

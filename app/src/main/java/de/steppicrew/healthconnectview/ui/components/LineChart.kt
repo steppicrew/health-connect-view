@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -182,6 +184,11 @@ fun LineChart(
      * takes part in the scale, so the level stays on the chart when the days wander off it.
      */
     baseline: List<Point> = emptyList(),
+    /**
+     * Told the stretch of time on screen whenever the zoom or pan settles on a new one, and
+     * null at full width, so a list beside the chart can follow it.
+     */
+    onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -278,6 +285,21 @@ fun LineChart(
     }
     val segments = remember(points, emptyBuckets) { segmentAtGaps(points, emptyBuckets) }
     val maxZoom = remember(fractions) { maxZoomFor(fractions) }
+    if (onVisibleRange != null) {
+        val report by rememberUpdatedState(onVisibleRange)
+        LaunchedEffect(zoom, pan, timeExtent) {
+            val whole = timeExtent
+            report(
+                if (zoom <= 1f || whole == null) {
+                    null
+                } else {
+                    val millis = Duration.between(whole.start, whole.endInclusive).toMillis()
+                    val start = whole.start.plusMillis((millis * pan).toLong())
+                    start..start.plusMillis((millis / zoom).toLong())
+                },
+            )
+        }
+    }
 
     fun nearestIndex(x: Float, width: Int): Int? {
         if (fractions.isEmpty() || width <= 0) return null

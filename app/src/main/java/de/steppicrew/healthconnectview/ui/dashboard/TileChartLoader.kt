@@ -84,6 +84,13 @@ internal class TileChartLoader(
             onProgress((done.get() + fraction * CHART_WEIGHT) / steps)
         }
         val readProgress = PageProgress<Record>(spec::timeOf, ::stepPart)
+        // How many records the window holds, where the chart's read went through all of them
+        // anyway: the list shows only the newest few hundred and can then say of how many.
+        var windowRecordCount: Int? = null
+        suspend fun <R> countingWindow(read: suspend (PageProgress<Record>) -> R): R {
+            val progress = PageProgress<Record>(spec::timeOf, ::stepPart)
+            return read(progress).also { windowRecordCount = progress.records }
+        }
         onProgress(0f)
 
         val windowStart = windowStart(span, offset)
@@ -144,7 +151,7 @@ internal class TileChartLoader(
                 // records carry the actual moment and amount, so the line steps exactly where
                 // the activity was and stays flat in between -- which is what the data says.
                 duration != null && spec.tile.cumulativeIntraday ->
-                    cumulativeFromRecords(spec, span, offset, origins, readProgress)
+                    countingWindow { progress -> cumulativeFromRecords(spec, span, offset, origins, progress) }
 
                 // A day of an instantaneous type is charted from the readings themselves.
                 //
@@ -159,7 +166,9 @@ internal class TileChartLoader(
                 // raw records would double-count.
                 duration != null && spec.shape != RecordTypeSpec.Shape.INTERVAL -> {
                     seriesAggregated = false
-                    val readings = repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
+                    val readings = countingWindow { progress ->
+                        repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = progress)
+                    }
                     secondaryPoints = readings.flatMap { spec.secondaryPointsOf(it) }.sortedBy { it.time }
                     readings.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
                 }
@@ -290,6 +299,7 @@ internal class TileChartLoader(
             val first = span.startDate(offset)
             val readFrom = if (spec.tile.rollingBaseline) first.minusDays(ROLLING_DAYS - 1L) else first
             val daily = DailyReadings(zone, first, bucketDays)
+            var inWindow = 0
             runCatching {
                 repository.forEachPage(
                     spec.type,
@@ -299,9 +309,11 @@ internal class TileChartLoader(
                 ) { page ->
                     page.forEach { record ->
                         val origin = record.metadata.dataOrigin.packageName
+                        if (!spec.timeOf(record).isBefore(windowStart)) inWindow++
                         spec.pointsOf(record).forEach { daily.add(it.time, it.value, origin) }
                     }
                 }
+                windowRecordCount = inWindow
             }
             dailyReadings = daily
             val buckets = daily.buckets()
@@ -313,7 +325,9 @@ internal class TileChartLoader(
         } else {
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
-            repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
+            countingWindow { progress ->
+                repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = progress)
+            }
                 .flatMap { spec.pointsOf(it) }
                 .sortedBy { it.time }
         }
@@ -327,7 +341,9 @@ internal class TileChartLoader(
         val chartPoints = points.ifEmpty {
             if (metric != null && source != null) {
                 runCatching {
-                    repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = readProgress)
+                    countingWindow { progress ->
+                        repository.readForChart(spec.type, span.instantFilter(offset), origins = origins, progress = progress)
+                    }
                         .flatMap { spec.pointsOf(it) }
                         .sortedBy { it.time }
                 }.getOrDefault(emptyList())
@@ -592,6 +608,7 @@ internal class TileChartLoader(
             },
             baseline = baseline,
             dailyFromReadings = dailyReadings != null,
+            recordCount = windowRecordCount,
             shapeSource = shapeSource,
             weeklyBuckets = (span.bucket?.days ?: 0) > 1,
             historyCapped = historyCapped,

@@ -138,12 +138,14 @@ open items below and `FEATURE-IDEAS.md`.
     still reads every reading -- about two minutes on the phone -- with the progress bar moving
     throughout. Seen on the phone.
 
-32. [ ] **A record list that follows the chart.** The list holds the newest 5,000 records,
-    which nobody reads through. Cap it at 500, say how many records the window really holds
-    where the chart's read already counted them, and when the chart is zoomed, list the
-    records of the visible stretch instead (debounced, re-read for that range, same cap). The
-    capped `read()` also feeds sums, so the list needs its own cap, not a smaller
-    `MAX_RECORDS`. Owner's request, 27.09.2026.
+32. [x] **A record list that follows the chart** -- merged 27.09.2026. The list shows the
+    newest 500 (`LIST_RECORDS`; the capped `read()` that feeds sums keeps 5,000), and says of
+    how many where the chart's read counted the window anyway -- respiratory rate, oxygen
+    saturation, a day of readings: "500 von 35.443 Datensätzen" -- else "von mehr als 500".
+    Zoomed, the list is re-read for the stretch on screen after the pinch settles, and zooming
+    out restores the window's list. With the list capped, the source picker still names its
+    writers from a page of the window. `read()` now stops at exactly its cap; pages of 1,000
+    had returned 626 or 1,000 for a cap of 500.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the

@@ -390,6 +390,23 @@
         <item quantity="one">%1$d record</item>
         <item quantity="other">%1$d records</item>
     </plurals>
+    <plurals name="detail_records_of">
+        <item quantity="one">%1$s of %2$s record</item>
+        <item quantity="other">%1$s of %2$s records</item>
+    </plurals>
+    <plurals name="detail_records_of_more">
+        <item quantity="one">The newest %1$d of more records</item>
+        <item quantity="other">The newest %1$d of more than %1$d records</item>
+    </plurals>
+    <plurals name="detail_records_in_range">
+        <item quantity="one">%1$d record in the zoomed stretch</item>
+        <item quantity="other">%1$d records in the zoomed stretch</item>
+    </plurals>
+    <plurals name="detail_records_in_range_capped">
+        <item quantity="one">The newest record in the zoomed stretch</item>
+        <item quantity="other">The newest %1$d records in the zoomed stretch</item>
+    </plurals>
+    <string name="detail_list_zoom_hint">Zoom into the chart to list the records of a stretch.</string>
     <plurals name="detail_truncated">
         <item quantity="one">The list shows the most recent record only. The chart still covers the whole period.</item>
         <item quantity="other">The list shows the most recent %1$d records only. The chart still covers the whole period.</item>

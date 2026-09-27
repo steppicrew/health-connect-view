@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import java.time.Instant
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
@@ -231,6 +232,7 @@ fun TileDetailScreen(
                     onSelectSource = viewModel::selectSource,
                     onOpenSession = { openSession = it },
                     loadCurve = viewModel::curveFor,
+                    onVisibleRange = viewModel::showListFor,
                 )
             }
         }
@@ -243,9 +245,10 @@ private fun SpanContent(
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
     loadCurve: suspend (Session) -> List<Point>?,
+    onVisibleRange: (ClosedRange<Instant>?) -> Unit,
 ) {
     LazyColumn {
-        item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession) }
+        item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession, onVisibleRange) }
 
         // A session type's own screen: the sessions are the content, not context behind a
         // chart, so they get a row each with the heart rate recorded during them.
@@ -301,14 +304,12 @@ private fun SpanContent(
             }
         }
 
-        if (data.truncated) {
+        // Only over the whole window: zoomed, the header already says the list is the stretch.
+        if (data.truncated && data.listRange == null) {
             item(key = "truncated") {
+                // The header below says how many; this says how to reach the rest.
                 Text(
-                    text = pluralStringResource(
-                        R.plurals.detail_truncated,
-                        HealthRepository.MAX_RECORDS,
-                        HealthRepository.MAX_RECORDS,
-                    ),
+                    text = stringResource(R.string.detail_list_zoom_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -331,12 +332,24 @@ private fun SpanContent(
                 }
             }
         } else item(key = "records_header") {
+            val shown = data.records.size
+            val total = data.recordCount
             Text(
-                text = pluralStringResource(
-                    R.plurals.detail_records_header,
-                    data.records.size,
-                    data.records.size,
-                ),
+                text = when {
+                    data.listRange != null && data.truncated ->
+                        pluralStringResource(R.plurals.detail_records_in_range_capped, shown, shown)
+                    data.listRange != null ->
+                        pluralStringResource(R.plurals.detail_records_in_range, shown, shown)
+                    // The exact count where the chart's read counted the window anyway.
+                    data.truncated && total != null && total > shown -> pluralStringResource(
+                        R.plurals.detail_records_of,
+                        total,
+                        Formatting.integer(shown.toLong()),
+                        Formatting.integer(total.toLong()),
+                    )
+                    data.truncated -> pluralStringResource(R.plurals.detail_records_of_more, shown, shown)
+                    else -> pluralStringResource(R.plurals.detail_records_header, shown, shown)
+                },
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
@@ -505,6 +518,7 @@ private fun SpanSummary(
     data: TileDetailData,
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
+    onVisibleRange: (ClosedRange<Instant>?) -> Unit,
 ) {
     Column(Modifier.padding(16.dp)) {
         // First: it changes how a short chart should be read -- not missing data, but data
@@ -626,7 +640,8 @@ private fun SpanSummary(
                 nightPoints = if (showNights) data.nightPoints else emptyList(),
                 baseline = if (showMean) data.baseline else emptyList(),
             )
-            DataLineChart(shown, Modifier.padding(top = 16.dp))
+            // Zoomed, the list below follows the stretch on screen.
+            DataLineChart(shown, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
             Text(
                 text = stringResource(
                     when {
@@ -860,6 +875,7 @@ internal fun DataLineChart(
     interactive: Boolean = true,
     fillHeight: Boolean = false,
     compactAxis: Boolean = false,
+    onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
 ) {
     LineChart(
         points = data.points,
@@ -892,6 +908,7 @@ internal fun DataLineChart(
         },
         scatter = data.nightPoints,
         baseline = data.baseline,
+        onVisibleRange = onVisibleRange,
         modifier = modifier,
     )
 }
