@@ -38,6 +38,7 @@ class SettingsBackupTest {
             units = UnitChoice.IMPERIAL,
             glucose = GlucoseChoice.MG_PER_DL,
             showSingleNights = false,
+            showRollingMean = true,
         ),
     )
 

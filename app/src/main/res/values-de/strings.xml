@@ -279,6 +279,7 @@
     <string name="span_total">Gesamt</string>
     <string name="span_daily_value">Tageswert</string>
     <string name="legend_rolling_mean">4-Wochen-Mittel</string>
+    <string name="chart_show_rolling_mean">4-Wochen-Mittel zeigen</string>
 
     <!-- Berechtigungen -->
     <string name="permissions_title">Auswählen, was angezeigt wird</string>
