@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.record
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,22 @@ import de.steppicrew.healthconnectview.registry.deviceName
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
+
+/**
+ * The record [openId] names, from a list's [records], drawn over that list; nothing when none
+ * is open or it has left the list with a reload. Over the list rather than a destination of
+ * its own: the list already holds the record, a route would read it again by id, and the list
+ * keeps its scroll position underneath. Back closes it.
+ *
+ * Call it after the list's own screen, so it is drawn on top.
+ */
+@Composable
+fun RecordDetailOverlay(spec: RecordTypeSpec<*>?, records: List<Record>, openId: String?, onClose: () -> Unit) {
+    if (spec == null) return
+    val record = openId?.let { id -> records.firstOrNull { it.metadata.id == id } } ?: return
+    BackHandler(onBack = onClose)
+    RecordDetailScreen(spec, record, onBack = onClose, modifier = Modifier.fillMaxSize())
+}
 
 /** Everything stored about one record, including which app wrote it. */
 @OptIn(ExperimentalMaterial3Api::class)
