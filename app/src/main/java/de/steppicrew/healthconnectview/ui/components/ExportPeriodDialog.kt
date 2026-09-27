@@ -112,13 +112,18 @@ fun ExportPeriodDialog(
 @Composable
 private fun PeriodRow(@StringRes label: Int, detail: String, selected: Boolean, onClick: () -> Unit) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
             .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
             .padding(vertical = 4.dp),
     ) {
-        RadioButton(selected = selected, onClick = null)
+        // On the label's line, not centred between it and the dates beneath.
+        RadioButton(
+            selected = selected,
+            onClick = null,
+            modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, TOGGLE_SIZE.dp)),
+        )
         Column(Modifier.padding(start = 12.dp)) {
             Text(stringResource(label), style = MaterialTheme.typography.bodyLarge)
             Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -161,6 +166,9 @@ private fun RangePickerDialog(initial: ExportPeriod, today: LocalDate, onDismiss
         DateRangePicker(state = state, modifier = Modifier.weight(1f))
     }
 }
+
+/** A radio button or checkbox without its own touch target: the 20 dp mark and its padding. */
+private const val TOGGLE_SIZE = 24
 
 private fun LocalDate.toUtcMillis(): Long = atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
 

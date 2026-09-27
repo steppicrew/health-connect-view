@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -92,7 +93,7 @@ fun AddTileDialog(
 @Composable
 private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -> Unit) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
@@ -107,7 +108,10 @@ private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -
             Icon(
                 imageVector = Icons.Default.Lock,
                 contentDescription = stringResource(R.string.settings_pro),
-                modifier = Modifier.size(18.dp),
+                // On the name's first line, should a long name wrap.
+                modifier = Modifier
+                    .padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, 18.dp))
+                    .size(18.dp),
             )
         }
     }

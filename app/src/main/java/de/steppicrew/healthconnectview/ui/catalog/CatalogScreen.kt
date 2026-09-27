@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.catalog
 
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -133,13 +134,15 @@ private fun CycleOverviewRow(onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
         Icon(
             imageVector = Icons.Default.CalendarViewMonth,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, 20.dp))
+                .size(20.dp),
         )
         Column(Modifier.padding(start = 12.dp)) {
             Text(

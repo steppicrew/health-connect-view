@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.settings
 
+import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.SnackbarHost
@@ -394,9 +395,11 @@ private fun SwitchRow(
             .fillMaxWidth()
             .clickable { onCheckedChange(!checked) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
     ) {
-        Column(Modifier.weight(1f)) {
+        // The switch on the title's line, not centred on the explanation beneath; it is taller
+        // than a line, so the text moves down to meet it.
+        Column(Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.bodyLarge, SWITCH_HEIGHT.dp))) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
             body?.let {
                 Text(
@@ -601,3 +604,6 @@ private fun Context.startActivitySafely(vararg intents: Intent) {
 private const val ACTION_APP_LOCALE_SETTINGS = "android.settings.APP_LOCALE_SETTINGS"
 
 private const val SOURCE_URL = "https://github.com/steppicrew/health-connect-view"
+
+/** Material 3's switch track height. */
+private const val SWITCH_HEIGHT = 32

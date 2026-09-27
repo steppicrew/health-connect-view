@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.detail
 
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -298,13 +299,15 @@ internal fun RecordRow(
             device?.let { stringResource(it.labelRes) },
             method.takeIf { it.shownInList }?.let { stringResource(it.labelRes) },
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.Top) {
             provenanceIcon(method, device)?.let { icon ->
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(end = 4.dp).size(14.dp),
+                    modifier = Modifier
+                        .padding(end = 4.dp, top = firstLineInset(MaterialTheme.typography.labelSmall, 14.dp))
+                        .size(14.dp),
                 )
             }
             Text(

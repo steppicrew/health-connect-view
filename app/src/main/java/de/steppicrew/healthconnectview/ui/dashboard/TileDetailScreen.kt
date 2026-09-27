@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material.icons.filled.Route
@@ -441,13 +442,13 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?) {
     Column(Modifier.padding(top = 8.dp)) {
         // The headline and the averages always show: they are the data. The rule is behind the
         // "i", closed until asked for, so the numbers are what is seen at first glance.
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.Top) {
             // The tile's arrow, so the direction reads at a glance before the words do. The
             // title beside it says the same, so the icon needs no description of its own.
             Icon(
                 imageVector = trend.direction.icon,
                 contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
             )
             Text(
                 text = stringResource(
@@ -1058,12 +1059,17 @@ private fun HrvStanding.labelRes(): Int = when (this) {
 @Composable
 private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Boolean) -> Unit) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         modifier = Modifier
             .fillMaxWidth()
             .toggleable(value = checked, role = Role.Checkbox, onValueChange = onChange),
     ) {
-        Checkbox(checked = checked, onCheckedChange = null)
+        // On the first line, should a long label wrap.
+        Checkbox(
+            checked = checked,
+            onCheckedChange = null,
+            modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyMedium, TOGGLE_SIZE.dp)),
+        )
         Text(text = stringResource(label), style = MaterialTheme.typography.bodyMedium)
     }
 }
@@ -1107,14 +1113,16 @@ private fun SessionCaption(session: Session, onClick: () -> Unit) {
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Icon(
             imageVector = iconFor(session),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(SESSION_ICON.dp),
+            modifier = Modifier
+                .padding(top = firstLineInset(MaterialTheme.typography.labelSmall, SESSION_ICON.dp))
+                .size(SESSION_ICON.dp),
         )
         Text(
             text = listOfNotNull(
@@ -1181,13 +1189,14 @@ private fun SessionRow(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
                 imageVector = iconFor(session),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, 24.dp)),
             )
             Column(Modifier.weight(1f)) {
                 Text(
@@ -1404,8 +1413,13 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                 // when that app is the preferred source: "only this app's value, not the combined
                 // one" was wrong there, since one writer's value is the combined one.
                 if (sources.size == 1) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SourceMark(sources.first(), SOURCE_ICON, SOURCE_ICON_PX) {}
+                    Row(verticalAlignment = Alignment.Top) {
+                        SourceMark(
+                            sources.first(),
+                            SOURCE_ICON,
+                            SOURCE_ICON_PX,
+                            Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodySmall, SOURCE_ICON.dp)),
+                        ) {}
                         Text(
                             text = stringResource(R.string.detail_written_by, context.appLabelFor(sources.first())),
                             style = MaterialTheme.typography.bodySmall,
@@ -1438,8 +1452,13 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                                     else -> kindText ?: name.orEmpty()
                                 }
                             }.distinct().joinToString(", ")
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                SourceMark(packageName, SOURCE_ICON, SOURCE_ICON_PX) {}
+                            Row(verticalAlignment = Alignment.Top) {
+                                SourceMark(
+                                    packageName,
+                                    SOURCE_ICON,
+                                    SOURCE_ICON_PX,
+                                    Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodySmall, SOURCE_ICON.dp)),
+                                ) {}
                                 Text(
                                     text = listOf(context.appLabelFor(packageName), deviceText)
                                         .filter { it.isNotEmpty() }
@@ -1494,6 +1513,9 @@ private fun devicesBySource(records: List<Record>): Map<String, List<Pair<Device
     }
 
 private const val SESSION_ICON = 16
+
+/** A checkbox without its own touch target: the 20 dp box and its padding. */
+private const val TOGGLE_SIZE = 24
 private const val SESSION_CURVE_HEIGHT = 40
 
 /** Big enough to recognise a brand mark, small enough that several chips fit a phone width. */
