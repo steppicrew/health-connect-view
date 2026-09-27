@@ -389,7 +389,6 @@
     <string name="legend_exercise">Activity</string>
     <string name="legend_range">Range of the day</string>
     <string name="legend_goal">Goal</string>
-    <string name="legend_readings">Measurement</string>
     <string name="legend_value_bars">Daily total</string>
     <string name="legend_value_bars_weekly">Weekly total</string>
     <string name="legend_value_sessions">Sessions per day</string>
@@ -397,6 +396,7 @@
     <string name="legend_value_line">Reading</string>
     <string name="legend_value_cumulative">Running total</string>
     <string name="legend_value_mean">Daily average</string>
+    <string name="legend_value_mean_weekly">Weekly average</string>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
     <string name="chart_source_sessions_per_day">Sessions per day</string>
     <string name="chart_source_aggregated_split">Daily totals split into their parts, deduplicated by Health Connect</string>

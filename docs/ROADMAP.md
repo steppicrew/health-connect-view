@@ -35,8 +35,10 @@ open items below and `FEATURE-IDEAS.md`.
     the goal and zones in the tile config.
 12. [x] **Blood glucose units** -- merged 27.09.2026, see section 18. Not seen with real
     readings: the phone has no glucose data.
-13. [ ] **Weight chart legend.** It shows two identical entries, "Messwert" and "Messung", for
-    what looks like one series. Find out where each comes from before removing either.
+13. [x] **Weight chart legend** -- merged 27.09.2026. "Messwert" named the line and "Messung"
+    the dots on it, with identical swatches; the dots are the line's own points, so they lost
+    their entry. Across days the line is now named "Tagesmittel"/"Wochenmittel", as the caption
+    already said. A plain line alone then has one entry, and a one-entry legend stays hidden.
 14. [ ] **Audit what Health Connect offers against what is shown.** The first pass at the tiles
     missed data that was there all along -- sleep stages sat in `SleepSessionRecord.stages`
     until step 4. Go through every registered type's record fields (segments, laps, routes,
