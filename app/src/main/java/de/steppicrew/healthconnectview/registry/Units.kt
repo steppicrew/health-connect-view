@@ -76,8 +76,13 @@ enum class Quantity(
     SPEED(R.string.unit_kmh, R.string.unit_mph, "km/h", "mph", 0.6213711922),
     TEMPERATURE(R.string.unit_celsius, R.string.unit_fahrenheit, "°C", "°F", 1.8, 32.0),
 
-    /** A difference between temperatures: scaled like one, never shifted by 32. */
-    TEMPERATURE_CHANGE(R.string.unit_celsius, R.string.unit_fahrenheit, "°C", "°F", 1.8),
+    /**
+     * A difference between temperatures: scaled like one, never shifted by 32. Labelled with a
+     * plus-minus, because skin temperature arrives as a change from the wearer's baseline with
+     * no baseline beside it, and "0 °C" under a plain unit read as a frozen body, not as "as
+     * usual".
+     */
+    TEMPERATURE_CHANGE(R.string.unit_celsius_change, R.string.unit_fahrenheit_change, "°C", "°F", 1.8),
     VOLUME(R.string.unit_l, R.string.unit_floz, "L", "fl oz", 33.8140227018),
 
     /**

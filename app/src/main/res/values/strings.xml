@@ -204,7 +204,7 @@
     <string name="type_oxygen_saturation">Oxygen saturation</string>
     <string name="type_respiratory_rate">Respiratory rate</string>
     <string name="type_resting_heart_rate">Resting heart rate</string>
-    <string name="type_skin_temperature">Skin temperature</string>
+    <string name="type_skin_temperature">Skin temperature change</string>
     <string name="type_hydration">Hydration</string>
     <string name="type_nutrition">Nutrition</string>
     <string name="type_sleep_session">Sleep</string>
@@ -297,6 +297,8 @@
     <string name="unit_in" translatable="false">in</string>
     <string name="unit_mph" translatable="false">mph</string>
     <string name="unit_fahrenheit" translatable="false">°F</string>
+    <string name="unit_celsius_change" translatable="false">± °C</string>
+    <string name="unit_fahrenheit_change" translatable="false">± °F</string>
     <string name="unit_floz" translatable="false">fl oz</string>
     <string name="unit_h" translatable="false">h</string>
 
