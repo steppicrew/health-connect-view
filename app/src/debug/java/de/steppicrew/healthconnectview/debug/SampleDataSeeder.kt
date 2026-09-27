@@ -16,6 +16,9 @@ import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.BloodGlucoseRecord
+import androidx.health.connect.client.records.MealType
+import androidx.health.connect.client.units.BloodGlucose
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.records.metadata.Metadata
@@ -58,6 +61,7 @@ object SampleDataSeeder {
         DistanceRecord::class,
         FloorsClimbedRecord::class,
         BloodPressureRecord::class,
+        BloodGlucoseRecord::class,
     )
 
 /** One kind of seeded workout: what it was, what it is called, and when it happens. */
@@ -361,13 +365,48 @@ private val SEEDED_WORKOUTS = listOf(
                 } else {
                     dayStart.plus(21, ChronoUnit.HOURS).plus(40, ChronoUnit.MINUTES)
                 }
-                listOf(morningAt to 134.0, eveningAt to 124.0).forEach { (at, systolic) ->
+                // Seated at the left upper arm as a cuff is meant to be used, with the odd reading
+                // standing or at the wrist, so the list rows and the report's tally of how
+                // readings were taken have something to show.
+                listOf(morningAt to 134.0, eveningAt to 124.0).forEachIndexed { index, (at, systolic) ->
                     if (past(at)) add(
                         BloodPressureRecord(
                             time = at,
                             zoneOffset = offset,
                             systolic = Pressure.millimetersOfMercury(systolic + random.nextInt(-4, 5)),
                             diastolic = Pressure.millimetersOfMercury(systolic - 48 + random.nextInt(-3, 4)),
+                            bodyPosition = if (dayOffset % 5 == 0 && index == 0) {
+                                BloodPressureRecord.BODY_POSITION_STANDING_UP
+                            } else {
+                                BloodPressureRecord.BODY_POSITION_SITTING_DOWN
+                            },
+                            measurementLocation = if (dayOffset % 4 == 0 && index == 1) {
+                                BloodPressureRecord.MEASUREMENT_LOCATION_LEFT_WRIST
+                            } else {
+                                BloodPressureRecord.MEASUREMENT_LOCATION_LEFT_UPPER_ARM
+                            },
+                            metadata = metadata(),
+                        ),
+                    )
+                }
+
+                // Blood glucose from a finger prick: fasting before breakfast, two hours after
+                // lunch, and before dinner, each with its meal, so the relation, the meal and
+                // the specimen all appear.
+                listOf(
+                    Triple(6.75, 5.3, BloodGlucoseRecord.RELATION_TO_MEAL_FASTING to MealType.MEAL_TYPE_BREAKFAST),
+                    Triple(14.5, 7.6, BloodGlucoseRecord.RELATION_TO_MEAL_AFTER_MEAL to MealType.MEAL_TYPE_LUNCH),
+                    Triple(18.25, 5.9, BloodGlucoseRecord.RELATION_TO_MEAL_BEFORE_MEAL to MealType.MEAL_TYPE_DINNER),
+                ).forEach { (hour, mmol, context) ->
+                    val at = dayStart.plus((hour * 60).toLong(), ChronoUnit.MINUTES)
+                    if (past(at)) add(
+                        BloodGlucoseRecord(
+                            time = at,
+                            zoneOffset = offset,
+                            level = BloodGlucose.millimolesPerLiter(mmol + random.nextInt(-5, 6) / 10.0),
+                            specimenSource = BloodGlucoseRecord.SPECIMEN_SOURCE_CAPILLARY_BLOOD,
+                            relationToMeal = context.first,
+                            mealType = context.second,
                             metadata = metadata(),
                         ),
                     )

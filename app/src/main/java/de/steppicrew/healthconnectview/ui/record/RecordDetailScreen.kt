@@ -27,6 +27,7 @@ import androidx.health.connect.client.records.Record
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.RecordingMethod
+import de.steppicrew.healthconnectview.registry.readingContext
 import de.steppicrew.healthconnectview.registry.deviceName
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
@@ -96,6 +97,9 @@ fun RecordDetailScreen(
 
             spec.detailsOf(record).forEach { field ->
                 DetailRow(stringResource(field.labelRes), field.value)
+            }
+            readingContext(record).forEach { item ->
+                DetailRow(stringResource(item.labelRes), stringResource(item.valueRes))
             }
 
             DetailRow(

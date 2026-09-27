@@ -8,6 +8,7 @@ import android.graphics.Path
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.ContextTally
 import de.steppicrew.healthconnectview.registry.AxisScale
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.components.monotoneControls
@@ -78,6 +79,24 @@ abstract class ReportPdf(protected val context: Context) {
     }
 
     protected fun gap(): Line = Line(GAP) {}
+
+    /**
+     * How the readings were taken, counted once for the whole report -- "Körperhaltung:
+     * Sitzend 40 · Stehend 2" -- instead of a column on every row, which the tables have no
+     * room for; the file and the app show it per reading. Nothing where no reading had any.
+     */
+    protected fun contextSection(tallies: List<ContextTally>): List<Line> {
+        if (tallies.isEmpty()) return emptyList()
+        return buildList {
+            add(section(context.getString(R.string.report_context)))
+            tallies.forEach { tally ->
+                val counts = tally.counts.joinToString(" · ") { (value, count) -> "${context.getString(value)} $count" }
+                addAll(wrapped("${context.getString(tally.labelRes)}: $counts", text))
+            }
+            add(textLine(context.getString(R.string.report_context_note), small))
+            add(gap())
+        }
+    }
 
     protected fun section(label: String): Line = textLine(label, heading, HEADING_SIZE + 10)
 

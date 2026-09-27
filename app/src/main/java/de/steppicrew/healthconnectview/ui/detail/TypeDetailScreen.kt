@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.RecordingMethod
+import de.steppicrew.healthconnectview.registry.readingContext
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -282,6 +283,15 @@ internal fun RecordRow(
             text = summaryWithUnit(spec, record),
             style = MaterialTheme.typography.bodyLarge,
         )
+        // What the writer said about the reading -- "Nüchtern · Frühstück", "Sitzend · Linker
+        // Oberarm" -- beside the value it qualifies, before when and by what.
+        val readingContext = readingContext(record)
+        if (readingContext.isNotEmpty()) {
+            Text(
+                text = readingContext.map { stringResource(it.valueRes) }.joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         Text(
             text = Formatting.timeSpan(spec.timeOf(record), spec.endTimeOf(record)),
             style = MaterialTheme.typography.labelSmall,

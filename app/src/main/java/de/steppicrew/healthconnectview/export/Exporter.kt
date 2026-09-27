@@ -25,6 +25,8 @@ import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.RecordingMethod
+import de.steppicrew.healthconnectview.registry.csv
+import de.steppicrew.healthconnectview.registry.readingContext
 import java.io.OutputStream
 import java.time.Instant
 import java.time.LocalDate
@@ -66,8 +68,13 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         var rows = 0
         val writer = out.bufferedWriter(Charsets.UTF_8)
         writer.write(BOM)
-        // How and by what each record was made, appended so earlier columns keep their places.
-        writer.write(Csv.line(listOf("start", "end", "time", "value", "unit", "text", "source", "recording_method", "device")))
+        // How and by what each record was made, then what the writer said about the reading
+        // ("relation_to_meal=fasting;meal=breakfast"), appended so earlier columns keep their
+        // places. One column of key=value pairs rather than one per item: the file serves
+        // every type, and only two have any.
+        writer.write(
+            Csv.line(listOf("start", "end", "time", "value", "unit", "text", "source", "recording_method", "device", "context")),
+        )
         repository.forEachPage(spec.type, range, origins) { page ->
             page.forEach { record ->
                 val recordStart = spec.timeOf(record)
@@ -83,6 +90,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
                 val provenance = listOf(
                     RecordingMethod.of(record.metadata.recordingMethod).csv,
                     DeviceKind.of(record.metadata.device)?.csv.orEmpty(),
+                    readingContext(record).csv(),
                 )
                 if (points.isEmpty()) {
                     // A record with no number -- a cycle observation -- is one row of words.
@@ -182,6 +190,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
                         it.relationToMeal,
                         it.mealType,
                         it.metadata.dataOrigin.packageName,
+                        readingContext(it),
                     )
                 }
             }
@@ -207,7 +216,12 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         val readings = mutableListOf<PressureReading>()
         repository.forEachPage(BloodPressureRecord::class, TimeRangeFilter.between(start, end), origins) { page ->
             page.forEach {
-                readings += PressureReading(it.time, it.systolic.inMillimetersOfMercury, it.diastolic.inMillimetersOfMercury)
+                readings += PressureReading(
+                    it.time,
+                    it.systolic.inMillimetersOfMercury,
+                    it.diastolic.inMillimetersOfMercury,
+                    readingContext(it),
+                )
             }
         }
         val report = pressureReport(readings, first, last, zone)

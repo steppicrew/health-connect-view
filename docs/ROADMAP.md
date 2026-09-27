@@ -102,9 +102,20 @@ open items below and `FEATURE-IDEAS.md`.
     route icon marks sessions with a route in the lists. Per-session consent hands the route
     over once and is asked again on the next opening -- only the standing permission keeps
     routes readable -- and the consent text says so.
-22. [ ] **Context on single readings.** Blood glucose's meal relation, meal type and specimen,
-    and blood pressure's body position and arm, are never shown. None on the phone, so build
-    against the emulator; worth doing before step 17's reports, which would use them.
+22. [x] **Context on single readings** -- built 27.09.2026. Blood glucose's relation to a meal,
+    the meal and the specimen, and blood pressure's body position and measuring site, in one
+    place (`registry/ReadingContext.kt`): a line under the value in the record lists
+    ("Nüchtern · Frühstück · Kapillarblut", "Sitzend · Linker Oberarm"), rows on the record
+    screen, a `context` column of key=value pairs at the end of the records CSV. Unknown values
+    are left out, since most writers set none. The reports count it once instead of a column
+    per row, which their tables have no room for -- "Angaben zur Messung: Körperhaltung:
+    Sitzend 24 · Stehend 3" says whether readings were taken alike; the glucose report names
+    only the specimen there, as relation and meal have columns already. The record screen
+    turned out unreachable since it was written (both lists passed an empty click handler);
+    it now opens over the list. The debug seeder writes glucose and the pressure context.
+    Seen on the emulator: list rows, record screen, both PDFs. Noticed on the way, not fixed:
+    glucose in mg/dL shows a decimal ("91,8 mg/dL"), and the blood pressure chart's caption
+    says "Tagessummen" for what are daily means.
 23. [ ] **Nutrition beyond energy.** Protein, carbohydrate, fat, sugar, fibre, sodium and
     caffeine have aggregates; only energy is shown. No nutrition data on the phone, so this
     waits for someone who logs food, or the emulator.

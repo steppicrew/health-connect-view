@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.health
 
+import de.steppicrew.healthconnectview.registry.ContextItem
+import de.steppicrew.healthconnectview.registry.readingContext
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -134,7 +136,15 @@ fun restingReport(readings: List<Reading>, first: LocalDate, last: LocalDate, zo
  * One glucose reading with the context its writer gave. [relation] and [meal] are Health
  * Connect's `RELATION_TO_MEAL_*` and `MealType.MEAL_TYPE_*` codes, 0 when unknown.
  */
-data class GlucoseReading(val time: Instant, val mmol: Double, val relation: Int, val meal: Int, val origin: String)
+data class GlucoseReading(
+    val time: Instant,
+    val mmol: Double,
+    val relation: Int,
+    val meal: Int,
+    val origin: String,
+    /** Everything the writer said about the reading, specimen included; see [readingContext]. */
+    val context: List<ContextItem> = emptyList(),
+)
 
 /**
  * The bands of the international consensus on time in range: very low below 54 mg/dL
