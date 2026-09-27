@@ -781,6 +781,7 @@ private fun ChartLegend(data: TileDetailData) {
             exerciseShown,
             data.goal != null,
             data.nightPoints.isNotEmpty(),
+            data.baseline.isNotEmpty(),
         ).count { it }
     if (entries < 2 && !bandShown) return
 
@@ -834,6 +835,9 @@ private fun ChartLegend(data: TileDetailData) {
                 round = true,
             )
         }
+        if (data.baseline.isNotEmpty()) {
+            LegendEntry(color = MaterialTheme.colorScheme.onSurfaceVariant, label = R.string.legend_rolling_mean)
+        }
         if (data.goal != null) {
             LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
         }
@@ -884,6 +888,7 @@ internal fun DataLineChart(
             standing?.takeIf { it != HrvStanding.WITHIN }?.color()
         },
         scatter = data.nightPoints,
+        baseline = data.baseline,
         modifier = modifier,
     )
 }

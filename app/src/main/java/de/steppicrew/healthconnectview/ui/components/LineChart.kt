@@ -175,6 +175,12 @@ fun LineChart(
      * it. They take part in the scale, or an unusual night would fall off the chart.
      */
     scatter: List<Point> = emptyList(),
+    /**
+     * A reference level drawn dashed behind the line, placed by time: a resting heart rate's
+     * four-week mean, against which a few beats up stand out from the day-to-day noise. It
+     * takes part in the scale, so the level stays on the chart when the days wander off it.
+     */
+    baseline: List<Point> = emptyList(),
 ) {
     if (points.isEmpty()) return
 
@@ -196,8 +202,10 @@ fun LineChart(
     val secondHigh = secondaryPoints.maxOfOrNull { it.value }
     val scatterLow = scatter.minOfOrNull { it.value } ?: values.min()
     val scatterHigh = scatter.maxOfOrNull { it.value } ?: values.max()
-    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow)
-    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh)
+    val baselineLow = baseline.minOfOrNull { it.value } ?: values.min()
+    val baselineHigh = baseline.maxOfOrNull { it.value } ?: values.max()
+    val dataLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow)
+    val dataHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh)
 
     // The ends are rounded outward onto multiples of a round step, so every gridline lands on
     // a number a reader can use. Taking them straight from the data instead labelled a heart
@@ -719,6 +727,28 @@ fun LineChart(
             // nights read as what it was made from. Joined by a dotted line so night-to-night
             // swings can be followed, broken where a night is missing: a line through a
             // missing night would draw a value nobody measured.
+            // Dashed and in the axis-label colour, under the line: a yardstick to read the line
+            // against, not a second series. Broken where a day has no mean, as the line is.
+            val baselineDash = PathEffect.dashPathEffect(
+                floatArrayOf(GOAL_DASH_ON.dp.toPx(), GOAL_DASH_OFF.dp.toPx()),
+            )
+            // One path per unbroken run, not a line per day: over a year a day is a pixel or
+            // two, shorter than one dash, so segment by segment the dashes never broke.
+            val baselinePath = Path()
+            var previous: Point? = null
+            baseline.forEach { point ->
+                val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
+                val y = yFor(point.value)
+                val joined = previous?.let { Duration.between(it.time, point.time) <= SCATTER_MAX_GAP } == true
+                if (joined) baselinePath.lineTo(x, y) else baselinePath.moveTo(x, y)
+                previous = point
+            }
+            drawPath(
+                path = baselinePath,
+                color = labelColor,
+                style = Stroke(width = 1.5.dp.toPx(), pathEffect = baselineDash),
+            )
+
             val scatterColor = lineColor.copy(alpha = SCATTER_ALPHA)
             val dotted = PathEffect.dashPathEffect(floatArrayOf(2.dp.toPx(), 4.dp.toPx()))
             scatter.sortedBy { it.time }.zipWithNext().forEach { (from, to) ->

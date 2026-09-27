@@ -122,6 +122,12 @@ data class TileSpec(
      * their chart -- the choice is per window, not per type.
      */
     val dailyValue: Boolean = false,
+    /**
+     * Across days, the four-week rolling mean drawn as a dashed line behind the daily values:
+     * the wearer's own level, so a few beats above it show against the day-to-day noise. See
+     * `rollingMean`.
+     */
+    val rollingBaseline: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

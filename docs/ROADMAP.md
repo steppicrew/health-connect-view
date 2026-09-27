@@ -115,6 +115,10 @@ open items below and `FEATURE-IDEAS.md`.
     and a large tile set to a day and a chart face falls back to the value. Week, four weeks and
     year keep their chart. Seen on the phone. Not done: a type that *can* hold several readings
     but happens to have one (a single weigh-in) still draws its dot -- step 15 fixed its axis.
+    Since: across days resting heart rate draws its four-week rolling mean dashed behind the
+    daily values (`rollingMean`, at least 14 of the 28 days), so a few beats above the wearer's
+    own level stand out from the night-to-night noise of +/-5 bpm. The detail view's trend now
+    carries the tile's arrow beside its words.
 30. [ ] **Range bands across gaps.** A shaded range is drawn as one ribbon through every point
     that has one, so where days are missing it runs straight across the gap and can look odd --
     a band sloping through days nothing was recorded, or narrowing to a point and widening
