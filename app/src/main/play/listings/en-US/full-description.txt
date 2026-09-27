@@ -35,7 +35,7 @@ PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
 • CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
-• Blood pressure report — a PDF log for your doctor: morning and evening averages, every day and every reading, each graded.
+• PDF reports for your doctor — blood pressure with morning and evening averages, every day and every reading, each graded; weight with its course by week; resting heart rate against its four-week mean; blood glucose by relation to meals and by target range.
 • Larger tiles — make any dashboard tile two cells wide, or two by two, and choose what it shows: today, the week, four weeks or the year, as a number, a chart or both.
 • Every future Pro feature, with no further charge.
 

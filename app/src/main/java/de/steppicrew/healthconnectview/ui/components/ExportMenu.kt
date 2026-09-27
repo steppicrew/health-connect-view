@@ -26,11 +26,11 @@ import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import kotlinx.coroutines.launch
 
-/** The files an export can produce; see `Exporter` and `PressureReportPdf`. */
+/** The files an export can produce; see `Exporter`, `PressureReportPdf` and `ReadingReportPdf`. */
 enum class ExportKind(val suffix: String, val extension: String, val feature: Feature) {
     RECORDS("records", "csv", Feature.EXPORT_CSV),
     DAILY("daily", "csv", Feature.EXPORT_CSV),
-    REPORT("report", "pdf", Feature.PRESSURE_REPORT),
+    REPORT("report", "pdf", Feature.PDF_REPORTS),
 }
 
 /**
@@ -45,7 +45,7 @@ enum class ExportKind(val suffix: String, val extension: String, val feature: Fe
 fun ExportAction(
     fileBase: String,
     dailyAvailable: Boolean,
-    /** Blood pressure only: the log for a doctor. */
+    /** Types with a PDF log for a doctor (`Exporter.REPORT_TYPES`). */
     reportAvailable: Boolean,
     /** Whether the file would hold anything; the dialog opens only if so. */
     canExport: suspend (ExportKind) -> Boolean,

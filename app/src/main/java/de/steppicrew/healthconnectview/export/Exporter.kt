@@ -4,7 +4,17 @@ import android.content.Context
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.records.BloodGlucoseRecord
 import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.RestingHeartRateRecord
+import androidx.health.connect.client.records.WeightRecord
+import de.steppicrew.healthconnectview.health.GlucoseReading
+import de.steppicrew.healthconnectview.health.ROLLING_DAYS
+import de.steppicrew.healthconnectview.health.Reading
+import de.steppicrew.healthconnectview.health.glucoseReport
+import de.steppicrew.healthconnectview.health.restingReport
+import de.steppicrew.healthconnectview.health.weightReport
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.PressureReading
 import de.steppicrew.healthconnectview.health.dayPartWindow
@@ -18,6 +28,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
+import kotlin.reflect.KClass
 
 /**
  * Writes a type's data for a window into a file the user chose.
@@ -119,14 +130,66 @@ class Exporter(private val context: Context, private val repository: HealthRepos
     }
 
     /**
-     * The blood pressure log for [first] through [last] as a PDF. Returns the number of
-     * readings in it.
+     * The PDF report of [spec]'s type for [first] through [last]. Returns the number of
+     * readings in it (days, for resting heart rate, which has one a day).
      *
      * Paged through every record rather than the capped list read, so a year of three readings
-     * a day is complete; read from 04:00 to 04:00 so each evening keeps its after-midnight
+     * a day is complete.
+     */
+    suspend fun writeReport(
+        spec: RecordTypeSpec<*>,
+        first: LocalDate,
+        last: LocalDate,
+        origins: Set<DataOrigin>,
+        source: String?,
+        out: OutputStream,
+    ): Int = when (spec.type) {
+        BloodPressureRecord::class -> writePressureReport(first, last, origins, source, out)
+        WeightRecord::class -> {
+            val readings = mutableListOf<Reading>()
+            repository.forEachPage(WeightRecord::class, dayRange(first, last), origins) { page ->
+                page.forEach { readings += Reading(it.time, it.weight.inKilograms, it.metadata.dataOrigin.packageName) }
+            }
+            val report = weightReport(readings, first, last, zone)
+            ReadingReportPdf(context).write(report, zone, source, out)
+            report.readings.size
+        }
+        RestingHeartRateRecord::class -> {
+            // From four weeks back, so the first days have their four-week mean too.
+            val readings = mutableListOf<Reading>()
+            val lookback = first.minusDays(ROLLING_DAYS - 1L)
+            repository.forEachPage(RestingHeartRateRecord::class, dayRange(lookback, last), origins) { page ->
+                page.forEach { readings += Reading(it.time, it.beatsPerMinute.toDouble(), it.metadata.dataOrigin.packageName) }
+            }
+            val report = restingReport(readings, first, last, zone)
+            ReadingReportPdf(context).write(report, zone, source, out)
+            report.days.size
+        }
+        BloodGlucoseRecord::class -> {
+            val readings = mutableListOf<GlucoseReading>()
+            repository.forEachPage(BloodGlucoseRecord::class, dayRange(first, last), origins) { page ->
+                page.forEach {
+                    readings += GlucoseReading(
+                        it.time,
+                        it.level.inMillimolesPerLiter,
+                        it.relationToMeal,
+                        it.mealType,
+                        it.metadata.dataOrigin.packageName,
+                    )
+                }
+            }
+            val report = glucoseReport(readings, first, last, zone)
+            ReadingReportPdf(context).write(report, zone, source, out)
+            report.readings.size
+        }
+        else -> error("no report for ${spec.type.simpleName}")
+    }
+
+    /**
+     * The blood pressure log. Read from 04:00 to 04:00 so each evening keeps its after-midnight
      * readings, as on screen.
      */
-    suspend fun writePressureReport(
+    private suspend fun writePressureReport(
         first: LocalDate,
         last: LocalDate,
         origins: Set<DataOrigin>,
@@ -145,6 +208,9 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         return report.readings.size
     }
 
+    private fun dayRange(first: LocalDate, last: LocalDate): TimeRangeFilter =
+        TimeRangeFilter.between(first.atStartOfDay(zone).toInstant(), last.plusDays(1).atStartOfDay(zone).toInstant())
+
     /**
      * Whether [writeRecords] over the same window would write a row: any record, a night kept
      * by its end as the file keeps it. Checked before the save dialog opens, so an empty window
@@ -161,20 +227,33 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         return repository.total(metric, TimeRangeFilter.between(from.atStartOfDay(), until.atStartOfDay()), origins) != null
     }
 
-    /** Whether [writePressureReport] would have a reading, over the report's own 04:00 window. */
-    suspend fun hasPressureReadings(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): Boolean {
-        val (start, end) = dayPartWindow(first, last, zone)
-        return repository.read(BloodPressureRecord::class, TimeRangeFilter.between(start, end), 1, origins).isNotEmpty()
+    /** Whether [writeReport] would have a reading, over the report's own window. */
+    suspend fun hasReportData(spec: RecordTypeSpec<*>, first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): Boolean {
+        val range = if (spec.type == BloodPressureRecord::class) {
+            val (start, end) = dayPartWindow(first, last, zone)
+            TimeRangeFilter.between(start, end)
+        } else {
+            dayRange(first, last)
+        }
+        return repository.read(spec.type, range, 1, origins).isNotEmpty()
     }
 
-    private companion object {
+    companion object {
+        /** The types with a PDF report. */
+        val REPORT_TYPES: Set<KClass<out Record>> = setOf(
+            BloodPressureRecord::class,
+            WeightRecord::class,
+            RestingHeartRateRecord::class,
+            BloodGlucoseRecord::class,
+        )
+
         /** Nights read to find one kept by its end; more than a window's edges can hold. */
-        const val SLEEP_PROBE = 5
+        private const val SLEEP_PROBE = 5
 
         /**
          * Marks the file as UTF-8. Without it Excel reads "Stärke" as "StÃ¤rke"; programs that
          * do not need it skip it.
          */
-        const val BOM = "\uFEFF"
+        private const val BOM = "\uFEFF"
     }
 }

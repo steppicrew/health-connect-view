@@ -11,7 +11,6 @@ import androidx.compose.material3.Checkbox
 import de.steppicrew.healthconnectview.health.HrvSummary
 import de.steppicrew.healthconnectview.health.HrvStanding
 import androidx.annotation.StringRes
-import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.semantics
@@ -33,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.runtime.LaunchedEffect
 import de.steppicrew.healthconnectview.export.ExportResult
+import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.components.ExportAction
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
@@ -185,7 +185,7 @@ fun TileDetailScreen(
                             // a file would give a second answer to "how long did I sleep".
                             dailyAvailable = current.aggregate != null &&
                                 current.tile.form != TileSpec.Form.SESSIONS,
-                            reportAvailable = current.type == BloodPressureRecord::class,
+                            reportAvailable = current.type in Exporter.REPORT_TYPES,
                             canExport = viewModel::canExport,
                             onExport = viewModel::export,
                         )
