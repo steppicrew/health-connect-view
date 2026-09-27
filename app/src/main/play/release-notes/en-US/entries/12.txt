@@ -1,0 +1,1 @@
+0.9.0 — New: a four-week mean as a dashed line; gaps drawn dotted; the list follows the zoom; a daily value instead of a chart for resting heart rate. Pro: PDF reports for weight, resting heart rate and blood glucose too; choose any period when exporting; view or print reports. Fixed: curves no longer overshoot readings; no more empty exports.
