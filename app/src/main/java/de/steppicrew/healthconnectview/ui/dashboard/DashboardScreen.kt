@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.dashboard.TileFace
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -505,17 +507,29 @@ private fun TileEditControls(
             // size, then inwards back to a single cell.
             val largest = resizable && (width to height) == SIZES.last()
             // Locked, it stays in place with a padlock: a control that silently vanishes
-            // cannot be asked about.
+            // cannot be asked about. The padlock sits in a filled disc and the arrow is dimmed:
+            // drawn bare, the lock landed on the arrowhead and read as part of the arrow, so
+            // nobody saw a lock at all.
             BadgedBox(
                 badge = {
                     if (!resizable) {
-                        Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(LOCK_BADGE.dp))
+                        Badge(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                        ) {
+                            Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(LOCK_BADGE.dp))
+                        }
                     }
                 },
             ) {
                 Icon(
                     imageVector = if (largest) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
                     contentDescription = if (resizable) resize else stringResource(R.string.export_premium, resize),
+                    tint = if (resizable) {
+                        LocalContentColor.current
+                    } else {
+                        LocalContentColor.current.copy(alpha = LOCKED_ALPHA)
+                    },
                 )
             }
         }
@@ -847,7 +861,10 @@ private const val VALUE_SHARE = 0.35f
 private const val TILE_SOURCE_ICON = 16
 private const val TREND_ICON = 16
 private const val LOCK_ICON = 20
-private const val LOCK_BADGE = 12
+private const val LOCK_BADGE = 10
+
+/** How faint a locked control's own icon is, so the padlock reads as its state. */
+private const val LOCKED_ALPHA = 0.45f
 private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
