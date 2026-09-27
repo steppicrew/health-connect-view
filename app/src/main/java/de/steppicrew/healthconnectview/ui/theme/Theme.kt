@@ -3,6 +3,10 @@ package de.steppicrew.healthconnectview.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -77,5 +81,36 @@ fun HealthConnectViewTheme(
         }
     }
 
-    MaterialTheme(colorScheme = colorScheme, content = content)
+    MaterialTheme(colorScheme = colorScheme, typography = HyphenatedTypography, content = content)
+}
+
+/**
+ * Material's type scale with hyphenation on, for every style.
+ *
+ * German runs to long compounds -- "Herzfrequenzvariabilität", "Hauttemperatur-Abweichung" --
+ * and without hyphenation a word wider than the space left either broke mid-syllable wherever
+ * it ran out ("Abweichu" / "ng") or pushed a whole line down. Android carries the hyphenation
+ * patterns for every language it supports, so this is one setting rather than a dictionary of
+ * our own. Paragraph line breaking goes with it: it balances lines instead of filling each one
+ * greedily, which is what makes a hyphen land somewhere sensible.
+ */
+private val HyphenatedTypography: Typography = Typography().run {
+    fun TextStyle.hyphenated() = copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)
+    copy(
+        displayLarge = displayLarge.hyphenated(),
+        displayMedium = displayMedium.hyphenated(),
+        displaySmall = displaySmall.hyphenated(),
+        headlineLarge = headlineLarge.hyphenated(),
+        headlineMedium = headlineMedium.hyphenated(),
+        headlineSmall = headlineSmall.hyphenated(),
+        titleLarge = titleLarge.hyphenated(),
+        titleMedium = titleMedium.hyphenated(),
+        titleSmall = titleSmall.hyphenated(),
+        bodyLarge = bodyLarge.hyphenated(),
+        bodyMedium = bodyMedium.hyphenated(),
+        bodySmall = bodySmall.hyphenated(),
+        labelLarge = labelLarge.hyphenated(),
+        labelMedium = labelMedium.hyphenated(),
+        labelSmall = labelSmall.hyphenated(),
+    )
 }
