@@ -33,6 +33,17 @@ open items below and `FEATURE-IDEAS.md`.
     on its chart (axis values, the goal line), a default time range other than the day (a week
     of steps, a month of weight), and a choice of what the face shows. Per tile, stored beside
     the goal and zones in the tile config.
+12. [ ] **Blood glucose units.** A setting for mg/dL or mmol/L, beside the metric/imperial
+    choice in section 18. The two regions do not line up with it -- Germany uses both -- so it
+    is its own choice rather than following the unit system.
+13. [ ] **Weight chart legend.** It shows two identical entries, "Messwert" and "Messung", for
+    what looks like one series. Find out where each comes from before removing either.
+14. [ ] **Audit what Health Connect offers against what is shown.** The first pass at the tiles
+    missed data that was there all along -- sleep stages sat in `SleepSessionRecord.stages`
+    until step 4. Go through every registered type's record fields (segments, laps, routes,
+    metadata such as recording method and device, per-sample series) and every aggregate
+    metric, check each against a real device's data, and list what is available but not
+    shown. The output is a ranked list for this plan, not code.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
