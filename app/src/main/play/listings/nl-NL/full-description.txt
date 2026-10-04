@@ -1,0 +1,50 @@
+Health Connect bewaart de gegevens die je horloge, weegschaal en fitness-apps schrijven, maar er is geen eenvoudige manier om ze te bekijken. Deze app is die ontbrekende viewer.
+
+WAT DE APP DOET
+
+• Een dashboard met de cijfers die voor jou tellen, dag voor dag
+• Elk gegevenstype dat Health Connect ondersteunt, van stappen en slaap tot bloeddruk en VO₂ max
+• Losse registraties met exacte tijd, waarde, eenheid en de app die ze schreef
+• Grafieken per dag, week, vier weken of jaar
+• Slaap en trainingen gearceerd achter de dagkrommen, zodat een piek of dal een verklaring heeft
+• Elke training met de hartslag tijdens die training en, als je dat toestaat, de route met hoogteprofiel
+• Slaapfasen — diep, licht, REM en wakker
+• Een cyclusoverzicht: alle cycli van een jaar naast elkaar, uitgelijnd op dag één, zonder voorspellingen
+• Trendpijlen: de laatste week tegenover je 30-daags gemiddelde
+• Reeksen: hoeveel dagen op rij je je doel haalde of actief was, en de langste van het jaar
+• Hoe elke meting is gedaan: bloedglucose nuchter of na een maaltijd, bloeddruk zittend of aan de pols
+• Tegels ordenen door te slepen, metrische of imperiale eenheden, bloedglucose in mmol/L of mg/dL
+• Je dashboard en instellingen als bestand bewaren en op een nieuwe telefoon terugzetten
+
+JE GEGEVENS BLIJVEN OP JE TELEFOON
+
+Deze app heeft geen internettoestemming. Niet "we beloven niets te uploaden": Android zelf verhindert elke netwerkverbinding. Geen account, geen server, geen analyses, geen advertenties en geen tracking.
+
+De app is alleen-lezen: hij toont je gezondheidsgegevens, maar kan ze niet wijzigen of verwijderen. Er wordt niets opgeslagen tenzij je zelf exporteert, dus verwijderen ruimt alles op. Routes worden alleen gelezen als je dat toestaat, en zonder kaart getekend.
+
+JIJ KIEST WAT JE DEELT
+
+Toestemmingen worden per gegevenstype gevraagd en niets is vooraf geselecteerd. Sta alleen toe wat je wilt zien en verander het wanneer je wilt in de instellingen van Health Connect.
+
+KLOPPENDE TOTALEN
+
+Als meerdere apps hetzelfde vastleggen — een telefoon en een horloge die allebei stappen tellen — overlappen hun registraties. Deze app gebruikt de eigen aggregatie van Health Connect om dubbele gegevens te verwijderen, zodat dagtotalen kloppen in plaats van dubbel te tellen, en vertelt je wanneer meer dan één app heeft bijgedragen.
+
+Health Connect koppelt een training niet aan de metingen die erbij horen. Waar deze app de cijfers van een sessie toont, zegt hij duidelijk dat ze op tijd zijn gekoppeld.
+
+PRO — EENMALIGE AANKOOP, GEEN ABONNEMENT
+
+Alles hierboven is gratis en blijft gratis. Pro is één in-app-aankoop die ontgrendelt:
+
+• CSV-export van elk gegevenstype: elke registratie met de bron-app, of de ontdubbelde dagtotalen van Health Connect. Jij kiest waar het bestand komt; de app houdt geen kopie.
+• PDF-rapporten voor je arts: bloeddruk met ochtend- en avondgemiddelden, gewicht per week, rusthartslag tegenover het 4-weeks gemiddelde, bloedglucose per maaltijd en doelbereik.
+• Grotere tegels met een eigen periode — vandaag, de week, vier weken of het jaar — als getal, grafiek of beide.
+• Meerdere tegels voor hetzelfde cijfer, en een eigen kleur per tegel.
+• Trainingsroutes als GPX-bestanden.
+• Elke toekomstige Pro-functie, zonder extra kosten.
+
+Aankopen worden volledig door Google Play afgehandeld en gaan mee naar een nieuwe telefoon.
+
+OPEN SOURCE
+
+De broncode is openbaar, dus elke bewering hierboven kan worden gecontroleerd.

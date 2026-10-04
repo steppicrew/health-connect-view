@@ -1,0 +1,50 @@
+Health Connect guarda los datos que escriben tu reloj, tu báscula y tus apps de fitness, pero no ofrece una forma sencilla de verlos. Esta aplicación es ese visor que faltaba.
+
+QUÉ HACE
+
+• Un panel con las cifras que te importan, día a día
+• Todos los tipos de datos de Health Connect, desde pasos y sueño hasta presión arterial y VO₂ máx.
+• Registros individuales con hora exacta, valor, unidad y la app que los escribió
+• Gráficos por día, semana, cuatro semanas o año
+• Sueño y entrenamientos sombreados detrás de los gráficos del día, para que un pico tenga explicación
+• Cada entrenamiento con su frecuencia cardíaca y, si lo permites, su ruta con perfil de altura
+• Fases del sueño — profundo, ligero, REM y despierto
+• Resumen de ciclos: todos los ciclos de un año, alineados en el día uno, sin predicciones
+• Flechas de tendencia: la última semana frente a tu media de 30 días
+• Rachas: días seguidos cumpliendo tu objetivo o activo, y la más larga del año
+• Cómo se tomó cada medición: glucosa en ayunas o tras comer, presión sentado o en la muñeca
+• Mosaicos que se ordenan arrastrando, unidades métricas o imperiales, glucosa en mmol/L o mg/dL
+• Copia de tu panel y ajustes en un archivo para restaurarlos en otro teléfono
+
+TUS DATOS SE QUEDAN EN TU TELÉFONO
+
+Esta aplicación no tiene permiso de internet. No es «prometemos no subir nada»: Android mismo le impide cualquier conexión de red. No hay cuenta, ni servidor, ni analítica, ni publicidad, ni seguimiento.
+
+Es de solo lectura: muestra tus datos de salud pero no puede cambiarlos ni borrarlos. No escribe nada en el almacenamiento salvo que tú lo exportes, así que al desinstalarla desaparece todo. Las rutas solo se leen si lo permites y se dibujan sin mapa.
+
+TÚ ELIGES QUÉ COMPARTIR
+
+Los permisos se piden tipo por tipo y no hay nada seleccionado de antemano. Permite solo lo que quieras ver y cámbialo cuando quieras en los ajustes de Health Connect.
+
+TOTALES CORRECTOS
+
+Cuando varias apps registran lo mismo — un teléfono y un reloj contando pasos —, sus registros se solapan. Esta aplicación usa la agregación de Health Connect para eliminar duplicados, así que los totales diarios son correctos y no se cuentan dos veces, y te indica cuándo ha contribuido más de una app.
+
+Health Connect no vincula un entrenamiento con las mediciones tomadas durante él. Donde esta aplicación muestra las cifras de una sesión, dice claramente que se asignan por la hora.
+
+PRO — PAGO ÚNICO, SIN SUSCRIPCIÓN
+
+Todo lo anterior es gratis y lo seguirá siendo. Pro es una única compra dentro de la app que desbloquea:
+
+• Exportación CSV de cualquier tipo de datos: cada registro con su app de origen, o los totales diarios sin duplicados. Tú eliges dónde se guarda; la app no guarda copia.
+• Informes PDF para tu médico: presión arterial con medias de mañana y tarde, peso por semana, frecuencia cardíaca en reposo frente a su media de cuatro semanas, glucosa por comida y rango objetivo.
+• Mosaicos más grandes con su propio periodo — hoy, la semana, cuatro semanas o el año — como número, gráfico o ambos.
+• Varios mosaicos para la misma cifra y un color propio para cada uno.
+• Rutas de entrenamiento como archivos GPX.
+• Todas las funciones Pro futuras, sin coste adicional.
+
+Las compras las gestiona íntegramente Google Play y te acompañan a un teléfono nuevo.
+
+CÓDIGO ABIERTO
+
+El código fuente es público, así que cada afirmación puede comprobarse.

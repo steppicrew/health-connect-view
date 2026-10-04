@@ -1,0 +1,1 @@
+0.10.0 — Baru: rangkaian, berapa hari berturut-turut Anda mencapai target atau aktif, dengan yang terpanjang tahun ini; rute latihan dengan profil ketinggian, hanya jika Anda izinkan; mindfulness; cara glukosa darah dan tekanan darah diukur; mengatur kartu dengan menyeret; penjelasan setiap izin. Pro: beberapa kartu untuk satu angka, warna kartu, rute sebagai file GPX.

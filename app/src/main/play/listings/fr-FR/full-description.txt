@@ -1,0 +1,50 @@
+Santé Connect stocke les données écrites par votre montre, votre balance et vos applis de sport, mais n’offre aucun moyen simple de les consulter. Cette application est la visionneuse qui manquait.
+
+CE QU’ELLE FAIT
+
+• Un tableau de bord des chiffres qui vous importent, jour après jour
+• Tous les types de données de Santé Connect, des pas et du sommeil à la tension artérielle et à la VO₂ max
+• Chaque enregistrement avec son heure exacte, sa valeur, son unité et l’appli qui l’a écrit
+• Graphiques par jour, semaine, quatre semaines ou année
+• Sommeil et entraînements ombrés derrière les graphiques du jour, pour qu’un pic ait une explication
+• Chaque entraînement avec sa fréquence cardiaque et, si vous l’autorisez, son parcours et son profil d’altitude
+• Les phases de sommeil — profond, léger, paradoxal et éveil
+• Une vue des cycles : tous les cycles d’une année, alignés sur le premier jour, sans prédiction
+• Des flèches de tendance : la dernière semaine comparée à votre moyenne sur 30 jours
+• Des séries : jours d’affilée à atteindre votre objectif ou à être actif, et la plus longue de l’année
+• Comment chaque mesure a été prise : glycémie à jeun ou après un repas, tension assis ou au poignet
+• Vignettes réorganisables par glisser, unités métriques ou impériales, glycémie en mmol/L ou mg/dL
+• Sauvegarde du tableau de bord et des paramètres dans un fichier, pour un nouveau téléphone
+
+VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
+
+Cette application n’a aucune autorisation Internet. Ce n’est pas « nous promettons de ne rien envoyer » : Android lui-même l’empêche d’établir la moindre connexion réseau. Pas de compte, pas de serveur, pas d’analyse, pas de publicité, pas de suivi.
+
+Elle est en lecture seule : elle affiche vos données de santé sans pouvoir les modifier ni les supprimer. Rien n’est écrit sur le stockage sauf si vous l’exportez vous-même, donc la désinstallation efface tout. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
+
+VOUS CHOISISSEZ CE QUE VOUS PARTAGEZ
+
+Les autorisations sont demandées type par type, et rien n’est présélectionné. Autorisez seulement ce que vous voulez voir, et changez d’avis quand vous voulez dans les paramètres de Santé Connect.
+
+DES TOTAUX JUSTES
+
+Quand plusieurs applis enregistrent la même chose — un téléphone et une montre qui comptent les pas —, leurs enregistrements se chevauchent. Cette application utilise l’agrégation de Santé Connect pour supprimer les doublons : les totaux journaliers sont justes, sans double comptage, et elle vous signale quand plusieurs applis ont contribué.
+
+Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. Là où l’application affiche les chiffres d’une séance, elle indique clairement qu’ils sont rapprochés par l’heure.
+
+PRO — ACHAT UNIQUE, SANS ABONNEMENT
+
+Tout ce qui précède est gratuit et le restera. Pro est un achat intégré unique qui débloque :
+
+• L’export CSV de n’importe quel type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. Vous choisissez où va le fichier ; l’appli n’en garde aucune copie.
+• Des rapports PDF pour votre médecin : tension avec moyennes du matin et du soir, poids par semaine, fréquence cardiaque au repos face à sa moyenne sur quatre semaines, glycémie par repas et par plage cible.
+• Des vignettes plus grandes avec leur propre période — aujourd’hui, la semaine, quatre semaines ou l’année — en chiffre, en graphique ou les deux.
+• Plusieurs vignettes pour un même chiffre, et une couleur pour chacune.
+• Les parcours d’entraînement en fichiers GPX.
+• Toutes les futures fonctions Pro, sans frais supplémentaires.
+
+Les achats sont entièrement gérés par Google Play et vous suivent sur un nouveau téléphone.
+
+OPEN SOURCE
+
+Le code source est public : chaque affirmation ci-dessus peut être vérifiée.

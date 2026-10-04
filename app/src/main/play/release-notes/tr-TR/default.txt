@@ -1,0 +1,1 @@
+0.10.0 — Yeni: seriler, hedefinize art arda kaç gün ulaştığınız veya aktif olduğunuz, yılın en uzunuyla; yalnızca izin verirseniz yükseklik profilli antrenman rotaları; farkındalık; kan şekeri ve tansiyonun nasıl ölçüldüğü; kutucukları sürükleyerek düzenleme; her izin açıklandı. Pro: bir değer için birden fazla kutucuk, kutucuk renkleri, GPX dosyası olarak rotalar.

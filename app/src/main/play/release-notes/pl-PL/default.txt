@@ -1,0 +1,1 @@
+0.10.0 — Nowości: serie, ile dni z rzędu osiągnięto cel lub była aktywność, z najdłuższą w roku; trasy treningów z profilem wysokości, tylko za Twoją zgodą; uważność; jak zmierzono glukozę i ciśnienie; układanie kafelków przeciąganiem; wyjaśnienie każdego uprawnienia. Pro: kilka kafelków dla jednej wartości, kolory kafelków, trasy jako pliki GPX.
