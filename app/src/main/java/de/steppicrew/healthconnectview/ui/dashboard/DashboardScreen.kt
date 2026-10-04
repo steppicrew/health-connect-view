@@ -37,10 +37,10 @@ import androidx.compose.material.icons.filled.FormatColorFill
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.automirrored.filled.NavigateBefore
 import androidx.compose.material.icons.filled.CloseFullscreen
 import androidx.compose.material.icons.filled.OpenInFull
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -245,7 +245,7 @@ fun DashboardScreen(
                         enabled = !editing,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ChevronLeft,
+                            imageVector = Icons.AutoMirrored.Filled.NavigateBefore,
                             contentDescription = stringResource(R.string.dashboard_previous_day),
                         )
                     }
@@ -256,7 +256,7 @@ fun DashboardScreen(
                         enabled = state.canStepForward && !editing,
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ChevronRight,
+                            imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                             contentDescription = stringResource(R.string.dashboard_next_day),
                         )
                     }

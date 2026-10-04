@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.automirrored.filled.NavigateBefore
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,14 +76,14 @@ fun WindowStepper(
     ) {
         IconButton(onClick = onBack) {
             Icon(
-                imageVector = Icons.Default.ChevronLeft,
+                imageVector = Icons.AutoMirrored.Filled.NavigateBefore,
                 contentDescription = stringResource(R.string.span_previous),
             )
         }
         Text(text = label, style = MaterialTheme.typography.labelLarge)
         IconButton(onClick = onForward, enabled = canStepForward) {
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = stringResource(R.string.span_next),
             )
         }
