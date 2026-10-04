@@ -1,0 +1,50 @@
+Health Connect menyimpan data yang ditulis jam tangan, timbangan, dan aplikasi kebugaran Anda, tetapi tidak menyediakan cara mudah untuk melihatnya. Aplikasi inilah penampil yang selama ini kurang.
+
+FITUR
+
+• Dasbor angka yang penting bagi Anda, hari demi hari
+• Semua jenis data yang didukung Health Connect, dari langkah dan tidur hingga tekanan darah dan VO₂ maks
+• Catatan satu per satu dengan waktu tepat, nilai, satuan, dan aplikasi yang menulisnya
+• Diagram per hari, minggu, empat minggu, atau tahun
+• Tidur dan latihan diarsir di balik diagram harian, agar puncak atau penurunan punya penjelasan
+• Setiap latihan dengan detak jantung selama latihan dan, jika Anda izinkan, rutenya dengan profil ketinggian
+• Tahap tidur — nyenyak, ringan, REM, dan terjaga
+• Ringkasan siklus: semua siklus setahun berdampingan, disejajarkan pada hari pertama, tanpa prediksi
+• Panah tren: minggu terakhir dibandingkan rata-rata 30 hari Anda
+• Rangkaian: berapa hari berturut-turut target tercapai atau Anda aktif, dan yang terpanjang tahun ini
+• Cara setiap pengukuran dilakukan: glukosa saat puasa atau setelah makan, tekanan darah duduk atau di pergelangan
+• Kartu yang bisa diatur dengan menyeret, satuan metrik atau imperial, glukosa dalam mmol/L atau mg/dL
+• Cadangan dasbor dan setelan ke file untuk dipulihkan di ponsel baru
+
+DATA ANDA TETAP DI PONSEL ANDA
+
+Aplikasi ini tidak memiliki izin internet. Ini bukan "kami berjanji tidak mengunggah apa pun" — Android sendiri yang mencegahnya membuat koneksi jaringan apa pun. Tanpa akun, server, analitik, iklan, atau pelacakan.
+
+Aplikasi ini hanya membaca: menampilkan data kesehatan Anda tetapi tidak bisa mengubah atau menghapusnya. Tidak ada yang disimpan kecuali Anda mengekspornya sendiri, jadi mencopot pemasangan menghapus semuanya. Rute hanya dibaca jika Anda izinkan dan digambar tanpa peta.
+
+ANDA YANG MEMILIH APA YANG DIBAGIKAN
+
+Izin diminta per jenis data, dan tidak ada yang dipilih secara default. Izinkan hanya yang ingin Anda lihat, dan ubah kapan saja di setelan Health Connect.
+
+TOTAL YANG TEPAT
+
+Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tepat dan tidak terhitung dua kali, serta memberi tahu Anda jika lebih dari satu aplikasi berkontribusi.
+
+Health Connect tidak mengaitkan latihan dengan hasil ukur yang diambil selama latihan itu. Di tempat aplikasi menampilkan angka sebuah sesi, aplikasi menyatakan dengan jelas bahwa angka itu dicocokkan berdasarkan waktu.
+
+PRO — SEKALI BELI, TANPA LANGGANAN
+
+Semua yang di atas gratis dan akan tetap gratis. Pro adalah satu pembelian dalam aplikasi yang membuka:
+
+• Ekspor CSV untuk jenis data apa pun: setiap catatan dengan aplikasi sumbernya, atau total harian tanpa duplikat. Anda yang memilih tempat file disimpan; aplikasi tidak menyimpan salinan.
+• Laporan PDF untuk dokter Anda: tekanan darah dengan rata-rata pagi dan malam, berat badan per minggu, detak jantung istirahat terhadap rata-rata empat minggu, glukosa menurut waktu makan dan rentang target.
+• Kartu lebih besar dengan periode sendiri — hari ini, minggu ini, empat minggu, atau setahun — sebagai angka, diagram, atau keduanya.
+• Beberapa kartu untuk angka yang sama, dan warna sendiri untuk tiap kartu.
+• Rute latihan sebagai file GPX.
+• Semua fitur Pro mendatang, tanpa biaya tambahan.
+
+Pembelian sepenuhnya ditangani Google Play dan ikut pindah ke ponsel baru Anda.
+
+OPEN SOURCE
+
+Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di atas dapat diperiksa.

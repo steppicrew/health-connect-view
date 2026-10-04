@@ -1,0 +1,1 @@
+0.10.0 — Novidades: sequências, quantos dias seguidos você cumpriu sua meta ou ficou ativo, com a mais longa do ano; trajetos de treino com perfil de altitude, só se você permitir; mindfulness; como glicemia e pressão foram medidas; organizar blocos arrastando; cada permissão explicada. Pro: vários blocos para um número, cores de bloco, trajetos como arquivos GPX.

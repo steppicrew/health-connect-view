@@ -1,0 +1,50 @@
+Health Connect; saatinizin, tartınızın ve fitness uygulamalarınızın yazdığı verileri saklar ama bunlara bakmanın basit bir yolunu sunmaz. Bu uygulama eksik olan o görüntüleyicidir.
+
+NE YAPAR
+
+• Önem verdiğiniz değerleri gün gün gösteren bir panel
+• Adımlardan uykuya, tansiyondan VO₂ maks. değerine kadar Health Connect’in desteklediği her veri türü
+• Tam zamanı, değeri, birimi ve yazan uygulamasıyla tek tek kayıtlar
+• Gün, hafta, dört hafta veya yıl bazında grafikler
+• Günün grafiklerinin arkasında gölgelenen uyku ve antrenmanlar; böylece bir zirvenin açıklaması olur
+• Her antrenman, sırasında kaydedilen nabızla ve izin verirseniz yükseklik profilli rotasıyla
+• Uyku evreleri — derin, hafif, REM ve uyanık
+• Döngü özeti: bir yılın tüm döngüleri yan yana, ilk güne hizalı, tahmin yok
+• Eğilim okları: son hafta, 30 günlük ortalamanızla karşılaştırılır
+• Seriler: hedefe art arda kaç gün ulaştığınız veya aktif olduğunuz, ve yılın en uzunu
+• Her ölçümün nasıl alındığı: kan şekeri açken veya yemekten sonra, tansiyon oturarak veya bilekten
+• Sürükleyerek düzenlenen kutucuklar, metrik veya İngiliz birimleri, mmol/L veya mg/dL kan şekeri
+• Paneli ve ayarları bir dosyaya yedekleyip yeni telefonda geri yükleme
+
+VERİLERİNİZ TELEFONUNUZDA KALIR
+
+Bu uygulamanın internet izni yoktur. Bu "hiçbir şey yüklemeyeceğimize söz veriyoruz" değil: Android’in kendisi herhangi bir ağ bağlantısını engeller. Hesap, sunucu, analiz, reklam veya izleme yoktur.
+
+Salt okunurdur: sağlık verilerinizi gösterir ama değiştiremez veya silemez. Siz dışa aktarmadıkça hiçbir şey depolamaya yazılmaz; bu yüzden kaldırmak her şeyi siler. Rotalar yalnızca izin verirseniz okunur ve haritasız çizilir.
+
+NEYİ PAYLAŞACAĞINIZI SİZ SEÇERSİNİZ
+
+İzinler her veri türü için ayrı istenir ve varsayılan olarak hiçbir şey seçili değildir. Yalnızca görmek istediklerinize izin verin, istediğiniz zaman Health Connect ayarlarından değiştirin.
+
+DOĞRU TOPLAMLAR
+
+Birden fazla uygulama aynı şeyi kaydettiğinde — adım sayan bir telefon ve bir saat gibi — kayıtları çakışır. Bu uygulama yinelenenleri kaldırmak için Health Connect’in kendi toplama işlevini kullanır; böylece günlük toplamlar iki kez sayılmaz, doğru olur ve birden fazla uygulamanın katkıda bulunduğunu size söyler.
+
+Health Connect bir antrenmanı sırasında alınan ölçümlerle ilişkilendirmez. Uygulama bir oturumun değerlerini gösterdiği yerde, bunların zamana göre eşleştirildiğini açıkça belirtir.
+
+PRO — TEK SEFERLİK SATIN ALMA, ABONELİK YOK
+
+Yukarıdakilerin hepsi ücretsizdir ve öyle kalacaktır. Pro, şunları açan tek bir uygulama içi satın almadır:
+
+• Herhangi bir veri türünün CSV olarak dışa aktarılması: kaynak uygulamasıyla her kayıt veya tekilleştirilmiş günlük toplamlar. Dosyanın nereye gideceğini siz seçersiniz; uygulama kopya tutmaz.
+• Doktorunuz için PDF raporlar: sabah ve akşam ortalamalarıyla tansiyon, haftalara göre kilo, 4 haftalık ortalamasına göre dinlenme nabzı, öğüne ve hedef aralığa göre kan şekeri.
+• Kendi dönemi olan daha büyük kutucuklar — bugün, hafta, dört hafta veya yıl — sayı, grafik ya da ikisi birden.
+• Aynı değer için birden fazla kutucuk ve her birine kendi rengi.
+• GPX dosyası olarak antrenman rotaları.
+• Gelecekteki tüm Pro özellikleri, ek ücret olmadan.
+
+Satın almalar tamamen Google Play tarafından yürütülür ve yeni telefonunuza sizinle gelir.
+
+AÇIK KAYNAK
+
+Kaynak kodu herkese açıktır; yukarıdaki her iddia doğrulanabilir.

@@ -1,0 +1,50 @@
+O Conexão Saúde guarda os dados que seu relógio, sua balança e seus apps de fitness gravam, mas não oferece um jeito simples de vê-los. Este app é o visualizador que faltava.
+
+O QUE ELE FAZ
+
+• Um painel com os números que importam para você, dia a dia
+• Todos os tipos de dados do Conexão Saúde, de passos e sono a pressão arterial e VO₂ máx.
+• Registros individuais com horário exato, valor, unidade e o app que os gravou
+• Gráficos por dia, semana, quatro semanas ou ano
+• Sono e treinos sombreados atrás dos gráficos do dia, para que um pico tenha explicação
+• Cada treino com a frequência cardíaca registrada e, se você permitir, o trajeto com perfil de altitude
+• Fases do sono — profundo, leve, REM e acordado
+• Uma visão geral dos ciclos: todos os ciclos de um ano lado a lado, alinhados no dia um, sem previsões
+• Setas de tendência: a última semana comparada com sua média de 30 dias
+• Sequências: dias seguidos cumprindo a meta ou ativo, e a mais longa do ano
+• Como cada medição foi feita: glicemia em jejum ou depois de comer, pressão sentado ou no pulso
+• Blocos organizados arrastando, unidades métricas ou imperiais, glicemia em mmol/L ou mg/dL
+• Backup do painel e das configurações em um arquivo, para restaurar em um novo smartphone
+
+SEUS DADOS FICAM NO SEU SMARTPHONE
+
+Este app não tem permissão de internet. Não é "prometemos não enviar nada": o próprio Android impede qualquer conexão de rede. Sem conta, sem servidor, sem análises, sem anúncios e sem rastreamento.
+
+Ele é somente leitura: mostra seus dados de saúde, mas não pode alterá-los nem excluí-los. Nada é gravado no armazenamento a não ser que você mesmo exporte, então desinstalar remove tudo. Os trajetos só são lidos se você permitir e são desenhados sem mapa.
+
+VOCÊ ESCOLHE O QUE COMPARTILHAR
+
+As permissões são pedidas um tipo de dado por vez, e nada vem selecionado. Permita só o que quiser ver e mude de ideia quando quiser nas configurações do Conexão Saúde.
+
+TOTAIS CORRETOS
+
+Quando vários apps registram a mesma coisa — um smartphone e um relógio contando passos —, os registros se sobrepõem. Este app usa a agregação do próprio Conexão Saúde para remover duplicatas, então os totais diários estão corretos, sem contagem dupla, e ele avisa quando mais de um app contribuiu.
+
+O Conexão Saúde não vincula um treino às medições feitas durante ele. Onde o app mostra os números de uma sessão, ele diz claramente que foram associados pelo horário.
+
+PRO — COMPRA ÚNICA, SEM ASSINATURA
+
+Tudo acima é gratuito e vai continuar assim. O Pro é uma única compra no app que desbloqueia:
+
+• Exportação em CSV de qualquer tipo de dado: cada registro com o app de origem, ou os totais diários sem duplicatas. Você escolhe onde salvar; o app não guarda cópia.
+• Relatórios em PDF para seu médico: pressão com médias da manhã e da noite, peso por semana, frequência cardíaca em repouso comparada à média de quatro semanas, glicemia por refeição e faixa-alvo.
+• Blocos maiores com período próprio — hoje, a semana, quatro semanas ou o ano — como número, gráfico ou ambos.
+• Vários blocos para o mesmo número e uma cor para cada um.
+• Trajetos de treino como arquivos GPX.
+• Todos os recursos Pro futuros, sem custo adicional.
+
+As compras são gerenciadas inteiramente pelo Google Play e acompanham sua conta em um novo smartphone.
+
+CÓDIGO ABERTO
+
+O código-fonte é público, então cada afirmação acima pode ser verificada.
