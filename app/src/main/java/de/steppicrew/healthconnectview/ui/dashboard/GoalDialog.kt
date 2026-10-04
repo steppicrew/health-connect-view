@@ -14,13 +14,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.ui.components.parseDecimalInput
 
 /**
  * Sets a ring tile's daily goal.
  *
- * Input is parsed leniently -- both a decimal comma and a point are accepted, since the app
- * is translated and the keyboard's separator follows the locale while [String.toDoubleOrNull]
- * does not.
+ * Input is parsed leniently by [parseDecimalInput], since the keyboard follows the locale.
  */
 @Composable
 fun GoalDialog(
@@ -55,7 +54,7 @@ fun GoalDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(typeName, text.replace(',', '.').trim().toDoubleOrNull())
+                    onSave(typeName, parseDecimalInput(text))
                     onDismiss()
                 },
             ) {
