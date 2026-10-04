@@ -1,0 +1,1 @@
+0.11.0 — Agora em 17 idiomas, incluindo o português. Números digitados com algarismos árabes ou hindis agora funcionam, e as setas de dia apontam para o lado certo em idiomas escritos da direita para a esquerda.

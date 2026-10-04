@@ -1,0 +1,1 @@
+0.11.0 — Ahora en 17 idiomas, entre ellos el español. Los números escritos con cifras árabes o hindi ya funcionan, y las flechas de día apuntan bien en los idiomas que se escriben de derecha a izquierda.

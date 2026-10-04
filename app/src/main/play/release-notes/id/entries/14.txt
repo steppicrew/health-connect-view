@@ -1,0 +1,1 @@
+0.11.0 — Kini dalam 17 bahasa, termasuk bahasa Indonesia. Angka yang diketik dengan digit Arab atau Hindi kini dikenali, dan panah hari menunjuk ke arah yang benar dalam bahasa yang ditulis dari kanan ke kiri.

@@ -1,0 +1,1 @@
+0.11.0 — Artık Türkçe dahil 17 dilde. Arapça veya Hintçe rakamlarla girilen sayılar artık çalışıyor ve gün okları sağdan sola yazılan dillerde doğru yönü gösteriyor.

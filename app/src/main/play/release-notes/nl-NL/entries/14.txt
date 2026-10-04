@@ -1,0 +1,1 @@
+0.11.0 — Nu in 17 talen, waaronder het Nederlands. Getallen met Arabische of Hindi-cijfers werken nu, en de dagpijlen wijzen de goede kant op in talen die van rechts naar links worden geschreven.

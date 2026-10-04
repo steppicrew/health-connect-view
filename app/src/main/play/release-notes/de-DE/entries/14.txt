@@ -1,0 +1,1 @@
+0.11.0 — Jetzt in 17 Sprachen: neu sind Spanisch, Französisch, Italienisch, Portugiesisch, Niederländisch, Polnisch, Türkisch, Russisch, Japanisch, Koreanisch, Chinesisch, Hindi, Indonesisch und Arabisch. Zahlen mit arabischen oder indischen Ziffern werden erkannt, und die Tagespfeile zeigen bei Schrift von rechts nach links in die richtige Richtung.

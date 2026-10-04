@@ -1,0 +1,1 @@
+0.11.0 — Now in 17 languages: added Spanish, French, Italian, Portuguese, Dutch, Polish, Turkish, Russian, Japanese, Korean, Chinese, Hindi, Indonesian and Arabic. Numbers typed with Arabic or Hindi digits now work, and the day arrows point the right way in right-to-left languages.

@@ -1,0 +1,1 @@
+0.11.0 — Teraz w 17 językach, w tym po polsku. Liczby wpisane cyframi arabskimi lub hindi są teraz rozpoznawane, a strzałki dni wskazują właściwy kierunek w językach pisanych od prawej do lewej.

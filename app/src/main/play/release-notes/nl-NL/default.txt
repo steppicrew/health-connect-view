@@ -1,1 +1,1 @@
-0.10.0 — Nieuw: reeksen, hoeveel dagen op rij je je doel haalde of actief was, met de langste van het jaar; trainingsroutes met hoogteprofiel, alleen als je dat toestaat; mindfulness; hoe bloedglucose en bloeddruk zijn gemeten; tegels ordenen door te slepen; elke toestemming uitgelegd. Pro: meerdere tegels voor één cijfer, tegelkleuren, routes als GPX-bestanden.
+0.11.0 — Nu in 17 talen, waaronder het Nederlands. Getallen met Arabische of Hindi-cijfers werken nu, en de dagpijlen wijzen de goede kant op in talen die van rechts naar links worden geschreven.
