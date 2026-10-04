@@ -164,6 +164,13 @@ take_shots() {
         local previous="" current="" settled=0
         for _ in $(seq 1 "$SETTLE_TRIES"); do
             sleep "$SETTLE_INTERVAL"
+            # The splash screen holds still too, so two matching frames of it also passed as
+            # settled -- right after the script's own reinstall, when cold starts are slowest,
+            # four store screenshots showed nothing but the launcher icon. Wait it out first.
+            if adb -s "$device" shell dumpsys window windows | grep -q "Splash Screen $PACKAGE"; then
+                previous=""
+                continue
+            fi
             adb -s "$device" exec-out screencap -p > "$shot"
             current="$(md5sum < "$shot")"
             if [ -n "$previous" ] && [ "$current" = "$previous" ]; then settled=1; break; fi
