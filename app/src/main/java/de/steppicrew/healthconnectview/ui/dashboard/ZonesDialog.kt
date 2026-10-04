@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.ValueZones
+import de.steppicrew.healthconnectview.ui.components.parseDecimalInput
 
 /**
  * Sets the value boundaries a curve is coloured by.
@@ -129,7 +130,7 @@ fun ZonesDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val parsed = fields.map { it.replace(',', '.').trim().toDoubleOrNull() }
+                    val parsed = fields.map { parseDecimalInput(it) }
                     // Rejected rather than silently repaired: a boundary the user cannot see
                     // the effect of is worse than being told the numbers do not work.
                     if (parsed.any { it == null } || parsed.filterNotNull().let {
