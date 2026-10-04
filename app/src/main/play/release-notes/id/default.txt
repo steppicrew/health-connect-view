@@ -1,1 +1,1 @@
-0.10.0 — Baru: rangkaian, berapa hari berturut-turut Anda mencapai target atau aktif, dengan yang terpanjang tahun ini; rute latihan dengan profil ketinggian, hanya jika Anda izinkan; mindfulness; cara glukosa darah dan tekanan darah diukur; mengatur kartu dengan menyeret; penjelasan setiap izin. Pro: beberapa kartu untuk satu angka, warna kartu, rute sebagai file GPX.
+0.11.0 — Kini dalam 17 bahasa, termasuk bahasa Indonesia. Angka yang diketik dengan digit Arab atau Hindi kini dikenali, dan panah hari menunjuk ke arah yang benar dalam bahasa yang ditulis dari kanan ke kiri.

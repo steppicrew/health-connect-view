@@ -1,1 +1,1 @@
-0.10.0 — Nowości: serie, ile dni z rzędu osiągnięto cel lub była aktywność, z najdłuższą w roku; trasy treningów z profilem wysokości, tylko za Twoją zgodą; uważność; jak zmierzono glukozę i ciśnienie; układanie kafelków przeciąganiem; wyjaśnienie każdego uprawnienia. Pro: kilka kafelków dla jednej wartości, kolory kafelków, trasy jako pliki GPX.
+0.11.0 — Teraz w 17 językach, w tym po polsku. Liczby wpisane cyframi arabskimi lub hindi są teraz rozpoznawane, a strzałki dni wskazują właściwy kierunek w językach pisanych od prawej do lewej.

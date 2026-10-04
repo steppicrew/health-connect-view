@@ -1,0 +1,1 @@
+0.11.0 — Désormais en 17 langues, dont le français. Les nombres saisis en chiffres arabes ou hindis sont reconnus, et les flèches de jour pointent dans le bon sens pour les langues écrites de droite à gauche.

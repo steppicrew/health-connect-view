@@ -1,0 +1,1 @@
+0.11.0 — Ora in 17 lingue, tra cui l’italiano. I numeri digitati con cifre arabe o hindi ora funzionano, e le frecce dei giorni puntano nel verso giusto nelle lingue da destra a sinistra.
