@@ -44,6 +44,19 @@ name brands.
 the release notes alike, including imperatives ("Geben Sie ... frei", not "Gib ... frei"). An
 infinitive ("Tippen, um ...") is fine.
 
+**Seventeen languages ship**, and a new string goes into every `values-*` file in the same
+commit: `TranslationsTest` fails a locale that was complete and drops a key. Each release also
+needs `release-notes/<lang>/entries/<versionCode>.txt` for all 18 Play locales, or
+`release.sh` stops. Register per language: formal *vous*, *вы*, *siz*, *आप*, *Anda*; the
+informal *tú*, *tu*, *você*, *je* that Android's own UI uses in those languages; polite form in
+Japanese and Korean. Use Health Connect's platform name where Android localizes it -- *Santé
+Connect*, *Connessione Salute*, *Conexão Saúde*, *ヘルスコネクト*, *헬스 커넥트* -- so the text
+matches the system screens it sends people to. Plurals need every category the language has
+(lint's `ImpliedQuantity` wants the number in French/Portuguese/Hindi/Russian `one`), Turkish
+reduplications like "tek tek" trip lint's `Typos`, and the locale config lists Indonesian as
+`in`, the folder name, not `id`. Arrows that mean earlier/later must be `AutoMirrored` icons,
+or they point the wrong way in Arabic.
+
 **Icons sit on the first line of the text beside them** -- row icons, source marks,
 checkboxes, radio buttons, switches, a lock -- never centred on the whole block. Text that fits
 one line today wraps on a narrow phone or in German, and a centred icon then drops between the
