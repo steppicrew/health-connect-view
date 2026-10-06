@@ -22,8 +22,10 @@ while read -r _local_ref local_sha remote_ref remote_sha; do
     [ "$local_sha" = "$ZERO" ] && continue          # deleting main: nothing to publish
     if [ "$remote_sha" = "$ZERO" ]; then
         changed=true                                # first push of main
+    # grep reads to the end rather than -q: -q exits on the first match, git diff then dies of
+    # SIGPIPE, and pipefail turns the match into a failure -- a large privacy change was skipped.
     elif git diff -U0 "$remote_sha" "$local_sha" -- "${PAGE_SOURCES[@]}" \
-        | grep -qE '^[-+].*(name="privacy_|privacy-page)|^\+\+\+ b/scripts/privacy-page.py'; then
+        | grep -E '^[-+].*(name="privacy_|privacy-page)|^\+\+\+ b/scripts/privacy-page.py' >/dev/null; then
         changed=true
     fi
 done
