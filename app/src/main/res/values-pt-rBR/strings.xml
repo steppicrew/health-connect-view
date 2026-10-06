@@ -648,7 +648,7 @@
     <string name="privacy_purchases_title">Compras</string>
     <string name="privacy_purchases_body">Os recursos pagos opcionais são gerenciados inteiramente pelo Google Play. O app nunca vê seus dados de pagamento, e a verificação de compras acontece pelo app Play Store, e não pela rede.</string>
     <string name="privacy_contact_title">Código e contato</string>
-    <string name="privacy_contact_body">O código-fonte é público, então cada afirmação desta página pode ser verificada. Relate problemas pelo rastreador de problemas do projeto no GitHub.</string>
+    <string name="privacy_contact_body">O código-fonte é público, então cada afirmação desta página pode ser verificada. Relate problemas pelo rastreador de problemas do projeto no GitHub. Você também pode enviar dúvidas por e-mail para hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Média da noite</string>
     <string name="hrv_week_label">Média das últimas 7 noites</string>
     <string name="hrv_week_mean">Média das últimas 7 noites: %1$s ms</string>

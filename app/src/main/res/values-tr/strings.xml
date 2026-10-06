@@ -623,7 +623,7 @@
     <string name="privacy_purchases_title">Satın almalar</string>
     <string name="privacy_purchases_body">İsteğe bağlı ücretli özellikler tamamen Google Play tarafından yürütülür. Uygulama ödeme bilgilerinizi asla görmez ve satın alma kontrolleri ağ üzerinden değil, Play Store uygulaması aracılığıyla yapılır.</string>
     <string name="privacy_contact_title">Kaynak ve iletişim</string>
-    <string name="privacy_contact_body">Kaynak kodu herkese açıktır; bu sayfadaki her iddia doğrulanabilir. Lütfen sorunları projenin GitHub’daki sorun takipçisi üzerinden bildirin.</string>
+    <string name="privacy_contact_body">Kaynak kodu herkese açıktır; bu sayfadaki her iddia doğrulanabilir. Lütfen sorunları projenin GitHub’daki sorun takipçisi üzerinden bildirin. Sorularınızı hcview@steppicrew.de adresine e-postayla da gönderebilirsiniz.</string>
     <string name="hrv_night_label">Gece ortalaması</string>
     <string name="hrv_week_label">Son 7 gecenin ortalaması</string>
     <string name="hrv_week_mean">Son 7 gecenin ortalaması: %1$s ms</string>

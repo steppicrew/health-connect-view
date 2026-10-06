@@ -623,7 +623,7 @@
     <string name="privacy_purchases_title">खरीदारी</string>
     <string name="privacy_purchases_body">वैकल्पिक पेड सुविधाएं पूरी तरह Google Play संभालता है। ऐप कभी आपकी पेमेंट की जानकारी नहीं देखता, और खरीदारी की जांच नेटवर्क से नहीं, बल्कि Play Store ऐप के ज़रिए होती है।</string>
     <string name="privacy_contact_title">सोर्स और संपर्क</string>
-    <string name="privacy_contact_body">सोर्स कोड सार्वजनिक है, इसलिए इस पेज की हर बात जांची जा सकती है। कृपया समस्याएं GitHub पर प्रोजेक्ट के इश्यू ट्रैकर से बताएं।</string>
+    <string name="privacy_contact_body">सोर्स कोड सार्वजनिक है, इसलिए इस पेज की हर बात जांची जा सकती है। कृपया समस्याएं GitHub पर प्रोजेक्ट के इश्यू ट्रैकर से बताएं। आप सवाल hcview@steppicrew.de पर ईमेल से भी भेज सकते हैं।</string>
     <string name="hrv_night_label">रात का औसत</string>
     <string name="hrv_week_label">पिछली 7 रातों का औसत</string>
     <string name="hrv_week_mean">पिछली 7 रातों का औसत: %1$s ms</string>

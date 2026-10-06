@@ -598,7 +598,7 @@
     <string name="privacy_purchases_title">购买</string>
     <string name="privacy_purchases_body">可选付费功能完全由 Google Play 处理。此应用永远看不到您的付款信息，购买验证通过 Play 商店应用完成，而不是通过网络。</string>
     <string name="privacy_contact_title">源代码和联系方式</string>
-    <string name="privacy_contact_body">源代码是公开的，因此此页面上的每项说明都可以核实。请通过该项目在 GitHub 上的问题跟踪器报告问题。</string>
+    <string name="privacy_contact_body">源代码是公开的，因此此页面上的每项说明都可以核实。请通过该项目在 GitHub 上的问题跟踪器报告问题。如有疑问，也可发送电子邮件至 hcview@steppicrew.de。</string>
     <string name="hrv_night_label">当晚平均值</string>
     <string name="hrv_week_label">最近 7 晚平均值</string>
     <string name="hrv_week_mean">最近 7 晚平均值：%1$s ms</string>

@@ -623,7 +623,7 @@
     <string name="privacy_purchases_title">Aankopen</string>
     <string name="privacy_purchases_body">Optionele betaalde functies worden volledig door Google Play afgehandeld. De app ziet nooit je betaalgegevens, en aankopen worden gecontroleerd via de Play Store-app in plaats van via het netwerk.</string>
     <string name="privacy_contact_title">Broncode en contact</string>
-    <string name="privacy_contact_body">De broncode is openbaar, dus elke bewering op deze pagina kan worden gecontroleerd. Meld problemen via de issuetracker van het project op GitHub.</string>
+    <string name="privacy_contact_body">De broncode is openbaar, dus elke bewering op deze pagina kan worden gecontroleerd. Meld problemen via de issuetracker van het project op GitHub. Vragen kun je ook mailen naar hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Nachtgemiddelde</string>
     <string name="hrv_week_label">Gemiddelde van de laatste 7 nachten</string>
     <string name="hrv_week_mean">Gemiddelde van de laatste 7 nachten: %1$s ms</string>
