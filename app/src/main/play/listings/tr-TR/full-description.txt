@@ -48,3 +48,5 @@ Satın almalar tamamen Google Play tarafından yürütülür ve yeni telefonunuz
 AÇIK KAYNAK
 
 Kaynak kodu herkese açıktır; yukarıdaki her iddia doğrulanabilir.
+
+Eksik bir özellik mi var? hcview@steppicrew.de adresine yazın.

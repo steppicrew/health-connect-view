@@ -48,3 +48,5 @@ Aankopen worden volledig door Google Play afgehandeld en gaan mee naar een nieuw
 OPEN SOURCE
 
 De broncode is openbaar, dus elke bewering hierboven kan worden gecontroleerd.
+
+Mis je een functie? Mail naar hcview@steppicrew.de.

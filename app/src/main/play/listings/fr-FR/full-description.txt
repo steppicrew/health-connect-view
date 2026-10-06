@@ -48,3 +48,5 @@ Les achats sont entièrement gérés par Google Play et vous suivent sur un nouv
 OPEN SOURCE
 
 Le code source est public : chaque affirmation ci-dessus peut être vérifiée.
+
+Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.

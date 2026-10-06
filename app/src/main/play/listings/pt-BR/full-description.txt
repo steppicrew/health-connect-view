@@ -48,3 +48,5 @@ As compras são gerenciadas inteiramente pelo Google Play e acompanham sua conta
 CÓDIGO ABERTO
 
 O código-fonte é público, então cada afirmação acima pode ser verificada.
+
+Sente falta de algum recurso? Escreva para hcview@steppicrew.de.

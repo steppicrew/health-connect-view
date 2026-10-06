@@ -48,3 +48,5 @@ Purchases are handled entirely by Google Play. Your purchase follows your Google
 OPEN SOURCE
 
 The source code is public, so every claim above can be verified.
+
+Missing a feature? Write to hcview@steppicrew.de.
