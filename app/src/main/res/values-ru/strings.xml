@@ -673,7 +673,7 @@
     <string name="privacy_purchases_title">Покупки</string>
     <string name="privacy_purchases_body">Необязательные платные функции полностью обрабатывает Google Play. Приложение никогда не видит ваших платёжных данных, а покупки проверяются через приложение Play Маркет, а не по сети.</string>
     <string name="privacy_contact_title">Исходный код и контакты</string>
-    <string name="privacy_contact_body">Исходный код открыт, поэтому каждое утверждение на этой странице можно проверить. Сообщайте о проблемах через трекер задач проекта на GitHub.</string>
+    <string name="privacy_contact_body">Исходный код открыт, поэтому каждое утверждение на этой странице можно проверить. Сообщайте о проблемах через трекер задач проекта на GitHub. Вопросы можно также отправить по электронной почте на hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Среднее за ночь</string>
     <string name="hrv_week_label">Среднее за последние 7 ночей</string>
     <string name="hrv_week_mean">Среднее за последние 7 ночей: %1$s ms</string>

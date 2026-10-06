@@ -723,7 +723,7 @@
     <string name="privacy_purchases_title">عمليات الشراء</string>
     <string name="privacy_purchases_body">تتولى Google Play بالكامل الميزات المدفوعة الاختيارية. لا يرى التطبيق تفاصيل الدفع الخاصة بك أبدًا، ويتم التحقق من المشتريات عبر تطبيق متجر Play وليس عبر الشبكة.</string>
     <string name="privacy_contact_title">المصدر والتواصل</string>
-    <string name="privacy_contact_body">الرمز المصدري متاح للعموم، لذا يمكن التحقق من كل ما في هذه الصفحة. يُرجى الإبلاغ عن المشكلات عبر نظام تتبّع المشكلات الخاص بالمشروع على GitHub.</string>
+    <string name="privacy_contact_body">الرمز المصدري متاح للعموم، لذا يمكن التحقق من كل ما في هذه الصفحة. يُرجى الإبلاغ عن المشكلات عبر نظام تتبّع المشكلات الخاص بالمشروع على GitHub. ويمكنك أيضًا إرسال أسئلتك بالبريد الإلكتروني إلى hcview@steppicrew.de.</string>
     <string name="hrv_night_label">متوسط الليلة</string>
     <string name="hrv_week_label">متوسط آخر 7 ليالٍ</string>
     <string name="hrv_week_mean">متوسط آخر 7 ليالٍ: %1$s ms</string>

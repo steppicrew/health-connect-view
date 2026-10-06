@@ -598,7 +598,7 @@
     <string name="privacy_purchases_title">購入</string>
     <string name="privacy_purchases_body">オプションの有料機能は、すべて Google Play が処理します。アプリが支払い情報を見ることはなく、購入の確認はネットワーク経由ではなく Play ストア アプリを通じて行われます。</string>
     <string name="privacy_contact_title">ソースと連絡先</string>
-    <string name="privacy_contact_body">ソースコードは公開されているため、このページの記述はすべて確認できます。問題は GitHub のプロジェクトの issue トラッカーからご報告ください。</string>
+    <string name="privacy_contact_body">ソースコードは公開されているため、このページの記述はすべて確認できます。問題は GitHub のプロジェクトの issue トラッカーからご報告ください。ご質問は hcview@steppicrew.de へのメールでも受け付けています。</string>
     <string name="hrv_night_label">夜間の平均</string>
     <string name="hrv_week_label">過去 7 夜の平均</string>
     <string name="hrv_week_mean">過去 7 夜の平均: %1$s ms</string>

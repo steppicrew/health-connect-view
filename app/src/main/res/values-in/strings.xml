@@ -598,7 +598,7 @@
     <string name="privacy_purchases_title">Pembelian</string>
     <string name="privacy_purchases_body">Fitur berbayar opsional sepenuhnya ditangani oleh Google Play. Aplikasi tidak pernah melihat detail pembayaran Anda, dan pemeriksaan pembelian dilakukan melalui aplikasi Play Store, bukan melalui jaringan.</string>
     <string name="privacy_contact_title">Kode sumber dan kontak</string>
-    <string name="privacy_contact_body">Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di halaman ini dapat diperiksa. Laporkan masalah melalui issue tracker proyek di GitHub.</string>
+    <string name="privacy_contact_body">Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di halaman ini dapat diperiksa. Laporkan masalah melalui issue tracker proyek di GitHub. Pertanyaan juga dapat dikirim lewat email ke hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Rata-rata malam</string>
     <string name="hrv_week_label">Rata-rata 7 malam terakhir</string>
     <string name="hrv_week_mean">Rata-rata 7 malam terakhir: %1$s ms</string>

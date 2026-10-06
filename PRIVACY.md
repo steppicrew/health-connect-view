@@ -2,7 +2,7 @@
 
 **Health Connect View**
 
-Last updated: 2026-08-28
+Last updated: 2026-10-06
 
 ## Summary
 
@@ -67,4 +67,4 @@ repository, with the date above updated.
 ## Contact
 
 Please raise questions or concerns through the issue tracker of the project's public GitHub
-repository.
+repository, or by email to hcview@steppicrew.de.

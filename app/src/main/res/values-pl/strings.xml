@@ -673,7 +673,7 @@
     <string name="privacy_purchases_title">Zakupy</string>
     <string name="privacy_purchases_body">Opcjonalnymi płatnymi funkcjami w całości zajmuje się Google Play. Aplikacja nigdy nie widzi twoich danych płatniczych, a zakupy są sprawdzane przez aplikację Sklep Play, a nie przez sieć.</string>
     <string name="privacy_contact_title">Kod źródłowy i kontakt</string>
-    <string name="privacy_contact_body">Kod źródłowy jest publiczny, więc każde twierdzenie na tej stronie można sprawdzić. Problemy zgłaszaj przez system zgłoszeń projektu na GitHubie.</string>
+    <string name="privacy_contact_body">Kod źródłowy jest publiczny, więc każde twierdzenie na tej stronie można sprawdzić. Problemy zgłaszaj przez system zgłoszeń projektu na GitHubie. Pytania możesz też wysłać e-mailem na hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Średnia z nocy</string>
     <string name="hrv_week_label">Średnia z ostatnich 7 nocy</string>
     <string name="hrv_week_mean">Średnia z ostatnich 7 nocy: %1$s ms</string>

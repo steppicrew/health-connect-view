@@ -656,7 +656,7 @@
     <string name="privacy_purchases_title">Purchases</string>
     <string name="privacy_purchases_body">Optional paid features are handled entirely by Google Play. The app never sees your payment details, and purchase checks happen through the Play Store app rather than over the network.</string>
     <string name="privacy_contact_title">Source and contact</string>
-    <string name="privacy_contact_body">The source code is public, so every claim on this page can be checked. Please report issues through the project\'s issue tracker on GitHub.</string>
+    <string name="privacy_contact_body">The source code is public, so every claim on this page can be checked. Please report issues through the project\'s issue tracker on GitHub. Questions can also be sent by email to hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Night average</string>
     <string name="hrv_week_label">Average of the last 7 nights</string>
     <string name="hrv_week_mean">Average of the last 7 nights: %1$s ms</string>
