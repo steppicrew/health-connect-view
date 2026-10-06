@@ -48,3 +48,5 @@ Zakupami w całości zajmuje się Google Play; przechodzą one z Tobą na nowy t
 OTWARTE ŹRÓDŁO
 
 Kod źródłowy jest publiczny, więc każde powyższe twierdzenie można sprawdzić.
+
+Brakuje Ci jakiejś funkcji? Napisz na hcview@steppicrew.de.

@@ -48,3 +48,5 @@ Pembelian sepenuhnya ditangani Google Play dan ikut pindah ke ponsel baru Anda.
 OPEN SOURCE
 
 Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di atas dapat diperiksa.
+
+Ada fitur yang Anda perlukan? Kirim email ke hcview@steppicrew.de.

@@ -1,11 +1,11 @@
-Health Connect speichert, was Uhr, Waage und Fitness-Apps schreiben — aber es gibt keine einfache Möglichkeit, es anzusehen. Diese App ist dieser fehlende Betrachter.
+Health Connect speichert, was Uhr, Waage und Fitness-Apps schreiben — aber es gibt keine einfache Möglichkeit, es anzusehen. Diese App ist der fehlende Betrachter.
 
 WAS SIE KANN
 
 • Ein Dashboard mit den Werten, die Sie interessieren, Tag für Tag
-• Alle von Health Connect unterstützten Datentypen durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
-• Einzelne Datensätze mit genauen Zeitstempeln, Werten, Einheiten und der App, die sie geschrieben hat
-• Trends nach Tag, Woche, vier Wochen oder Jahr grafisch darstellen
+• Alle Datentypen von Health Connect durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
+• Einzelne Datensätze mit genauen Zeitstempeln, Werten, Einheiten und der schreibenden App
+• Trends nach Tag, Woche, vier Wochen oder Jahr als Diagramm
 • Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
 • Jedes Training mit der dabei aufgezeichneten Herzfrequenz, und seine Route als Form mit Höhenprofil, wenn Sie sie freigeben
 • Schlafphasen — Tief-, Leicht-, REM-Schlaf und Wachphasen — für jede Nacht, in der Ihre Uhr sie erfasst
@@ -24,7 +24,7 @@ Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, ab
 
 SIE ENTSCHEIDEN, WAS SIE TEILEN
 
-Berechtigungen werden einzeln pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten; ändern können Sie das jederzeit in Health Connect.
+Berechtigungen werden pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten; ändern können Sie das jederzeit in Health Connect.
 
 KORREKTE SUMMEN
 
@@ -40,11 +40,13 @@ Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und s
 • PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck mit Durchschnitten morgens und abends, jedem Tag und jeder Messung, jeweils eingestuft; Gewicht mit dem Verlauf nach Wochen; Ruhepuls gegen sein Vier-Wochen-Mittel; Blutzucker nach Bezug zur Mahlzeit und nach Zielbereich. Zeitraum frei wählbar, zum Speichern oder direkt ansehen und drucken.
 • Größere Kacheln — doppelt so breit oder doppelt so groß, mit freier Wahl, was sie zeigen: heute, Woche, vier Wochen oder Jahr, als Zahl, Diagramm oder beides.
 • Mehrere Kacheln für denselben Wert, etwa Schritte heute und im Jahr, und eine eigene Farbe für jede Kachel.
-• Trainingsrouten als GPX-Datei, zum Öffnen in einer Karten- oder Trainings-App.
+• Trainingsrouten als GPX-Datei für Karten- oder Trainings-Apps.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
-Der Kauf läuft über Google Play und zieht mit Ihrem Google-Konto auf ein neues Handy um.
+Der Kauf läuft über Google Play und zieht mit Ihrem Konto auf ein neues Handy um.
 
 OPEN SOURCE
 
-Der Quellcode ist öffentlich, jede Aussage lässt sich also überprüfen.
+Der Quellcode ist öffentlich, jede Aussage ist also überprüfbar.
+
+Fehlt Ihnen eine Funktion? Schreiben Sie an hcview@steppicrew.de.

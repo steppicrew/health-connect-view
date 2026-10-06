@@ -48,3 +48,5 @@ Las compras las gestiona íntegramente Google Play y te acompañan a un teléfon
 CÓDIGO ABIERTO
 
 El código fuente es público, así que cada afirmación puede comprobarse.
+
+¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.
