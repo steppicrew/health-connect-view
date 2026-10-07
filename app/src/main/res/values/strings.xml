@@ -393,8 +393,8 @@
     <string name="unit_in" translatable="false">in</string>
     <string name="unit_mph" translatable="false">mph</string>
     <string name="unit_fahrenheit" translatable="false">°F</string>
-    <string name="unit_celsius_change" translatable="false">± °C</string>
-    <string name="unit_fahrenheit_change" translatable="false">± °F</string>
+    <string name="unit_celsius_change" translatable="false">°C</string>
+    <string name="unit_fahrenheit_change" translatable="false">°F</string>
     <string name="unit_floz" translatable="false">fl oz</string>
     <string name="unit_h" translatable="false">h</string>
 

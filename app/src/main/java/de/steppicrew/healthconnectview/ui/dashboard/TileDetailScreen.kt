@@ -113,6 +113,7 @@ import java.time.LocalDate
 import de.steppicrew.healthconnectview.registry.readingGap
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.Point
@@ -800,7 +801,10 @@ private fun SpanSummary(
                 text = if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
                     Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
                 } else {
-                    pressureText(total, data.secondaryTotal, data.spec.valueDecimals) +
+                    // A change is signed, as in the record list: "+0,01 °C" says above the
+                    // wearer's baseline where "0,01 ± °C" read like a tolerance.
+                    (if (data.spec.quantity == Quantity.TEMPERATURE_CHANGE && total > 0) "+" else "") +
+                        pressureText(total, data.secondaryTotal, data.spec.valueDecimals) +
                         (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
                 },
                 style = MaterialTheme.typography.headlineMedium,
