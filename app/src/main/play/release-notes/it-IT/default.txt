@@ -1,1 +1,3 @@
-0.11.0 — Ora in 17 lingue, tra cui l’italiano. I numeri digitati con cifre arabe o hindi ora funzionano, e le frecce dei giorni puntano nel verso giusto nelle lingue da destra a sinistra.
+1.0.0 — Novità: cosa è cambiato questa settimana in tutti i tipi, anche come riquadro; composizione corporea; due tipi a confronto su un unico asse del tempo (tutti e tre Pro). Inoltre: una schermata per ogni allenamento, allenamenti per tipo, record personali, il tuo intervallo abituale di battito a riposo e respiro, un intervallo di riferimento per l'ossigeno, l'escursione giornaliera della pressione e una fonte suggerita per tipo.
+
+Ti manca una funzione? Scrivi a hcview@steppicrew.de.

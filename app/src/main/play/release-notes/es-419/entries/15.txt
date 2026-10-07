@@ -1,1 +1,3 @@
+1.0.0 — Novedades: qué cambió esta semana en todos los tipos, también como mosaico; composición corporal; dos tipos comparados en un mismo eje de tiempo (los tres, Pro). Además: una pantalla para cada entrenamiento, entrenamientos por tipo, récords personales, tu rango habitual de pulso en reposo y respiración, un rango de referencia para el oxígeno, la variación diaria de la presión arterial y una fuente sugerida por tipo.
+
 ¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.

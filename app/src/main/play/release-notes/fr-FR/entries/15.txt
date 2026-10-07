@@ -1,1 +1,3 @@
+1.0.0 — Nouveau : ce qui a changé cette semaine pour tous les types, aussi en vignette ; composition corporelle ; deux types comparés sur un même axe du temps (les trois en Pro). Aussi : un écran par entraînement, entraînements par type, records personnels, votre plage habituelle pour le pouls au repos et la respiration, une plage de référence pour l'oxygène, l'écart quotidien de la tension et une source suggérée par type.
+
 Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.

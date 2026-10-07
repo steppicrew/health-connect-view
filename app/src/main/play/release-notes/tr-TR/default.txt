@@ -1,1 +1,3 @@
-0.11.0 — Artık Türkçe dahil 17 dilde. Arapça veya Hintçe rakamlarla girilen sayılar artık çalışıyor ve gün okları sağdan sola yazılan dillerde doğru yönü gösteriyor.
+1.0.0 — Yeni: bu hafta tüm türlerde neyin değiştiği, kutucuk olarak da; vücut kompozisyonu; iki türün tek zaman ekseninde karşılaştırılması (üçü de Pro). Ayrıca: her antrenman için ayrı ekran, türe göre antrenmanlar, kişisel rekorlar, dinlenme nabzı ve solunum hızı için olağan aralığınız, oksijen için referans aralığı, tansiyonun günlük aralığı ve her tür için önerilen kaynak. Ve birçok düzeltme.
+
+Eksik bir özellik mi var? hcview@steppicrew.de adresine yazın.
