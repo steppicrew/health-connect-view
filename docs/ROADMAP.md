@@ -368,6 +368,12 @@ open items below and `FEATURE-IDEAS.md`.
       no brand names, no comparison to a device's scores).
     - **Per window:** what a year of a type should be (weekly totals, weekly means with the
       spread, or the four-week mean alone), and where a day needs no chart at all (step 29).
+    - **A day of weight**, the owner's example, 07.10.2026: a time-of-day chart of one
+      weigh-in is a lone dot (and, before the axis fix the same day, two writers' copies of it
+      spread into five "81,900" gridlines). The owner's idea: a bar for the day with the
+      previous weigh-in behind it as a shadow, and a range where the day had several
+      readings -- or something better. Applies alike to the other measured-now-and-then types
+      (body fat, the other body measurements, blood pressure on a day of one reading).
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
