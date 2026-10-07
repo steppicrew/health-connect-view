@@ -76,6 +76,8 @@
     <string name="dashboard_empty_title">Ancora nessun riquadro</string>
     <string name="dashboard_empty_body">Aggiungi i valori che vuoi vedere dall’elenco di tutti i tipi di dati.</string>
     <string name="tile_locked">Non consentito</string>
+    <string name="tile_loading">Caricamento</string>
+    <string name="tile_failed">Caricamento non riuscito</string>
     <string name="tile_grant">Consenti</string>
     <string name="tile_value_as_of">al %1$s</string>
     <string name="trend_up">Ultimi 7 giorni sopra la media di 30 giorni</string>

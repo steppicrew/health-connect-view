@@ -74,6 +74,8 @@
     <string name="dashboard_empty_title">아직 타일이 없습니다</string>
     <string name="dashboard_empty_body">모든 데이터 유형 목록에서 보고 싶은 수치를 추가하세요.</string>
     <string name="tile_locked">허용되지 않음</string>
+    <string name="tile_loading">불러오는 중</string>
+    <string name="tile_failed">불러오지 못했습니다</string>
     <string name="tile_grant">허용</string>
     <string name="tile_value_as_of">%1$s 기준</string>
     <string name="trend_up">최근 7일이 30일 평균보다 높음</string>

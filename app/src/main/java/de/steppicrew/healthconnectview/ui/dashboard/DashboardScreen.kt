@@ -54,6 +54,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -784,7 +785,7 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         // zero sessions is a real answer rather than an absence of data.
         data.spec.tile.form == TileSpec.Form.SESSIONS -> SessionCount(data)
 
-        data.loading || data.value == null -> TileValue(data, large)
+        data.loading || data.failed || data.value == null -> TileValue(data, large)
 
         data.spec.tile.form == TileSpec.Form.RING && progress != null ->
             ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
@@ -864,11 +865,12 @@ private fun SessionCount(data: TileData) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (data.loading) {
-            Text(
-                text = stringResource(R.string.tile_no_data),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            TileLoading()
+            return@Column
+        }
+        // Zero sessions is an answer; a read that threw is not, so it must not say "none".
+        if (data.failed) {
+            TileFailed()
             return@Column
         }
 
@@ -1001,6 +1003,30 @@ private fun LockedTile(onGrantAccess: () -> Unit) {
     }
 }
 
+/** A tile whose read is still running: small, so a full dashboard does not spin loudly. */
+@Composable
+private fun TileLoading() {
+    val label = stringResource(R.string.tile_loading)
+    CircularProgressIndicator(
+        modifier = Modifier
+            .size(TILE_SPINNER.dp)
+            .semantics { contentDescription = label },
+        strokeWidth = 2.dp,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/** A tile whose read threw; the next return to the app reads it again. */
+@Composable
+private fun TileFailed() {
+    Text(
+        text = stringResource(R.string.tile_failed),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
+}
+
 @Composable
 private fun TileValue(data: TileData, large: Boolean = false) {
     // A tall tile's number grows with it; left at tile size it sat lost in the middle of a
@@ -1016,11 +1042,10 @@ private fun TileValue(data: TileData, large: Boolean = false) {
             textAlign = TextAlign.Center,
         )
 
-        data.loading -> Text(
-            text = stringResource(R.string.tile_no_data),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        // Never the dash: a tile still reading looked exactly like a day with nothing in it.
+        data.loading -> TileLoading()
+
+        data.failed -> TileFailed()
 
         // A missing value is not zero. Rendering null as "0" would claim the user took no
         // steps when in fact nothing was recorded.
@@ -1126,6 +1151,9 @@ private const val TILE_SOURCE_ICON_PX = 48
 
 private const val TILE_ICONS = 3
 private const val TILE_ICON_SIZE = 14
+
+/** The spinner in a tile still loading, about the height of a line of its value. */
+private const val TILE_SPINNER = 24
 
 /** The grip's touch target, in dp; its icon is the default 24. */
 private const val DRAG_HANDLE = 36

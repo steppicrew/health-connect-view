@@ -77,6 +77,8 @@
     <string name="dashboard_empty_title">Brak kafelków</string>
     <string name="dashboard_empty_body">Dodaj wartości, które chcesz widzieć, z listy wszystkich typów danych.</string>
     <string name="tile_locked">Brak zgody</string>
+    <string name="tile_loading">Wczytywanie</string>
+    <string name="tile_failed">Nie udało się wczytać</string>
     <string name="tile_grant">Zezwól</string>
     <string name="tile_value_as_of">stan na %1$s</string>
     <string name="trend_up">Ostatnie 7 dni powyżej średniej z 30 dni</string>
