@@ -276,6 +276,33 @@ open items below and `FEATURE-IDEAS.md`.
     called every aggregated chart "Tagessummen"; for blood pressure, heart rate, weight and
     the other averaged types it now says "Tagesmittel", as the tile's screen already did.
     Seen on the emulator.
+44. [ ] **Loading must not look like "no data"** -- the owner's report, 07.10.2026: after a
+    restart the dashboard sometimes shows only dashes. A tile still loading renders
+    `tile_no_data`, the same "—" as a tile with nothing recorded (`DashboardScreen.kt`, the
+    `data.loading` branches of the value and `SessionCount`), so the two cannot be told apart.
+    A loading tile gets its own look -- a small indeterminate indicator, or the tile's shape
+    shimmering -- and keeps it only while its read runs. Also a third state the dash hides:
+    `load()` turns a failed read into a null value (`runCatching { ... }.getOrNull()`), so a
+    refused read (Health Connect slow to start, the app behind another screen) shows as "no
+    data" for good. A failed tile says so and retries on the next resume. Re-check every other
+    loading surface the same way while there: catalog, record lists, session sheets, cycle
+    overview, exports.
+45. [ ] **A detail page's progress bar that moves steadily** -- same report: it often jumps 0
+    to 100 %, or sits at 0 for a long time, jumps to about 80 % and then to the end. The bar
+    is weighted 8 for the chart, 1 for the total, 1 for sessions (`TileChartLoader.chart`,
+    `CHART_WEIGHT`), and only moves inside the chart step when the chart pages raw records
+    (`PageProgress`). Most types chart from one aggregate request, which reports nothing, so
+    the bar stays at 0 and then lands on 8/9. Options, to measure on the phone first:
+    - Split a long aggregate into pieces (a year as twelve monthly requests) and count each.
+      Real progress, but more requests; Health Connect serves one app largely in turn, so
+      total time must be measured, not assumed.
+    - Estimate from the last load of the same type and span, kept in memory (a duration is
+      not health data, so DataStore would be fine too), and run the bar toward ~90 % on that
+      clock, finishing at the real end.
+    - Animate between reported values (`animateFloatAsState`) so a jump becomes a glide, and
+      show nothing for the first ~300 ms so a fast load does not flash a bar at all.
+    Probably all three: pieces where the request is long, an estimate where it is one call,
+    the animation everywhere.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
