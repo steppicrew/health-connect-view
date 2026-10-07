@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.health.HrvStanding
+import de.steppicrew.healthconnectview.health.StreakSummary
+import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvSummary
 import androidx.health.connect.client.records.metadata.DataOrigin
@@ -64,6 +66,15 @@ internal class TileChartLoader(
         offset: Int,
         historyCapped: Boolean,
         source: String?,
+        /**
+         * Leave the four-week mean, the trend and the streak for [extras] instead of reading
+         * them here. Measured on the phone they were the slowest part of some screens -- a
+         * day of distance spent 12.5 s on its streak after the chart itself was ready -- and
+         * none of them is the chart. The detail screen shows the chart first and adds them
+         * once its list is in; the dashboard, which shows none of that separately, reads
+         * everything here.
+         */
+        deferExtras: Boolean = false,
         onProgress: (Float) -> Unit = {},
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
@@ -510,51 +521,77 @@ internal class TileChartLoader(
         // one-value-a-day type has no chart to put it on. Read from 27 days before the window,
         // so its first day already has four weeks behind it; a failed read just leaves it out.
         val shownPoints = perDayPoints.ifEmpty { scaledPoints }
-        val baseline = if (spec.tile.rollingBaseline && span.bucket != null && shownPoints.isNotEmpty()) {
-            runCatching {
-                val zone = HealthRepository.DEFAULT_ZONE
-                val first = span.startDate(offset)
-                val lookback = first.minusDays(ROLLING_DAYS - 1L)
-                val daily = when {
-                    dailyReadings != null -> dailyReadings.dailyMeans()
-                    // Sleep's bars come from its sessions, so its weeks before the window do
-                    // too, credited like the bars to the morning each night ended on.
-                    sessionKind == Session.Kind.SLEEP -> {
-                        val before = repository.sessionsIn(
-                            lookback.atStartOfDay(zone).toInstant(),
-                            first.atStartOfDay(zone).toInstant(),
-                            setOf(Session.Kind.SLEEP),
-                        )
-                            .groupBy { it.end.atZone(zone).toLocalDate() }
-                            .filterKeys { it.isBefore(first) }
-                            .mapValues { (_, nights) -> numericAggregate(nights.totalDuration()) ?: 0.0 }
-                        before + perDayPoints.associate { it.time.atZone(zone).toLocalDate() to it.value }
+        // Everything below the chart that it does not need to be drawn; see deferExtras.
+        suspend fun readExtras(): ChartExtras {
+            val baseline = if (spec.tile.rollingBaseline && span.bucket != null && shownPoints.isNotEmpty()) {
+                runCatching {
+                    val zone = HealthRepository.DEFAULT_ZONE
+                    val first = span.startDate(offset)
+                    val lookback = first.minusDays(ROLLING_DAYS - 1L)
+                    val daily = when {
+                        dailyReadings != null -> dailyReadings.dailyMeans()
+                        // Sleep's bars come from its sessions, so its weeks before the window do
+                        // too, credited like the bars to the morning each night ended on.
+                        sessionKind == Session.Kind.SLEEP -> {
+                            val before = repository.sessionsIn(
+                                lookback.atStartOfDay(zone).toInstant(),
+                                first.atStartOfDay(zone).toInstant(),
+                                setOf(Session.Kind.SLEEP),
+                            )
+                                .groupBy { it.end.atZone(zone).toLocalDate() }
+                                .filterKeys { it.isBefore(first) }
+                                .mapValues { (_, nights) -> numericAggregate(nights.totalDuration()) ?: 0.0 }
+                            before + perDayPoints.associate { it.time.atZone(zone).toLocalDate() to it.value }
+                        }
+                        metric != null -> repository.bucketedTotals(
+                            metric,
+                            TimeRangeFilter.between(lookback.atStartOfDay(), span.endDate(offset).atStartOfDay()),
+                            Period.ofDays(1),
+                            origins,
+                        ).mapNotNull { bucket ->
+                            val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
+                                ?: return@mapNotNull null
+                            bucket.startTime.toLocalDate() to value
+                        }.toMap()
+                        else -> emptyMap()
                     }
-                    metric != null -> repository.bucketedTotals(
-                        metric,
-                        TimeRangeFilter.between(lookback.atStartOfDay(), span.endDate(offset).atStartOfDay()),
-                        Period.ofDays(1),
-                        origins,
-                    ).mapNotNull { bucket ->
-                        val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
-                            ?: return@mapNotNull null
-                        bucket.startTime.toLocalDate() to value
-                    }.toMap()
-                    else -> emptyMap()
+                    // A year of a counted quantity is drawn as weekly totals, so the mean is read
+                    // in the same units -- a week's worth -- or it would lie along the bars' feet.
+                    val perBucket = if (bucketedTotals) (span.bucket?.days ?: 1).toDouble() else 1.0
+                    // Within the series' own span: a year's last point is its week's start, and a
+                    // line running past it would leave the plot.
+                    rollingMean(
+                        daily,
+                        shownPoints.first().time.atZone(zone).toLocalDate(),
+                        shownPoints.last().time.atZone(zone).toLocalDate(),
+                    ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean * perBucket) }
+                }.getOrDefault(emptyList())
+            } else {
+                emptyList()
+            }
+
+            val trend = if (span == Span.DAY && metric != null && spec.tile.form != TileSpec.Form.SESSIONS) {
+                runCatching { repository.trendBefore(metric, span.startDate(offset), origins) }.getOrNull()
+            } else {
+                null
+            }
+            val streak = runCatching {
+                when {
+                    span != Span.DAY -> null
+                    goal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
+                        streakSummary(goal, span.startDate(offset), headlineTotal, repository.dailyTotalsOf(metric, origins))
+                    sessionKind == Session.Kind.EXERCISE ->
+                        streakSummary(1.0, span.startDate(offset), sessions.size.toDouble(), repository.dailyActivities())
+                    else -> null
                 }
-                // A year of a counted quantity is drawn as weekly totals, so the mean is read
-                // in the same units -- a week's worth -- or it would lie along the bars' feet.
-                val perBucket = if (bucketedTotals) (span.bucket?.days ?: 1).toDouble() else 1.0
-                // Within the series' own span: a year's last point is its week's start, and a
-                // line running past it would leave the plot.
-                rollingMean(
-                    daily,
-                    shownPoints.first().time.atZone(zone).toLocalDate(),
-                    shownPoints.last().time.atZone(zone).toLocalDate(),
-                ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean * perBucket) }
-            }.getOrDefault(emptyList())
+            }.getOrNull()
+            return ChartExtras(baseline, trend, streak)
+        }
+        val extras = if (deferExtras) {
+            pendingExtras = ::readExtras
+            ChartExtras()
         } else {
-            emptyList()
+            readExtras()
         }
 
         val chart = TileDetailData(
@@ -575,23 +612,8 @@ internal class TileChartLoader(
             contributingApps = emptySet(),
             selectedSource = source,
             goal = goal,
-            trend = if (span == Span.DAY && metric != null && spec.tile.form != TileSpec.Form.SESSIONS) {
-                runCatching { repository.trendBefore(metric, span.startDate(offset), origins) }.getOrNull()
-            } else {
-                null
-            },
-            // Against the same total the goal line reads, so the count and the line agree; an
-            // activity day against the sessions listed under it.
-            streak = runCatching {
-                when {
-                    span != Span.DAY -> null
-                    goal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
-                        streakSummary(goal, span.startDate(offset), headlineTotal, repository.dailyTotalsOf(metric, origins))
-                    sessionKind == Session.Kind.EXERCISE ->
-                        streakSummary(1.0, span.startDate(offset), sessions.size.toDouble(), repository.dailyActivities())
-                    else -> null
-                }
-            }.getOrNull(),
+            trend = extras.trend,
+            streak = extras.streak,
             cumulative = cumulative,
             // Suppressed on an apportioned curve: "reached at 19:59" on a straight ramp is
             // reading a time off a line that was drawn, not measured.
@@ -623,7 +645,7 @@ internal class TileChartLoader(
             } else {
                 emptyList()
             },
-            baseline = baseline,
+            baseline = extras.baseline,
             dailyFromReadings = dailyReadings != null,
             recordCount = windowRecordCount,
             shapeSource = shapeSource,
@@ -824,6 +846,12 @@ internal class TileChartLoader(
      * Set by [cumulativeFromRecords] when it took the curve's shape from a single writer.
      * Read straight afterwards on the same coroutine, so no synchronisation is needed.
      */
+    /** Set by a [chart] that deferred its extras; read once by [extras]. */
+    private var pendingExtras: (suspend () -> ChartExtras)? = null
+
+    /** What a [chart] with `deferExtras` left out, or nothing if it left nothing. */
+    suspend fun extras(): ChartExtras = pendingExtras?.invoke() ?: ChartExtras()
+
     private var chosenShapeWriter: String? = null
 
     /**
@@ -994,3 +1022,11 @@ internal fun heartRateSpec(): RecordTypeSpec<*>? = RecordRegistry.specOrNull(HEA
  * in the shape, because dropping it moves half the day's total into the morning.
  */
 private const val SUMMARY_PERCENT: Long = 95
+
+/** The parts of a chart read after it is on screen: see `deferExtras` on [TileChartLoader.chart]. */
+internal data class ChartExtras(
+    val baseline: List<Point> = emptyList(),
+    val trend: TrendResult? = null,
+    val streak: StreakSummary? = null,
+)
+

@@ -708,8 +708,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val windowStart = windowStart(span, offset)
         val windowEnd = windowEnd(span, offset)
 
-        val chart = TileChartLoader(repository, dashboardStore)
-            .chart(spec, span, offset, historyCapped, source) { _progress.value = it }
+        val loader = TileChartLoader(repository, dashboardStore)
+        val chart = loader
+            .chart(spec, span, offset, historyCapped, source, deferExtras = true) { _progress.value = it }
 
         // The chart first, then the list and the picker.
         //
@@ -803,13 +804,18 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val contributors = writers + (aggregateOriginsRead?.await() ?: emptySet())
 
         windowList = records
-        chart.copy(
+        val listed = chart.copy(
             records = records,
             truncated = records.size >= HealthRepository.LIST_RECORDS,
             contributingApps = contributors,
             dayParts = dayPartsRead?.await()?.takeIf { it.morning != null || it.evening != null },
             listPending = false,
         )
+        // The list is on screen before the extras: a streak reaching back a year took 12.5 s
+        // on the phone, and holding the list behind it left the screen half empty for that long.
+        onChartReady(listed)
+        val extras = loader.extras()
+        listed.copy(baseline = extras.baseline, trend = extras.trend, streak = extras.streak)
     }
 
     private companion object {
