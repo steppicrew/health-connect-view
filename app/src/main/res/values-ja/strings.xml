@@ -416,7 +416,6 @@
     <string name="status_has_data">データあり</string>
     <string name="status_no_data">データの記録なし</string>
     <string name="status_not_granted">許可されていません</string>
-    <string name="status_unknown">不明</string>
 
     <!-- Type detail -->
     <string name="action_back">戻る</string>

@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 
 data class TypeDetailData(
@@ -82,16 +84,28 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
         reload()
     }
 
+    /** The load in flight, cancelled when a newer one starts. */
+    private var loadJob: Job? = null
+
     private fun reload() {
         val spec = RecordRegistry.specOrNull(typeName ?: return) ?: run {
             _state.update { UiState.Error("Unknown type") }
             return
         }
 
-        viewModelScope.launch {
+        // A newer load replaces an older one: stepping through windows could otherwise let the
+        // older finish last and put its window over the newer one.
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { UiState.Loading }
 
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            // A refused permission read is a failure, not "nothing granted": shown as the
+            // lock, it sent people to grant what they had already granted.
+            val granted = runCatching { repository.grantedPermissions() }.getOrElse { error ->
+                ensureActive()
+                _state.update { UiState.Error(error.message ?: "Could not read data") }
+                return@launch
+            }
             if (spec.permission !in granted) {
                 _state.update { UiState.NoPermission }
                 return@launch
@@ -102,6 +116,8 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
             val capped = span.needsHistoryPermission(offset) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
             val result = runCatching { loadData(spec, span, offset, capped) }
+            // runCatching also catches the cancellation; a superseded load must not publish.
+            ensureActive()
             result.fold(
                 onSuccess = { data ->
                     // Some types have no stored records but still aggregate to a value:

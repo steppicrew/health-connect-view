@@ -421,7 +421,6 @@
     <string name="status_has_data">Daten vorhanden</string>
     <string name="status_no_data">Keine Daten aufgezeichnet</string>
     <string name="status_not_granted">Nicht freigegeben</string>
-    <string name="status_unknown">Unbekannt</string>
 
     <!-- Detailansicht -->
     <string name="action_back">Zurück</string>

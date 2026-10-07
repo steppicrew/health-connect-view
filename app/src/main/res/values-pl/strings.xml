@@ -449,7 +449,6 @@
     <string name="status_has_data">Są dane</string>
     <string name="status_no_data">Brak zapisanych danych</string>
     <string name="status_not_granted">Brak zgody</string>
-    <string name="status_unknown">Nieznany</string>
 
     <!-- Type detail -->
     <string name="action_back">Wstecz</string>

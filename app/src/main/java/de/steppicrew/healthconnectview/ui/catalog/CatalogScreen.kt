@@ -14,9 +14,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarViewMonth
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudOff
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.RemoveCircleOutline
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Availability
@@ -187,19 +190,36 @@ private fun TypeRow(
                 MaterialTheme.colorScheme.onSurfaceVariant,
                 R.string.status_not_granted,
             )
-            TypeStatus.UNKNOWN -> Triple(
-                Icons.Default.RemoveCircleOutline,
+            TypeStatus.CHECKING -> Triple(
+                null,
                 MaterialTheme.colorScheme.onSurfaceVariant,
-                R.string.status_unknown,
+                R.string.tile_loading,
+            )
+            TypeStatus.FAILED -> Triple(
+                Icons.Default.ErrorOutline,
+                MaterialTheme.colorScheme.onSurfaceVariant,
+                R.string.tile_failed,
             )
         }
 
-        Icon(
-            imageVector = icon,
-            contentDescription = stringResource(description),
-            tint = tint,
-            modifier = Modifier.size(20.dp),
-        )
+        if (icon == null) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(2.dp)
+                    // The line under the name already says it is loading.
+                    .clearAndSetSemantics {},
+                strokeWidth = 2.dp,
+                color = tint,
+            )
+        } else {
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(description),
+                tint = tint,
+                modifier = Modifier.size(20.dp),
+            )
+        }
         Column(Modifier.padding(start = 12.dp)) {
             Text(
                 text = stringResource(spec.displayNameRes),

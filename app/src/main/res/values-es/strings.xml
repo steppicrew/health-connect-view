@@ -438,7 +438,6 @@
     <string name="status_has_data">Con datos</string>
     <string name="status_no_data">Sin datos registrados</string>
     <string name="status_not_granted">No permitido</string>
-    <string name="status_unknown">Desconocido</string>
 
     <!-- Type detail -->
     <string name="action_back">Atrás</string>

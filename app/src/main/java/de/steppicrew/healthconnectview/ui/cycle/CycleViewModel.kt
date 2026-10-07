@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
@@ -70,8 +72,12 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
         reload()
     }
 
+    /** The load in flight, cancelled when a newer one starts: every resume starts one. */
+    private var loadJob: Job? = null
+
     private fun reload() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { UiState.Loading }
             if (fixture) {
                 val records = CycleFixture.records(ZoneId.systemDefault())
@@ -80,7 +86,12 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
             }
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            // A refused permission read is a failure, not "nothing granted".
+            val granted = runCatching { repository.grantedPermissions() }.getOrElse { error ->
+                ensureActive()
+                _state.update { UiState.Error(error.message ?: "Could not read data") }
+                return@launch
+            }
             // Periods and flow share READ_MENSTRUATION. Without it there is no day 1 to align
             // anything to, so the other layers alone cannot make a single row.
             if (permissionOf(MenstruationPeriodRecord::class) !in granted) {
@@ -89,6 +100,8 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
             }
             val offset = _offset.value
             val result = runCatching { loadData(granted, offset) }
+            // runCatching also catches the cancellation; a superseded load must not publish.
+            ensureActive()
             _state.update {
                 result.fold(
                     onSuccess = { data -> if (data.cycles.isEmpty()) UiState.Empty else UiState.Data(data) },

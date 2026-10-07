@@ -471,7 +471,6 @@
     <string name="status_has_data">توجد بيانات</string>
     <string name="status_no_data">لم تُسجَّل بيانات</string>
     <string name="status_not_granted">غير مسموح</string>
-    <string name="status_unknown">غير معروف</string>
 
     <!-- Type detail -->
     <string name="action_back">رجوع</string>

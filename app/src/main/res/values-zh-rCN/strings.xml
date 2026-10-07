@@ -416,7 +416,6 @@
     <string name="status_has_data">有数据</string>
     <string name="status_no_data">未记录数据</string>
     <string name="status_not_granted">未获允许</string>
-    <string name="status_unknown">未知</string>
 
     <!-- Type detail -->
     <string name="action_back">返回</string>
