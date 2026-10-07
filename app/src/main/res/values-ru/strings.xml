@@ -735,7 +735,8 @@
     <string name="hrv_explained">Среднее за последние 7 ночей в сравнении со средней половиной ваших ночей за 4 предыдущие недели. Учитываются только измерения во сне. Рассчитано этим приложением по измерениям вашего устройства; оценка, которую показывает устройство или его приложение, может отличаться.</string>
     <string name="chart_source_hrv">Среднее за последние 7 ночей; заливка: ваш обычный диапазон</string>
     <string name="legend_hrv_week">Среднее за 7 ночей</string>
-    <string name="legend_hrv_usual">Обычный диапазон</string>
+    <string name="legend_hrv_usual">Ваш обычный диапазон</string>
+    <string name="reference_spo2">Референсный диапазон для взрослых, 95–100 %</string>
     <string name="tile_hrv_note">Среднее за 7 ночей</string>
     <string name="chart_source_hrv_nights">Линия: среднее за последние 7 ночей; точки: отдельные ночи; заливка: ваш обычный диапазон</string>
     <string name="legend_hrv_night">Отдельная ночь</string>

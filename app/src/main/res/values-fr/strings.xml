@@ -710,7 +710,8 @@
     <string name="hrv_explained">La moyenne des 7 dernières nuits comparée à la moitié centrale de vos nuits des 4 semaines précédentes. Seules les mesures prises pendant le sommeil comptent. Calculé par cette application à partir des mesures de votre appareil ; une évaluation affichée par votre appareil ou son application peut différer.</string>
     <string name="chart_source_hrv">Moyenne des 7 dernières nuits ; zone ombrée : votre plage habituelle</string>
     <string name="legend_hrv_week">Moyenne sur 7 nuits</string>
-    <string name="legend_hrv_usual">Plage habituelle</string>
+    <string name="legend_hrv_usual">Votre plage habituelle</string>
+    <string name="reference_spo2">Plage de référence pour adultes, 95–100 %</string>
     <string name="tile_hrv_note">Moyenne sur 7 nuits</string>
     <string name="chart_source_hrv_nights">Ligne : moyenne des 7 dernières nuits ; points : nuits individuelles ; zone ombrée : votre plage habituelle</string>
     <string name="legend_hrv_night">Nuit individuelle</string>

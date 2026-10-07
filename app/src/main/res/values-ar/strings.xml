@@ -785,7 +785,8 @@
     <string name="hrv_explained">يقارن متوسط آخر 7 ليالٍ بالنصف الأوسط من لياليك في الأسابيع الأربعة السابقة. لا تُحتسب إلا القراءات المأخوذة أثناء النوم. حسبه هذا التطبيق من قراءات جهازك؛ وقد يختلف التقييم الذي يعرضه جهازك أو تطبيقه.</string>
     <string name="chart_source_hrv">متوسط آخر 7 ليالٍ؛ المنطقة المظلّلة: نطاقك المعتاد</string>
     <string name="legend_hrv_week">متوسط 7 ليالٍ</string>
-    <string name="legend_hrv_usual">النطاق المعتاد</string>
+    <string name="legend_hrv_usual">نطاقك المعتاد</string>
+    <string name="reference_spo2">النطاق المرجعي للبالغين، 95–100 %</string>
     <string name="tile_hrv_note">متوسط 7 ليالٍ</string>
     <string name="chart_source_hrv_nights">الخط: متوسط آخر 7 ليالٍ؛ النقاط: الليالي المنفردة؛ المنطقة المظلّلة: نطاقك المعتاد</string>
     <string name="legend_hrv_night">ليلة منفردة</string>

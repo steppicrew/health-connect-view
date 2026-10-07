@@ -493,7 +493,15 @@ object RecordRegistry {
             // list still shows it, as what the app stored.
             points = { listOfNotNull(Point(it.time, it.percentage.value).takeIf { p -> p.value > 0.0 }) },
             summary = { Formatting.number(it.percentage.value) + " %" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, dailyMeans = true, rollingBaseline = true),
+            // The general adult reference, named as such in the legend -- not the wearer's own
+            // range, and not a diagnosis.
+            tile = TileSpec(
+                TileSpec.Form.NUMBER,
+                markReadings = true,
+                dailyMeans = true,
+                rollingBaseline = true,
+                referenceRange = ReferenceRange(95.0, 100.0, R.string.reference_spo2),
+            ),
         ),
         RecordTypeSpec(
             type = RespiratoryRateRecord::class,
@@ -512,7 +520,9 @@ object RecordRegistry {
                 markReadings = true,
                 integralValues = true,
                 dailyMeans = true,
-                rollingBaseline = true,
+                // The wearer's usual range rather than a dashed mean: "is tonight normal for
+                // me" is read off a band at a glance, and a mean says only where the middle is.
+                usualRange = true,
             ),
         ),
         RecordTypeSpec(
@@ -531,7 +541,7 @@ object RecordRegistry {
                 markReadings = true,
                 integralValues = true,
                 dailyValue = true,
-                rollingBaseline = true,
+                usualRange = true,
                 personalRecord = RecordKind.LOWEST,
             ),
         ),

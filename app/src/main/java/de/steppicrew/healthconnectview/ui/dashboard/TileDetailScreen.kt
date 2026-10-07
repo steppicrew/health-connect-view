@@ -144,6 +144,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
+import de.steppicrew.healthconnectview.ui.components.REFERENCE_COLOR
 import de.steppicrew.healthconnectview.health.Suggestion
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import androidx.compose.material3.TextButton
@@ -884,6 +885,9 @@ private fun SpanSummary(
             val shown = data.copy(
                 nightPoints = if (showNights) data.nightPoints else emptyList(),
                 baseline = if (showMean) data.baseline else emptyList(),
+                // The wearer's usual range replaces the day's spread where the type has one:
+                // two bands behind one line would be two answers to "is this normal".
+                rangeBand = data.usualBand.ifEmpty { data.rangeBand },
             )
             // Zoomed, the list below follows the stretch on screen.
             DataLineChart(shown, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
@@ -1055,11 +1059,13 @@ private fun ChartLegend(data: TileDetailData) {
     // caption, a bar has both plus its own label, but a pale rectangle behind them has
     // nothing. The sleep timeline is exactly that case: a single band, reported as
     // unexplained, which the "more than one entry" rule would have gone on suppressing.
-    val bandShown = sleepShown || exerciseShown || data.rangeBand.isNotEmpty()
+    val reference = data.spec.tile.referenceRange
+    val bandShown = sleepShown || exerciseShown || data.rangeBand.isNotEmpty() || reference != null
     val entries = (if (seriesLabel != null) 1 else 0) +
         (if (stacked) data.stackLabels.size else 0) +
         listOf(
             data.rangeBand.isNotEmpty(),
+            reference != null,
             sleepShown,
             exerciseShown,
             data.goal != null,
@@ -1096,10 +1102,17 @@ private fun ChartLegend(data: TileDetailData) {
             LegendEntry(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
                 label = when {
-                    data.hrv != null -> R.string.legend_hrv_usual
+                    data.hrv != null || data.usualBand.isNotEmpty() -> R.string.legend_hrv_usual
                     data.weeklyBuckets -> R.string.legend_range_weekly
                     else -> R.string.legend_range
                 },
+            )
+        }
+        // Named with where it comes from, so it is never read as the wearer's own range.
+        reference?.let {
+            LegendEntry(
+                color = REFERENCE_COLOR.copy(alpha = LEGEND_BAND_ALPHA),
+                label = it.labelRes,
             )
         }
         if (sleepShown) {
@@ -1158,6 +1171,7 @@ internal fun DataLineChart(
         valueDecimals = data.spec.valueDecimals,
         emptyBuckets = data.emptyBuckets,
         sessions = data.bandSessions,
+        referenceRange = data.spec.tile.referenceRange?.let { it.low..it.high },
         zones = data.lineZones,
         secondaryPoints = data.secondaryPoints,
         secondaryZones = data.secondaryZones,

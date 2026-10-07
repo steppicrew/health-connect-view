@@ -735,7 +735,8 @@
     <string name="hrv_explained">Średnia z ostatnich 7 nocy na tle środkowej połowy twoich nocy z 4 poprzednich tygodni. Liczą się tylko pomiary wykonane podczas snu. Obliczone przez tę aplikację na podstawie pomiarów z twojego urządzenia; ocena pokazywana przez urządzenie lub jego aplikację może się różnić.</string>
     <string name="chart_source_hrv">Średnia z ostatnich 7 nocy; zacieniowane: twój zwykły zakres</string>
     <string name="legend_hrv_week">Średnia z 7 nocy</string>
-    <string name="legend_hrv_usual">Zwykły zakres</string>
+    <string name="legend_hrv_usual">Twój zwykły zakres</string>
+    <string name="reference_spo2">Zakres referencyjny dla dorosłych, 95–100 %</string>
     <string name="tile_hrv_note">Średnia z 7 nocy</string>
     <string name="chart_source_hrv_nights">Linia: średnia z ostatnich 7 nocy; kropki: pojedyncze noce; zacieniowane: twój zwykły zakres</string>
     <string name="legend_hrv_night">Pojedyncza noc</string>

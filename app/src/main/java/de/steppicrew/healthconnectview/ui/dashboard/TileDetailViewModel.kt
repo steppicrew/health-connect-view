@@ -204,6 +204,8 @@ data class TileDetailData(
     val nightPoints: List<Point> = emptyList(),
     /** The four-week rolling mean behind the series, for a type with `rollingBaseline`. */
     val baseline: List<Point> = emptyList(),
+    /** The wearer's usual range at each point, for a type with `usualRange`. */
+    val usualBand: List<ValueBand> = emptyList(),
     /** The series is each bucket's mean of readings the platform cannot aggregate. */
     val dailyFromReadings: Boolean = false,
     /**
@@ -863,7 +865,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                 null
             }
         }
-        listed.copy(baseline = extras.baseline, trend = extras.trend, streak = extras.streak, record = record)
+        listed.copy(baseline = extras.baseline, usualBand = extras.usualBand, trend = extras.trend, streak = extras.streak, record = record)
     }
 
     private companion object {

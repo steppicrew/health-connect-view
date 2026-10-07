@@ -660,7 +660,8 @@
     <string name="hrv_explained">過去 7 夜の平均を、直前の 4 週間の夜の中央半分と比べています。睡眠中の測定値のみを使います。このアプリがデバイスの測定値から算出したもので、デバイスやそのアプリが表示する評価とは異なる場合があります。</string>
     <string name="chart_source_hrv">過去 7 夜の平均。網掛け: いつもの範囲</string>
     <string name="legend_hrv_week">7 夜平均</string>
-    <string name="legend_hrv_usual">いつもの範囲</string>
+    <string name="legend_hrv_usual">あなたのいつもの範囲</string>
+    <string name="reference_spo2">成人の基準範囲 95～100 %</string>
     <string name="tile_hrv_note">7 夜平均</string>
     <string name="chart_source_hrv_nights">線: 過去 7 夜の平均。点: 各夜。網掛け: いつもの範囲</string>
     <string name="legend_hrv_night">各夜</string>

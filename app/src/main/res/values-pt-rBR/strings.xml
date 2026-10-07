@@ -710,7 +710,8 @@
     <string name="hrv_explained">A média das últimas 7 noites em relação à metade central das suas noites nas 4 semanas anteriores. Só contam as medições feitas durante o sono. Calculado por este app a partir das medições do seu dispositivo; uma avaliação que seu dispositivo ou o app dele mostre pode ser diferente.</string>
     <string name="chart_source_hrv">Média das últimas 7 noites; área sombreada: sua faixa habitual</string>
     <string name="legend_hrv_week">Média de 7 noites</string>
-    <string name="legend_hrv_usual">Faixa habitual</string>
+    <string name="legend_hrv_usual">Sua faixa habitual</string>
+    <string name="reference_spo2">Faixa de referência para adultos, 95–100 %</string>
     <string name="tile_hrv_note">Média de 7 noites</string>
     <string name="chart_source_hrv_nights">Linha: média das últimas 7 noites; pontos: noites individuais; área sombreada: sua faixa habitual</string>
     <string name="legend_hrv_night">Noite individual</string>
