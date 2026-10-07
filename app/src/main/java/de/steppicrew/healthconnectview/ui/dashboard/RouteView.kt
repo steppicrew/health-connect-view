@@ -55,17 +55,25 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
     val at = Instant.ofEpochMilli(start + (span * fraction).toLong())
     val index = indexAt(points, at)
     val here = points[index]
+    // The route and the profile only change with the route or the canvas size, but they were
+    // projected and rebuilt point by point on every step of the slider -- hundreds of points
+    // per frame, and the marker lagged behind the finger. Built once per size, kept here; each
+    // step now draws only the marker on top.
+    val routeShape = remember(points) { ShapeCache() }
+    val profileShape = remember(points) { ShapeCache() }
 
     Column(modifier) {
         Canvas(Modifier.fillMaxWidth().height(ROUTE_HEIGHT.dp)) {
             val pad = MARKER.dp.toPx() * 2
-            val projected = projectRoute(points, size.width - 2 * pad, size.height - 2 * pad)
-                .map { (x, y) -> Offset(x + pad, y + pad) }
-            if (projected.isEmpty()) return@Canvas
-            val path = Path().apply {
-                moveTo(projected.first().x, projected.first().y)
-                projected.drop(1).forEach { lineTo(it.x, it.y) }
+            val (projected, path) = routeShape.forSize(size.width, size.height) {
+                val projected = projectRoute(points, size.width - 2 * pad, size.height - 2 * pad)
+                    .map { (x, y) -> Offset(x + pad, y + pad) }
+                projected to Path().apply {
+                    projected.firstOrNull()?.let { moveTo(it.x, it.y) }
+                    projected.drop(1).forEach { lineTo(it.x, it.y) }
+                }
             }
+            if (projected.isEmpty()) return@Canvas
             drawPath(path, line, style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
             drawCircle(line, MARKER.dp.toPx(), projected.first())
             drawCircle(surface, (MARKER - 2).dp.toPx(), projected.last())
@@ -79,9 +87,12 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
                 val range = (heights.endInclusive - heights.start).takeIf { it > 0 } ?: 1.0
                 fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
                 fun y(height: Double) = (size.height - (height - heights.start) / range * size.height).toFloat()
-                val path = Path()
-                profile.forEachIndexed { i, (time, height) ->
-                    if (i == 0) path.moveTo(x(time), y(height)) else path.lineTo(x(time), y(height))
+                val (_, path) = profileShape.forSize(size.width, size.height) {
+                    emptyList<Offset>() to Path().apply {
+                        profile.forEachIndexed { i, (time, height) ->
+                            if (i == 0) moveTo(x(time), y(height)) else lineTo(x(time), y(height))
+                        }
+                    }
                 }
                 drawPath(path, muted, style = Stroke(width = 1.5.dp.toPx(), join = StrokeJoin.Round))
                 val nowX = x(at)
@@ -115,6 +126,27 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
             color = muted,
             modifier = Modifier.padding(top = 2.dp),
         )
+    }
+}
+
+/**
+ * A drawn shape kept between frames: its points and path, rebuilt only when the canvas size
+ * changes. Plain state on purpose -- replacing it must not trigger a recomposition, and it is
+ * only ever touched while drawing.
+ */
+private class ShapeCache {
+    private var width = -1f
+    private var height = -1f
+    private var shape: Pair<List<Offset>, Path>? = null
+
+    fun forSize(width: Float, height: Float, build: () -> Pair<List<Offset>, Path>): Pair<List<Offset>, Path> {
+        val kept = shape
+        if (kept != null && width == this.width && height == this.height) return kept
+        return build().also {
+            shape = it
+            this.width = width
+            this.height = height
+        }
     }
 }
 
