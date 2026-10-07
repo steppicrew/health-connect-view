@@ -146,6 +146,14 @@ class AxisScaleTest {
     }
 
     @Test
+    fun `two copies of one reading draw as one reading`() {
+        // Two writers' copies of the same weigh-in, apart by a unit conversion's rounding.
+        val copies = AxisScale.of(81.9, 81.9000004)
+        val single = AxisScale.of(81.9, 81.9)
+        assertEquals(single, copies)
+    }
+
+    @Test
     fun `a flat series still draws`() {
         val scale = AxisScale.of(70.0, 70.0, integral = true)
         assertTrue("a flat series needs a range", scale.max > scale.min)
