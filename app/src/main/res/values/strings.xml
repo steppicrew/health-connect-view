@@ -475,6 +475,25 @@
     <string name="session_gone">This session can no longer be found.</string>
     <string name="session_laps">Laps</string>
     <string name="session_lap">Lap %1$d</string>
+    <string name="exercise_biking">Cycling</string>
+    <string name="exercise_biking_stationary">Indoor cycling</string>
+    <string name="exercise_running">Running</string>
+    <string name="exercise_running_treadmill">Treadmill</string>
+    <string name="exercise_walking">Walking</string>
+    <string name="exercise_hiking">Hiking</string>
+    <string name="exercise_swimming">Swimming</string>
+    <string name="exercise_strength">Strength training</string>
+    <string name="exercise_yoga">Yoga</string>
+    <string name="exercise_pilates">Pilates</string>
+    <string name="exercise_stretching">Stretching</string>
+    <string name="exercise_rowing">Rowing</string>
+    <string name="exercise_elliptical">Elliptical</string>
+    <string name="family_yoga">Yoga &amp; stretching</string>
+    <string name="family_other">Other</string>
+    <string name="workouts_all">All</string>
+    <string name="workouts_by_kind">Workouts by kind</string>
+    <string name="workouts_none">No workouts in the last 12 months.</string>
+    <string name="workouts_span_year">Workouts of the last 12 months.</string>
     <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="session_statistics">What was recorded during this session</string>

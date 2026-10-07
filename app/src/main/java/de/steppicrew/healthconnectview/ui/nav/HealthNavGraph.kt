@@ -5,6 +5,9 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.session.SessionScreen
 import de.steppicrew.healthconnectview.ui.session.SessionViewModel
+import de.steppicrew.healthconnectview.ui.session.WorkoutsScreen
+import de.steppicrew.healthconnectview.ui.session.WorkoutsViewModel
+import de.steppicrew.healthconnectview.health.WorkoutFamily
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,6 +45,11 @@ object Routes {
     const val CYCLE = "cycle?fixture={fixture}"
     /** One session by its record's id; `kind` says which record type to read it from. */
     const val SESSION = "session/{kind}/{id}"
+
+    /** The past year's workouts; `family` opens on one kind, by its enum name. */
+    const val WORKOUTS = "workouts?family={family}"
+
+    fun workouts() = "workouts"
 
     fun session(session: Session) = "session/${session.kind.name}/${Uri.encode(session.recordId)}"
 
@@ -170,6 +178,7 @@ fun HealthNavGraph(
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 openSession = entry.arguments?.getString("session").orEmpty(),
                 onOpenSession = { navController.navigate(Routes.session(it)) },
+                onOpenWorkouts = { navController.navigate(Routes.workouts()) },
             )
         }
 
@@ -187,6 +196,27 @@ fun HealthNavGraph(
             val viewModel: SessionViewModel = viewModel()
             LaunchedEffect(kind, id) { viewModel.load(kind, id) }
             SessionScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        }
+
+        composable(
+            route = Routes.WORKOUTS,
+            arguments = listOf(
+                navArgument("family") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+            ),
+        ) { entry ->
+            val family = entry.arguments?.getString("family")
+                ?.let { name -> WorkoutFamily.entries.firstOrNull { it.name == name } }
+            val viewModel: WorkoutsViewModel = viewModel()
+            LaunchedEffect(viewModel) { viewModel.start(family) }
+            WorkoutsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenSession = { navController.navigate(Routes.session(it)) },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
         }
 
         composable(

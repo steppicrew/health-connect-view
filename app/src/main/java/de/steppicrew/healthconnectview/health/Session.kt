@@ -107,30 +107,15 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
     return kept
 }
 
-/** Maps a session to a readable activity name, or null where the type says nothing useful. */
-fun exerciseTypeName(type: Int): String? = EXERCISE_TYPE_NAMES[type]
-
-// Only the types that carry a meaning worth showing; anything else falls back to the session's
-// own title, and failing that to no label at all rather than a guess.
-private val EXERCISE_TYPE_NAMES: Map<Int, String> = mapOf(
-    ExerciseSessionRecord.EXERCISE_TYPE_BIKING to "Biking",
-    ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY to "Indoor bike",
-    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING to "Running",
-    ExerciseSessionRecord.EXERCISE_TYPE_WALKING to "Walking",
-    ExerciseSessionRecord.EXERCISE_TYPE_HIKING to "Hiking",
-    ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL to "Swimming",
-    ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING to "Strength",
-    ExerciseSessionRecord.EXERCISE_TYPE_PILATES to "Pilates",
-    ExerciseSessionRecord.EXERCISE_TYPE_YOGA to "Yoga",
-    ExerciseSessionRecord.EXERCISE_TYPE_ROWING_MACHINE to "Rowing",
-    ExerciseSessionRecord.EXERCISE_TYPE_ELLIPTICAL to "Elliptical",
-)
-
-/** Builds a [Session] from an exercise record, naming it from its title or its type. */
+/**
+ * Builds a [Session] from an exercise record. The title is the writer's own or none: a name
+ * from the type is the UI's to give, in the user's language, and [dedupeSessions] prefers the
+ * copy a writer named.
+ */
 fun ExerciseSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
-    title = title ?: exerciseTypeName(exerciseType),
+    title = title,
     kind = Session.Kind.EXERCISE,
     origin = metadata.dataOrigin.packageName,
     recordId = metadata.id,
@@ -144,26 +129,17 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
 
 /**
  * A mindfulness session: meditation, breathing, a guided track. Named like exercise, from its
- * title or its type. The record type is marked experimental in the library; its permission
+ * title or not at all. The record type is marked experimental in the library; its permission
  * resolves to the platform's `READ_MINDFULNESS`, so it can be granted.
  */
 @OptIn(ExperimentalMindfulnessSessionApi::class)
 fun MindfulnessSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
-    title = title ?: MINDFULNESS_TYPE_NAMES[mindfulnessSessionType],
+    title = title,
     kind = Session.Kind.MINDFULNESS,
     origin = metadata.dataOrigin.packageName,
     recordId = metadata.id,
-)
-
-@OptIn(ExperimentalMindfulnessSessionApi::class)
-private val MINDFULNESS_TYPE_NAMES: Map<Int, String> = mapOf(
-    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MEDITATION to "Meditation",
-    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_BREATHING to "Breathing",
-    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MUSIC to "Music",
-    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_MOVEMENT to "Movement",
-    MindfulnessSessionRecord.MINDFULNESS_SESSION_TYPE_UNGUIDED to "Unguided",
 )
 
 fun SleepSessionRecord.toSession(): Session = Session(

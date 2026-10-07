@@ -119,6 +119,9 @@ import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.iconFor
+import de.steppicrew.healthconnectview.ui.components.sessionName
+import androidx.compose.material.icons.filled.FilterList
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.LineChart
@@ -159,6 +162,8 @@ fun TileDetailScreen(
     openSession: String = "",
     /** The session screen, for a session tapped anywhere on this one. */
     onOpenSession: (Session) -> Unit = {},
+    /** The year's workouts by kind, offered on the workouts type only. */
+    onOpenWorkouts: () -> Unit = {},
 ) {
     val requested = openSession
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -203,6 +208,14 @@ fun TileDetailScreen(
                     }
                 },
                 actions = {
+                    if (spec?.type == ExerciseSessionRecord::class) {
+                        IconButton(onClick = onOpenWorkouts) {
+                            Icon(
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = stringResource(R.string.workouts_by_kind),
+                            )
+                        }
+                    }
                     spec?.let { current ->
                         ExportAction(
                             typeName = current.type.simpleName.orEmpty().removeSuffix("Record"),
@@ -1266,7 +1279,7 @@ private fun SessionCaption(session: Session, onClick: () -> Unit) {
         )
         Text(
             text = listOfNotNull(
-                sessionTitle(session),
+                sessionName(session),
                 stringResource(
                     R.string.session_span,
                     Formatting.time(session.start),
@@ -1340,7 +1353,7 @@ private fun SessionRow(
             )
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = sessionTitle(session) ?: stringResource(R.string.session_untitled),
+                    text = sessionName(session),
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
@@ -1417,12 +1430,6 @@ private fun SessionRow(
         }
     }
 }
-
-/** A session's own name, falling back to "Sleep" for a night no app bothered to title. */
-@Composable
-private fun sessionTitle(session: Session): String? =
-    session.title
-        ?: stringResource(R.string.session_sleep).takeIf { session.kind == Session.Kind.SLEEP }
 
 /**
  * Source picker plus a plain statement of what the number above actually is.
