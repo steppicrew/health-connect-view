@@ -87,6 +87,8 @@ data class RecordTypeSpec<T : Record>(
      * sum already is the whole answer.
      */
     val rangeAggregates: Pair<AggregateMetric<*>, AggregateMetric<*>>? = null,
+    /** The same for the second value: diastolic's own spread beneath systolic's. */
+    val secondaryRangeAggregates: Pair<AggregateMetric<*>, AggregateMetric<*>>? = null,
     /**
      * A second value measured together with the first, charted as its own line and shown
      * after a slash: blood pressure is two numbers, and the diastolic alone decides a grade as

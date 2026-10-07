@@ -116,6 +116,8 @@ fun LineChart(
      * to say when within it anything happened.
      */
     rangeBand: List<ValueBand> = emptyList(),
+    /** The second line's spread, drawn like [rangeBand]: diastolic's beneath systolic's. */
+    secondaryRangeBand: List<ValueBand> = emptyList(),
     /**
      * Per-bucket components of a stacked bar, bottom-up, empty where the type declares none.
      *
@@ -218,8 +220,8 @@ fun LineChart(
     // small movement in a resting heart rate stay visible.
     // The band takes part in the scale, for the same reason the goal does: a ribbon clipped
     // at the top would show a day's peak as equal to the highest that happened to fit.
-    val bandLow = rangeBand.minOfOrNull { it.low }
-    val bandHigh = rangeBand.maxOfOrNull { it.high }
+    val bandLow = (rangeBand + secondaryRangeBand).minOfOrNull { it.low }
+    val bandHigh = (rangeBand + secondaryRangeBand).maxOfOrNull { it.high }
     // The second line takes part too: diastolic sits well below systolic, and a scale fitted
     // to the upper line alone would cut the lower one off entirely.
     val secondLow = secondaryPoints.minOfOrNull { it.value }
@@ -555,11 +557,12 @@ fun LineChart(
             // The spread behind the line: one filled shape across the low edge and back along
             // the high edge. Drawn before the guides so the axis stays readable over it, and
             // before the line so the mean it explains is never obscured by it.
-            if (rangeBand.size > 1 && timeSpan != null) {
-                val lows = rangeBand.mapNotNull { band ->
+            fun drawRibbons(band: List<ValueBand>) {
+            if (band.size > 1 && timeSpan != null) {
+                val lows = band.mapNotNull { band ->
                     xForTime(band.time.toEpochMilli())?.let { Offset(it, yFor(band.low)) }
                 }
-                val highs = rangeBand.mapNotNull { band ->
+                val highs = band.mapNotNull { band ->
                     xForTime(band.time.toEpochMilli())?.let { Offset(it, yFor(band.high)) }
                 }
                 if (lows.size == highs.size && lows.size > 1) {
@@ -567,9 +570,9 @@ fun LineChart(
                     // across days nothing was recorded, sloping or pinching through them as
                     // if the spread had been measured there.
                     val runs = mutableListOf(mutableListOf(0))
-                    for (index in 1 until rangeBand.size) {
-                        val from = rangeBand[index - 1].time
-                        val to = rangeBand[index].time
+                    for (index in 1 until band.size) {
+                        val from = band[index - 1].time
+                        val to = band[index].time
                         val broken = gaps.any { (before, after) -> from <= before && to >= after }
                         if (broken) runs += mutableListOf(index) else runs.last() += index
                     }
@@ -584,6 +587,9 @@ fun LineChart(
                     }
                 }
             }
+            }
+            drawRibbons(rangeBand)
+            drawRibbons(secondaryRangeBand)
 
             // Guides labelled at their own line, so a value can be read off the chart rather
             // than inferred from the endpoints. The count follows from the round step rather

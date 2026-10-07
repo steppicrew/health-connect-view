@@ -118,6 +118,8 @@ data class TileDetailData(
      * band around it would repeat the same data as a wider version of itself.
      */
     val rangeBand: List<ValueBand> = emptyList(),
+    /** The second value's spread, diastolic beneath systolic; empty for other types. */
+    val secondaryRangeBand: List<ValueBand> = emptyList(),
     /** Per-bucket components of a stacked bar, empty where the type declares none. */
     val stack: List<StackedBucket> = emptyList(),
     /** Labels for [stack]'s components, bottom-up. */
