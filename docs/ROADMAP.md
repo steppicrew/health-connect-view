@@ -364,7 +364,7 @@ open items below and `FEATURE-IDEAS.md`.
     granted mark but has no box to tick: it says to open a workout with a route, tap "Route
     anzeigen" and allow it always; a tap opens the "i". The route dialog's text and the
     message after declining no longer point to the permission screen.
-49. [ ] **How each type is drawn, per window** -- the owner's request, 07.10.2026. Today each
+49. [x] **How each type is drawn, per window** -- built 07.10.2026, every decision seen on the phone (nutrition from 15.12.2025, skin temperature, sleep and workouts in the year, oxygen with its reference, resting heart rate and respiration with the usual range, a weigh-in day). -- the owner's request, 07.10.2026. Today each
     type's look grew one fix at a time; review it as a whole. First a table for the owner to
     decide on, then code:
     - **Inventory:** for every type, what day, week, four weeks and year show now (line,

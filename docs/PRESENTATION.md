@@ -1,7 +1,8 @@
 # How each type is drawn -- review for step 49
 
 Inventory as of 07.10.2026 (read from `RecordRegistry` and `TileChartLoader`), the rules it is
-checked against, and the decisions the owner is asked to make. Nothing here is built yet.
+checked against, and the decisions the owner made: all as recommended, 07.10.2026, and built
+the same day.
 
 Windows: **Day** (24 h), **Week** and **4 weeks** (one bucket per day), **Year** (one bucket
 per week).
