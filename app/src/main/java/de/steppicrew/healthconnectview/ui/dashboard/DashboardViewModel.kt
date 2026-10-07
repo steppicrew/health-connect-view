@@ -37,10 +37,13 @@ import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import de.steppicrew.healthconnectview.registry.GlucoseUnit
 import de.steppicrew.healthconnectview.registry.UnitSystem
 import de.steppicrew.healthconnectview.registry.Units
@@ -82,6 +85,12 @@ data class TileData(
     val sessions: List<Session> = emptyList(),
     val granted: Boolean = true,
     val loading: Boolean = true,
+    /**
+     * The read threw rather than coming back empty -- Health Connect still starting after a
+     * restart, or refusing a caller behind another screen. Kept apart from a null [value],
+     * which means nothing was recorded: drawn the same, a refused read read as an empty day.
+     */
+    val failed: Boolean = false,
     /**
      * The single app this tile is filtered to, or null for the combined deduplicated view.
      * Shown on the tile, because a filtered number differs from the one the same tile shows
@@ -396,7 +405,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val now = System.currentTimeMillis()
         // Colour left out: it changes nothing read, and a new colour must not cost a reload.
         val key = CacheKey(date, config.tiles.map { it.copy(color = TileColor.DEFAULT) }, sources, preferred, granted, now)
-        val loadedTiles = _state.value.tiles.takeIf { it.none(TileData::loading) }
+        val loadedTiles = _state.value.tiles.takeIf { tiles -> tiles.none { it.loading || it.failed } }
         if (loadedTiles != null && cache?.isFresh(now, key) == true) {
             // Nothing the values depend on has changed and they are still fresh, so the reads
             // would return what is already on screen. Skipping them is what keeps the
@@ -428,6 +437,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             // another, or changing the preferred app leaves the old app's number on screen
             // under the new app's name until the read returns.
             if (carried.loading ||
+                carried.failed ||
                 carried.granted != placeholder.granted ||
                 carried.source != placeholder.source
             ) {
@@ -465,6 +475,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 }
             }.awaitAll()
         }
+        // A cancelled load must stop here. Its reads swallow the cancellation and come back
+        // empty, so publishing them put a dash in every tile -- on each cold start, where
+        // ON_RESUME cancels the load `init` began -- and the cache below kept those dashes
+        // on screen when returning from a tile.
+        currentCoroutineContext().ensureActive()
         // Keep the previous arrows and streaks until the new ones arrive, as with the values
         // above -- the streak only while the goal is the same, since a new goal is a new count.
         val withCarried = loaded.map { tile ->
@@ -484,6 +499,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
 
         val trended = withCurrentLayout(loadTrends(loaded, date, gate))
+        currentCoroutineContext().ensureActive()
         // Only if nothing has replaced these tiles in the meantime -- a day step or a source
         // change starts a new load, and its tiles must not receive this load's arrows.
         _state.update { state ->
@@ -494,7 +510,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
         Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
-        cache = key.copy(loadedAt = System.currentTimeMillis())
+        // A failed tile is not an answer worth keeping: the next resume must read it again.
+        if (loaded.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
     }
 
     /**
@@ -519,9 +536,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             TimeRangeFilter.between(windowStart(tile.span, offset), windowEnd(tile.span, offset)),
         )
         val capped = tile.span.needsHistoryPermission(offset) && !historyGranted
-        val chart = runCatching {
+        val reads = Reads()
+        val chart = reads.attempt {
             TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source)
-        }.getOrNull()
+        }
 
         return (day ?: placeholder.copy(source = source)).copy(
             value = day?.value ?: chart?.total,
@@ -531,6 +549,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             shownSpan = tile.span,
             chart = chart,
             loading = false,
+            failed = chart == null && (reads.failed || day?.failed == true),
         )
     }
 
@@ -569,9 +588,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         // A session tile counts spans rather than measuring a metric, so neither branch below
         // describes it: its face is how many activities there were, not how much of anything.
+        val reads = Reads()
         spec.tile.sessionKind?.takeIf { spec.tile.form == TileSpec.Form.SESSIONS }?.let { kind ->
-            val sessions = runCatching { daySessions(date, kind) }.getOrDefault(emptyList())
-            return placeholder.copy(sessions = sessions, loading = false)
+            val sessions = reads.attempt { daySessions(date, kind) }
+            return placeholder.copy(sessions = sessions.orEmpty(), loading = false, failed = sessions == null)
         }
 
         val metric = spec.aggregate
@@ -583,12 +603,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         // HRV's tile number is the week's mean of nightly values, coloured against the usual
         // range -- the latest five-minute reading said nothing about how the week went.
         if (spec.tile.nightlyStatus) {
-            val day = runCatching { repository.hrvWindow(date, date, origins).days.singleOrNull() }.getOrNull()
-            return tile.copy(value = day?.weekMean, standing = day?.standing, loading = false)
+            val window = reads.attempt { repository.hrvWindow(date, date, origins) }
+            val day = window?.days?.singleOrNull()
+            return tile.copy(value = day?.weekMean, standing = day?.standing, loading = false, failed = window == null)
         }
 
         val value = if (metric != null) {
-            val total = runCatching { repository.total(metric, dayTotalFilter(date), origins) }.getOrNull()
+            val total = reads.attempt { repository.total(metric, dayTotalFilter(date), origins) }
                 // Aggregation returns nothing for an interval as wide as its own bucket -- an
                 // app posting one whole-day summary record. Summing that one app's records is
                 // safe because a single writer cannot overlap itself; never for the combined
@@ -602,7 +623,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 total
             }
         } else {
-            runCatching {
+            reads.attempt {
                 repository.read(
                     spec.type,
                     dayInstants(date),
@@ -611,7 +632,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 )
                     .firstOrNull()
                     ?.let { spec.pointsOf(it).lastOrNull()?.value }
-            }.getOrNull()
+            }
         }
 
         // Only beside a first value from the same day: a diastolic without its systolic, or one
@@ -633,7 +654,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         // Only where the day itself has nothing: a reading on the shown day always wins over
         // an older one, however recent.
         val carried = if (value == null && spec.tile.carryLastReading) {
-            runCatching { lastReadingBefore(spec, date, origins) }.getOrNull()
+            reads.attempt { lastReadingBefore(spec, date, origins) }
         } else {
             null
         }
@@ -644,6 +665,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             valueDate = carried?.first,
             curve = curve,
             loading = false,
+            // Only with nothing to show: a value that did arrive is the answer, whatever else
+            // failed beside it.
+            failed = value == null && carried == null && reads.failed,
         )
     }
 
@@ -797,3 +821,24 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         const val LATEST_ONLY = 1
     }
 }
+
+/**
+ * Runs a tile's reads, remembering whether one threw.
+ *
+ * `runCatching` turned a refused read into the same null as an empty day, and swallowed
+ * cancellation as well; here a failure is noted and cancellation passes through.
+ */
+private class Reads {
+    var failed = false
+        private set
+
+    suspend fun <T> attempt(read: suspend () -> T): T? = try {
+        read()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        failed = true
+        null
+    }
+}
+

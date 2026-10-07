@@ -79,6 +79,8 @@
     <string name="dashboard_empty_title">لا توجد بطاقات بعد</string>
     <string name="dashboard_empty_body">أضِف القيم التي تريد رؤيتها من قائمة كل أنواع البيانات.</string>
     <string name="tile_locked">غير مسموح</string>
+    <string name="tile_loading">جارٍ التحميل</string>
+    <string name="tile_failed">تعذّر التحميل</string>
     <string name="tile_grant">سماح</string>
     <string name="tile_value_as_of">حتى %1$s</string>
     <string name="trend_up">آخر 7 أيام فوق متوسط 30 يومًا</string>

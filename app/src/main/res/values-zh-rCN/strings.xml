@@ -74,6 +74,8 @@
     <string name="dashboard_empty_title">还没有卡片</string>
     <string name="dashboard_empty_body">从所有数据类型列表中添加您想查看的数据。</string>
     <string name="tile_locked">未获允许</string>
+    <string name="tile_loading">正在加载</string>
+    <string name="tile_failed">加载失败</string>
     <string name="tile_grant">允许</string>
     <string name="tile_value_as_of">截至 %1$s</string>
     <string name="trend_up">最近 7 天高于 30 天平均值</string>

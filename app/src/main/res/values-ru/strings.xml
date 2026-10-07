@@ -77,6 +77,8 @@
     <string name="dashboard_empty_title">Плиток пока нет</string>
     <string name="dashboard_empty_body">Добавьте нужные показатели из списка всех типов данных.</string>
     <string name="tile_locked">Нет доступа</string>
+    <string name="tile_loading">Загрузка</string>
+    <string name="tile_failed">Не удалось загрузить</string>
     <string name="tile_grant">Разрешить</string>
     <string name="tile_value_as_of">на %1$s</string>
     <string name="trend_up">Последние 7 дней выше среднего за 30 дней</string>

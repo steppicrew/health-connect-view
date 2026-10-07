@@ -74,6 +74,8 @@
     <string name="dashboard_empty_title">尚無資訊卡</string>
     <string name="dashboard_empty_body">從所有資料類型清單中新增您想查看的數據。</string>
     <string name="tile_locked">未獲允許</string>
+    <string name="tile_loading">載入中</string>
+    <string name="tile_failed">載入失敗</string>
     <string name="tile_grant">允許</string>
     <string name="tile_value_as_of">截至 %1$s</string>
     <string name="trend_up">最近 7 天高於 30 天平均值</string>

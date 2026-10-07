@@ -76,6 +76,8 @@
     <string name="dashboard_empty_title">Aucune vignette pour l’instant</string>
     <string name="dashboard_empty_body">Ajoutez les chiffres que vous voulez voir depuis la liste de tous les types de données.</string>
     <string name="tile_locked">Non autorisé</string>
+    <string name="tile_loading">Chargement</string>
+    <string name="tile_failed">Échec du chargement</string>
     <string name="tile_grant">Autoriser</string>
     <string name="tile_value_as_of">au %1$s</string>
     <string name="trend_up">7 derniers jours au-dessus de la moyenne sur 30 jours</string>

@@ -75,6 +75,8 @@
     <string name="dashboard_empty_title">Noch keine Kacheln</string>
     <string name="dashboard_empty_body">Fügen Sie die Werte hinzu, die Sie sehen möchten – aus der Liste aller Datentypen.</string>
     <string name="tile_locked">Nicht freigegeben</string>
+    <string name="tile_loading">Wird geladen</string>
+    <string name="tile_failed">Laden fehlgeschlagen</string>
     <string name="tile_grant">Freigeben</string>
     <string name="tile_value_as_of">Stand %1$s</string>
     <string name="trend_up">Letzte 7 Tage über dem 30-Tage-Schnitt</string>

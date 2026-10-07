@@ -75,6 +75,8 @@
     <string name="dashboard_empty_title">Henüz kutucuk yok</string>
     <string name="dashboard_empty_body">Görmek istediğiniz değerleri tüm veri türleri listesinden ekleyin.</string>
     <string name="tile_locked">İzin yok</string>
+    <string name="tile_loading">Yükleniyor</string>
+    <string name="tile_failed">Yüklenemedi</string>
     <string name="tile_grant">İzin ver</string>
     <string name="tile_value_as_of">%1$s itibarıyla</string>
     <string name="trend_up">Son 7 gün, 30 günlük ortalamanın üzerinde</string>
