@@ -110,7 +110,7 @@ private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -
                 contentDescription = stringResource(R.string.settings_pro),
                 // On the name's first line, should a long name wrap.
                 modifier = Modifier
-                    .padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, 18.dp))
+                    .padding(start = 8.dp, top = firstLineInset(MaterialTheme.typography.bodyLarge, 18.dp))
                     .size(18.dp),
             )
         }
