@@ -336,8 +336,22 @@ open items below and `FEATURE-IDEAS.md`.
     workout 6h 7m on 12.11.2025. An empty window shows it under its message, since VO2 max is
     measured now and then (seen: 44 mL/kg/min on 16.08.2026). Not done: a record on the
     dashboard tile.
-47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
-    sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app (section 10).
+47. [x] **Suggest a source per type** -- built 07.10.2026; seen on the phone for heart rate
+    (three writers, 4.6 s) and sleep (two, 0.13 s). -- the owner's idea, 07.10.2026; see
+    "Handling multiple sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app
+    (section 10).
+    - In the opened sources box, "Quellen vergleichen" counts the last 30 days per writer in
+      one pass: days with data, entries a day, nights with stages for sleep, and "seit" from
+      one ascending read per writer -- only with the history permission, or it would name the
+      window's start.
+    - The writer ahead is ranked by days, then entries a day, then the longer history, and
+      labelled with the count that decided; equal on all three names nobody. On the phone
+      both sleep writers had 30/30 nights with stages and only "seit" (13.07. against
+      24.07.2025) told them apart.
+    - "Nur ... anzeigen" is the per-type source filter, as the chip; it cannot change Health
+      Connect's priority for the combined total, and the box says so beneath.
+    - Not built: the same across every type at once (the "sources overview" idea), and device
+      or measurement-context details beyond sleep stages.
 48. [x] **"Alle Trainingsrouten" unticks itself** -- the owner's report, 07.10.2026: ticking it
     and tapping "Freigeben" returned with the box clear. Health Connect drops
     `READ_EXERCISE_ROUTES` from a permission request -- it stayed `granted=false` without even
