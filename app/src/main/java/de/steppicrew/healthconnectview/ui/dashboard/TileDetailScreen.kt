@@ -870,6 +870,8 @@ private fun SpanSummary(
             ChartLegend(data = data)
         }
 
+        data.readingContext?.let { ReadingContextStrip(data, it) }
+
         if (data.drawsChart) {
             // The single nights are optional: some want the week's line alone, some want to
             // see which nights moved it. Remembered, as a display choice, not per screen.
@@ -1844,6 +1846,83 @@ private fun SourceComparison(compare: SourceCompare, selected: String?) {
                     Text(stringResource(R.string.sources_show_only, context.appLabelFor(suggested)))
                 }
             }
+        }
+    }
+}
+
+/**
+ * A day of a type measured now and then, without a 24-hour axis: a single weigh-in on one was
+ * a lone dot, and its time of day is the least interesting thing about it. Instead what a
+ * reading is looked at for -- up or down since the last one, and against what -- with the
+ * recent days as dots and this one highlighted.
+ *
+ * The change names the earlier reading's date: over an uneven gap, two days or three weeks,
+ * a bare "-0,4 kg" would read as a rate.
+ */
+@Composable
+private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
+    val spec = data.spec
+    val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    val zone = HealthRepository.DEFAULT_ZONE
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val shownDay = data.readingContextDay
+    val index = context.days.indexOfLast { it.time.atZone(zone).toLocalDate() == shownDay }
+    val current = context.days.getOrNull(index)
+    val previous = context.days.getOrNull(index - 1)
+
+    // As precise as the readings are shown, no more: "+0,37 kg" beside a weight of "81,9 kg"
+    // claimed a precision the headline itself does not.
+    val changeDecimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else 1
+    fun signed(value: Double): String =
+        (if (value > 0) "+" else "") + Formatting.number(value, changeDecimals)
+
+    Column(Modifier.padding(top = 8.dp)) {
+        if (context.dayHigh > context.dayLow) {
+            Text(
+                text = stringResource(
+                    R.string.context_day_range,
+                    Formatting.number(context.dayLow, spec.valueDecimals),
+                    Formatting.number(context.dayHigh, spec.valueDecimals) + unit,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        if (current != null && previous != null) {
+            val second = context.secondaryDays
+            val secondNow = second.firstOrNull { it.time == current.time }
+            val secondBefore = second.firstOrNull { it.time == previous.time }
+            val change = signed(current.value - previous.value) +
+                (if (secondNow != null && secondBefore != null) "/" + signed(secondNow.value - secondBefore.value) else "") +
+                unit
+            Text(
+                text = stringResource(R.string.context_change, change, Formatting.date(previous.time, zone)),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        } else if (current != null) {
+            Text(
+                text = stringResource(R.string.context_first),
+                style = MaterialTheme.typography.bodyMedium,
+                color = muted,
+            )
+        }
+        if (context.days.size > 1) {
+            val highlight = MaterialTheme.colorScheme.tertiary
+            LineChart(
+                points = context.days,
+                modifier = Modifier.padding(top = 12.dp),
+                smooth = false,
+                unitRes = spec.displayUnitRes,
+                valueDecimals = spec.valueDecimals,
+                integral = spec.tile.integralValues,
+                markReadings = true,
+                secondaryPoints = context.secondaryDays,
+                pointColors = context.days.mapIndexed { i, _ -> highlight.takeIf { i == index } },
+            )
+            Text(
+                text = stringResource(R.string.context_caption),
+                style = MaterialTheme.typography.labelSmall,
+                color = muted,
+            )
         }
     }
 }

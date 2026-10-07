@@ -208,6 +208,10 @@
     <string name="detail_records_loading">Cargando registros…</string>
     <string name="span_average">Media</string>
     <string name="span_per_night">Promedio por noche</string>
+    <string name="context_day_range">Rango de este día: %1$s–%2$s</string>
+    <string name="context_change">%1$s desde el %2$s</string>
+    <string name="context_first">La primera medición registrada</string>
+    <string name="context_caption">Últimos días con medición, este resaltado</string>
     <string name="chart_source_aggregated_mean">Medias diarias, sin duplicados según Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Medias semanales, sin duplicados según Health Connect</string>
     <string name="bp_grade_low">Baja</string>

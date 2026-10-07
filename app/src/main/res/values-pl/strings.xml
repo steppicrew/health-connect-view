@@ -210,6 +210,10 @@
     <string name="detail_records_loading">Wczytywanie wpisów…</string>
     <string name="span_average">Średnia</string>
     <string name="span_per_night">Średnio na noc</string>
+    <string name="context_day_range">Zakres tego dnia: %1$s–%2$s</string>
+    <string name="context_change">%1$s od %2$s</string>
+    <string name="context_first">Pierwszy zapisany pomiar</string>
+    <string name="context_caption">Ostatnie dni z pomiarem, ten wyróżniony</string>
     <string name="chart_source_aggregated_mean">Średnie dzienne, bez duplikatów według Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Średnie tygodniowe, bez duplikatów według Health Connect</string>
     <string name="bp_grade_low">Niskie</string>

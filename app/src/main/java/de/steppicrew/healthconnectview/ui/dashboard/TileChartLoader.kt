@@ -46,6 +46,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import java.time.Duration
 import java.time.Instant
+import de.steppicrew.healthconnectview.health.recordsIn
 import java.time.LocalDate
 import java.time.Period
 
@@ -652,6 +653,19 @@ internal class TileChartLoader(
             readExtras()
         }
 
+        // A day of a type measured now and then is shown against its recent readings rather
+        // than on a 24-hour axis; see TileSpec.occasional. Only on the detail screen (which
+        // defers its extras): a dashboard tile shows the value alone.
+        val readingContext = if (
+            deferExtras && span == Span.DAY && spec.tile.occasional && chartPoints.isNotEmpty() &&
+            // Blood pressure keeps its chart on a day of several readings, morning and evening.
+            (spec.type != BloodPressureRecord::class || chartPoints.size == 1)
+        ) {
+            runCatching { readingContext(spec, windowEnd, origins, chartPoints) }.getOrNull()
+        } else {
+            null
+        }
+
         val chart = TileDetailData(
             spec = spec,
             points = shownPoints,
@@ -706,6 +720,7 @@ internal class TileChartLoader(
             },
             baseline = extras.baseline,
             usualBand = extras.usualBand,
+            readingContext = readingContext,
             dailyFromReadings = dailyReadings != null,
             recordCount = windowRecordCount,
             shapeSource = shapeSource,
@@ -1008,6 +1023,46 @@ internal class TileChartLoader(
     }
 
     /**
+     * The most recent days with a reading up to the shown day, one value each, newest last.
+     *
+     * One read of at most [CONTEXT_RECORDS] records, newest first, reaching back as far as
+     * Health Connect allows. A day's value is the mean of its readings: two writers copying one
+     * weigh-in agree to the gram, and several weigh-ins in a day are what the day's range,
+     * shown beside it, is for.
+     */
+    private suspend fun readingContext(
+        spec: RecordTypeSpec<*>,
+        windowEnd: Instant,
+        origins: Set<DataOrigin>,
+        dayPoints: List<Point>,
+    ): ReadingContext? {
+        val zone = HealthRepository.DEFAULT_ZONE
+        val records = repository.recordsIn(
+            spec,
+            windowEnd.minus(CONTEXT_LOOKBACK),
+            windowEnd,
+            origins,
+            maxRecords = CONTEXT_RECORDS,
+        )
+        fun byDay(points: List<Point>): Map<LocalDate, Double> = points
+            .groupBy { it.time.atZone(zone).toLocalDate() }
+            .mapValues { (_, ofDay) -> ofDay.map { it.value }.average() }
+        val primary = byDay(records.flatMap { spec.pointsOf(it) })
+        val secondary = byDay(records.flatMap { spec.secondaryPointsOf(it) })
+        val days = primary.keys.sortedDescending().take(CONTEXT_DAYS).sorted()
+        if (days.isEmpty()) return null
+        fun series(values: Map<LocalDate, Double>) = days.mapNotNull { day ->
+            values[day]?.let { Point(day.atStartOfDay(zone).toInstant(), it) }
+        }
+        return ReadingContext(
+            days = series(primary),
+            secondaryDays = series(secondary),
+            dayLow = dayPoints.minOf { it.value },
+            dayHigh = dayPoints.maxOf { it.value },
+        )
+    }
+
+    /**
      * Sleep and exercise spans overlapping the window, for the bands behind the chart.
      *
      * The widening, deduplication and clipping all live in [sessionsIn], shared with the
@@ -1104,6 +1159,15 @@ internal fun windowStart(span: Span, offset: Int): Instant =
 /** The window's end, exclusive. */
 internal fun windowEnd(span: Span, offset: Int): Instant =
     span.endDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+
+/** How many days with a reading a context strip shows. */
+private const val CONTEXT_DAYS = 10
+
+/** At most this many records are read for it: enough for ten days of several weigh-ins. */
+private const val CONTEXT_RECORDS = 200
+
+/** How far back it looks: a body scan once a year still finds its predecessor. */
+private val CONTEXT_LOOKBACK: java.time.Duration = java.time.Duration.ofDays(3650)
 
 /** The type whose readings describe a session from the inside. */
 internal const val HEART_RATE = "HeartRateRecord"

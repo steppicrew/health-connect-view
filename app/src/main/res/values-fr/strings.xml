@@ -208,6 +208,10 @@
     <string name="detail_records_loading">Chargement des enregistrements…</string>
     <string name="span_average">Moyenne</string>
     <string name="span_per_night">Moyenne par nuit</string>
+    <string name="context_day_range">Plage ce jour-là : %1$s–%2$s</string>
+    <string name="context_change">%1$s depuis le %2$s</string>
+    <string name="context_first">La première mesure enregistrée</string>
+    <string name="context_caption">Derniers jours avec une mesure, celui-ci en surbrillance</string>
     <string name="chart_source_aggregated_mean">Moyennes journalières, dédoublonnées par Santé Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Moyennes hebdomadaires, dédoublonnées par Santé Connect</string>
     <string name="bp_grade_low">Basse</string>

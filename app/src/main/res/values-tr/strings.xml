@@ -206,6 +206,10 @@
     <string name="detail_records_loading">Kayıtlar yükleniyor…</string>
     <string name="span_average">Ortalama</string>
     <string name="span_per_night">Gece başına ortalama</string>
+    <string name="context_day_range">Bu günün aralığı: %1$s–%2$s</string>
+    <string name="context_change">%2$s tarihinden beri %1$s</string>
+    <string name="context_first">Kayıtlı ilk ölçüm</string>
+    <string name="context_caption">Ölçüm olan son günler, bu gün vurgulu</string>
     <string name="chart_source_aggregated_mean">Günlük ortalamalar, Health Connect tarafından tekilleştirildi</string>
     <string name="chart_source_aggregated_weekly_mean">Haftalık ortalamalar, Health Connect tarafından tekilleştirildi</string>
     <string name="bp_grade_low">Düşük</string>

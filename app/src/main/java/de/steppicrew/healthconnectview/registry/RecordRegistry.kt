@@ -315,7 +315,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.vo2MillilitersPerMinuteKilogram)) },
             summary = { Formatting.number(it.vo2MillilitersPerMinuteKilogram) + " mL/kg/min" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, personalRecord = RecordKind.HIGHEST),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, personalRecord = RecordKind.HIGHEST, occasional = true),
         ),
         RecordTypeSpec(
             type = WheelchairPushesRecord::class,
@@ -346,7 +346,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.percentage.value)) },
             summary = { Formatting.number(it.percentage.value) + " %" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = BodyWaterMassRecord::class,
@@ -358,7 +358,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = BoneMassRecord::class,
@@ -370,7 +370,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = HeightRecord::class,
@@ -383,7 +383,7 @@ object RecordRegistry {
             points = { listOf(Point(it.time, it.height.inMeters * 100.0)) },
             summary = { Units.format(Quantity.BODY_HEIGHT, it.height.inMeters * 100.0) },
             aggregate = HeightRecord.HEIGHT_AVG,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = LeanBodyMassRecord::class,
@@ -395,7 +395,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.mass.inKilograms)) },
             summary = { Units.format(Quantity.MASS, it.mass.inKilograms) },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = WeightRecord::class,
@@ -409,7 +409,7 @@ object RecordRegistry {
             summary = { Units.format(Quantity.MASS, it.weight.inKilograms) },
             aggregate = WeightRecord.WEIGHT_AVG,
             rangeAggregates = WeightRecord.WEIGHT_MIN to WeightRecord.WEIGHT_MAX,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
             type = BloodGlucoseRecord::class,
@@ -438,7 +438,9 @@ object RecordRegistry {
             aggregate = BloodPressureRecord.SYSTOLIC_AVG,
             secondaryPoints = { listOf(Point(it.time, it.diastolic.inMillimetersOfMercury)) },
             secondaryAggregate = BloodPressureRecord.DIASTOLIC_AVG,
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            // Occasional only on a day of one reading: with a morning and an evening reading
+            // the time of day is the point, and the day keeps its chart.
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, occasional = true),
         ),
         RecordTypeSpec(
             type = BodyTemperatureRecord::class,
