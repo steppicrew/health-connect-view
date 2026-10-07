@@ -43,6 +43,38 @@ Picked by the owner on 07.10.2026 from a list of ideas, alongside goal streaks (
   the data shows ("schreibt an 98 % der Tage, mit Schlafphasen"), never as a verdict on a
   device or app, and computed only on request, since it probes every type.
 
+## From the list of 07.10.2026, not picked first
+
+Ideas from the same list; recorded so they are not lost, not ranked. Scores are from that list
+(out of 10), which weighed value against cost and risk.
+
+Free:
+
+- Year heatmap per metric (8): a calendar grid coloured by daily value, from the daily totals
+  already read. Shows habits and gaps at a glance; needs a colour scale per type.
+- Sources overview (7): which app writes which types, since when, and where they overlap.
+  The groundwork for the suggested source above.
+- Jump to a date (7): a date picker on the dashboard and the detail screens, instead of many
+  swipes.
+- Charts described for screen readers (6): "Schritte, 4 Wochen, Mittel 8.200, steigend" from
+  the trend numbers that already exist.
+- Home-screen widget (4): very visible, but it needs reading in the background
+  (`READ_HEALTH_DATA_IN_BACKGROUND`), which changes what the privacy page promises.
+
+Pro:
+
+- One report for the doctor (9): blood pressure, weight, resting heart rate and glucose for one
+  period in a single PDF, from the four reports that exist.
+- Compare periods (8): this month over the same month last year on one chart. Answers "is it
+  better?" without implying a cause; anything older than 30 days needs the history permission.
+- Time in heart-rate zones (7): per workout and per week, from the zones set on the tile and
+  the heart rate matched to the session by time -- and saying it is matched by time.
+- Sleep regularity (7): the spread of bedtimes and wake times and the usual bedtime, from the
+  sessions alone. A description, never a score.
+- The same workout over time (6): pace and heart rate for one activity type, or one route,
+  across weeks. "The same route" is fuzzy, and writers disagree about activity types.
+- Monthly summary PDF (5): any metric for a month; overlaps with the CSV export.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).
