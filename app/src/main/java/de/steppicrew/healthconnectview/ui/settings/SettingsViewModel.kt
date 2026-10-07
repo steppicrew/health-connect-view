@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -87,6 +88,15 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
     fun preferSource(packageName: String?) {
         viewModelScope.launch { sourceStore.preferSource(packageName) }
+    }
+
+    /** How many types have a source of their own, set on their screen. */
+    val ownSourceCount: StateFlow<Int> = sourceStore.selections.map { it.size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT), 0)
+
+    /** Every type back to the default source: the preferred app, or all sources without one. */
+    fun resetSources() {
+        viewModelScope.launch { sourceStore.clearSelections() }
     }
 
     /**

@@ -503,6 +503,10 @@
     <string name="source_all_explained">Tutte le fonti: combinate e senza duplicati secondo Connessione Salute. Non è lo stesso del valore di una singola app.</string>
     <string name="source_showing_one">%1$s: solo il valore di questa app, non il tuo totale senza duplicati.</string>
     <string name="source_priority_hint">Quale app prevale dove le registrazioni si sovrappongono si imposta in Connessione Salute, alla voce priorità delle app.</string>
+    <string name="source_default">Fonte predefinita</string>
+    <string name="source_use_default">Usa predefinita (%1$s)</string>
+    <string name="settings_reset_sources">Ripristina tutte le fonti predefinite</string>
+    <string name="settings_reset_sources_body">I tipi per cui hai scelto una fonte nella loro schermata seguono di nuovo l’app preferita.</string>
     <string name="sources_compare">Confronta le fonti</string>
     <string name="sources_compare_title">Ultimi 30 giorni</string>
     <string name="sources_days">Giorni con dati: %1$d/%2$d</string>

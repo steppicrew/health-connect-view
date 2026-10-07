@@ -491,6 +491,10 @@
     <string name="source_all_explained">Tüm kaynaklar: Health Connect tarafından birleştirildi ve tekilleştirildi. Tek bir uygulamanın değeriyle aynı değildir.</string>
     <string name="source_showing_one">%1$s: yalnızca bu uygulamanın değeri, tekilleştirilmiş toplamınız değil.</string>
     <string name="source_priority_hint">Kayıtlar çakıştığında hangi uygulamanın geçerli olacağı Health Connect’te, uygulama önceliği altında ayarlanır.</string>
+    <string name="source_default">Varsayılan kaynak</string>
+    <string name="source_use_default">Varsayılanı kullan (%1$s)</string>
+    <string name="settings_reset_sources">Tüm kaynakları varsayılana sıfırla</string>
+    <string name="settings_reset_sources_body">Ekranında kaynak seçtiğiniz türler yeniden tercih edilen uygulamayı izler.</string>
     <string name="sources_compare">Kaynakları karşılaştır</string>
     <string name="sources_compare_title">Son 30 gün</string>
     <string name="sources_days">Veri olan günler: %1$d/%2$d</string>

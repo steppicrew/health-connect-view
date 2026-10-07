@@ -499,9 +499,34 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         selectedSource = packageName
         val type = typeName ?: return
         viewModelScope.launch {
-            sourceStore.select(type, packageName)
+            // "All" is stored as a choice of its own, so it outlasts the preferred app.
+            sourceStore.select(type, packageName ?: SourceStore.ALL_SOURCES)
+            refreshSourceDefault(type)
             reload()
         }
+    }
+
+    /** Drops this type's own choice, so it follows the preferred app from settings again. */
+    fun useDefaultSource() {
+        val type = typeName ?: return
+        viewModelScope.launch {
+            sourceStore.select(type, null)
+            selectedSource = resolveSource(type)
+            refreshSourceDefault(type)
+            reload()
+        }
+    }
+
+    private val _sourceDefault = MutableStateFlow(SourceDefault(preferred = null, ownChoice = false))
+
+    /** The preferred app from settings, and whether this type has a choice of its own. */
+    val sourceDefault: StateFlow<SourceDefault> = _sourceDefault.asStateFlow()
+
+    private suspend fun refreshSourceDefault(type: String) {
+        _sourceDefault.value = SourceDefault(
+            preferred = runCatching { sourceStore.preferred.first() }.getOrNull(),
+            ownChoice = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap()).containsKey(type),
+        )
     }
 
     /**
@@ -523,6 +548,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         _offset.update { offsetForDate(date, chosenSpan ?: _span.value) }
         viewModelScope.launch {
             selectedSource = resolveSource(typeName)
+            refreshSourceDefault(typeName)
             reload()
         }
     }
@@ -537,7 +563,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      */
     private suspend fun resolveSource(typeName: String): String? {
         val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-        selections[typeName]?.let { return it }
+        selections[typeName]?.let { return it.takeUnless { chosen -> chosen == SourceStore.ALL_SOURCES } }
 
         val preferred = runCatching { sourceStore.preferred.first() }.getOrNull() ?: return null
         val spec = RecordRegistry.specOrNull(typeName) ?: return null
@@ -903,3 +929,6 @@ sealed interface CoverageLoad {
     data class Done(val coverage: SourceCoverage) : CoverageLoad
     data object Failed : CoverageLoad
 }
+
+/** The app chosen in settings as the default source, and whether a type overrides it. */
+data class SourceDefault(val preferred: String?, val ownChoice: Boolean)

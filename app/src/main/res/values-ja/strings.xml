@@ -479,6 +479,10 @@
     <string name="source_all_explained">すべてのソース: ヘルスコネクトが統合し、重複を除外したものです。どれか 1 つのアプリの数値とは異なります。</string>
     <string name="source_showing_one">%1$s: このアプリの数値のみで、重複を除外した合計ではありません。</string>
     <string name="source_priority_hint">記録が重なったときにどのアプリを優先するかは、ヘルスコネクトのアプリの優先順位で設定します。</string>
+    <string name="source_default">デフォルトのソース</string>
+    <string name="source_use_default">デフォルトを使用（%1$s）</string>
+    <string name="settings_reset_sources">すべてのソースをデフォルトに戻す</string>
+    <string name="settings_reset_sources_body">画面でソースを選んだデータタイプが、再び優先アプリに従います。</string>
     <string name="sources_compare">ソースを比較</string>
     <string name="sources_compare_title">過去30日間</string>
     <string name="sources_days">データのある日: %1$d/%2$d</string>

@@ -438,7 +438,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 granted = spec.permission in granted,
                 // The preference is provisional here: load() drops it for a type the
                 // preferred app never wrote, and reports back what it actually used.
-                source = sources[tile.typeName] ?: preferred,
+                source = when (val chosen = sources[tile.typeName]) {
+                    SourceStore.ALL_SOURCES -> null
+                    null -> preferred
+                    else -> chosen
+                },
             )
         }
 
@@ -590,7 +594,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     private suspend fun resolveSource(placeholder: TileData, range: TimeRangeFilter): String? {
         val spec = placeholder.spec
-        return sources[spec.type.simpleName] ?: placeholder.source?.takeIf { pkg ->
+        sources[spec.type.simpleName]?.let { chosen ->
+            return chosen.takeUnless { it == SourceStore.ALL_SOURCES }
+        }
+        return placeholder.source?.takeIf { pkg ->
             runCatching {
                 repository.read(spec.type, range, maxRecords = LATEST_ONLY, origins = setOf(DataOrigin(pkg)))
                     .isNotEmpty()

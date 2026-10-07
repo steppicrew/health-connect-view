@@ -479,6 +479,10 @@
     <string name="source_all_explained">所有來源：由 Health Connect 合併並去除重複。與任何單一應用程式的數值都不同。</string>
     <string name="source_showing_one">%1$s：僅顯示這個應用程式的數值，並非您去除重複後的總計。</string>
     <string name="source_priority_hint">記錄重疊時以哪個應用程式為準，是在 Health Connect 的應用程式優先順序中設定。</string>
+    <string name="source_default">預設來源</string>
+    <string name="source_use_default">使用預設（%1$s）</string>
+    <string name="settings_reset_sources">將所有來源重設為預設</string>
+    <string name="settings_reset_sources_body">您在其頁面上選過來源的類型將重新使用偏好的應用程式。</string>
     <string name="sources_compare">比較來源</string>
     <string name="sources_compare_title">最近 30 天</string>
     <string name="sources_days">有資料的天數：%1$d/%2$d</string>

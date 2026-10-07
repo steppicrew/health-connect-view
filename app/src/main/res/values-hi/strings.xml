@@ -491,6 +491,10 @@
     <string name="source_all_explained">सभी सोर्स: Health Connect ने इन्हें मिलाया है और डुप्लीकेट हटाए हैं। यह किसी एक ऐप के आंकड़े जैसा नहीं है।</string>
     <string name="source_showing_one">%1$s: सिर्फ़ इस ऐप का आंकड़ा, डुप्लीकेट हटाया गया आपका कुल नहीं।</string>
     <string name="source_priority_hint">रिकॉर्ड ओवरलैप होने पर किस ऐप को प्राथमिकता मिले, यह Health Connect में ऐप की प्राथमिकता में सेट होता है।</string>
+    <string name="source_default">डिफ़ॉल्ट सोर्स</string>
+    <string name="source_use_default">डिफ़ॉल्ट इस्तेमाल करें (%1$s)</string>
+    <string name="settings_reset_sources">सभी सोर्स को डिफ़ॉल्ट पर रीसेट करें</string>
+    <string name="settings_reset_sources_body">जिन प्रकारों के लिए आपने उनकी स्क्रीन पर सोर्स चुना था, वे फिर से पसंदीदा ऐप का पालन करेंगे।</string>
     <string name="sources_compare">सोर्स की तुलना करें</string>
     <string name="sources_compare_title">पिछले 30 दिन</string>
     <string name="sources_days">डेटा वाले दिन: %1$d/%2$d</string>
