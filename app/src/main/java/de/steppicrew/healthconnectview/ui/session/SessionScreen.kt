@@ -60,6 +60,7 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import de.steppicrew.healthconnectview.ui.components.iconFor
+import de.steppicrew.healthconnectview.ui.components.sessionName
 import de.steppicrew.healthconnectview.ui.dashboard.heartRateSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
@@ -393,13 +394,6 @@ private fun Section(title: String) {
         modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
     )
 }
-
-/** A session's own name, "Sleep" for an untitled night, else the generic "Activity". */
-@Composable
-internal fun sessionName(session: Session): String =
-    session.title
-        ?: stringResource(R.string.session_sleep).takeIf { session.kind == Session.Kind.SLEEP }
-        ?: stringResource(R.string.session_untitled)
 
 private const val HEADER_ICON = 28
 
