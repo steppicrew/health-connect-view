@@ -434,6 +434,7 @@
     <string name="detail_no_permission_body">Bu uygulamaya bu veri türü için erişim vermediniz. İzinler ekranından izin verebilirsiniz.</string>
     <string name="detail_empty_title">Kayıt yok</string>
     <string name="detail_empty_body">Erişime izin verildi ancak seçilen dönemde bu türden veri yazılmadı. Daha uzun bir dönem deneyin.</string>
+    <string name="detail_latest_value">Son kayıt: %1$s</string>
     <string name="detail_error_title">Veriler okunamadı</string>
     <string name="detail_written_by">Yazan: %1$s</string>
     <string name="source_phone_sensors">Bu telefon</string>

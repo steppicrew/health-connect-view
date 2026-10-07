@@ -423,6 +423,7 @@
     <string name="detail_no_permission_body">您尚未允许此应用访问此数据类型。您可以在权限屏幕中允许。</string>
     <string name="detail_empty_title">无记录</string>
     <string name="detail_empty_body">已允许访问，但所选时段内没有写入此类型的数据。请尝试更长的时段。</string>
+    <string name="detail_latest_value">最近记录：%1$s</string>
     <string name="detail_error_title">无法读取数据</string>
     <string name="detail_written_by">写入者：%1$s</string>
     <string name="source_phone_sensors">此手机</string>

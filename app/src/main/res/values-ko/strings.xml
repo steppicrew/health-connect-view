@@ -423,6 +423,7 @@
     <string name="detail_no_permission_body">이 앱에 이 데이터 유형에 대한 액세스 권한을 주지 않았습니다. 권한 화면에서 허용할 수 있습니다.</string>
     <string name="detail_empty_title">기록 없음</string>
     <string name="detail_empty_body">액세스는 허용되었지만 선택한 기간에 이 유형의 데이터가 기록되지 않았습니다. 더 긴 기간을 선택해 보세요.</string>
+    <string name="detail_latest_value">마지막 기록: %1$s</string>
     <string name="detail_error_title">데이터를 읽을 수 없습니다</string>
     <string name="detail_written_by">기록한 앱: %1$s</string>
     <string name="source_phone_sensors">이 휴대전화</string>

@@ -465,6 +465,7 @@
     <string name="detail_no_permission_body">You have not given this app access to this data type. You can allow it from the permissions screen.</string>
     <string name="detail_empty_title">Nothing recorded</string>
     <string name="detail_empty_body">Access is allowed, but no data of this type was written in the selected period. Try a longer period.</string>
+    <string name="detail_latest_value">Last recorded on %1$s</string>
     <string name="detail_error_title">Could not read data</string>
     <string name="detail_written_by">Written by %1$s</string>
     <string name="source_phone_sensors">This phone</string>

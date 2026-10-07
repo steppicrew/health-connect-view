@@ -434,6 +434,7 @@
     <string name="detail_no_permission_body">Je hebt deze app geen toegang tot dit gegevenstype gegeven. Je kunt het toestaan op het toestemmingsscherm.</string>
     <string name="detail_empty_title">Niets geregistreerd</string>
     <string name="detail_empty_body">Toegang is toegestaan, maar in de gekozen periode zijn geen gegevens van dit type geschreven. Probeer een langere periode.</string>
+    <string name="detail_latest_value">Laatst vastgelegd op %1$s</string>
     <string name="detail_error_title">Gegevens konden niet worden gelezen</string>
     <string name="detail_written_by">Geschreven door %1$s</string>
     <string name="source_phone_sensors">Deze telefoon</string>

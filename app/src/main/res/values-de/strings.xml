@@ -428,6 +428,7 @@
     <string name="detail_no_permission_body">Sie haben dieser App keinen Zugriff auf diesen Datentyp gegeben. Sie können ihn in den Berechtigungen freigeben.</string>
     <string name="detail_empty_title">Nichts aufgezeichnet</string>
     <string name="detail_empty_body">Der Zugriff ist freigegeben, aber im gewählten Zeitraum wurden keine Daten dieses Typs geschrieben. Versuchen Sie einen längeren Zeitraum.</string>
+    <string name="detail_latest_value">Zuletzt aufgezeichnet am %1$s</string>
     <string name="detail_error_title">Daten konnten nicht gelesen werden</string>
     <string name="detail_written_by">Geschrieben von %1$s</string>
     <string name="source_phone_sensors">Dieses Telefon</string>

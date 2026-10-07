@@ -445,6 +445,7 @@
     <string name="detail_no_permission_body">Vous n’avez pas donné à cette application l’accès à ce type de données. Vous pouvez l’autoriser depuis l’écran des autorisations.</string>
     <string name="detail_empty_title">Rien d’enregistré</string>
     <string name="detail_empty_body">L’accès est autorisé, mais aucune donnée de ce type n’a été écrite sur la période choisie. Essayez une période plus longue.</string>
+    <string name="detail_latest_value">Dernier enregistrement le %1$s</string>
     <string name="detail_error_title">Impossible de lire les données</string>
     <string name="detail_written_by">Écrit par %1$s</string>
     <string name="source_phone_sensors">Ce téléphone</string>

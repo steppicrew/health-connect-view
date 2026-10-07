@@ -445,6 +445,7 @@
     <string name="detail_no_permission_body">Você não deu a este app acesso a este tipo de dado. Você pode permitir isso na tela de permissões.</string>
     <string name="detail_empty_title">Nada registrado</string>
     <string name="detail_empty_body">O acesso está permitido, mas nenhum dado deste tipo foi gravado no período selecionado. Tente um período mais longo.</string>
+    <string name="detail_latest_value">Último registro em %1$s</string>
     <string name="detail_error_title">Não foi possível ler os dados</string>
     <string name="detail_written_by">Gravado por %1$s</string>
     <string name="source_phone_sensors">Este smartphone</string>

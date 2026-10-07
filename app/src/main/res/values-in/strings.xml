@@ -423,6 +423,7 @@
     <string name="detail_no_permission_body">Anda belum memberi aplikasi ini akses ke jenis data ini. Anda dapat mengizinkannya dari layar izin.</string>
     <string name="detail_empty_title">Tidak ada catatan</string>
     <string name="detail_empty_body">Akses diizinkan, tetapi tidak ada data jenis ini yang ditulis pada periode yang dipilih. Coba periode yang lebih panjang.</string>
+    <string name="detail_latest_value">Terakhir dicatat pada %1$s</string>
     <string name="detail_error_title">Data tidak dapat dibaca</string>
     <string name="detail_written_by">Ditulis oleh %1$s</string>
     <string name="source_phone_sensors">Ponsel ini</string>
