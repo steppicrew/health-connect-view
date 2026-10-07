@@ -324,8 +324,18 @@ open items below and `FEATURE-IDEAS.md`.
     600 ms and shows only after 300 ms. No estimate from earlier loads was needed.
     Not done: the streak and trend arrive above the chart and push it down by about a
     quarter of the screen.
-46. [ ] **Personal records** -- the owner's pick, 07.10.2026; see "Motivation" in
-    `FEATURE-IDEAS.md`. Free.
+46. [x] **Personal records** -- the owner's pick, 07.10.2026; see "Motivation" in
+    `FEATURE-IDEAS.md`. Free. Built 07.10.2026 on the type's screen, under the chart beside
+    streak and trend (`health/PersonalRecord.kt`, `TileSpec.personalRecord`): the best day of
+    steps, distance, active energy, elevation, floors and wheelchair pushes; the lowest
+    resting heart rate; the highest VO2 max reading; the longest workout -- each with its day,
+    over the year before today (30 days without the history permission, said behind the
+    "i"). Daily figures are the deduplicated aggregate, so a day two apps wrote cannot win by
+    being counted twice; today is left out while it runs. Read last, off the main thread,
+    once per type and source. Seen on the phone: resting rate 41 bpm on 29.03.2026, longest
+    workout 6h 7m on 12.11.2025. An empty window shows it under its message, since VO2 max is
+    measured now and then (seen: 44 mL/kg/min on 16.08.2026). Not done: a record on the
+    dashboard tile.
 47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
     sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app (section 10).
 48. [x] **"Alle Trainingsrouten" unticks itself** -- the owner's report, 07.10.2026: ticking it
