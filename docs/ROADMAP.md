@@ -391,6 +391,13 @@ open items below and `FEATURE-IDEAS.md`.
       previous weigh-in behind it as a shadow, and a range where the day had several
       readings -- or something better. Applies alike to the other measured-now-and-then types
       (body fat, the other body measurements, blood pressure on a day of one reading).
+    - **Decided 07.10.2026, all as recommended** (`docs/PRESENTATION.md`): (1) a day of a
+      now-and-then type as a context strip -- value, change since the previous reading with
+      its date, the last readings as dots -- with no 24-hour axis; (2) glucose and skin
+      temperature as daily means with a band, body and basal temperature as joined dots;
+      (3) nutrition as a summed quantity; (4) sessions in the year as one bar per week;
+      (5) a reference band for oxygen saturation, the usual range for resting heart rate and
+      respiratory rate, none for glucose and temperature.
 50. [x] **From an empty window to the nearest one with data** -- built 07.10.2026; seen on the phone with VO2 max, four weeks empty, "Zuletzt aufgezeichnet am 16.08.2026". -- the owner's idea, 07.10.2026.
     A day, week or four weeks with nothing recorded today mostly means stepping back through
     more empty ones (VO2 max, weight, blood pressure are measured now and then). Not by
