@@ -533,7 +533,7 @@
         <item quantity="one">Hedefe art arda %d gün ulaşıldı</item>
         <item quantity="other">Hedefe art arda %d gün ulaşıldı</item>
     </plurals>
-    <string name="streak_rule">Bu güne kadar hedefe ulaşılan art arda günleri sayar. Hiçbir şeyin kaydedilmediği bir gün seriyi bozmaz ve seriye de sayılmaz; bir ay boyunca hiçbir şey kaydedilmezse yeni bir seri başlar. Bugün, hedefe ulaşıldığı anda sayılır ve o zamana kadar hiçbir şeyi bozmaz. En uzun seri son bir yılda aranır; eski verilere erişim yoksa son 30 günde.</string>
+    <string name="streak_rule">Bu güne kadar hedefe ulaşılan art arda günleri sayar. Hiçbir şeyin kaydedilmediği bir gün seriyi bozmaz ve seriye de sayılmaz; bir ay boyunca hiçbir şey kaydedilmezse yeni bir seri başlar. Bugün, hedefe ulaşıldığı anda sayılır ve o zamana kadar hiçbir şeyi bozmaz. En uzun seri son bir yılda aranır.</string>
     <plurals name="streak_active_days">
         <item quantity="one">Art arda %d gün aktif</item>
         <item quantity="other">Art arda %d gün aktif</item>
@@ -552,9 +552,11 @@
     <string name="record_title_highest">Son bir yılın en yüksek değeri</string>
     <string name="record_title_longest">Son bir yılın en uzun antrenmanı</string>
     <string name="record_value_on">%1$s, %2$s</string>
-    <string name="record_rule">Son bir yıl içinde bugünden önceki günler arasında aranır; daha eski verilere erişim yoksa son 30 günde. Günlük değerler, Health Connect’in tekrarlar çıkarılmış toplamlarıdır; birkaç uygulamanın kaydettiği bir gün bir kez sayılır, bir antrenman da öyle. Bugün, gün bitince sayılır.</string>
+    <string name="record_rule">Son bir yıl içinde bugünden önceki günler arasında aranır. Günlük değerler, Health Connect’in tekrarlar çıkarılmış toplamlarıdır; birkaç uygulamanın kaydettiği bir gün bir kez sayılır, bir antrenman da öyle. Bugün, gün bitince sayılır.</string>
+    <string name="history_limit_note">Daha eski verilere erişim olmadığından yalnızca son 30 gün tarandı.</string>
+    <string name="history_grant">Eski verilere izin verin</string>
     <string name="streak_is_longest">Son bir yıldaki en uzun seri.</string>
-    <string name="streak_active_rule">Bu güne kadar en az bir etkinliğin kaydedildiği art arda günleri sayar. Etkinliksiz bir gün, o gün cihazınızı takmamış olsanız bile seriyi bitirir: Health Connect etkinlik olmamasını kayıt olmamasından ayırt edemez. Bugün, bir etkinlik kaydedildiği anda sayılır ve o zamana kadar hiçbir şeyi bozmaz. En uzun seri son bir yılda aranır; eski verilere erişim yoksa son 30 günde.</string>
+    <string name="streak_active_rule">Bu güne kadar en az bir etkinliğin kaydedildiği art arda günleri sayar. Etkinliksiz bir gün, o gün cihazınızı takmamış olsanız bile seriyi bitirir: Health Connect etkinlik olmamasını kayıt olmamasından ayırt edemez. Bugün, bir etkinlik kaydedildiği anda sayılır ve o zamana kadar hiçbir şeyi bozmaz. En uzun seri son bir yılda aranır.</string>
     <string name="chart_source_raw">Tekil ölçümler</string>
     <string name="chart_source_readings_daily">Ölçümlerin günlük ortalamaları, gün başına bir uygulama</string>
     <string name="chart_source_readings_weekly">Ölçümlerin haftalık ortalamaları, gün başına bir uygulama</string>

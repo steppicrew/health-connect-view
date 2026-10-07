@@ -159,6 +159,7 @@ fun HealthNavGraph(
             TileDetailScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 openSession = entry.arguments?.getString("session").orEmpty(),
             )
         }

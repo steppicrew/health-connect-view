@@ -511,7 +511,7 @@
     <plurals name="streak_days">
         <item quantity="other">%d일 연속 목표 달성</item>
     </plurals>
-    <string name="streak_rule">이 날까지 목표를 달성한 연속 일수를 셉니다. 기록이 없는 날은 연속을 끊지도 않고 일수에 포함되지도 않습니다. 기록 없이 한 달이 지나면 새 연속이 시작됩니다. 오늘은 목표를 달성하는 즉시 포함되며, 그 전까지는 아무것도 끊지 않습니다. 가장 긴 연속은 지난 1년에서 찾고, 이전 데이터에 대한 액세스가 없으면 최근 30일에서 찾습니다.</string>
+    <string name="streak_rule">이 날까지 목표를 달성한 연속 일수를 셉니다. 기록이 없는 날은 연속을 끊지도 않고 일수에 포함되지도 않습니다. 기록 없이 한 달이 지나면 새 연속이 시작됩니다. 오늘은 목표를 달성하는 즉시 포함되며, 그 전까지는 아무것도 끊지 않습니다. 가장 긴 연속은 지난 1년에서 찾습니다.</string>
     <plurals name="streak_active_days">
         <item quantity="other">%d일 연속 활동</item>
     </plurals>
@@ -527,9 +527,11 @@
     <string name="record_title_highest">지난 1년 중 최고값</string>
     <string name="record_title_longest">지난 1년 중 가장 긴 운동</string>
     <string name="record_value_on">%2$s: %1$s</string>
-    <string name="record_rule">지난 1년 동안 오늘 이전의 날 중에서 찾습니다. 더 오래된 데이터에 접근할 수 없으면 최근 30일 중에서 찾습니다. 하루 값은 헬스 커넥트의 중복을 제거한 합계이므로 여러 앱이 기록한 날도 한 번만 계산되며, 운동도 마찬가지입니다. 오늘은 하루가 끝난 뒤에 포함됩니다.</string>
+    <string name="record_rule">지난 1년 동안 오늘 이전의 날 중에서 찾습니다. 하루 값은 헬스 커넥트의 중복을 제거한 합계이므로 여러 앱이 기록한 날도 한 번만 계산되며, 운동도 마찬가지입니다. 오늘은 하루가 끝난 뒤에 포함됩니다.</string>
+    <string name="history_limit_note">이전 데이터에 대한 액세스가 없어 최근 30일만 검색했습니다.</string>
+    <string name="history_grant">이전 데이터 허용</string>
     <string name="streak_is_longest">지난 1년 중 가장 긴 연속입니다.</string>
-    <string name="streak_active_rule">이 날까지 기록된 활동이 하나 이상 있는 연속 일수를 셉니다. 활동이 없는 날은 그날 기기를 착용하지 않았더라도 연속을 끝냅니다. 헬스 커넥트는 활동이 없는 것과 기록이 없는 것을 구분할 수 없기 때문입니다. 오늘은 활동이 기록되는 즉시 포함되며, 그 전까지는 아무것도 끊지 않습니다. 가장 긴 연속은 지난 1년에서 찾고, 이전 데이터에 대한 액세스가 없으면 최근 30일에서 찾습니다.</string>
+    <string name="streak_active_rule">이 날까지 기록된 활동이 하나 이상 있는 연속 일수를 셉니다. 활동이 없는 날은 그날 기기를 착용하지 않았더라도 연속을 끝냅니다. 헬스 커넥트는 활동이 없는 것과 기록이 없는 것을 구분할 수 없기 때문입니다. 오늘은 활동이 기록되는 즉시 포함되며, 그 전까지는 아무것도 끊지 않습니다. 가장 긴 연속은 지난 1년에서 찾습니다.</string>
     <string name="chart_source_raw">개별 측정값</string>
     <string name="chart_source_readings_daily">측정값의 일일 평균, 하루에 앱 하나</string>
     <string name="chart_source_readings_weekly">측정값의 주간 평균, 하루에 앱 하나</string>

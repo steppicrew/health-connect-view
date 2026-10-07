@@ -533,7 +533,7 @@
         <item quantity="one">Doel %d dag op rij gehaald</item>
         <item quantity="other">Doel %d dagen op rij gehaald</item>
     </plurals>
-    <string name="streak_rule">Telt de dagen op rij tot en met deze dag waarop het doel is gehaald. Een dag zonder registraties breekt de reeks niet en telt ook niet mee; na een maand zonder registraties begint een nieuwe reeks. Vandaag telt zodra het doel is gehaald en breekt tot dan niets. De langste reeks wordt gezocht in het afgelopen jaar; zonder toegang tot oudere gegevens in de laatste 30 dagen.</string>
+    <string name="streak_rule">Telt de dagen op rij tot en met deze dag waarop het doel is gehaald. Een dag zonder registraties breekt de reeks niet en telt ook niet mee; na een maand zonder registraties begint een nieuwe reeks. Vandaag telt zodra het doel is gehaald en breekt tot dan niets. De langste reeks wordt gezocht in het afgelopen jaar.</string>
     <plurals name="streak_active_days">
         <item quantity="one">%d dag op rij actief</item>
         <item quantity="other">%d dagen op rij actief</item>
@@ -552,9 +552,11 @@
     <string name="record_title_highest">Hoogste waarde van het afgelopen jaar</string>
     <string name="record_title_longest">Langste training van het afgelopen jaar</string>
     <string name="record_value_on">%1$s op %2$s</string>
-    <string name="record_rule">Gezocht onder de dagen vóór vandaag in het afgelopen jaar; zonder toegang tot oudere gegevens in de laatste 30 dagen. Dagwaarden zijn de totalen van Health Connect zonder dubbelingen, dus een dag die meerdere apps hebben vastgelegd telt één keer, net als een training. Vandaag telt mee zodra de dag voorbij is.</string>
+    <string name="record_rule">Gezocht onder de dagen vóór vandaag in het afgelopen jaar. Dagwaarden zijn de totalen van Health Connect zonder dubbelingen, dus een dag die meerdere apps hebben vastgelegd telt één keer, net als een training. Vandaag telt mee zodra de dag voorbij is.</string>
+    <string name="history_limit_note">Zonder toegang tot oudere gegevens zijn alleen de laatste 30 dagen doorzocht.</string>
+    <string name="history_grant">Oudere gegevens toestaan</string>
     <string name="streak_is_longest">De langste reeks in het afgelopen jaar.</string>
-    <string name="streak_active_rule">Telt de dagen op rij tot en met deze dag met minstens één geregistreerde activiteit. Een dag zonder activiteit beëindigt de reeks, ook als je je apparaat die dag niet droeg: Health Connect kan geen activiteit niet onderscheiden van geen registratie. Vandaag telt zodra er een activiteit is geregistreerd en breekt tot dan niets. De langste reeks wordt gezocht in het afgelopen jaar; zonder toegang tot oudere gegevens in de laatste 30 dagen.</string>
+    <string name="streak_active_rule">Telt de dagen op rij tot en met deze dag met minstens één geregistreerde activiteit. Een dag zonder activiteit beëindigt de reeks, ook als je je apparaat die dag niet droeg: Health Connect kan geen activiteit niet onderscheiden van geen registratie. Vandaag telt zodra er een activiteit is geregistreerd en breekt tot dan niets. De langste reeks wordt gezocht in het afgelopen jaar.</string>
     <string name="chart_source_raw">Losse metingen</string>
     <string name="chart_source_readings_daily">Daggemiddelden van de metingen, één app per dag</string>
     <string name="chart_source_readings_weekly">Weekgemiddelden van de metingen, één app per dag</string>

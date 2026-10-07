@@ -555,7 +555,7 @@
         <item quantity="many">Objectif atteint %d jours d’affilée</item>
         <item quantity="other">Objectif atteint %d jours d’affilée</item>
     </plurals>
-    <string name="streak_rule">Compte les jours d’affilée jusqu’à ce jour où l’objectif a été atteint. Un jour sans enregistrement n’interrompt pas la série et n’y compte pas ; après un mois sans enregistrement, une nouvelle série commence. Aujourd’hui compte dès que l’objectif est atteint, et d’ici là n’interrompt rien. La plus longue série est recherchée sur l’année écoulée ; sans accès aux données plus anciennes, sur les 30 derniers jours.</string>
+    <string name="streak_rule">Compte les jours d’affilée jusqu’à ce jour où l’objectif a été atteint. Un jour sans enregistrement n’interrompt pas la série et n’y compte pas ; après un mois sans enregistrement, une nouvelle série commence. Aujourd’hui compte dès que l’objectif est atteint, et d’ici là n’interrompt rien. La plus longue série est recherchée sur l’année écoulée.</string>
     <plurals name="streak_active_days">
         <item quantity="one">Actif %d jour d’affilée</item>
         <item quantity="many">Actif %d jours d’affilée</item>
@@ -577,9 +577,11 @@
     <string name="record_title_highest">Valeur la plus haute de l’année écoulée</string>
     <string name="record_title_longest">Entraînement le plus long de l’année écoulée</string>
     <string name="record_value_on">%1$s le %2$s</string>
-    <string name="record_rule">Recherché parmi les jours précédant aujourd’hui sur l’année écoulée ; sans accès aux données plus anciennes, sur les 30 derniers jours. Les valeurs quotidiennes sont les totaux de Santé Connect sans doublons : un jour enregistré par plusieurs applications ne compte qu’une fois, de même qu’un entraînement. Aujourd’hui compte une fois la journée terminée.</string>
+    <string name="record_rule">Recherché parmi les jours précédant aujourd’hui sur l’année écoulée. Les valeurs quotidiennes sont les totaux de Santé Connect sans doublons : un jour enregistré par plusieurs applications ne compte qu’une fois, de même qu’un entraînement. Aujourd’hui compte une fois la journée terminée.</string>
+    <string name="history_limit_note">Sans accès aux données plus anciennes, seuls les 30 derniers jours ont été examinés.</string>
+    <string name="history_grant">Autoriser les données plus anciennes</string>
     <string name="streak_is_longest">La plus longue série de l’année écoulée.</string>
-    <string name="streak_active_rule">Compte les jours d’affilée jusqu’à ce jour avec au moins une activité enregistrée. Un jour sans activité met fin à la série, même si vous ne portiez pas votre appareil ce jour-là : Santé Connect ne fait pas la différence entre aucune activité et aucun enregistrement. Aujourd’hui compte dès qu’une activité est enregistrée, et d’ici là n’interrompt rien. La plus longue série est recherchée sur l’année écoulée ; sans accès aux données plus anciennes, sur les 30 derniers jours.</string>
+    <string name="streak_active_rule">Compte les jours d’affilée jusqu’à ce jour avec au moins une activité enregistrée. Un jour sans activité met fin à la série, même si vous ne portiez pas votre appareil ce jour-là : Santé Connect ne fait pas la différence entre aucune activité et aucun enregistrement. Aujourd’hui compte dès qu’une activité est enregistrée, et d’ici là n’interrompt rien. La plus longue série est recherchée sur l’année écoulée.</string>
     <string name="chart_source_raw">Mesures individuelles</string>
     <string name="chart_source_readings_daily">Moyennes journalières des mesures, une application par jour</string>
     <string name="chart_source_readings_weekly">Moyennes hebdomadaires des mesures, une application par jour</string>

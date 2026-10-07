@@ -511,7 +511,7 @@
     <plurals name="streak_days">
         <item quantity="other">Target tercapai %d hari berturut-turut</item>
     </plurals>
-    <string name="streak_rule">Menghitung hari berturut-turut sampai hari ini saat target tercapai. Hari tanpa catatan tidak memutus rangkaian dan tidak ikut dihitung; setelah sebulan tanpa catatan, rangkaian baru dimulai. Hari ini dihitung begitu target tercapai, dan sampai saat itu tidak memutus apa pun. Rangkaian terpanjang dicari dalam setahun terakhir; tanpa akses ke data lama, dalam 30 hari terakhir.</string>
+    <string name="streak_rule">Menghitung hari berturut-turut sampai hari ini saat target tercapai. Hari tanpa catatan tidak memutus rangkaian dan tidak ikut dihitung; setelah sebulan tanpa catatan, rangkaian baru dimulai. Hari ini dihitung begitu target tercapai, dan sampai saat itu tidak memutus apa pun. Rangkaian terpanjang dicari dalam setahun terakhir.</string>
     <plurals name="streak_active_days">
         <item quantity="other">Aktif %d hari berturut-turut</item>
     </plurals>
@@ -527,9 +527,11 @@
     <string name="record_title_highest">Nilai tertinggi dalam setahun terakhir</string>
     <string name="record_title_longest">Latihan terlama dalam setahun terakhir</string>
     <string name="record_value_on">%1$s pada %2$s</string>
-    <string name="record_rule">Dicari di antara hari-hari sebelum hari ini dalam setahun terakhir; tanpa akses ke data yang lebih lama, dalam 30 hari terakhir. Nilai harian adalah total Health Connect tanpa duplikat, jadi hari yang dicatat oleh beberapa aplikasi dihitung sekali, begitu pula latihan. Hari ini dihitung setelah berakhir.</string>
+    <string name="record_rule">Dicari di antara hari-hari sebelum hari ini dalam setahun terakhir. Nilai harian adalah total Health Connect tanpa duplikat, jadi hari yang dicatat oleh beberapa aplikasi dihitung sekali, begitu pula latihan. Hari ini dihitung setelah berakhir.</string>
+    <string name="history_limit_note">Tanpa akses ke data yang lebih lama, hanya 30 hari terakhir yang dicari.</string>
+    <string name="history_grant">Izinkan data lama</string>
     <string name="streak_is_longest">Rangkaian terpanjang dalam setahun terakhir.</string>
-    <string name="streak_active_rule">Menghitung hari berturut-turut sampai hari ini dengan setidaknya satu aktivitas tercatat. Hari tanpa aktivitas mengakhiri rangkaian, meskipun Anda tidak memakai perangkat hari itu: Health Connect tidak bisa membedakan tidak ada aktivitas dengan tidak ada pencatatan. Hari ini dihitung begitu ada aktivitas yang tercatat, dan sampai saat itu tidak memutus apa pun. Rangkaian terpanjang dicari dalam setahun terakhir; tanpa akses ke data lama, dalam 30 hari terakhir.</string>
+    <string name="streak_active_rule">Menghitung hari berturut-turut sampai hari ini dengan setidaknya satu aktivitas tercatat. Hari tanpa aktivitas mengakhiri rangkaian, meskipun Anda tidak memakai perangkat hari itu: Health Connect tidak bisa membedakan tidak ada aktivitas dengan tidak ada pencatatan. Hari ini dihitung begitu ada aktivitas yang tercatat, dan sampai saat itu tidak memutus apa pun. Rangkaian terpanjang dicari dalam setahun terakhir.</string>
     <string name="chart_source_raw">Hasil ukur tunggal</string>
     <string name="chart_source_readings_daily">Rata-rata harian hasil ukur, satu aplikasi per hari</string>
     <string name="chart_source_readings_weekly">Rata-rata mingguan hasil ukur, satu aplikasi per hari</string>

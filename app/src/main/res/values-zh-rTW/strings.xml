@@ -511,7 +511,7 @@
     <plurals name="streak_days">
         <item quantity="other">已連續 %d 天達成目標</item>
     </plurals>
-    <string name="streak_rule">計算截至這一天連續達成目標的天數。沒有記錄的日子既不會中斷連續紀錄，也不會計入；連續一個月沒有記錄後，會開始新的連續紀錄。今天在達成目標後即計入，在那之前不會中斷任何紀錄。最長連續紀錄會在過去一年中尋找；如果沒有較舊資料的存取權，則在最近 30 天中尋找。</string>
+    <string name="streak_rule">計算截至這一天連續達成目標的天數。沒有記錄的日子既不會中斷連續紀錄，也不會計入；連續一個月沒有記錄後，會開始新的連續紀錄。今天在達成目標後即計入，在那之前不會中斷任何紀錄。最長連續紀錄會在過去一年中尋找。</string>
     <plurals name="streak_active_days">
         <item quantity="other">已連續活動 %d 天</item>
     </plurals>
@@ -527,9 +527,11 @@
     <string name="record_title_highest">過去一年中的最高值</string>
     <string name="record_title_longest">過去一年中最長的運動</string>
     <string name="record_value_on">%2$s：%1$s</string>
-    <string name="record_rule">在過去一年中今天之前的日子裡尋找；如果無法存取更早的資料，則在最近 30 天內尋找。每日數值是 Health Connect 去除重複後的總計，因此由多個應用程式記錄的一天只算一次，運動也是如此。今天在結束後才計入。</string>
+    <string name="record_rule">在過去一年中今天之前的日子裡尋找。每日數值是 Health Connect 去除重複後的總計，因此由多個應用程式記錄的一天只算一次，運動也是如此。今天在結束後才計入。</string>
+    <string name="history_limit_note">由於無法存取更早的資料，僅搜尋了最近 30 天。</string>
+    <string name="history_grant">允許存取較舊的資料</string>
     <string name="streak_is_longest">過去一年中最長的連續紀錄。</string>
-    <string name="streak_active_rule">計算截至這一天至少有一項活動記錄的連續天數。沒有活動的日子會結束連續紀錄，即使當天您沒有配戴裝置也一樣：Health Connect 無法區分沒有活動和沒有記錄。今天在記錄到活動後即計入，在那之前不會中斷任何紀錄。最長連續紀錄會在過去一年中尋找；如果沒有較舊資料的存取權，則在最近 30 天中尋找。</string>
+    <string name="streak_active_rule">計算截至這一天至少有一項活動記錄的連續天數。沒有活動的日子會結束連續紀錄，即使當天您沒有配戴裝置也一樣：Health Connect 無法區分沒有活動和沒有記錄。今天在記錄到活動後即計入，在那之前不會中斷任何紀錄。最長連續紀錄會在過去一年中尋找。</string>
     <string name="chart_source_raw">單次測量值</string>
     <string name="chart_source_readings_daily">測量值的每日平均值，每天一個應用程式</string>
     <string name="chart_source_readings_weekly">測量值的每週平均值，每天一個應用程式</string>
