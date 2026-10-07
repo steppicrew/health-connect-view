@@ -484,8 +484,10 @@
     <string name="source_phone_sensors">هذا الهاتف</string>
     <string name="session_sleep">النوم</string>
     <string name="session_untitled">نشاط</string>
-    <string name="session_loading">جارٍ التجميع…</string>
     <string name="session_no_stats">لم يُسجَّل شيء آخر خلال هذه الجلسة.</string>
+    <string name="session_gone">لم يعد بالإمكان العثور على هذه الجلسة.</string>
+    <string name="session_laps">اللفّات</string>
+    <string name="session_lap">اللفّة %1$d</string>
     <string name="session_overlap_note">هذه هي القراءات المأخوذة خلال هذه الجلسة. لا يربط Health Connect القراءات بجلسة، لذا تتم مطابقتها حسب الوقت.</string>
     <string name="session_statistics">ما سُجِّل خلال هذه الجلسة</string>
     <string name="zones_title">مناطق الألوان</string>

@@ -1,6 +1,10 @@
 package de.steppicrew.healthconnectview.ui.nav
 
+import android.net.Uri
+import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.ui.session.SessionScreen
+import de.steppicrew.healthconnectview.ui.session.SessionViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +40,10 @@ object Routes {
     const val PRIVACY = "privacy"
     /** `fixture` draws synthetic cycles; only the debug build has any to draw. */
     const val CYCLE = "cycle?fixture={fixture}"
+    /** One session by its record's id; `kind` says which record type to read it from. */
+    const val SESSION = "session/{kind}/{id}"
+
+    fun session(session: Session) = "session/${session.kind.name}/${Uri.encode(session.recordId)}"
 
     fun cycle() = "cycle"
 
@@ -161,7 +169,24 @@ fun HealthNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 openSession = entry.arguments?.getString("session").orEmpty(),
+                onOpenSession = { navController.navigate(Routes.session(it)) },
             )
+        }
+
+        composable(
+            route = Routes.SESSION,
+            arguments = listOf(
+                navArgument("kind") { type = NavType.StringType },
+                navArgument("id") { type = NavType.StringType },
+            ),
+        ) { entry ->
+            val kind = entry.arguments?.getString("kind")
+                ?.let { name -> Session.Kind.entries.firstOrNull { it.name == name } }
+                ?: Session.Kind.EXERCISE
+            val id = entry.arguments?.getString("id").orEmpty()
+            val viewModel: SessionViewModel = viewModel()
+            LaunchedEffect(kind, id) { viewModel.load(kind, id) }
+            SessionScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
 
         composable(

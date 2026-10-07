@@ -462,8 +462,10 @@
     <string name="source_phone_sensors">Ten telefon</string>
     <string name="session_sleep">Sen</string>
     <string name="session_untitled">Aktywność</string>
-    <string name="session_loading">Zbieranie…</string>
     <string name="session_no_stats">Podczas tej sesji nie zapisano nic więcej.</string>
+    <string name="session_gone">Nie można już znaleźć tej sesji.</string>
+    <string name="session_laps">Okrążenia</string>
+    <string name="session_lap">Okrążenie %1$d</string>
     <string name="session_overlap_note">To pomiary wykonane podczas tej sesji. Health Connect nie łączy pomiarów z sesją, więc są dopasowywane według czasu.</string>
     <string name="session_statistics">Co zapisano podczas tej sesji</string>
     <string name="zones_title">Strefy kolorów</string>

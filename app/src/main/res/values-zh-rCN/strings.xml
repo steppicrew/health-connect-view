@@ -429,8 +429,10 @@
     <string name="source_phone_sensors">此手机</string>
     <string name="session_sleep">睡眠</string>
     <string name="session_untitled">活动</string>
-    <string name="session_loading">正在收集…</string>
     <string name="session_no_stats">此次活动期间没有记录其他内容。</string>
+    <string name="session_gone">找不到此次活动。</string>
+    <string name="session_laps">圈</string>
+    <string name="session_lap">第 %1$d 圈</string>
     <string name="session_overlap_note">这些是此次活动期间的测量值。Health Connect 不会将测量值与活动关联，因此按时间进行匹配。</string>
     <string name="session_statistics">此次活动期间记录的内容</string>
     <string name="zones_title">颜色区间</string>

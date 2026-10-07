@@ -138,6 +138,7 @@ import de.steppicrew.healthconnectview.health.RecordKind
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import androidx.compose.material3.TextButton
 
 /**
@@ -156,33 +157,27 @@ fun TileDetailScreen(
     onOpenPermissions: () -> Unit = {},
     /** A session to open once loaded: an ISO instant it runs at, or "route"; see the nav route. */
     openSession: String = "",
+    /** The session screen, for a session tapped anywhere on this one. */
+    onOpenSession: (Session) -> Unit = {},
 ) {
     val requested = openSession
     val state by viewModel.state.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
     val spec by viewModel.spec.collectAsStateWithLifecycle()
-    var openSession by remember { mutableStateOf<Session?>(null) }
-    var opened by remember { mutableStateOf(false) }
+    // Saveable: back from the session screen this composes afresh, and a plain flag would
+    // open the requested session again at once, trapping the screen in a loop.
+    var opened by rememberSaveable { mutableStateOf(false) }
     var openRecord by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(state, requested) {
         if (requested.isEmpty() || opened) return@LaunchedEffect
         val sessions = (state as? UiState.Data)?.value?.sessions ?: return@LaunchedEffect
         val at = runCatching { Instant.parse(requested) }.getOrNull()
         sessions.firstOrNull { if (at != null) at >= it.start && at < it.end else requested == "route" && it.route != null }?.let {
-            openSession = it
             opened = true
+            onOpenSession(it)
         }
     }
 
-    openSession?.let { session ->
-        SessionSheet(
-            session = session,
-            loadStats = { viewModel.statisticsFor(it) },
-            loadRoute = { viewModel.routeFor(it) },
-            onExportRoute = viewModel::exportRoute,
-            onDismiss = { openSession = null },
-        )
-    }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val emptyRecord by viewModel.emptyRecord.collectAsStateWithLifecycle()
@@ -191,46 +186,7 @@ fun TileDetailScreen(
     OnResume { viewModel.onResume() }
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
-    val resources = LocalResources.current
-    val context = LocalContext.current
-    LaunchedEffect(viewModel) {
-        viewModel.exportResults.collect { result ->
-            val message = when (result) {
-                is ExportResult.Written ->
-                    resources.getQuantityString(R.plurals.export_done, result.rows, result.rows)
-                is ExportResult.Report ->
-                    resources.getQuantityString(R.plurals.export_report_done, result.readings, result.readings)
-                ExportResult.Failed -> resources.getString(R.string.export_failed)
-                ExportResult.Empty -> resources.getString(R.string.export_empty)
-                ExportResult.NoViewer -> resources.getString(R.string.export_no_viewer)
-            }
-            // Where the file went, so it can be opened straight away in the user's own viewer.
-            val saved = when (result) {
-                is ExportResult.Written -> result.uri to result.mimeType
-                is ExportResult.Report -> result.uri to result.mimeType
-                else -> null
-            }
-            if (saved == null) {
-                snackbar.showSnackbar(message)
-            } else {
-                val choice = snackbar.showSnackbar(
-                    message,
-                    actionLabel = resources.getString(R.string.export_open),
-                    duration = SnackbarDuration.Long,
-                )
-                if (choice == SnackbarResult.ActionPerformed) {
-                    val view = Intent(Intent.ACTION_VIEW)
-                        .setDataAndType(saved.first, saved.second)
-                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    try {
-                        context.startActivity(view)
-                    } catch (_: ActivityNotFoundException) {
-                        snackbar.showSnackbar(resources.getString(R.string.export_no_viewer))
-                    }
-                }
-            }
-        }
-    }
+    ShowExportResults(viewModel.exportResults, snackbar)
 
     Scaffold(
         modifier = modifier,
@@ -328,7 +284,7 @@ fun TileDetailScreen(
                     is UiState.Data -> SpanContent(
                         data = current.value,
                         onSelectSource = viewModel::selectSource,
-                        onOpenSession = { openSession = it },
+                        onOpenSession = onOpenSession,
                         loadCurve = viewModel::curveFor,
                         onVisibleRange = viewModel::showListFor,
                         onOpenRecord = { openRecord = it },

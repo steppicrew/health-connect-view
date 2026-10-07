@@ -429,8 +429,10 @@
     <string name="source_phone_sensors">이 휴대전화</string>
     <string name="session_sleep">수면</string>
     <string name="session_untitled">활동</string>
-    <string name="session_loading">수집 중…</string>
     <string name="session_no_stats">이 세션 동안 그 밖에 기록된 것이 없습니다.</string>
+    <string name="session_gone">이 세션을 더 이상 찾을 수 없습니다.</string>
+    <string name="session_laps">랩</string>
+    <string name="session_lap">랩 %1$d</string>
     <string name="session_overlap_note">이 세션 동안 측정된 값입니다. 헬스 커넥트는 측정값을 세션과 연결하지 않으므로 시간으로 맞춥니다.</string>
     <string name="session_statistics">이 세션 동안 기록된 내용</string>
     <string name="zones_title">색상 구간</string>
