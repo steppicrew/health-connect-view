@@ -79,6 +79,14 @@ data class AxisScale(
             val rawSpan = (top - bottom).takeIf { it > 0.0 }
                 ?: return flat(bottom, targetSteps, integral)
 
+            // Nearly flat is flat. Two writers' copies of one weigh-in differed by a millionth of
+            // a kilogram, and that sliver spread over the full height labelled every gridline
+            // "81,900" and drew the two copies as a vertical stroke. Only differences far below
+            // anything shown count: weight moving inside a kilogram is a real range and keeps
+            // its fine scale.
+            val middle = (bottom + top) / 2
+            if (rawSpan <= abs(middle) * NEARLY_FLAT) return flat(middle, targetSteps, integral)
+
             val step = niceStep(rawSpan / targetSteps, integral)
             var min = floor(bottom / step) * step
             var max = ceil(top / step) * step
@@ -123,6 +131,12 @@ data class AxisScale(
          * drawn on 95..99 -- and wide enough that the value is not pinned to an edge.
          */
         private const val FLAT_ROOM = 0.02
+
+        /**
+         * A range at most this share of its value is drawn as flat: a ten-thousandth, 0.008 kg
+         * at 82 kg, far below any decimal the axis shows.
+         */
+        private const val NEARLY_FLAT = 1e-4
 
         /**
          * The smallest round step at or above [rough].
