@@ -474,6 +474,17 @@
     <string name="source_all_explained">所有来源：由 Health Connect 合并并去重。与任何单个应用的数值都不同。</string>
     <string name="source_showing_one">%1$s：仅此应用的数值，不是您去重后的总计。</string>
     <string name="source_priority_hint">记录重叠时以哪个应用为准，在 Health Connect 的应用优先级中设置。</string>
+    <string name="sources_compare">比较来源</string>
+    <string name="sources_compare_title">最近 30 天</string>
+    <string name="sources_days">有数据的天数：%1$d/%2$d</string>
+    <string name="sources_per_day">每天条目数：%1$d</string>
+    <string name="sources_since">自 %1$s 起</string>
+    <string name="sources_stages">含睡眠阶段的夜晚：%1$d/%2$d</string>
+    <string name="sources_most_days">覆盖天数最多</string>
+    <string name="sources_most_entries">每天条目最多</string>
+    <string name="sources_longest_history">历史最长</string>
+    <string name="sources_show_only">仅显示 %1$s</string>
+    <string name="sources_compare_failed">无法比较来源。</string>
     <string name="detail_history_capped">仅显示最近 30 天。请在权限屏幕中允许访问较早的数据以查看整个时段。</string>
     <plurals name="detail_records_header">
         <item quantity="other">%1$d 条记录</item>

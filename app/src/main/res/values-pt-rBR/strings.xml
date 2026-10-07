@@ -498,6 +498,17 @@
     <string name="source_all_explained">Todas as fontes: combinadas e sem duplicatas segundo o Conexão Saúde. Não é o mesmo que o número de um único app.</string>
     <string name="source_showing_one">%1$s: só o número deste app, não o seu total sem duplicatas.</string>
     <string name="source_priority_hint">Qual app prevalece quando registros se sobrepõem é definido no Conexão Saúde, em prioridade dos apps.</string>
+    <string name="sources_compare">Comparar fontes</string>
+    <string name="sources_compare_title">Últimos 30 dias</string>
+    <string name="sources_days">Dias com dados: %1$d/%2$d</string>
+    <string name="sources_per_day">Registros por dia: %1$d</string>
+    <string name="sources_since">Desde %1$s</string>
+    <string name="sources_stages">Noites com fases: %1$d/%2$d</string>
+    <string name="sources_most_days">Cobre mais dias</string>
+    <string name="sources_most_entries">Mais registros por dia</string>
+    <string name="sources_longest_history">Histórico mais longo</string>
+    <string name="sources_show_only">Mostrar só %1$s</string>
+    <string name="sources_compare_failed">Não foi possível comparar as fontes.</string>
     <string name="detail_history_capped">Mostrando só os últimos 30 dias. Permita o acesso aos dados mais antigos na tela de permissões para ver o período inteiro.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d registro</item>

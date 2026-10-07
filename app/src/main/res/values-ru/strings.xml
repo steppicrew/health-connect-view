@@ -510,6 +510,17 @@
     <string name="source_all_explained">Все источники: объединены и очищены от дубликатов Health Connect. Это не то же самое, что показатель одного приложения.</string>
     <string name="source_showing_one">%1$s: только показатель этого приложения, а не ваш итог без дубликатов.</string>
     <string name="source_priority_hint">Какое приложение главнее при пересечении записей, задаётся в Health Connect, в разделе приоритета приложений.</string>
+    <string name="sources_compare">Сравнить источники</string>
+    <string name="sources_compare_title">Последние 30 дней</string>
+    <string name="sources_days">Дни с данными: %1$d/%2$d</string>
+    <string name="sources_per_day">Записей в день: %1$d</string>
+    <string name="sources_since">С %1$s</string>
+    <string name="sources_stages">Ночи с фазами: %1$d/%2$d</string>
+    <string name="sources_most_days">Охватывает больше всего дней</string>
+    <string name="sources_most_entries">Больше всего записей в день</string>
+    <string name="sources_longest_history">Самая длинная история</string>
+    <string name="sources_show_only">Показать только %1$s</string>
+    <string name="sources_compare_failed">Не удалось сравнить источники.</string>
     <string name="detail_history_capped">Показаны только последние 30 дней. Разрешите доступ к более старым данным на экране разрешений, чтобы увидеть весь период.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d запись</item>

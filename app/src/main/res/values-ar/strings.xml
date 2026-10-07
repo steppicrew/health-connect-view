@@ -534,6 +534,17 @@
     <string name="source_all_explained">كل المصادر: مجمّعة ومُزال تكرارها بواسطة Health Connect. لا تساوي قيمة أي تطبيق منفرد.</string>
     <string name="source_showing_one">%1$s: قيمة هذا التطبيق فقط، وليس إجماليك بعد إزالة التكرار.</string>
     <string name="source_priority_hint">التطبيق الذي يُعتمد عند تداخل السجلات يُحدَّد في Health Connect، ضمن أولوية التطبيقات.</string>
+    <string name="sources_compare">مقارنة المصادر</string>
+    <string name="sources_compare_title">آخر 30 يومًا</string>
+    <string name="sources_days">أيام بها بيانات: %1$d/%2$d</string>
+    <string name="sources_per_day">الإدخالات في اليوم: %1$d</string>
+    <string name="sources_since">منذ %1$s</string>
+    <string name="sources_stages">ليالٍ بها مراحل النوم: %1$d/%2$d</string>
+    <string name="sources_most_days">يغطي أكبر عدد من الأيام</string>
+    <string name="sources_most_entries">أكثر إدخالات في اليوم</string>
+    <string name="sources_longest_history">أطول سجل</string>
+    <string name="sources_show_only">عرض %1$s فقط</string>
+    <string name="sources_compare_failed">تعذّرت مقارنة المصادر.</string>
     <string name="detail_history_capped">يتم عرض آخر 30 يومًا فقط. اسمح بالوصول إلى البيانات الأقدم في شاشة الأذونات لرؤية الفترة كاملة.</string>
     <plurals name="detail_records_header">
         <item quantity="zero">لا سجلات</item>

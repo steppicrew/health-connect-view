@@ -486,6 +486,17 @@
     <string name="source_all_explained">सभी सोर्स: Health Connect ने इन्हें मिलाया है और डुप्लीकेट हटाए हैं। यह किसी एक ऐप के आंकड़े जैसा नहीं है।</string>
     <string name="source_showing_one">%1$s: सिर्फ़ इस ऐप का आंकड़ा, डुप्लीकेट हटाया गया आपका कुल नहीं।</string>
     <string name="source_priority_hint">रिकॉर्ड ओवरलैप होने पर किस ऐप को प्राथमिकता मिले, यह Health Connect में ऐप की प्राथमिकता में सेट होता है।</string>
+    <string name="sources_compare">सोर्स की तुलना करें</string>
+    <string name="sources_compare_title">पिछले 30 दिन</string>
+    <string name="sources_days">डेटा वाले दिन: %1$d/%2$d</string>
+    <string name="sources_per_day">प्रति दिन एंट्री: %1$d</string>
+    <string name="sources_since">%1$s से</string>
+    <string name="sources_stages">नींद के चरणों वाली रातें: %1$d/%2$d</string>
+    <string name="sources_most_days">सबसे ज़्यादा दिन कवर करता है</string>
+    <string name="sources_most_entries">प्रति दिन सबसे ज़्यादा एंट्री</string>
+    <string name="sources_longest_history">सबसे लंबा इतिहास</string>
+    <string name="sources_show_only">सिर्फ़ %1$s दिखाएँ</string>
+    <string name="sources_compare_failed">सोर्स की तुलना नहीं हो सकी।</string>
     <string name="detail_history_capped">सिर्फ़ पिछले 30 दिन दिखाए जा रहे हैं। पूरी अवधि देखने के लिए अनुमतियों वाली स्क्रीन पर पुराने डेटा के ऐक्सेस की अनुमति दें।</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d रिकॉर्ड</item>

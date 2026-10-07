@@ -474,6 +474,17 @@
     <string name="source_all_explained">Semua sumber: digabung dan tanpa duplikat menurut Health Connect. Tidak sama dengan angka dari satu aplikasi mana pun.</string>
     <string name="source_showing_one">%1$s: hanya angka dari aplikasi ini, bukan total tanpa duplikat Anda.</string>
     <string name="source_priority_hint">Aplikasi mana yang diutamakan jika catatan tumpang tindih diatur di Health Connect, pada prioritas aplikasi.</string>
+    <string name="sources_compare">Bandingkan sumber</string>
+    <string name="sources_compare_title">30 hari terakhir</string>
+    <string name="sources_days">Hari dengan data: %1$d/%2$d</string>
+    <string name="sources_per_day">Entri per hari: %1$d</string>
+    <string name="sources_since">Sejak %1$s</string>
+    <string name="sources_stages">Malam dengan tahap tidur: %1$d/%2$d</string>
+    <string name="sources_most_days">Mencakup hari terbanyak</string>
+    <string name="sources_most_entries">Entri per hari terbanyak</string>
+    <string name="sources_longest_history">Riwayat terpanjang</string>
+    <string name="sources_show_only">Tampilkan hanya %1$s</string>
+    <string name="sources_compare_failed">Sumber tidak dapat dibandingkan.</string>
     <string name="detail_history_capped">Hanya menampilkan 30 hari terakhir. Izinkan akses ke data lama di layar izin untuk melihat seluruh periode.</string>
     <plurals name="detail_records_header">
         <item quantity="other">%1$d catatan</item>

@@ -486,6 +486,17 @@
     <string name="source_all_explained">Tüm kaynaklar: Health Connect tarafından birleştirildi ve tekilleştirildi. Tek bir uygulamanın değeriyle aynı değildir.</string>
     <string name="source_showing_one">%1$s: yalnızca bu uygulamanın değeri, tekilleştirilmiş toplamınız değil.</string>
     <string name="source_priority_hint">Kayıtlar çakıştığında hangi uygulamanın geçerli olacağı Health Connect’te, uygulama önceliği altında ayarlanır.</string>
+    <string name="sources_compare">Kaynakları karşılaştır</string>
+    <string name="sources_compare_title">Son 30 gün</string>
+    <string name="sources_days">Veri olan günler: %1$d/%2$d</string>
+    <string name="sources_per_day">Günlük kayıt: %1$d</string>
+    <string name="sources_since">%1$s tarihinden beri</string>
+    <string name="sources_stages">Evreli geceler: %1$d/%2$d</string>
+    <string name="sources_most_days">En çok günü kapsıyor</string>
+    <string name="sources_most_entries">Günde en çok kayıt</string>
+    <string name="sources_longest_history">En uzun geçmiş</string>
+    <string name="sources_show_only">Yalnızca %1$s göster</string>
+    <string name="sources_compare_failed">Kaynaklar karşılaştırılamadı.</string>
     <string name="detail_history_capped">Yalnızca son 30 gün gösteriliyor. Dönemin tamamını görmek için izinler ekranında eski verilere erişime izin verin.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d kayıt</item>
