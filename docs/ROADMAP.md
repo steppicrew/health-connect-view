@@ -276,7 +276,7 @@ open items below and `FEATURE-IDEAS.md`.
     called every aggregated chart "Tagessummen"; for blood pressure, heart rate, weight and
     the other averaged types it now says "Tagesmittel", as the tile's screen already did.
     Seen on the emulator.
-44. [ ] **Loading must not look like "no data"** -- the owner's report, 07.10.2026: after a
+44. [x] **Loading must not look like "no data"** -- built 07.10.2026; plan as written below. -- the owner's report, 07.10.2026: after a
     restart the dashboard sometimes shows only dashes. A tile still loading renders
     `tile_no_data`, the same "—" as a tile with nothing recorded (`DashboardScreen.kt`, the
     `data.loading` branches of the value and `SessionCount`), so the two cannot be told apart.
@@ -287,6 +287,15 @@ open items below and `FEATURE-IDEAS.md`.
     data" for good. A failed tile says so and retries on the next resume. Re-check every other
     loading surface the same way while there: catalog, record lists, session sheets, cycle
     overview, exports.
+    Built: tiles spin while reading and say "Laden fehlgeschlagen" when a read throws, kept
+    out of the cache so the next resume re-reads them. The dashes after a restart had a cause
+    of their own: ON_RESUME cancels the load `init` began, and the cancelled load's reads
+    swallowed the cancellation, came back empty and were published and cached as finished
+    tiles; it now stops when cancelled. The catalog's probe state was drawn like "no data" and
+    now shows "Wird geladen" with a spinner, or an error mark; the type and cycle screens
+    cancel the load they replace; a refused permission read is a failure, not a lock. Seen on
+    the phone: one "loaded 7 tiles" line per cold start where there were two, a spinner in
+    every tile, then the values; the catalog checking, then its marks.
 45. [ ] **A detail page's progress bar that moves steadily** -- same report: it often jumps 0
     to 100 %, or sits at 0 for a long time, jumps to about 80 % and then to the end. The bar
     is weighted 8 for the chart, 1 for the total, 1 for sessions (`TileChartLoader.chart`,
@@ -307,6 +316,13 @@ open items below and `FEATURE-IDEAS.md`.
     `FEATURE-IDEAS.md`. Free.
 47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
     sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app (section 10).
+48. [ ] **"Alle Trainingsrouten" unticks itself** -- the owner's report, 07.10.2026, on a fresh
+    debug install with every other permission granted: ticking it and tapping "Freigeben"
+    returns with the box clear. `READ_EXERCISE_ROUTES` stays `granted=false` without the
+    `USER_SET` flag, so Health Connect seems never to have asked; the Play install holds it
+    granted. Suspected: a request for routes alone, with `READ_EXERCISE` already granted, is
+    dropped -- recent Health Connect offers routes inside the exercise permission. Not yet
+    confirmed; a log captured during the attempt showed only the permission controller binding.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
