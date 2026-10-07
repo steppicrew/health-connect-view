@@ -398,6 +398,12 @@ open items below and `FEATURE-IDEAS.md`.
       (3) nutrition as a summed quantity; (4) sessions in the year as one bar per week;
       (5) a reference band for oxygen saturation, the usual range for resting heart rate and
       respiratory rate, none for glucose and temperature.
+    - **Progress bar, open:** the owner saw the sleep year sit at 0 and then fill at once
+      (07.10.2026); not reproduced the same evening, when every load took about 1 s. Two
+      known weak spots: the bar shows 0 until the first read reports, so a slow first
+      answer from Health Connect looks like no progress (an indeterminate bar until then
+      would be honest); and a session type's nights are one request counted as one step of
+      ten, while the weekly aggregate read before them is not even drawn for sessions.
 50. [x] **From an empty window to the nearest one with data** -- built 07.10.2026; seen on the phone with VO2 max, four weeks empty, "Zuletzt aufgezeichnet am 16.08.2026". -- the owner's idea, 07.10.2026.
     A day, week or four weeks with nothing recorded today mostly means stepping back through
     more empty ones (VO2 max, weight, blood pressure are measured now and then). Not by
