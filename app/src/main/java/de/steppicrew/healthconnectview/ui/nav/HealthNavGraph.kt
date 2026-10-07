@@ -4,6 +4,8 @@ import android.net.Uri
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionScreen
+import de.steppicrew.healthconnectview.ui.compare.CompareScreen
+import de.steppicrew.healthconnectview.ui.compare.CompareViewModel
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionViewModel
 import de.steppicrew.healthconnectview.ui.session.SessionScreen
 import de.steppicrew.healthconnectview.ui.session.SessionViewModel
@@ -54,6 +56,10 @@ object Routes {
     fun workouts() = "workouts"
 
     const val BODY = "body"
+
+    const val COMPARE = "compare/{first}/{second}?span={span}&date={date}"
+
+    fun compare(first: String, second: String, span: Span, date: String) = "compare/$first/$second?span=${span.name}&date=$date"
 
     fun session(session: Session) = "session/${session.kind.name}/${Uri.encode(session.recordId)}"
 
@@ -184,6 +190,9 @@ fun HealthNavGraph(
                 onOpenSession = { navController.navigate(Routes.session(it)) },
                 onOpenWorkouts = { navController.navigate(Routes.workouts()) },
                 onOpenBody = { navController.navigate(Routes.BODY) },
+                onCompare = { first, second, shownSpan, shownDate ->
+                    navController.navigate(Routes.compare(first, second, shownSpan, shownDate))
+                },
             )
         }
 
@@ -201,6 +210,38 @@ fun HealthNavGraph(
             val viewModel: SessionViewModel = viewModel()
             LaunchedEffect(kind, id) { viewModel.load(kind, id) }
             SessionScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        }
+
+        composable(
+            route = Routes.COMPARE,
+            arguments = listOf(
+                navArgument("first") { type = NavType.StringType },
+                navArgument("second") { type = NavType.StringType },
+                navArgument("span") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+                navArgument("date") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+            ),
+        ) { entry ->
+            val args = entry.arguments
+            val viewModel: CompareViewModel = viewModel()
+            LaunchedEffect(viewModel) {
+                viewModel.start(
+                    args?.getString("first").orEmpty(),
+                    args?.getString("second").orEmpty(),
+                    args?.getString("span").orEmpty(),
+                    args?.getString("date").orEmpty(),
+                )
+            }
+            CompareScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
         }
 
         composable(Routes.BODY) {

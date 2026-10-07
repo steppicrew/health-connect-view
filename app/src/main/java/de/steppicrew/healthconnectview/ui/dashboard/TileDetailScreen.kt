@@ -135,6 +135,8 @@ import androidx.activity.compose.LocalActivity
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
+import de.steppicrew.healthconnectview.ui.compare.CompareTypeDialog
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.LineChart
@@ -182,6 +184,8 @@ fun TileDetailScreen(
     onOpenWorkouts: () -> Unit = {},
     /** Weight and its parts together, from any of the body-composition types. */
     onOpenBody: () -> Unit = {},
+    /** Opens this type beside [second] over the window shown: first, second, span, a day in it. */
+    onCompare: (first: String, second: String, span: Span, date: String) -> Unit = { _, _, _, _ -> },
 ) {
     val requested = openSession
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -237,6 +241,16 @@ fun TileDetailScreen(
                         }
                     }
                     if (spec?.type in BODY_TYPES) BodyCompositionAction(onOpenBody)
+                    spec?.takeIf { it.isPinnable }?.let { current ->
+                        val typeName = current.type.simpleName.orEmpty()
+                        CompareAction(
+                            typeName = typeName,
+                            load = viewModel::compareCandidates,
+                            onPick = { second ->
+                                onCompare(typeName, second, span, span.endDate(offset).minusDays(1).toString())
+                            },
+                        )
+                    }
                     spec?.let { current ->
                         ExportAction(
                             typeName = current.type.simpleName.orEmpty().removeSuffix("Record"),
@@ -1192,6 +1206,11 @@ internal fun DataLineChart(
     fillHeight: Boolean = false,
     compactAxis: Boolean = false,
     onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
+    /**
+     * The time axis, where it must match another chart's -- a comparison. Not written into
+     * [data]: its own extent also says "this is a day", which decides the session bands.
+     */
+    axis: ClosedRange<Instant>? = data.extent,
 ) {
     LineChart(
         points = data.points,
@@ -1216,7 +1235,7 @@ internal fun DataLineChart(
         secondaryZones = data.secondaryZones,
         markReadings = data.spec.tile.markReadings,
         integral = data.spec.tile.integralValues,
-        extent = data.extent,
+        extent = axis,
         interactive = interactive,
         fillHeight = fillHeight,
         compactAxis = compactAxis,
@@ -2018,4 +2037,21 @@ private fun BodyCompositionAction(onOpen: () -> Unit) {
             contentDescription = if (unlocked) label else stringResource(R.string.export_premium, label),
         )
     }
+}
+
+/** Opens the type picker for a comparison, or Play's purchase sheet where Pro is not owned. */
+@Composable
+private fun CompareAction(typeName: String, load: suspend () -> List<RecordTypeSpec<*>>, onPick: (String) -> Unit) {
+    val activity = LocalActivity.current
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
+    val unlocked = pro.allows(Feature.COMPARE)
+    var picking by rememberSaveable { mutableStateOf(false) }
+    val label = stringResource(R.string.compare_title)
+    IconButton(onClick = { if (unlocked) picking = true else activity?.let(AppEntitlements.current::buy) }) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.CompareArrows,
+            contentDescription = if (unlocked) label else stringResource(R.string.export_premium, label),
+        )
+    }
+    if (picking) CompareTypeDialog(current = typeName, load = load, onDismiss = { picking = false }, onPick = onPick)
 }

@@ -36,4 +36,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** Weight with fat, lean mass, water and bone, a chart each on one time axis. */
     BODY_COMPOSITION(isPremium = true),
+
+    /** Two types' charts stacked on one time axis. */
+    COMPARE(isPremium = true),
 }

@@ -731,4 +731,9 @@
     <string name="body_composition_one">Una medición en este periodo</string>
     <string name="body_fat_mass">Masa grasa</string>
     <string name="body_fat_mass_note">Calculado: porcentaje de grasa corporal × peso del mismo día</string>
+    <string name="compare_title">Comparar</string>
+    <string name="compare_pick">Comparar con</string>
+    <string name="compare_swap">Invertir el orden</string>
+    <string name="compare_none">No hay valores en este periodo</string>
+    <string name="compare_note">Dos gráficos en un mismo eje de tiempo, cada uno con su propia escala. Que dos valores cambien juntos no significa que uno cause el otro.</string>
 </resources>

@@ -681,4 +681,9 @@
     <string name="body_composition_one">この期間の測定値は1件です</string>
     <string name="body_fat_mass">脂肪量</string>
     <string name="body_fat_mass_note">計算値：体脂肪率 × 同じ日の体重</string>
+    <string name="compare_title">比較</string>
+    <string name="compare_pick">比較する種類</string>
+    <string name="compare_swap">順序を入れ替え</string>
+    <string name="compare_none">この期間の値はありません</string>
+    <string name="compare_note">1つの時間軸に2つのグラフ（目盛りはそれぞれ独自）。2つの値が一緒に動いても、一方が他方の原因とは限りません。</string>
 </resources>

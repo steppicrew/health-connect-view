@@ -756,4 +756,9 @@
     <string name="body_composition_one">Jeden pomiar w tym okresie</string>
     <string name="body_fat_mass">Masa tłuszczu</string>
     <string name="body_fat_mass_note">Obliczone: procent tkanki tłuszczowej × waga z tego samego dnia</string>
+    <string name="compare_title">Porównaj</string>
+    <string name="compare_pick">Porównaj z</string>
+    <string name="compare_swap">Zamień kolejność</string>
+    <string name="compare_none">Brak wartości w tym okresie</string>
+    <string name="compare_note">Dwa wykresy na jednej osi czasu, każdy z własną skalą. To, że dwie wartości zmieniają się razem, nie znaczy, że jedna powoduje drugą.</string>
 </resources>

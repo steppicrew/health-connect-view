@@ -14,6 +14,7 @@ import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.toPoints
 import androidx.health.connect.client.records.ExerciseRouteResult
+import de.steppicrew.healthconnectview.ui.compare.comparableTypes
 import de.steppicrew.healthconnectview.ui.components.ExportKind
 import de.steppicrew.healthconnectview.util.appLabelFor
 import kotlinx.coroutines.Dispatchers
@@ -303,6 +304,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * period no longer leaves a file of headers. A failed check lets the export go ahead:
      * the write reports its own failure.
      */
+    /** The types a comparison may set beside this one. */
+    suspend fun compareCandidates(): List<RecordTypeSpec<*>> = repository.comparableTypes()
+
     suspend fun canExport(kind: ExportKind, period: ExportPeriod): Boolean {
         val spec = _spec.value ?: return false
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
