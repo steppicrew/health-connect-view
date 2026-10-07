@@ -575,6 +575,10 @@ object RecordRegistry {
         ),
         RecordTypeSpec(
             type = NutritionRecord::class,
+            // Energy eaten adds up through the day like hydration: a running total on a day,
+            // a bar per day across days. As a reading it drew a line between meals, as if
+            // something were eaten in between.
+            tile = TileSpec(TileSpec.Form.NUMBER, cumulativeIntraday = true),
             displayNameRes = R.string.type_nutrition,
             category = Category.NUTRITION,
             unitRes = R.string.unit_kcal,
