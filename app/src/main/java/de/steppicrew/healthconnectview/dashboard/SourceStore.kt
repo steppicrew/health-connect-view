@@ -63,7 +63,11 @@ class SourceStore(private val context: Context) {
         selections: Map<String, String>,
         preferred: String?,
         writers: Set<String>,
-    ): String? = selections[typeName] ?: preferred?.takeIf { it in writers }
+    ): String? = when (val chosen = selections[typeName]) {
+        ALL_SOURCES -> null
+        null -> preferred?.takeIf { it in writers }
+        else -> chosen
+    }
 
     /** [packageName] null clears the preference back to all sources. */
     suspend fun preferSource(packageName: String?) {
@@ -76,7 +80,13 @@ class SourceStore(private val context: Context) {
         }
     }
 
-    /** [packageName] null clears the filter back to all sources. */
+    /**
+     * The per-type choice: an app, [ALL_SOURCES] for all of them, or null to drop the choice
+     * and follow the preferred app again.
+     *
+     * "All sources" is a choice of its own rather than the absence of one. Stored as absence,
+     * tapping "Alle" showed every source once and the preferred app again on the next visit.
+     */
     suspend fun select(typeName: String, packageName: String?) {
         context.sourceDataStore.edit { prefs ->
             val current = prefs[KEY_SOURCES]
@@ -89,6 +99,11 @@ class SourceStore(private val context: Context) {
             }
             prefs[KEY_SOURCES] = encode(updated)
         }
+    }
+
+    /** Drops every per-type choice, so every type follows the preferred app again. */
+    suspend fun clearSelections() {
+        context.sourceDataStore.edit { prefs -> prefs.remove(KEY_SOURCES) }
     }
 
     /** Replaces every choice at once, for restoring a backup. */
@@ -109,8 +124,11 @@ class SourceStore(private val context: Context) {
             .toMap()
     }
 
-    private companion object {
-        val KEY_SOURCES = stringPreferencesKey("selected_sources")
-        val KEY_PREFERRED = stringPreferencesKey("preferred_source")
+    companion object {
+        /** A per-type choice of every source, overriding the preferred app. */
+        const val ALL_SOURCES = "*"
+
+        private val KEY_SOURCES = stringPreferencesKey("selected_sources")
+        private val KEY_PREFERRED = stringPreferencesKey("preferred_source")
     }
 }

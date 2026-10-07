@@ -123,6 +123,7 @@ import de.steppicrew.healthconnectview.ui.detail.RecordRow
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.sessionName
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Star
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
@@ -196,6 +197,7 @@ fun TileDetailScreen(
     OnResume { viewModel.onResume() }
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val coverage by viewModel.coverage.collectAsStateWithLifecycle()
+    val sourceDefault by viewModel.sourceDefault.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     ShowExportResults(viewModel.exportResults, snackbar)
 
@@ -261,6 +263,7 @@ fun TileDetailScreen(
             CompositionLocalProvider(
                 LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions),
                 LocalSourceCompare provides SourceCompare(coverage, viewModel::compareSources, viewModel::selectSource),
+                LocalSourceDefault provides SourceDefaultAction(sourceDefault, viewModel::useDefaultSource),
                 LocalDayJump provides DayJump(
                     shown = span.startDate(offset).takeIf { span == Span.DAY },
                     onShow = viewModel::showDay,
@@ -576,6 +579,11 @@ private class SourceCompare(
 )
 
 private val LocalSourceCompare = staticCompositionLocalOf<SourceCompare?> { null }
+
+/** The default source from settings, and how to return this type to it. */
+private class SourceDefaultAction(val state: SourceDefault, val onUseDefault: () -> Unit)
+
+private val LocalSourceDefault = staticCompositionLocalOf<SourceDefaultAction?> { null }
 
 /**
  * Under an explanation that searches the past year: said only where the search was in fact cut
@@ -1540,7 +1548,13 @@ private fun StackedSources(sources: List<String>) {
  * announced as with any chip.
  */
 @Composable
-private fun SourceChip(selected: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
+private fun SourceChip(
+    selected: Boolean,
+    onClick: () -> Unit,
+    /** The app chosen in settings as the default: marked with a star, named for TalkBack. */
+    isDefault: Boolean = false,
+    content: @Composable () -> Unit,
+) {
     Surface(
         shape = MaterialTheme.shapes.small,
         color = if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
@@ -1549,16 +1563,27 @@ private fun SourceChip(selected: Boolean, onClick: () -> Unit, content: @Composa
             .minimumInteractiveComponentSize()
             .selectable(selected = selected, onClick = onClick, role = Role.RadioButton),
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .height(SOURCE_CHIP_HEIGHT.dp)
                 .padding(horizontal = 8.dp),
-            contentAlignment = Alignment.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             content()
+            if (isDefault) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = stringResource(R.string.source_default),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(DEFAULT_STAR.dp),
+                )
+            }
         }
     }
 }
+
+private const val DEFAULT_STAR = 14
 
 @Composable
 private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Unit) {
@@ -1566,6 +1591,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
     val sources = data.contributingApps.sortedBy { context.appLabelFor(it) }
 
     val explanation = rememberExplanation("sources")
+    val defaultAction = LocalSourceDefault.current
 
     // One outlined box for chips, "i" and explanation, so they read as one control -- and so
     // the space is already taken while the writers are still being read, and the chart below
@@ -1605,6 +1631,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                                 SourceChip(
                                     selected = data.selectedSource == packageName,
                                     onClick = { onSelectSource(packageName) },
+                                    isDefault = packageName == defaultAction?.state?.preferred,
                                 ) {
                                     // The app's own icon where it has one, which fits several sources
                                     // on screen at once where "Garmin Connect" and "Health Sync"
@@ -1618,6 +1645,17 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                         }
                         // The chips are the data; what choosing one means is the explanation.
                         InfoToggle(explanation)
+                    }
+                    // Back to the app chosen in settings, named, wherever this type shows something
+                    // else by a choice of its own -- "Alle" included, which no longer means
+                    // "the default" since it is remembered as a choice.
+                    val preferred = defaultAction?.state?.preferred
+                    if (preferred != null && preferred in sources && defaultAction.state.ownChoice &&
+                        data.selectedSource != preferred
+                    ) {
+                        TextButton(onClick = defaultAction.onUseDefault) {
+                            Text(stringResource(R.string.source_use_default, context.appLabelFor(preferred)))
+                        }
                     }
                 }
 

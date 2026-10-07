@@ -539,6 +539,10 @@
     <string name="source_all_explained">كل المصادر: مجمّعة ومُزال تكرارها بواسطة Health Connect. لا تساوي قيمة أي تطبيق منفرد.</string>
     <string name="source_showing_one">%1$s: قيمة هذا التطبيق فقط، وليس إجماليك بعد إزالة التكرار.</string>
     <string name="source_priority_hint">التطبيق الذي يُعتمد عند تداخل السجلات يُحدَّد في Health Connect، ضمن أولوية التطبيقات.</string>
+    <string name="source_default">المصدر الافتراضي</string>
+    <string name="source_use_default">استخدام الافتراضي (%1$s)</string>
+    <string name="settings_reset_sources">إعادة كل المصادر إلى الافتراضي</string>
+    <string name="settings_reset_sources_body">الأنواع التي اخترت لها مصدرًا في شاشتها تتبع التطبيق المفضّل مجددًا.</string>
     <string name="sources_compare">مقارنة المصادر</string>
     <string name="sources_compare_title">آخر 30 يومًا</string>
     <string name="sources_days">أيام بها بيانات: %1$d/%2$d</string>

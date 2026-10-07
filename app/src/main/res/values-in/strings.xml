@@ -479,6 +479,10 @@
     <string name="source_all_explained">Semua sumber: digabung dan tanpa duplikat menurut Health Connect. Tidak sama dengan angka dari satu aplikasi mana pun.</string>
     <string name="source_showing_one">%1$s: hanya angka dari aplikasi ini, bukan total tanpa duplikat Anda.</string>
     <string name="source_priority_hint">Aplikasi mana yang diutamakan jika catatan tumpang tindih diatur di Health Connect, pada prioritas aplikasi.</string>
+    <string name="source_default">Sumber default</string>
+    <string name="source_use_default">Gunakan default (%1$s)</string>
+    <string name="settings_reset_sources">Reset semua sumber ke default</string>
+    <string name="settings_reset_sources_body">Jenis yang sumbernya Anda pilih di layarnya kembali mengikuti aplikasi pilihan.</string>
     <string name="sources_compare">Bandingkan sumber</string>
     <string name="sources_compare_title">30 hari terakhir</string>
     <string name="sources_days">Hari dengan data: %1$d/%2$d</string>

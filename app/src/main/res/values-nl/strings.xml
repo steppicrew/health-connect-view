@@ -491,6 +491,10 @@
     <string name="source_all_explained">Alle bronnen: gecombineerd en ontdubbeld door Health Connect. Niet hetzelfde als het cijfer van één app.</string>
     <string name="source_showing_one">%1$s: alleen het cijfer van deze app, niet je ontdubbelde totaal.</string>
     <string name="source_priority_hint">Welke app voorgaat waar registraties overlappen, stel je in Health Connect in, onder app-prioriteit.</string>
+    <string name="source_default">Standaardbron</string>
+    <string name="source_use_default">Standaard gebruiken (%1$s)</string>
+    <string name="settings_reset_sources">Alle bronnen terugzetten naar standaard</string>
+    <string name="settings_reset_sources_body">Typen waarvoor je op hun scherm een bron hebt gekozen, volgen weer de voorkeursapp.</string>
     <string name="sources_compare">Bronnen vergelijken</string>
     <string name="sources_compare_title">Afgelopen 30 dagen</string>
     <string name="sources_days">Dagen met gegevens: %1$d/%2$d</string>

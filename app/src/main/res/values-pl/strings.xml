@@ -515,6 +515,10 @@
     <string name="source_all_explained">Wszystkie źródła: połączone i bez duplikatów według Health Connect. To nie to samo co wartość z jednej aplikacji.</string>
     <string name="source_showing_one">%1$s: tylko wartość tej aplikacji, nie twoja suma bez duplikatów.</string>
     <string name="source_priority_hint">To, która aplikacja ma pierwszeństwo przy nakładających się wpisach, ustawia się w Health Connect, w priorytecie aplikacji.</string>
+    <string name="source_default">Źródło domyślne</string>
+    <string name="source_use_default">Użyj domyślnego (%1$s)</string>
+    <string name="settings_reset_sources">Przywróć domyślne źródła</string>
+    <string name="settings_reset_sources_body">Typy, dla których wybrano źródło na ich ekranie, znów korzystają z preferowanej aplikacji.</string>
     <string name="sources_compare">Porównaj źródła</string>
     <string name="sources_compare_title">Ostatnie 30 dni</string>
     <string name="sources_days">Dni z danymi: %1$d/%2$d</string>

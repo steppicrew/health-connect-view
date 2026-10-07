@@ -515,6 +515,10 @@
     <string name="source_all_explained">Все источники: объединены и очищены от дубликатов Health Connect. Это не то же самое, что показатель одного приложения.</string>
     <string name="source_showing_one">%1$s: только показатель этого приложения, а не ваш итог без дубликатов.</string>
     <string name="source_priority_hint">Какое приложение главнее при пересечении записей, задаётся в Health Connect, в разделе приоритета приложений.</string>
+    <string name="source_default">Источник по умолчанию</string>
+    <string name="source_use_default">Использовать по умолчанию (%1$s)</string>
+    <string name="settings_reset_sources">Сбросить все источники</string>
+    <string name="settings_reset_sources_body">Типы, для которых вы выбрали источник на их экране, снова следуют предпочтительному приложению.</string>
     <string name="sources_compare">Сравнить источники</string>
     <string name="sources_compare_title">Последние 30 дней</string>
     <string name="sources_days">Дни с данными: %1$d/%2$d</string>

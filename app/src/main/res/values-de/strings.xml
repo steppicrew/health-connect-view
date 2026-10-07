@@ -485,6 +485,10 @@
     <string name="source_all_explained">Alle Quellen: von Health Connect zusammengeführt und entdoppelt. Nicht identisch mit dem Wert einer einzelnen App.</string>
     <string name="source_showing_one">%1$s: nur der Wert dieser App, nicht die entdoppelte Summe.</string>
     <string name="source_priority_hint">Welche App bei überlappenden Daten Vorrang hat, wird in Health Connect unter App-Priorität festgelegt.</string>
+    <string name="source_default">Standardquelle</string>
+    <string name="source_use_default">Standard verwenden (%1$s)</string>
+    <string name="settings_reset_sources">Alle Quellen auf Standard zurücksetzen</string>
+    <string name="settings_reset_sources_body">Datentypen, für die Sie auf ihrer Seite eine Quelle gewählt haben, folgen wieder der bevorzugten App.</string>
     <string name="sources_compare">Quellen vergleichen</string>
     <string name="sources_compare_title">Letzte 30 Tage</string>
     <string name="sources_days">Tage mit Daten: %1$d/%2$d</string>

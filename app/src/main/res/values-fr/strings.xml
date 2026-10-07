@@ -503,6 +503,10 @@
     <string name="source_all_explained">Toutes les sources : combinées et dédoublonnées par Santé Connect. Ce n’est pas la même chose que le chiffre d’une seule application.</string>
     <string name="source_showing_one">%1$s : seulement le chiffre de cette application, pas votre total dédoublonné.</string>
     <string name="source_priority_hint">L’application qui l’emporte quand des enregistrements se chevauchent se règle dans Santé Connect, sous priorité des applications.</string>
+    <string name="source_default">Source par défaut</string>
+    <string name="source_use_default">Utiliser la valeur par défaut (%1$s)</string>
+    <string name="settings_reset_sources">Rétablir toutes les sources par défaut</string>
+    <string name="settings_reset_sources_body">Les types pour lesquels vous avez choisi une source sur leur écran suivent de nouveau l’app préférée.</string>
     <string name="sources_compare">Comparer les sources</string>
     <string name="sources_compare_title">30 derniers jours</string>
     <string name="sources_days">Jours avec données : %1$d/%2$d</string>

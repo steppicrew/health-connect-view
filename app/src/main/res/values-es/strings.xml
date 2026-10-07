@@ -503,6 +503,10 @@
     <string name="source_all_explained">Todas las fuentes: combinadas y sin duplicados según Health Connect. No es lo mismo que la cifra de una sola aplicación.</string>
     <string name="source_showing_one">%1$s: solo la cifra de esta aplicación, no tu total sin duplicados.</string>
     <string name="source_priority_hint">Qué aplicación prevalece cuando los registros se solapan se define en Health Connect, en la prioridad de aplicaciones.</string>
+    <string name="source_default">Fuente predeterminada</string>
+    <string name="source_use_default">Usar predeterminada (%1$s)</string>
+    <string name="settings_reset_sources">Restablecer todas las fuentes</string>
+    <string name="settings_reset_sources_body">Los tipos en los que elegiste una fuente en su pantalla vuelven a seguir la app preferida.</string>
     <string name="sources_compare">Comparar fuentes</string>
     <string name="sources_compare_title">Últimos 30 días</string>
     <string name="sources_days">Días con datos: %1$d/%2$d</string>

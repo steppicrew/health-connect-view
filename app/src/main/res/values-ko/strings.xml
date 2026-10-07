@@ -479,6 +479,10 @@
     <string name="source_all_explained">모든 소스: 헬스 커넥트가 합치고 중복을 제거한 값입니다. 어느 한 앱의 수치와는 다릅니다.</string>
     <string name="source_showing_one">%1$s: 이 앱의 수치만 표시하며, 중복이 제거된 합계가 아닙니다.</string>
     <string name="source_priority_hint">기록이 겹칠 때 어느 앱을 우선할지는 헬스 커넥트의 앱 우선순위에서 설정합니다.</string>
+    <string name="source_default">기본 소스</string>
+    <string name="source_use_default">기본값 사용(%1$s)</string>
+    <string name="settings_reset_sources">모든 소스를 기본값으로 재설정</string>
+    <string name="settings_reset_sources_body">화면에서 소스를 고른 데이터 유형이 다시 선호 앱을 따릅니다.</string>
     <string name="sources_compare">소스 비교</string>
     <string name="sources_compare_title">지난 30일</string>
     <string name="sources_days">데이터가 있는 날: %1$d/%2$d</string>

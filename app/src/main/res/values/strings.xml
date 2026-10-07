@@ -524,6 +524,10 @@
     <string name="source_all_explained">All sources: combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
     <string name="source_showing_one">%1$s: only this app\'s figure, not your deduplicated total.</string>
     <string name="source_priority_hint">Which app wins where records overlap is set in Health Connect, under app priority.</string>
+    <string name="source_default">Default source</string>
+    <string name="source_use_default">Use default (%1$s)</string>
+    <string name="settings_reset_sources">Reset all sources to default</string>
+    <string name="settings_reset_sources_body">Types where you picked a source on their screen follow the preferred app again.</string>
     <string name="sources_compare">Compare sources</string>
     <string name="sources_compare_title">Last 30 days</string>
     <string name="sources_days">Days with data: %1$d/%2$d</string>

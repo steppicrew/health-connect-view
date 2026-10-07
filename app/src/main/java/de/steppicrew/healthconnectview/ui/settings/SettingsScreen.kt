@@ -84,6 +84,7 @@ fun SettingsScreen(
     val granted by viewModel.grantedCount.collectAsStateWithLifecycle()
     val writers by viewModel.writers.collectAsStateWithLifecycle()
     val preferredSource by viewModel.preferredSource.collectAsStateWithLifecycle()
+    val ownSourceCount by viewModel.ownSourceCount.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmRevoke by remember { mutableStateOf(false) }
     val pendingRestore by viewModel.pendingRestore.collectAsStateWithLifecycle()
@@ -308,6 +309,16 @@ fun SettingsScreen(
                     writers = writers,
                     preferred = preferredSource,
                     onSelect = viewModel::preferSource,
+                )
+            }
+
+            // Only while some type has a source of its own: chosen on its screen, it outlasts
+            // the default here, and finding each such screen again to undo it is tedious.
+            if (ownSourceCount > 0) {
+                LinkRow(
+                    title = stringResource(R.string.settings_reset_sources),
+                    body = stringResource(R.string.settings_reset_sources_body),
+                    onClick = viewModel::resetSources,
                 )
             }
 
