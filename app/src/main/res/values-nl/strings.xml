@@ -206,6 +206,10 @@
     <string name="detail_records_loading">Registraties laden…</string>
     <string name="span_average">Gemiddelde</string>
     <string name="span_per_night">Gemiddeld per nacht</string>
+    <string name="context_day_range">Bereik deze dag: %1$s–%2$s</string>
+    <string name="context_change">%1$s sinds %2$s</string>
+    <string name="context_first">De eerste vastgelegde meting</string>
+    <string name="context_caption">Recente dagen met een meting, deze gemarkeerd</string>
     <string name="chart_source_aggregated_mean">Daggemiddelden, ontdubbeld door Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Weekgemiddelden, ontdubbeld door Health Connect</string>
     <string name="bp_grade_low">Laag</string>

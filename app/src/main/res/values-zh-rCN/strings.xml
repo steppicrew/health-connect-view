@@ -204,6 +204,10 @@
     <string name="detail_records_loading">正在加载记录…</string>
     <string name="span_average">平均值</string>
     <string name="span_per_night">每晚平均</string>
+    <string name="context_day_range">当天范围：%1$s–%2$s</string>
+    <string name="context_change">自 %2$s 以来 %1$s</string>
+    <string name="context_first">有记录的第一次测量</string>
+    <string name="context_caption">最近有测量的日子，当天突出显示</string>
     <string name="chart_source_aggregated_mean">每日平均值，已由 Health Connect 去重</string>
     <string name="chart_source_aggregated_weekly_mean">每周平均值，已由 Health Connect 去重</string>
     <string name="bp_grade_low">偏低</string>

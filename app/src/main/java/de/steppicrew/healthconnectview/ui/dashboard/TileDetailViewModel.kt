@@ -77,6 +77,18 @@ import java.time.LocalDate
 /** One bucket's total split into the components that make it up, drawn bottom-up. */
 data class StackedBucket(val time: Instant, val parts: List<Double>)
 
+/**
+ * A day of a type measured now and then, set against the days before it: each recent day's
+ * value (newest last, the shown day among them) and the shown day's own low and high.
+ */
+data class ReadingContext(
+    val days: List<Point>,
+    /** The second value per day, diastolic beside systolic; empty for other types. */
+    val secondaryDays: List<Point>,
+    val dayLow: Double,
+    val dayHigh: Double,
+)
+
 /** A bucket's low and high, for the spread drawn behind a multi-day mean. */
 data class ValueBand(val time: Instant, val low: Double, val high: Double)
 
@@ -206,6 +218,8 @@ data class TileDetailData(
     val baseline: List<Point> = emptyList(),
     /** The wearer's usual range at each point, for a type with `usualRange`. */
     val usualBand: List<ValueBand> = emptyList(),
+    /** A day of a type measured now and then, against its recent readings; see TileSpec. */
+    val readingContext: ReadingContext? = null,
     /** The series is each bucket's mean of readings the platform cannot aggregate. */
     val dailyFromReadings: Boolean = false,
     /**
@@ -236,8 +250,12 @@ data class TileDetailData(
      * Whether there is a series worth drawing. Not on a day of a type with one value a day:
      * that chart is a lone dot on an empty axis, and the value is already the headline.
      */
+    /** The day a reading context is shown for: a day window's own date. */
+    val readingContextDay: java.time.LocalDate?
+        get() = extent?.let { points.firstOrNull()?.time?.atZone(HealthRepository.DEFAULT_ZONE)?.toLocalDate() }
+
     val drawsChart: Boolean
-        get() = points.isNotEmpty() && !(spec.tile.dailyValue && extent != null)
+        get() = points.isNotEmpty() && !(spec.tile.dailyValue && extent != null) && readingContext == null
 
     /**
      * The sessions to shade behind the chart. Not behind a session type's own bars across

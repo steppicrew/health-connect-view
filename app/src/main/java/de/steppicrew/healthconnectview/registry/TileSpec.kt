@@ -151,6 +151,12 @@ data class TileSpec(
      * point -- drawn behind the series in place of the day's spread and the four-week mean.
      */
     val usualRange: Boolean = false,
+    /**
+     * Measured now and then -- a weigh-in, a body scan. A day of it is not drawn on a 24-hour
+     * axis, where one reading is a lone dot, but as a context strip: the change since the
+     * previous reading and the most recent days with one.
+     */
+    val occasional: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

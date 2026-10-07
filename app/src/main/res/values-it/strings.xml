@@ -208,6 +208,10 @@
     <string name="detail_records_loading">Caricamento registrazioni…</string>
     <string name="span_average">Media</string>
     <string name="span_per_night">Media per notte</string>
+    <string name="context_day_range">Intervallo di questo giorno: %1$s–%2$s</string>
+    <string name="context_change">%1$s dal %2$s</string>
+    <string name="context_first">La prima misurazione registrata</string>
+    <string name="context_caption">Ultimi giorni con una misurazione, questo evidenziato</string>
     <string name="chart_source_aggregated_mean">Medie giornaliere, senza duplicati secondo Connessione Salute</string>
     <string name="chart_source_aggregated_weekly_mean">Medie settimanali, senza duplicati secondo Connessione Salute</string>
     <string name="bp_grade_low">Bassa</string>

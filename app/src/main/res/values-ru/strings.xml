@@ -210,6 +210,10 @@
     <string name="detail_records_loading">Загрузка записей…</string>
     <string name="span_average">Среднее</string>
     <string name="span_per_night">В среднем за ночь</string>
+    <string name="context_day_range">Диапазон за этот день: %1$s–%2$s</string>
+    <string name="context_change">%1$s с %2$s</string>
+    <string name="context_first">Первое записанное измерение</string>
+    <string name="context_caption">Последние дни с измерением, этот выделен</string>
     <string name="chart_source_aggregated_mean">Средние за день, без дубликатов по данным Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Средние за неделю, без дубликатов по данным Health Connect</string>
     <string name="bp_grade_low">Низкое</string>

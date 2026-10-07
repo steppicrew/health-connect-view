@@ -206,6 +206,10 @@
     <string name="detail_records_loading">Datensätze werden geladen …</string>
     <string name="span_average">Durchschnitt</string>
     <string name="span_per_night">Durchschnitt pro Nacht</string>
+    <string name="context_day_range">Spanne an diesem Tag: %1$s–%2$s</string>
+    <string name="context_change">%1$s seit %2$s</string>
+    <string name="context_first">Die erste aufgezeichnete Messung</string>
+    <string name="context_caption">Die letzten Tage mit Messung, dieser hervorgehoben</string>
     <string name="chart_source_aggregated_mean">Tagesmittel, von Health Connect entdoppelt</string>
     <string name="chart_source_aggregated_weekly_mean">Wochenmittel, von Health Connect entdoppelt</string>
     <string name="bp_grade_low">Niedrig</string>

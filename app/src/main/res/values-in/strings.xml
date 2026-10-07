@@ -204,6 +204,10 @@
     <string name="detail_records_loading">Memuat catatan…</string>
     <string name="span_average">Rata-rata</string>
     <string name="span_per_night">Rata-rata per malam</string>
+    <string name="context_day_range">Rentang hari ini: %1$s–%2$s</string>
+    <string name="context_change">%1$s sejak %2$s</string>
+    <string name="context_first">Pengukuran pertama yang tercatat</string>
+    <string name="context_caption">Hari-hari terakhir dengan pengukuran, hari ini disorot</string>
     <string name="chart_source_aggregated_mean">Rata-rata harian, tanpa duplikat menurut Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Rata-rata mingguan, tanpa duplikat menurut Health Connect</string>
     <string name="bp_grade_low">Rendah</string>

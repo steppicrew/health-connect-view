@@ -214,6 +214,10 @@
     <string name="detail_records_loading">جارٍ تحميل السجلات…</string>
     <string name="span_average">المتوسط</string>
     <string name="span_per_night">المتوسط لكل ليلة</string>
+    <string name="context_day_range">نطاق هذا اليوم: %1$s–%2$s</string>
+    <string name="context_change">%1$s منذ %2$s</string>
+    <string name="context_first">أول قياس مسجّل</string>
+    <string name="context_caption">آخر الأيام التي فيها قياس، مع تمييز هذا اليوم</string>
     <string name="chart_source_aggregated_mean">المتوسطات اليومية، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">المتوسطات الأسبوعية، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="bp_grade_low">منخفض</string>
