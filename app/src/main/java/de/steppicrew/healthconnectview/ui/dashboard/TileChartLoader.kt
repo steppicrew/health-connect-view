@@ -129,6 +129,7 @@ internal class TileChartLoader(
         chosenShapeWriter = null
         shapeFromWholeDayOnly = false
         rangeBand = emptyList()
+        secondaryRangeBand = emptyList()
         stack = emptyList()
         pointStandings = emptyList()
 
@@ -203,6 +204,7 @@ internal class TileChartLoader(
 
                 period != null -> {
                     val bandMetrics = spec.rangeAggregates
+                    val secondBandMetrics = spec.secondaryRangeAggregates
                     val stackMetrics = spec.stackComponents
                     val buckets = bucketedInPieces(
                         metric,
@@ -210,7 +212,8 @@ internal class TileChartLoader(
                         period,
                         origins,
                         also = (
-                            bandMetrics?.toList().orEmpty() + stackMetrics.map { it.second } +
+                            bandMetrics?.toList().orEmpty() + secondBandMetrics?.toList().orEmpty() +
+                                stackMetrics.map { it.second } +
                                 listOfNotNull(spec.secondaryAggregate)
                             ).toSet(),
                         onFraction = ::stepPart,
@@ -240,22 +243,25 @@ internal class TileChartLoader(
                     // same buckets so a band cannot drift from the point it belongs to; a
                     // bucket missing either end contributes no band rather than a half-open
                     // one, which would read as a range reaching to zero.
-                    rangeBand = bandMetrics?.let { (lowMetric, highMetric) ->
-                        buckets.mapNotNull { bucket ->
-                            val low = bucket.result[lowMetric]?.let { numericAggregate(it, lowMetric) }
-                            val high = bucket.result[highMetric]?.let { numericAggregate(it, highMetric) }
-                            if (low == null || high == null) return@mapNotNull null
-                            ValueBand(
-                                time = bucket.startTime
-                                    .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
-                                low = low,
-                                high = high,
-                            )
-                        }
-                        // Only where some day actually had a spread. One reading a day -- a
-                        // resting rate, most people's weight -- makes every band zero wide, and
-                        // the legend and caption then named a range the chart did not draw.
-                    }?.takeIf { bands -> bands.any { it.high > it.low } }.orEmpty()
+                    fun bands(metrics: Pair<AggregateMetric<*>, AggregateMetric<*>>?): List<ValueBand> =
+                        metrics?.let { (lowMetric, highMetric) ->
+                            buckets.mapNotNull { bucket ->
+                                val low = bucket.result[lowMetric]?.let { numericAggregate(it, lowMetric) }
+                                val high = bucket.result[highMetric]?.let { numericAggregate(it, highMetric) }
+                                if (low == null || high == null) return@mapNotNull null
+                                ValueBand(
+                                    time = bucket.startTime
+                                        .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                    low = low,
+                                    high = high,
+                                )
+                            }
+                            // Only where some day actually had a spread. One reading a day -- a
+                            // resting rate, most people's weight -- makes every band zero wide, and
+                            // the legend and caption then named a range the chart did not draw.
+                        }?.takeIf { bands -> bands.any { it.high > it.low } }.orEmpty()
+                    rangeBand = bands(bandMetrics)
+                    secondaryRangeBand = bands(secondBandMetrics)
 
                     // A bucket with no value is a day nothing was recorded, which is not the
                     // same as a day with a value of zero. Both the empty times and the points
@@ -674,6 +680,7 @@ internal class TileChartLoader(
             // drawn stacked, or a counted quantity bucketed across days.
             bars = perDayPoints.isNotEmpty() || stack.isNotEmpty() || bucketedTotals,
             rangeBand = rangeBand,
+            secondaryRangeBand = secondaryRangeBand,
             stack = stack,
             stackLabels = spec.stackComponents.map { it.first },
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind == Session.Kind.EXERCISE,
@@ -972,6 +979,9 @@ internal class TileChartLoader(
 
     /** Set while building the points, read straight afterwards on the same coroutine. */
     private var rangeBand: List<ValueBand> = emptyList()
+
+    /** The second value's spread, beside [rangeBand]; empty for most types. */
+    private var secondaryRangeBand: List<ValueBand> = emptyList()
 
     /** Set while building the points, read straight afterwards on the same coroutine. */
     private var stack: List<StackedBucket> = emptyList()

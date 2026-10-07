@@ -1190,6 +1190,7 @@ internal fun DataLineChart(
         smooth = data.spec.tile.smoothChart && !data.bars,
         bars = data.bars,
         rangeBand = data.rangeBand,
+        secondaryRangeBand = data.secondaryRangeBand,
         stack = data.stack,
         goal = data.goal,
         goalCrossing = data.goalCrossing,

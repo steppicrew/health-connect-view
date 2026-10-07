@@ -78,6 +78,7 @@ object RecordRegistry {
                 val quantity = spec.quantity ?: return@forEach
                 listOfNotNull(spec.aggregate, spec.secondaryAggregate)
                     .plus(spec.rangeAggregates?.toList().orEmpty())
+                    .plus(spec.secondaryRangeAggregates?.toList().orEmpty())
                     .plus(spec.stackComponents.map { it.second })
                     .forEach { put(it, quantity) }
             }
@@ -438,6 +439,10 @@ object RecordRegistry {
             aggregate = BloodPressureRecord.SYSTOLIC_AVG,
             secondaryPoints = { listOf(Point(it.time, it.diastolic.inMillimetersOfMercury)) },
             secondaryAggregate = BloodPressureRecord.DIASTOLIC_AVG,
+            // Each value's own spread across days: a morning of 118 and an evening of 141
+            // average to an unremarkable 130, and the band puts the day back.
+            rangeAggregates = BloodPressureRecord.SYSTOLIC_MIN to BloodPressureRecord.SYSTOLIC_MAX,
+            secondaryRangeAggregates = BloodPressureRecord.DIASTOLIC_MIN to BloodPressureRecord.DIASTOLIC_MAX,
             // Occasional only on a day of one reading: with a morning and an evening reading
             // the time of day is the point, and the day keeps its chart.
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, occasional = true),

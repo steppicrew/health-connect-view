@@ -266,8 +266,10 @@ open items below and `FEATURE-IDEAS.md`.
 40. [ ] **Insights** -- from `FEATURE-IDEAS.md`. A tile or a section naming notable changes,
     "Ruhepuls diese Woche 8 % über dem 30-Tage-Mittel", built on the trend arrows' numbers.
     Worded as a position, never a diagnosis, and never compared to a brand's score. Pro.
-41. [ ] **Blood pressure daily spread** -- left over from step 19: a min-max band for systolic
-    and one for diastolic, which needs the chart to draw two bands at once.
+41. [x] **Blood pressure daily spread** -- built 07.10.2026, seen on the emulator's seeded
+    month (the phone has one day of readings, and one day draws no ribbon). Left over from
+    step 19: a min-max band for systolic and one for diastolic, from the same daily buckets as
+    the means; the chart draws a second ribbon with the same code as the first.
 42. [ ] **Local reminder** -- from `FEATURE-IDEAS.md`: "noch kein Blutdruck heute" in the
     afternoon. Needs a notification permission and reading in the background
     (`READ_HEALTH_DATA_IN_BACKGROUND`), so it changes what the privacy page promises; the
