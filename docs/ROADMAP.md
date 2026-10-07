@@ -381,7 +381,7 @@ open items below and `FEATURE-IDEAS.md`.
     an offer on the empty screen: "Letzter Wert am 16.08.2026" as a button that opens the
     window holding it. One request for the newest record before the window; the record list
     already reads newest-first.
-51. [ ] **Workouts by kind, and one screen for a workout** -- the owner's idea, 07.10.2026.
+51. [x] **Workouts by kind, and one screen for a workout** -- built 07.10.2026; seen on the phone: a ride with heart rate, route and stats on one screen, and the cycling chip listing "Berlin Mountainbiken" and "Heimtrainer" sessions. -- the owner's idea, 07.10.2026.
     - A list of recent workouts filtered by kind: chips for the kinds that actually occur in
       the data (Health Connect has 61, from biking and stationary biking to pool and open-water
       swimming; no mountain-bike type -- that is only ever in a writer's title). Writers
@@ -392,6 +392,17 @@ open items below and `FEATURE-IDEAS.md`.
       slider, laps and segments where a writer fills them. Today that is the session sheet, a
       dialog with no room for a heart-rate chart; a full screen would replace it, with one
       route to it (`session/{id}`), so the debug backdoor can open any workout too.
+    - As built: nine kinds (`WorkoutFamily`), only those that occur offered as chips, over the
+      past year (30 days without the history permission, said under the list). Reached from
+      the filter button on the workouts screen; debug route `workouts?family=CYCLING`.
+    - The session screen is `session/{kind}/{id}`, the id being the record the list kept after
+      deduplication; it is read again by id and matched against the other writers' copies, so
+      it carries a route or laps another app recorded. Everything is read before anything is
+      drawn, so nothing moves.
+    - Untitled sessions are now named in the user's language from their type; before, a fixed
+      English table made the German UI say "Biking".
+    - Left out: segments (60-odd segment types would each need a name in 17 languages), and
+      the dashboard tile still opens the workouts screen rather than the latest workout.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
