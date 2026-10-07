@@ -616,5 +616,8 @@ private const val ACTION_APP_LOCALE_SETTINGS = "android.settings.APP_LOCALE_SETT
 
 private const val SOURCE_URL = "https://github.com/steppicrew/health-connect-view"
 
-/** Material 3's switch track height. */
-private const val SWITCH_HEIGHT = 32
+/**
+ * A switch's height in the row: its 48 dp touch target, with the 32 dp track in the middle.
+ * Measured against the track alone, the title sat 8 dp above it.
+ */
+private const val SWITCH_HEIGHT = 48

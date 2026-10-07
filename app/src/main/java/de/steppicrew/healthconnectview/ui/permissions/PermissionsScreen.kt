@@ -7,6 +7,7 @@ import android.content.Intent
 import android.widget.Toast
 import android.content.Context
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
+import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import de.steppicrew.healthconnectview.ui.components.ExplanationState
 import de.steppicrew.healthconnectview.registry.PermissionInfo
 import androidx.compose.runtime.setValue
@@ -333,7 +334,7 @@ private fun PermissionRowLayout(
             )
             // The checkbox's touch target is 48 dp with the box in its middle; this puts the
             // first line's centre on the box's.
-            Column(Modifier.weight(1f).padding(start = 8.dp, top = CHECKBOX_LINE_OFFSET.dp)) {
+            Column(Modifier.weight(1f).padding(start = 8.dp, top = firstLineTextInset(MaterialTheme.typography.bodyLarge, CHECKBOX_TARGET.dp))) {
                 Text(text = title, style = MaterialTheme.typography.bodyLarge)
                 detail?.let {
                     Text(
@@ -370,8 +371,8 @@ private fun PermissionRowLayout(
     }
 }
 
-/** Half the checkbox's 48 dp target minus half a body line, so the name sits beside the box. */
-private const val CHECKBOX_LINE_OFFSET = 12
+/** The checkbox's touch target, with the box in its middle. */
+private const val CHECKBOX_TARGET = 48
 
 /**
  * This app's own page in Health Connect, where each permission has its switch; the general

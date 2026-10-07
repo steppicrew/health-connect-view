@@ -59,6 +59,7 @@ import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.sessionName
 import de.steppicrew.healthconnectview.ui.dashboard.heartRateSpec
@@ -211,7 +212,7 @@ private fun Header(session: Session) {
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = firstLineInset(style, HEADER_ICON.dp)).size(HEADER_ICON.dp),
         )
-        Column {
+        Column(Modifier.padding(top = firstLineTextInset(style, HEADER_ICON.dp))) {
             Text(text = sessionName(session), style = style)
             Text(
                 text = Formatting.date(session.start) + "  " + stringResource(
