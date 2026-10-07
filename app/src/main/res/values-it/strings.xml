@@ -207,6 +207,7 @@
     </plurals>
     <string name="detail_records_loading">Caricamento registrazioni…</string>
     <string name="span_average">Media</string>
+    <string name="span_per_night">Media per notte</string>
     <string name="chart_source_aggregated_mean">Medie giornaliere, senza duplicati secondo Connessione Salute</string>
     <string name="chart_source_aggregated_weekly_mean">Medie settimanali, senza duplicati secondo Connessione Salute</string>
     <string name="bp_grade_low">Bassa</string>
@@ -562,6 +563,11 @@
     <string name="legend_value_mean_weekly">Media settimanale</string>
     <string name="chart_source_aggregated">Totali giornalieri, senza duplicati secondo Connessione Salute</string>
     <string name="chart_source_sessions_per_day">Sessioni al giorno</string>
+    <string name="chart_source_sessions_per_week">Sessioni a settimana</string>
+    <string name="chart_source_sleep_nights">Sonno per notte, attribuito al mattino in cui è terminata</string>
+    <string name="chart_source_sleep_weeks">Media per notte registrata, per settimana</string>
+    <string name="chart_source_session_time_daily">Tempo totale al giorno</string>
+    <string name="chart_source_session_time_weekly">Tempo totale a settimana</string>
     <string name="chart_source_aggregated_split">Totali giornalieri suddivisi nelle loro parti, senza duplicati secondo Connessione Salute</string>
     <string name="calories_basal">Basali</string>
     <string name="calories_active">Attive</string>

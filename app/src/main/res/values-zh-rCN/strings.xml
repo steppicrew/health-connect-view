@@ -203,6 +203,7 @@
     </plurals>
     <string name="detail_records_loading">正在加载记录…</string>
     <string name="span_average">平均值</string>
+    <string name="span_per_night">每晚平均</string>
     <string name="chart_source_aggregated_mean">每日平均值，已由 Health Connect 去重</string>
     <string name="chart_source_aggregated_weekly_mean">每周平均值，已由 Health Connect 去重</string>
     <string name="bp_grade_low">偏低</string>
@@ -524,6 +525,11 @@
     <string name="legend_value_mean_weekly">每周平均值</string>
     <string name="chart_source_aggregated">每日总计，已由 Health Connect 去重</string>
     <string name="chart_source_sessions_per_day">每日活动次数</string>
+    <string name="chart_source_sessions_per_week">每周次数</string>
+    <string name="chart_source_sleep_nights">每晚睡眠，计入结束当天的早晨</string>
+    <string name="chart_source_sleep_weeks">每个有记录夜晚的平均值，按周</string>
+    <string name="chart_source_session_time_daily">每天总时长</string>
+    <string name="chart_source_session_time_weekly">每周总时长</string>
     <string name="chart_source_aggregated_split">按组成部分拆分的每日总计，已由 Health Connect 去重</string>
     <string name="calories_basal">基础</string>
     <string name="calories_active">活动</string>

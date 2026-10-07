@@ -205,6 +205,7 @@
     </plurals>
     <string name="detail_records_loading">Kayıtlar yükleniyor…</string>
     <string name="span_average">Ortalama</string>
+    <string name="span_per_night">Gece başına ortalama</string>
     <string name="chart_source_aggregated_mean">Günlük ortalamalar, Health Connect tarafından tekilleştirildi</string>
     <string name="chart_source_aggregated_weekly_mean">Haftalık ortalamalar, Health Connect tarafından tekilleştirildi</string>
     <string name="bp_grade_low">Düşük</string>
@@ -543,6 +544,11 @@
     <string name="legend_value_mean_weekly">Haftalık ortalama</string>
     <string name="chart_source_aggregated">Günlük toplamlar, Health Connect tarafından tekilleştirildi</string>
     <string name="chart_source_sessions_per_day">Günlük oturum</string>
+    <string name="chart_source_sessions_per_week">Haftalık oturumlar</string>
+    <string name="chart_source_sleep_nights">Gece başına uyku, bittiği sabaha sayılır</string>
+    <string name="chart_source_sleep_weeks">Kaydedilen gece başına ortalama, haftalık</string>
+    <string name="chart_source_session_time_daily">Günlük toplam süre</string>
+    <string name="chart_source_session_time_weekly">Haftalık toplam süre</string>
     <string name="chart_source_aggregated_split">Parçalarına ayrılmış günlük toplamlar, Health Connect tarafından tekilleştirildi</string>
     <string name="calories_basal">Bazal</string>
     <string name="calories_active">Aktif</string>
