@@ -296,7 +296,7 @@ open items below and `FEATURE-IDEAS.md`.
     cancel the load they replace; a refused permission read is a failure, not a lock. Seen on
     the phone: one "loaded 7 tiles" line per cold start where there were two, a spinner in
     every tile, then the values; the catalog checking, then its marks.
-45. [ ] **A detail page's progress bar that moves steadily** -- same report: it often jumps 0
+45. [x] **A detail page's progress bar that moves steadily** -- built 07.10.2026; plan below, result after it. -- same report: it often jumps 0
     to 100 %, or sits at 0 for a long time, jumps to about 80 % and then to the end. The bar
     is weighted 8 for the chart, 1 for the total, 1 for sessions (`TileChartLoader.chart`,
     `CHART_WEIGHT`), and only moves inside the chart step when the chart pages raw records
@@ -312,6 +312,18 @@ open items below and `FEATURE-IDEAS.md`.
       show nothing for the first ~300 ms so a fast load does not flash a bar at all.
     Probably all three: pieces where the request is long, an estimate where it is one call,
     the animation everywhere.
+    Measured on the phone first, which changed the plan: the worst cases were not the bar but
+    work done after it was full. A day of distance reached 100 % at 2.7 s and drew at 15.9 s,
+    12.5 s of it its streak; a year of steps spent 2.3 s on its four-week mean. Streak, trend
+    and mean are now read after the chart and the list (`deferExtras`), and fill in last:
+    distance draws at 2.7 s, the steps year at 2.3 s. A year of heart rate was one 32 s
+    aggregate with the bar at 0; read a quarter at a time (`bucketedInPieces`, aligned to
+    the weekly buckets) the bar moves about every 6 s, in 30.8 s against 35.6 s. Fourteen
+    pieces moved it every 3 s but took 44 % longer. The most recent quarter costs about
+    1.5 s more than the others, at any piece count. The bar glides to each value over
+    600 ms and shows only after 300 ms. No estimate from earlier loads was needed.
+    Not done: the streak and trend arrive above the chart and push it down by about a
+    quarter of the screen.
 46. [ ] **Personal records** -- the owner's pick, 07.10.2026; see "Motivation" in
     `FEATURE-IDEAS.md`. Free.
 47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
