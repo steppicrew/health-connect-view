@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.registry
 
+import androidx.annotation.StringRes
 import de.steppicrew.healthconnectview.health.RecordKind
 import de.steppicrew.healthconnectview.health.Session
 
@@ -140,6 +141,16 @@ data class TileSpec(
      * best, only readings. See `personalRecord`.
      */
     val personalRecord: RecordKind? = null,
+    /**
+     * A range from outside the data, drawn behind the chart and named with its source. Never
+     * together with [usualRange] on one chart: the two answer different questions.
+     */
+    val referenceRange: ReferenceRange? = null,
+    /**
+     * Across days, the wearer's usual range -- the middle half of the 28 days before each
+     * point -- drawn behind the series in place of the day's spread and the four-week mean.
+     */
+    val usualRange: Boolean = false,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
@@ -172,3 +183,6 @@ data class TileSpec(
         val ACTIVITY_CONTEXT: Set<Session.Kind> = setOf(Session.Kind.SLEEP, Session.Kind.EXERCISE)
     }
 }
+
+/** A range from outside the data, in the type's shown unit, with the words that name it. */
+data class ReferenceRange(val low: Double, val high: Double, @param:StringRes val labelRes: Int)

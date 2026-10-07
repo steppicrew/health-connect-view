@@ -660,7 +660,8 @@
     <string name="hrv_explained">將最近 7 晚的平均值與之前 4 週中您各晚數值的中間一半進行比較。只計入睡眠期間的測量值。由這個應用程式依據您裝置的測量值計算；您的裝置或其應用程式顯示的評估可能有所不同。</string>
     <string name="chart_source_hrv">最近 7 晚平均值；陰影：您的平常範圍</string>
     <string name="legend_hrv_week">7 晚平均值</string>
-    <string name="legend_hrv_usual">平常範圍</string>
+    <string name="legend_hrv_usual">您的平常範圍</string>
+    <string name="reference_spo2">成人參考範圍 95–100%</string>
     <string name="tile_hrv_note">7 晚平均值</string>
     <string name="chart_source_hrv_nights">曲線：最近 7 晚平均值；圓點：單晚；陰影：您的平常範圍</string>
     <string name="legend_hrv_night">單晚</string>

@@ -199,6 +199,12 @@ fun LineChart(
      * null at full width, so a list beside the chart can follow it.
      */
     onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
+    /**
+     * A range from outside the data -- oxygen saturation's 95-100 % for adults -- drawn as one
+     * full-width band with edges, unlike a per-bucket ribbon of the wearer's own values. It
+     * takes part in the scale, so a reading below it is seen to be below it.
+     */
+    referenceRange: ClosedFloatingPointRange<Double>? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -222,8 +228,10 @@ fun LineChart(
     val scatterHigh = scatter.maxOfOrNull { it.value } ?: values.max()
     val baselineLow = baseline.minOfOrNull { it.value } ?: values.min()
     val baselineHigh = baseline.maxOfOrNull { it.value } ?: values.max()
-    val fittedLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow)
-    val fittedHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh)
+    val referenceLow = referenceRange?.start ?: values.min()
+    val referenceHigh = referenceRange?.endInclusive ?: values.max()
+    val fittedLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow, referenceLow)
+    val fittedHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh, referenceHigh)
     val widen = minSpan?.let { ((it - (fittedHigh - fittedLow)) / 2).coerceAtLeast(0.0) } ?: 0.0
     // Not below zero: a floor on the range must not invent negative heart rates.
     val dataLow = (fittedLow - widen).let { if (fittedLow >= 0.0) it.coerceAtLeast(0.0) else it }
@@ -428,6 +436,24 @@ fun LineChart(
 
             val offsets = points.mapIndexed { index, point ->
                 Offset(xFor(index), yFor(point.value))
+            }
+            referenceRange?.let { range ->
+                val top = yFor(range.endInclusive)
+                val bottom = yFor(range.start)
+                drawRect(
+                    color = REFERENCE_COLOR.copy(alpha = REFERENCE_ALPHA),
+                    topLeft = Offset(0f, top),
+                    size = androidx.compose.ui.geometry.Size(size.width, bottom - top),
+                )
+                listOf(top, bottom).forEach { y ->
+                    drawLine(
+                        color = REFERENCE_COLOR.copy(alpha = REFERENCE_EDGE_ALPHA),
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = 1.5.dp.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx())),
+                    )
+                }
             }
             goal?.let { target ->
                 val y = yFor(target)
@@ -1488,3 +1514,15 @@ private const val GAP_DOT_OFF = 5f
 
 /** Fewest points a zoomed chart keeps on screen. */
 private const val MIN_VISIBLE_POINTS = 4
+
+/**
+ * A reference range's colour: fixed rather than themed, and unlike every band of the data, so
+ * it is never taken for the day's spread or the wearer's own range lying behind it.
+ */
+val REFERENCE_COLOR = Color(0xFF4DB6AC)
+
+/** Its fill: present, but quieter than the data drawn over it. */
+const val REFERENCE_ALPHA = 0.16f
+
+/** Its dashed edges, so where the range ends reads precisely. */
+private const val REFERENCE_EDGE_ALPHA = 0.9f

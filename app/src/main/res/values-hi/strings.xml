@@ -685,7 +685,8 @@
     <string name="hrv_explained">पिछली 7 रातों के औसत की तुलना पिछले 4 हफ़्तों की आपकी रातों के बीच वाले आधे हिस्से से की जाती है। सिर्फ़ नींद में ली गई रीडिंग गिनी जाती हैं। इस ऐप ने आपके डिवाइस की रीडिंग से कैलकुलेट किया है; आपका डिवाइस या उसका ऐप जो आकलन दिखाता है, वह अलग हो सकता है।</string>
     <string name="chart_source_hrv">पिछली 7 रातों का औसत; शेड किया गया: आपकी सामान्य रेंज</string>
     <string name="legend_hrv_week">7 रातों का औसत</string>
-    <string name="legend_hrv_usual">सामान्य रेंज</string>
+    <string name="legend_hrv_usual">आपकी सामान्य रेंज</string>
+    <string name="reference_spo2">वयस्कों के लिए संदर्भ सीमा, 95–100 %</string>
     <string name="tile_hrv_note">7 रातों का औसत</string>
     <string name="chart_source_hrv_nights">लाइन: पिछली 7 रातों का औसत; बिंदु: अलग-अलग रातें; शेड किया गया: आपकी सामान्य रेंज</string>
     <string name="legend_hrv_night">एक रात</string>

@@ -660,7 +660,8 @@
     <string name="hrv_explained">최근 7일 밤의 평균을 이전 4주 동안의 밤 중 가운데 절반과 비교합니다. 수면 중 측정값만 사용합니다. 이 앱이 기기의 측정값으로 계산한 것이며, 기기나 그 앱이 보여 주는 평가와 다를 수 있습니다.</string>
     <string name="chart_source_hrv">최근 7일 밤 평균, 음영: 평소 범위</string>
     <string name="legend_hrv_week">7일 밤 평균</string>
-    <string name="legend_hrv_usual">평소 범위</string>
+    <string name="legend_hrv_usual">내 평소 범위</string>
+    <string name="reference_spo2">성인 기준 범위 95–100%</string>
     <string name="tile_hrv_note">7일 밤 평균</string>
     <string name="chart_source_hrv_nights">선: 최근 7일 밤 평균, 점: 개별 밤, 음영: 평소 범위</string>
     <string name="legend_hrv_night">개별 밤</string>

@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.rollingUsualRange
 import de.steppicrew.healthconnectview.R
 import androidx.annotation.StringRes
 import java.time.temporal.ChronoUnit
@@ -316,7 +317,7 @@ internal class TileChartLoader(
             seriesAggregated = false
             val zone = HealthRepository.DEFAULT_ZONE
             val first = span.startDate(offset)
-            val readFrom = if (spec.tile.rollingBaseline) first.minusDays(ROLLING_DAYS - 1L) else first
+            val readFrom = if (spec.tile.rollingBaseline || spec.tile.usualRange) first.minusDays(ROLLING_DAYS.toLong()) else first
             val daily = DailyReadings(zone, first, bucketDays)
             var inWindow = 0
             runCatching {
@@ -556,12 +557,16 @@ internal class TileChartLoader(
         val shownPoints = perDayPoints.ifEmpty { scaledPoints }
         // Everything below the chart that it does not need to be drawn; see deferExtras.
         suspend fun readExtras(): ChartExtras {
-            val baseline = if (spec.tile.rollingBaseline && span.bucket != null && shownPoints.isNotEmpty()) {
+            // Daily values reaching four weeks before the window, for the four-week mean and the
+            // usual range alike: each needs its first day's weeks behind it.
+            val wantsDaily = (spec.tile.rollingBaseline || spec.tile.usualRange) &&
+                span.bucket != null && shownPoints.isNotEmpty()
+            val daily: Map<LocalDate, Double> = if (wantsDaily) {
                 runCatching {
                     val zone = HealthRepository.DEFAULT_ZONE
                     val first = span.startDate(offset)
-                    val lookback = first.minusDays(ROLLING_DAYS - 1L)
-                    val daily = when {
+                    val lookback = first.minusDays(ROLLING_DAYS.toLong())
+                    when {
                         dailyReadings != null -> dailyReadings.dailyMeans()
                         // Sleep's bars come from its sessions, so its weeks before the window do
                         // too, credited like the bars to the morning each night ended on.
@@ -588,17 +593,37 @@ internal class TileChartLoader(
                         }.toMap()
                         else -> emptyMap()
                     }
-                    // A year of a counted quantity is drawn as weekly totals, so the mean is read
-                    // in the same units -- a week's worth -- or it would lie along the bars' feet.
-                    val perBucket = if (bucketedTotals) (span.bucket?.days ?: 1).toDouble() else 1.0
-                    // Within the series' own span: a year's last point is its week's start, and a
-                    // line running past it would leave the plot.
-                    rollingMean(
-                        daily,
-                        shownPoints.first().time.atZone(zone).toLocalDate(),
-                        shownPoints.last().time.atZone(zone).toLocalDate(),
-                    ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean * perBucket) }
-                }.getOrDefault(emptyList())
+                }.getOrDefault(emptyMap())
+            } else {
+                emptyMap()
+            }
+            val zone = HealthRepository.DEFAULT_ZONE
+            val baseline = if (spec.tile.rollingBaseline && daily.isNotEmpty()) {
+                // A year of a counted quantity is drawn as weekly totals, so the mean is read
+                // in the same units -- a week's worth -- or it would lie along the bars' feet.
+                val perBucket = if (bucketedTotals) (span.bucket?.days ?: 1).toDouble() else 1.0
+                // Within the series' own span: a year's last point is its week's start, and a
+                // line running past it would leave the plot.
+                rollingMean(
+                    daily,
+                    shownPoints.first().time.atZone(zone).toLocalDate(),
+                    shownPoints.last().time.atZone(zone).toLocalDate(),
+                ).map { (date, mean) -> Point(date.atStartOfDay(zone).toInstant(), mean * perBucket) }
+            } else {
+                emptyList()
+            }
+            // The usual range at each point drawn: daily across weeks, at each week's start in
+            // a year, so the band follows the bars or line it sits behind.
+            val usualBand = if (spec.tile.usualRange && daily.isNotEmpty()) {
+                val byDate = rollingUsualRange(
+                    daily,
+                    shownPoints.first().time.atZone(zone).toLocalDate(),
+                    shownPoints.last().time.atZone(zone).toLocalDate(),
+                ).associateBy { it.first }
+                shownPoints.mapNotNull { point ->
+                    val (_, low, high) = byDate[point.time.atZone(zone).toLocalDate()] ?: return@mapNotNull null
+                    ValueBand(point.time, low, high)
+                }
             } else {
                 emptyList()
             }
@@ -618,7 +643,7 @@ internal class TileChartLoader(
                     else -> null
                 }
             }.getOrNull()
-            return ChartExtras(baseline, trend, streak)
+            return ChartExtras(baseline, trend, streak, usualBand)
         }
         val extras = if (deferExtras) {
             pendingExtras = ::readExtras
@@ -680,6 +705,7 @@ internal class TileChartLoader(
                 emptyList()
             },
             baseline = extras.baseline,
+            usualBand = extras.usualBand,
             dailyFromReadings = dailyReadings != null,
             recordCount = windowRecordCount,
             shapeSource = shapeSource,
@@ -1100,5 +1126,7 @@ internal data class ChartExtras(
     val baseline: List<Point> = emptyList(),
     val trend: TrendResult? = null,
     val streak: StreakSummary? = null,
+    /** The wearer's usual range at each point, for a type with `usualRange`; see TileSpec. */
+    val usualBand: List<ValueBand> = emptyList(),
 )
 

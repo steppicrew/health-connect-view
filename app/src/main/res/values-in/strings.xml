@@ -660,7 +660,8 @@
     <string name="hrv_explained">Rata-rata 7 malam terakhir dibandingkan dengan separuh tengah malam-malam Anda dalam 4 minggu sebelumnya. Hanya hasil ukur saat tidur yang dihitung. Dihitung oleh aplikasi ini dari hasil ukur perangkat Anda; penilaian yang ditampilkan perangkat Anda atau aplikasinya bisa berbeda.</string>
     <string name="chart_source_hrv">Rata-rata 7 malam terakhir; arsiran: rentang biasa Anda</string>
     <string name="legend_hrv_week">Rata-rata 7 malam</string>
-    <string name="legend_hrv_usual">Rentang biasa</string>
+    <string name="legend_hrv_usual">Rentang biasa Anda</string>
+    <string name="reference_spo2">Rentang acuan untuk dewasa, 95–100 %</string>
     <string name="tile_hrv_note">Rata-rata 7 malam</string>
     <string name="chart_source_hrv_nights">Garis: rata-rata 7 malam terakhir; titik: malam tunggal; arsiran: rentang biasa Anda</string>
     <string name="legend_hrv_night">Malam tunggal</string>

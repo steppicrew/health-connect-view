@@ -134,14 +134,6 @@ suspend fun HealthRepository.hrvWindow(
     return HrvWindow(nights, hrvDays(nights, dates))
 }
 
-/** Linear interpolation between ranks, on an already sorted list. */
-private fun List<Double>.percentile(quantile: Double): Double {
-    val position = quantile * (size - 1)
-    val lower = position.toInt()
-    val upper = minOf(lower + 1, size - 1)
-    return this[lower] + (this[upper] - this[lower]) * (position - lower)
-}
-
 private const val WEEK_DAYS = 7L
 
 /** Four weeks, as Garmin's comparison uses. */
@@ -152,9 +144,6 @@ private const val MIN_WEEK_NIGHTS = 3
 
 /** Half the baseline: a range from a handful of nights would move with every one of them. */
 private const val MIN_BASELINE_NIGHTS = 14
-
-private const val LOW_QUANTILE = 0.25
-private const val HIGH_QUANTILE = 0.75
 
 /** How many days before the first shown day the readings have to reach back. */
 const val HRV_LOOKBACK_DAYS: Long = WEEK_DAYS + BASELINE_DAYS

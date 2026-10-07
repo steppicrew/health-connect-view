@@ -685,7 +685,8 @@
     <string name="hrv_explained">Het gemiddelde van de laatste 7 nachten tegenover de middelste helft van je nachten in de 4 weken ervoor. Alleen metingen tijdens de slaap tellen mee. Berekend door deze app uit de metingen van je apparaat; een beoordeling die je apparaat of de bijbehorende app toont, kan afwijken.</string>
     <string name="chart_source_hrv">Gemiddelde van de laatste 7 nachten; gearceerd: je gebruikelijke bereik</string>
     <string name="legend_hrv_week">7-nachtsgemiddelde</string>
-    <string name="legend_hrv_usual">Gebruikelijk bereik</string>
+    <string name="legend_hrv_usual">Je gebruikelijke bereik</string>
+    <string name="reference_spo2">Referentiebereik voor volwassenen, 95–100 %</string>
     <string name="tile_hrv_note">7-nachtsgemiddelde</string>
     <string name="chart_source_hrv_nights">Lijn: gemiddelde van de laatste 7 nachten; stippen: losse nachten; gearceerd: je gebruikelijke bereik</string>
     <string name="legend_hrv_night">Losse nacht</string>

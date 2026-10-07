@@ -718,7 +718,8 @@
     <string name="hrv_explained">The average of the last 7 nights against the middle half of your nights in the 4 weeks before. Only readings taken asleep count. Calculated by this app from your device\'s readings; a rating your device or its app shows may differ.</string>
     <string name="chart_source_hrv">Average of the last 7 nights; shaded: your usual range</string>
     <string name="legend_hrv_week">7-night average</string>
-    <string name="legend_hrv_usual">Usual range</string>
+    <string name="legend_hrv_usual">Your usual range</string>
+    <string name="reference_spo2">Reference range for adults, 95–100 %</string>
     <string name="tile_hrv_note">7-night average</string>
     <string name="chart_source_hrv_nights">Line: average of the last 7 nights; dots: single nights; shaded: your usual range</string>
     <string name="legend_hrv_night">Single night</string>

@@ -685,7 +685,8 @@
     <string name="hrv_explained">Son 7 gecenin ortalaması, önceki 4 haftadaki gecelerinizin ortadaki yarısıyla karşılaştırılır. Yalnızca uykuda alınan ölçümler sayılır. Bu uygulama tarafından cihazınızın ölçümlerinden hesaplanmıştır; cihazınızın veya uygulamasının gösterdiği bir değerlendirme farklı olabilir.</string>
     <string name="chart_source_hrv">Son 7 gecenin ortalaması; gölgeli: olağan aralığınız</string>
     <string name="legend_hrv_week">7 gecelik ortalama</string>
-    <string name="legend_hrv_usual">Olağan aralık</string>
+    <string name="legend_hrv_usual">Olağan aralığınız</string>
+    <string name="reference_spo2">Yetişkinler için referans aralığı, %95–100</string>
     <string name="tile_hrv_note">7 gecelik ortalama</string>
     <string name="chart_source_hrv_nights">Çizgi: son 7 gecenin ortalaması; noktalar: tekil geceler; gölgeli: olağan aralığınız</string>
     <string name="legend_hrv_night">Tek gece</string>
