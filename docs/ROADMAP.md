@@ -374,6 +374,24 @@ open items below and `FEATURE-IDEAS.md`.
       previous weigh-in behind it as a shadow, and a range where the day had several
       readings -- or something better. Applies alike to the other measured-now-and-then types
       (body fat, the other body measurements, blood pressure on a day of one reading).
+50. [ ] **From an empty window to the nearest one with data** -- the owner's idea, 07.10.2026.
+    A day, week or four weeks with nothing recorded today mostly means stepping back through
+    more empty ones (VO2 max, weight, blood pressure are measured now and then). Not by
+    skipping automatically -- the arrows must stay predictable, one window per tap -- but as
+    an offer on the empty screen: "Letzter Wert am 16.08.2026" as a button that opens the
+    window holding it. One request for the newest record before the window; the record list
+    already reads newest-first.
+51. [ ] **Workouts by kind, and one screen for a workout** -- the owner's idea, 07.10.2026.
+    - A list of recent workouts filtered by kind: chips for the kinds that actually occur in
+      the data (Health Connect has 61, from biking and stationary biking to pool and open-water
+      swimming; no mountain-bike type -- that is only ever in a writer's title). Writers
+      disagree (the same ride as biking from the watch, stationary biking from the trainer's
+      app, CLAUDE.md), so related kinds may need grouping, and the title is shown where set.
+    - One workout screen reachable from anywhere a workout is tapped -- the dashboard tile, the
+      day's sessions, the list above, chart bands: stats, heart rate during it, route with the
+      slider, laps and segments where a writer fills them. Today that is the session sheet, a
+      dialog with no room for a heart-rate chart; a full screen would replace it, with one
+      route to it (`session/{id}`), so the debug backdoor can open any workout too.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
