@@ -216,9 +216,12 @@ The Xiaomi test phone (HyperOS) blocks **input injection** -- `adb shell input t
 `settings put system` and `wm size` from the shell (`WRITE_SETTINGS`/`WRITE_SECURE_SETTINGS`).
 See `docs/ROADMAP.md` §9. So:
 
-- **Install:** `adb install -r` works. Measured 19.09.2026 on HyperOS/Android 16: "Success".
-  An earlier note here said installs were blocked too; they are not, and pushing the APK for
-  the user to tap is only needed if that ever changes.
+- **Install:** not from the host. Since October 2026 HyperOS refuses `adb install -r` and
+  `pm install` from `/data/local/tmp` alike (`INSTALL_FAILED_USER_RESTRICTED: Install canceled
+  by user`, with no prompt on the phone), and `pm` cannot read shared storage at all. Push the
+  APK to `/sdcard/Download/`, have the owner tap it, and delete it once
+  `pm list packages` shows the install. Both had worked until 19.09.2026, so do not trust a
+  note saying they do.
 - **Drive the UI:** anything reachable by route, drive from the host with the nav backdoor
   below. Anything needing a tap -- a span chip, a settings toggle, Back -- needs a person.
 - **Rotation cannot be forced from the host.** Both `user_rotation` and `wm size` are refused,
