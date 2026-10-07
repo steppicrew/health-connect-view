@@ -438,7 +438,6 @@
     <string name="status_has_data">Contient des données</string>
     <string name="status_no_data">Aucune donnée enregistrée</string>
     <string name="status_not_granted">Non autorisé</string>
-    <string name="status_unknown">Inconnu</string>
 
     <!-- Type detail -->
     <string name="action_back">Retour</string>

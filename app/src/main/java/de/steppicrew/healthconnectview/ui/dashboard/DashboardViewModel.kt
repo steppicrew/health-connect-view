@@ -400,7 +400,23 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val date = _state.value.date
         // Always re-read: permissions are authoritative from Health Connect and can be
         // revoked while backgrounded, so they are never taken from the cache.
-        val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+        val granted = try {
+            repository.grantedPermissions()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Not "nothing granted": every tile would show the lock and ask for access already
+            // given. Each tile says it could not load, and the next resume tries again.
+            _state.update { state ->
+                state.copy(
+                    tiles = config.tiles.mapNotNull { tile ->
+                        tile.spec?.let { TileData(tile = tile, spec = it, loading = false, failed = true) }
+                    },
+                    loading = false,
+                )
+            }
+            return
+        }
 
         val now = System.currentTimeMillis()
         // Colour left out: it changes nothing read, and a new colour must not cost a reload.

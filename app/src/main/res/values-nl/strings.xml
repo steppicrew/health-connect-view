@@ -427,7 +427,6 @@
     <string name="status_has_data">Bevat gegevens</string>
     <string name="status_no_data">Geen gegevens geregistreerd</string>
     <string name="status_not_granted">Niet toegestaan</string>
-    <string name="status_unknown">Onbekend</string>
 
     <!-- Type detail -->
     <string name="action_back">Terug</string>

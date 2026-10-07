@@ -427,7 +427,6 @@
     <string name="status_has_data">Veri var</string>
     <string name="status_no_data">Kayıtlı veri yok</string>
     <string name="status_not_granted">İzin yok</string>
-    <string name="status_unknown">Bilinmiyor</string>
 
     <!-- Type detail -->
     <string name="action_back">Geri</string>

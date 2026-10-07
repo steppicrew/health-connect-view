@@ -9,6 +9,8 @@ import de.steppicrew.healthconnectview.health.TimeRange
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -20,8 +22,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
-/** Per-type state in the catalog list. */
-enum class TypeStatus { HAS_DATA, NO_DATA, NOT_GRANTED, UNKNOWN }
+/**
+ * Per-type state in the catalog list.
+ *
+ * [CHECKING] and [FAILED] are kept apart from [NO_DATA]: a single "unknown" drawn like an
+ * empty type made every row read as empty while the probes were still running.
+ */
+enum class TypeStatus { HAS_DATA, NO_DATA, NOT_GRANTED, CHECKING, FAILED }
 
 data class CatalogUiState(
     val availability: Availability = Availability.Available,
@@ -32,7 +39,7 @@ data class CatalogUiState(
     fun statusOf(spec: RecordTypeSpec<*>): TypeStatus =
         when {
             spec.permission !in granted -> TypeStatus.NOT_GRANTED
-            else -> status[spec.type.simpleName] ?: TypeStatus.UNKNOWN
+            else -> status[spec.type.simpleName] ?: TypeStatus.CHECKING
         }
 }
 
@@ -47,8 +54,16 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
         refresh()
     }
 
+    /** The refresh in flight, cancelled when a newer one starts. */
+    private var loadJob: Job? = null
+
+    /**
+     * Re-reads permissions and probes again, replacing a refresh still running: `init` and the
+     * first ON_RESUME both start one, and two probes racing publish in the order they finish.
+     */
     fun refresh() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             val availability = resolveAvailability(getApplication())
             if (availability != Availability.Available) {
                 _state.update { it.copy(availability = availability, loading = false) }
@@ -77,16 +92,20 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
                 .map { spec ->
                     async {
                         gate.withPermit {
-                            val status = runCatching {
-                                repository.hasData(
+                            // Not runCatching: that would turn a cancelled probe into a failed one.
+                            val status = try {
+                                val has = repository.hasData(
                                     type = spec.type,
                                     range = range,
                                     aggregateRange = localRange,
                                     metric = spec.aggregate,
                                 )
+                                if (has) TypeStatus.HAS_DATA else TypeStatus.NO_DATA
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: Exception) {
+                                TypeStatus.FAILED
                             }
-                                .map { if (it) TypeStatus.HAS_DATA else TypeStatus.NO_DATA }
-                                .getOrDefault(TypeStatus.UNKNOWN)
                             spec.type.simpleName.orEmpty() to status
                         }
                     }

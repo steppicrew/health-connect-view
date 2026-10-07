@@ -416,7 +416,6 @@
     <string name="status_has_data">Ada data</string>
     <string name="status_no_data">Tidak ada data tercatat</string>
     <string name="status_not_granted">Tidak diizinkan</string>
-    <string name="status_unknown">Tidak diketahui</string>
 
     <!-- Type detail -->
     <string name="action_back">Kembali</string>

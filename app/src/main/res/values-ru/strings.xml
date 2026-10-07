@@ -449,7 +449,6 @@
     <string name="status_has_data">Есть данные</string>
     <string name="status_no_data">Данных нет</string>
     <string name="status_not_granted">Нет доступа</string>
-    <string name="status_unknown">Неизвестно</string>
 
     <!-- Type detail -->
     <string name="action_back">Назад</string>

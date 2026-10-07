@@ -427,7 +427,6 @@
     <string name="status_has_data">डेटा है</string>
     <string name="status_no_data">कोई डेटा रिकॉर्ड नहीं हुआ</string>
     <string name="status_not_granted">अनुमति नहीं है</string>
-    <string name="status_unknown">पता नहीं</string>
 
     <!-- Type detail -->
     <string name="action_back">वापस जाएं</string>
