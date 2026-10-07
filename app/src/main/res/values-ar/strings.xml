@@ -665,7 +665,7 @@
     <string name="privacy_sharing_title">لا مشاركة</string>
     <string name="privacy_sharing_body">لا تتم مشاركة بياناتك الصحية مع أي أحد أبدًا، بما في ذلك المطوّر. لا تتلقاها أي حزمة SDK تابعة لجهة خارجية. الملف المُصدَّر ملكك: وأين يذهب بعد ذلك قرارك أنت.</string>
     <string name="permission_routes_title">كل مسارات التمارين</string>
-    <string name="permission_routes_body">يعرض مسار كل جلسة فورًا. بدون هذا الإذن، لا يُعرض كل مسار إلا عندما تطلبه، جلسة واحدة في كل مرة.</string>
+    <string name="permission_routes_body">يُسمح به من جلسة، لا من هنا: افتح تمرينًا له مسار واضغط على «%1$s». عندما يسألك Android، اسمح دائمًا، وبعدها تُعرض كل المسارات مباشرةً.</string>
     <string name="permission_shared_with">يُمنح مع %1$s.</string>
     <string name="perm_info_closing">للقراءة فقط: لا يغيّر التطبيق أي شيء ولا يحذفه أبدًا. لا يغادر أي شيء جهازك إلا إذا صدّرته بنفسك.</string>
     <string name="perm_info_history">يحتفظ Health Connect بالبيانات الأقدم، لكنه لا يمنح التطبيقات إلا آخر 30 يومًا ما لم تسمح بالمزيد. مع هذا الإذن، تمتد عروض الأسبوع والأسابيع الأربعة والسنة والاتجاهات والتقارير إلى أقدم ما لديك من بيانات. يغيّر هذا الإذن المدى الذي يمكن للتطبيق الرجوع إليه، لا أنواع البيانات.</string>
@@ -712,8 +712,8 @@
     <string name="route_heights">الارتفاع %1$s–%2$s</string>
     <string name="route_no_map">مرسوم بدون خريطة: لا يملك التطبيق وصولًا إلى الإنترنت لتحميل خريطة.</string>
     <string name="route_export">تصدير المسار (GPX)</string>
-    <string name="route_consent_body">لهذه الجلسة مسار. يسألك Android في كل مرة قبل أن يتمكن التطبيق من عرضه؛ اسمح بكل المسارات في شاشة الأذونات لتخطّي هذا السؤال.</string>
-    <string name="route_declined">يبقى المسار مخفيًا. يمكنك السماح به هنا في أي وقت، أو بكل المسارات في شاشة الأذونات.</string>
+    <string name="route_consent_body">لهذه الجلسة مسار. يسألك Android قبل أن يتمكن التطبيق من عرضه؛ اسمح دائمًا هناك، وبعدها تُعرض كل المسارات دون سؤال.</string>
+    <string name="route_declined">يبقى المسار مخفيًا. يمكنك السماح به هنا في أي وقت.</string>
     <string name="route_show">إظهار المسار</string>
     <string name="route_available">تم تسجيل المسار</string>
     <string name="route_unavailable">تعذّرت قراءة المسار.</string>

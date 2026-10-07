@@ -565,7 +565,7 @@
     <string name="privacy_sharing_title">Niets wordt gedeeld</string>
     <string name="privacy_sharing_body">Je gezondheidsgegevens worden met niemand gedeeld, ook niet met de ontwikkelaar. Geen enkele SDK van derden ontvangt ze. Een geëxporteerd bestand is van jou: waar het daarna heen gaat, bepaal jij.</string>
     <string name="permission_routes_title">Alle trainingsroutes</string>
-    <string name="permission_routes_body">Toont de route van elke sessie meteen. Zonder dit wordt elke route alleen getoond als je erom vraagt, één sessie tegelijk.</string>
+    <string name="permission_routes_body">Toestaan gaat via een sessie, niet hier: open een training met een route en tik op ‘%1$s’. Sta het altijd toe als Android erom vraagt; daarna wordt elke route meteen getoond.</string>
     <string name="permission_shared_with">Samen met %1$s verleend.</string>
     <string name="perm_info_closing">Alleen lezen: de app wijzigt of verwijdert nooit iets. Niets verlaat je apparaat, tenzij je het zelf exporteert.</string>
     <string name="perm_info_history">Health Connect bewaart oudere gegevens, maar geeft apps alleen de laatste 30 dagen, tenzij je meer toestaat. Hiermee reiken week-, vierweken- en jaaroverzichten, trends en rapporten zo ver terug als je gegevens. Het verandert hoe ver de app terug mag kijken, niet welke soorten gegevens.</string>
@@ -612,8 +612,8 @@
     <string name="route_heights">Hoogte %1$s–%2$s</string>
     <string name="route_no_map">Getekend zonder kaart: de app heeft geen internettoegang om er een te laden.</string>
     <string name="route_export">Route exporteren (GPX)</string>
-    <string name="route_consent_body">Deze sessie heeft een route. Android vraagt je er elke keer om voordat de app hem mag tonen; sta alle routes toe op het toestemmingsscherm om de vraag over te slaan.</string>
-    <string name="route_declined">De route blijft verborgen. Je kunt hem hier op elk moment toestaan, of alle routes op het toestemmingsscherm.</string>
+    <string name="route_consent_body">Deze sessie heeft een route. Android vraagt je erom voordat de app hem mag tonen; sta het daar altijd toe, dan worden alle routes voortaan zonder vraag getoond.</string>
+    <string name="route_declined">De route blijft verborgen. Je kunt hem hier op elk moment toestaan.</string>
     <string name="route_show">Route tonen</string>
     <string name="route_available">Route geregistreerd</string>
     <string name="route_unavailable">De route kon niet worden gelezen.</string>

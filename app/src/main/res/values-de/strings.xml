@@ -559,7 +559,7 @@
     <string name="privacy_sharing_title">Keine Weitergabe</string>
     <string name="privacy_sharing_body">Ihre Gesundheitsdaten werden an niemanden weitergegeben, auch nicht an den Entwickler. Keine Drittanbieter-SDKs erhalten sie. Eine exportierte Datei gehört Ihnen: Was danach mit ihr geschieht, entscheiden Sie.</string>
     <string name="permission_routes_title">Alle Trainingsrouten</string>
-    <string name="permission_routes_body">Zeigt die Route jeder Sitzung sofort. Ohne diese Freigabe wird eine Route nur gezeigt, wenn Sie sie anfordern, Sitzung für Sitzung.</string>
+    <string name="permission_routes_body">Wird bei einer Sitzung freigegeben, nicht hier: Öffnen Sie ein Training mit Route und tippen Sie auf „%1$s“. Erlauben Sie es immer, wenn Android fragt – dann wird jede Route sofort gezeigt.</string>
     <string name="permission_shared_with">Wird zusammen mit %1$s freigegeben.</string>
     <string name="perm_info_closing">Nur lesen: Die App ändert oder löscht nichts. Nichts verlässt Ihr Gerät, außer Sie exportieren es selbst.</string>
     <string name="perm_info_history">Health Connect bewahrt ältere Daten auf, gibt Apps aber nur die letzten 30 Tage, wenn Sie nicht mehr erlauben. Damit reichen Wochen-, Vier-Wochen- und Jahresansicht, Trends und Berichte so weit zurück wie Ihre Daten. Es ändert, wie weit die App zurückblicken darf, nicht welche Arten von Daten.</string>
@@ -606,8 +606,8 @@
     <string name="route_heights">Höhe %1$s–%2$s</string>
     <string name="route_no_map">Ohne Karte gezeichnet: Die App hat keinen Internetzugang, um eine zu laden.</string>
     <string name="route_export">Route exportieren (GPX)</string>
-    <string name="route_consent_body">Diese Sitzung hat eine Route. Android fragt Sie jedes Mal danach, bevor die App sie zeigen darf. Mit „Alle Trainingsrouten“ auf der Seite der Berechtigungen entfällt die Frage.</string>
-    <string name="route_declined">Die Route bleibt verborgen. Sie können sie hier jederzeit freigeben oder alle Routen auf der Seite der Berechtigungen.</string>
+    <string name="route_consent_body">Diese Sitzung hat eine Route. Android fragt Sie, bevor die App sie zeigen darf. Erlauben Sie es dort immer, dann werden alle Routen künftig ohne Frage gezeigt.</string>
+    <string name="route_declined">Die Route bleibt verborgen. Sie können sie hier jederzeit freigeben.</string>
     <string name="route_show">Route anzeigen</string>
     <string name="route_available">Route aufgezeichnet</string>
     <string name="route_unavailable">Die Route konnte nicht gelesen werden.</string>

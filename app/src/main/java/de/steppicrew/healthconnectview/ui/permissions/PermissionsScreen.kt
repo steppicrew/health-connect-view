@@ -97,7 +97,6 @@ fun PermissionsScreen(
                 state = state,
                 onToggle = viewModel::toggle,
                 onToggleHistory = viewModel::toggleHistory,
-                onToggleRoutes = viewModel::toggleRoutes,
                 onSelectAll = viewModel::selectAll,
                 onRequest = { onRequestPermissions(viewModel.permissionsToRequest()) },
                 onContinue = onContinue,
@@ -113,7 +112,6 @@ private fun PermissionList(
     state: PermissionsUiState,
     onToggle: (RecordTypeSpec<*>) -> Unit,
     onToggleHistory: () -> Unit,
-    onToggleRoutes: () -> Unit,
     onSelectAll: () -> Unit,
     onRequest: () -> Unit,
     onContinue: () -> Unit,
@@ -171,13 +169,20 @@ private fun PermissionList(
                     selected = state.historySelected,
                     onToggle = onToggleHistory,
                 )
-                ExtraPermissionRow(
-                    title = R.string.permission_routes_title,
-                    body = R.string.permission_routes_body,
+                // No box to tick: Health Connect grants every route only from its own dialog when
+                // a route is opened ("always"), and drops this permission from a request here --
+                // the box came back cleared, which looked like a bug. The row says where to go.
+                PermissionRowLayout(
+                    title = stringResource(R.string.permission_routes_title),
+                    detail = if (state.routesGranted) {
+                        null
+                    } else {
+                        stringResource(R.string.permission_routes_body, stringResource(R.string.route_show))
+                    },
                     info = R.string.perm_info_routes,
                     granted = state.routesGranted,
-                    selected = state.routesSelected,
-                    onToggle = onToggleRoutes,
+                    selected = false,
+                    onToggle = null,
                 )
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             }
@@ -240,8 +245,7 @@ private fun CategoryHeader(category: Category) {
  * A permission that is not a record type, above the type list rather than inside a category.
  *
  * History is depth: Health Connect caps reads at 30 days without it and reports no error,
- * which reads as "there is no older data" instead of "the app may not see it". Routes are
- * every exercise track at once; without them each one is asked for on its own.
+ * which reads as "there is no older data" instead of "the app may not see it".
  */
 @Composable
 private fun ExtraPermissionRow(
@@ -298,7 +302,9 @@ private fun PermissionRowLayout(
     @StringRes info: Int?,
     granted: Boolean,
     selected: Boolean,
-    onToggle: () -> Unit,
+    // Null where the permission cannot be requested from here: the box stays empty and
+    // disabled, and a tap opens the explanation instead.
+    onToggle: (() -> Unit)?,
 ) {
     var open by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -306,7 +312,13 @@ private fun PermissionRowLayout(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = if (granted) { { context.openOwnHealthPermissions(title) } } else onToggle)
+                .clickable(
+                    onClick = when {
+                        granted -> { { context.openOwnHealthPermissions(title) } }
+                        onToggle != null -> onToggle
+                        else -> { { open = !open } }
+                    },
+                )
                 .padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
             // Box and "i" on the name's line, not in the middle of a row that grew a second
             // and third line beneath it.
@@ -316,8 +328,8 @@ private fun PermissionRowLayout(
                 checked = granted || selected,
                 // Kept even when granted: without a callback the box drops its 48 dp target and
                 // shifts off the others' line. Disabled, it passes the tap on to the row.
-                onCheckedChange = { onToggle() },
-                enabled = !granted,
+                onCheckedChange = { onToggle?.invoke() },
+                enabled = !granted && onToggle != null,
             )
             // The checkbox's touch target is 48 dp with the box in its middle; this puts the
             // first line's centre on the box's.

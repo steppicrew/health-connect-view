@@ -540,7 +540,7 @@
     <string name="privacy_sharing_title">不共享</string>
     <string name="privacy_sharing_body">您的健康数据绝不会与任何人共享，包括开发者在内。任何第三方 SDK 都不会接收这些数据。导出的文件归您所有：之后去向由您决定。</string>
     <string name="permission_routes_title">所有锻炼路线</string>
-    <string name="permission_routes_body">立即显示每次锻炼的路线。没有此权限时，每条路线只在您要求时显示，一次一次锻炼。</string>
+    <string name="permission_routes_body">需在锻炼中允许，而非此处：打开一次有路线的锻炼并点按“%1$s”。Android 询问时选择始终允许，此后所有路线都会直接显示。</string>
     <string name="permission_shared_with">与%1$s一起授予。</string>
     <string name="perm_info_closing">只读：此应用绝不会更改或删除任何内容。除非您自己导出，否则任何内容都不会离开您的设备。</string>
     <string name="perm_info_history">Health Connect 会保留较早的数据，但除非您允许更多，否则只向应用提供最近 30 天的数据。有了此权限，周、四周和年视图、趋势以及报告都能追溯到您数据的最早时间。它改变的是此应用能回看多久，而不是数据的种类。</string>
@@ -587,8 +587,8 @@
     <string name="route_heights">海拔 %1$s–%2$s</string>
     <string name="route_no_map">无地图绘制：此应用没有联网权限，无法加载地图。</string>
     <string name="route_export">导出路线（GPX）</string>
-    <string name="route_consent_body">此次锻炼有路线。在此应用显示路线之前，Android 每次都会询问您；在权限屏幕中允许所有路线即可跳过此询问。</string>
-    <string name="route_declined">路线保持隐藏。您可以随时在这里允许它，或在权限屏幕中允许所有路线。</string>
+    <string name="route_consent_body">此次锻炼有路线。在此应用显示路线之前，Android 会询问您；在那里选择始终允许，此后所有路线都会直接显示，不再询问。</string>
+    <string name="route_declined">路线保持隐藏。您可以随时在这里允许它。</string>
     <string name="route_show">显示路线</string>
     <string name="route_available">已记录路线</string>
     <string name="route_unavailable">无法读取路线。</string>

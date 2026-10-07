@@ -32,7 +32,6 @@ data class PermissionsUiState(
     val historySelected: Boolean get() = RecordRegistry.HISTORY_PERMISSION in selected
 
     val routesGranted: Boolean get() = RecordRegistry.ROUTES_PERMISSION in granted
-    val routesSelected: Boolean get() = RecordRegistry.ROUTES_PERMISSION in selected
 }
 
 class PermissionsViewModel(application: Application) : AndroidViewModel(application) {
@@ -92,9 +91,6 @@ class PermissionsViewModel(application: Application) : AndroidViewModel(applicat
      * long ranges silently return a month of data and look like missing history.
      */
     fun toggleHistory() = toggleExtra(RecordRegistry.HISTORY_PERMISSION)
-
-    /** Every route at once; see [RecordRegistry.ROUTES_PERMISSION]. Not part of [selectAll]. */
-    fun toggleRoutes() = toggleExtra(RecordRegistry.ROUTES_PERMISSION)
 
     private fun toggleExtra(permission: String) {
         _state.update { current ->

@@ -565,7 +565,7 @@
     <string name="privacy_sharing_title">Paylaşım yok</string>
     <string name="privacy_sharing_body">Sağlık verileriniz geliştirici dahil hiç kimseyle paylaşılmaz. Hiçbir üçüncü taraf SDK bunları almaz. Dışa aktarılan bir dosya sizindir: oradan nereye gideceği size kalmıştır.</string>
     <string name="permission_routes_title">Tüm egzersiz rotaları</string>
-    <string name="permission_routes_body">Her oturumun rotasını hemen gösterir. Bu olmadan her rota yalnızca siz istediğinizde, her seferinde bir oturum için gösterilir.</string>
+    <string name="permission_routes_body">Burada değil, bir oturumdan izin verilir: rotası olan bir antrenmanı açın ve “%1$s” öğesine dokunun. Android sorduğunda her zaman izin verin; o andan itibaren her rota hemen gösterilir.</string>
     <string name="permission_shared_with">%1$s ile birlikte verilir.</string>
     <string name="perm_info_closing">Salt okunur: uygulama hiçbir şeyi asla değiştirmez veya silmez. Siz dışa aktarmadıkça hiçbir şey cihazınızdan çıkmaz.</string>
     <string name="perm_info_history">Health Connect eski verileri saklar ama siz daha fazlasına izin vermedikçe uygulamalara yalnızca son 30 günü verir. Bununla hafta, dört hafta ve yıl görünümleri, eğilimler ve raporlar verileriniz ne kadar eskiye gidiyorsa o kadar geriye uzanır. Uygulamanın hangi tür verileri değil, ne kadar geriye bakabileceğini değiştirir.</string>
@@ -612,8 +612,8 @@
     <string name="route_heights">Yükseklik %1$s–%2$s</string>
     <string name="route_no_map">Haritasız çizildi: uygulamanın harita yüklemek için internet erişimi yok.</string>
     <string name="route_export">Rotayı dışa aktar (GPX)</string>
-    <string name="route_consent_body">Bu oturumun bir rotası var. Uygulama gösterebilmeden önce Android her seferinde size sorar; soruyu atlamak için izinler ekranında tüm rotalara izin verin.</string>
-    <string name="route_declined">Rota gizli kalır. Burada istediğiniz zaman ona veya izinler ekranında tüm rotalara izin verebilirsiniz.</string>
+    <string name="route_consent_body">Bu oturumun bir rotası var. Uygulama gösterebilmeden önce Android size sorar; orada her zaman izin verin, o andan itibaren tüm rotalar sorulmadan gösterilir.</string>
+    <string name="route_declined">Rota gizli kalır. Burada istediğiniz zaman izin verebilirsiniz.</string>
     <string name="route_show">Rotayı göster</string>
     <string name="route_available">Rota kaydedildi</string>
     <string name="route_unavailable">Rota okunamadı.</string>

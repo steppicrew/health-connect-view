@@ -615,7 +615,7 @@
     <string name="privacy_sharing_title">Brak udostępniania</string>
     <string name="privacy_sharing_body">Twoje dane o zdrowiu nigdy nie są nikomu udostępniane, również deweloperowi. Nie otrzymuje ich żaden zewnętrzny SDK. Wyeksportowany plik należy do ciebie: co się z nim dalej stanie, zależy od ciebie.</string>
     <string name="permission_routes_title">Wszystkie trasy ćwiczeń</string>
-    <string name="permission_routes_body">Od razu pokazuje trasę każdej sesji. Bez tego każda trasa jest pokazywana dopiero na prośbę, jedna sesja naraz.</string>
+    <string name="permission_routes_body">Zgodę daje się przy sesji, nie tutaj: otwórz trening z trasą i dotknij „%1$s”. Gdy Android zapyta, zezwól zawsze – od tej chwili każda trasa będzie widoczna od razu.</string>
     <string name="permission_shared_with">Przyznawane razem z: %1$s.</string>
     <string name="perm_info_closing">Tylko odczyt: aplikacja nigdy niczego nie zmienia ani nie usuwa. Nic nie opuszcza urządzenia, chyba że sam to wyeksportujesz.</string>
     <string name="perm_info_history">Health Connect przechowuje starsze dane, ale aplikacjom udostępnia tylko ostatnie 30 dni, chyba że zezwolisz na więcej. Dzięki temu widoki tygodnia, czterech tygodni i roku, trendy i raporty sięgają tak daleko wstecz, jak twoje dane. Zmienia to, jak daleko wstecz aplikacja może patrzeć, a nie rodzaje danych.</string>
@@ -662,8 +662,8 @@
     <string name="route_heights">Wysokość %1$s–%2$s</string>
     <string name="route_no_map">Narysowana bez mapy: aplikacja nie ma dostępu do internetu, by ją wczytać.</string>
     <string name="route_export">Eksportuj trasę (GPX)</string>
-    <string name="route_consent_body">Ta sesja ma trasę. Android za każdym razem pyta o zgodę, zanim aplikacja może ją pokazać; zezwól na wszystkie trasy na ekranie uprawnień, aby pominąć to pytanie.</string>
-    <string name="route_declined">Trasa pozostaje ukryta. Możesz w każdej chwili zezwolić na nią tutaj lub na wszystkie trasy na ekranie uprawnień.</string>
+    <string name="route_consent_body">Ta sesja ma trasę. Android pyta o zgodę, zanim aplikacja może ją pokazać; zezwól tam zawsze, a od tej chwili wszystkie trasy będą widoczne bez pytania.</string>
+    <string name="route_declined">Trasa pozostaje ukryta. Możesz w każdej chwili zezwolić na nią tutaj.</string>
     <string name="route_show">Pokaż trasę</string>
     <string name="route_available">Zapisano trasę</string>
     <string name="route_unavailable">Nie udało się odczytać trasy.</string>
