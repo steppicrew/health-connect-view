@@ -131,6 +131,9 @@ import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
+import androidx.compose.material.icons.filled.MilitaryTech
+import de.steppicrew.healthconnectview.health.PersonalRecord
+import de.steppicrew.healthconnectview.health.RecordKind
 
 /**
  * One type, full screen, over a span the user can step through.
@@ -539,6 +542,63 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
     }
 }
 
+/**
+ * The type's personal best over the past year: which kind of best, its value, its day.
+ *
+ * Worded as what the data holds, never as praise or a verdict -- a "lowest" resting rate is a
+ * position, not a diagnosis. The rule behind it, including the 30 days without the history
+ * permission, is behind the "i", as for the streak.
+ */
+@Composable
+private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
+    val explanation = rememberExplanation("record")
+    val zone = HealthRepository.DEFAULT_ZONE
+    val title = stringResource(
+        when (record.kind) {
+            RecordKind.MOST -> R.string.record_title_most
+            RecordKind.LOWEST -> R.string.record_title_lowest
+            RecordKind.HIGHEST -> R.string.record_title_highest
+            RecordKind.LONGEST -> R.string.record_title_longest
+        },
+    )
+    val value = if (record.kind == RecordKind.LONGEST) {
+        Formatting.duration(Duration.ofSeconds(record.value.toLong()))
+    } else {
+        Formatting.number(record.value, spec.valueDecimals) +
+            (spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
+    }
+    Column(Modifier.padding(top = 8.dp)) {
+        Row(verticalAlignment = Alignment.Top) {
+            Icon(
+                imageVector = Icons.Default.MilitaryTech,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+        }
+        Text(
+            text = stringResource(
+                R.string.record_value_on,
+                value,
+                Formatting.date(record.date.atStartOfDay(zone).toInstant(), zone),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.record_rule),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
 /** "132/85" where a second value exists, whole numbers as a cuff shows them; else the value. */
 private fun pressureText(first: Double, second: Double?, decimals: Int? = null): String =
     if (second == null) Formatting.number(first, decimals) else "${first.roundToInt()}/${second.roundToInt()}"
@@ -856,6 +916,7 @@ private fun SpanSummary(
         // screen down while it was being looked at.
         data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
         data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
+        data.record?.let { RecordExplanation(it, data.spec) }
     }
 }
 

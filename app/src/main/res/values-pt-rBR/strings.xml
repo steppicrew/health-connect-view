@@ -572,6 +572,12 @@
         <item quantity="other">A mais longa do último ano: %1$d dias, %2$s</item>
     </plurals>
     <string name="streak_range">de %1$s a %2$s</string>
+    <string name="record_title_most">Melhor dia do último ano</string>
+    <string name="record_title_lowest">Menor valor do último ano</string>
+    <string name="record_title_highest">Maior valor do último ano</string>
+    <string name="record_title_longest">Treino mais longo do último ano</string>
+    <string name="record_value_on">%1$s em %2$s</string>
+    <string name="record_rule">Buscado entre os dias antes de hoje no último ano; sem acesso a dados mais antigos, nos últimos 30 dias. Os valores diários são os totais do Conexão Saúde sem duplicatas, então um dia registrado por vários apps conta uma vez, assim como um treino. Hoje conta quando terminar.</string>
     <string name="streak_is_longest">A sequência mais longa do último ano.</string>
     <string name="streak_active_rule">Conta os dias seguidos até este dia com pelo menos uma atividade registrada. Um dia sem nenhuma encerra a sequência, mesmo que você não estivesse usando o dispositivo naquele dia: o Conexão Saúde não distingue entre nenhuma atividade e nenhum registro. Hoje conta assim que uma atividade é registrada e, até lá, não interrompe nada. A sequência mais longa é procurada no último ano; sem acesso aos dados mais antigos, nos últimos 30 dias.</string>
     <string name="chart_source_raw">Medições individuais</string>

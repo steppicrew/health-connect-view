@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.registry
 
+import de.steppicrew.healthconnectview.health.RecordKind
 import de.steppicrew.healthconnectview.health.Session
 
 /**
@@ -134,6 +135,11 @@ data class TileSpec(
      * strokes. See `DailyReadings`.
      */
     val dailyMeans: Boolean = false,
+    /**
+     * What a personal best is for this type, shown under its chart; null where a type has no
+     * best, only readings. See `personalRecord`.
+     */
+    val personalRecord: RecordKind? = null,
 ) {
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */

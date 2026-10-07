@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.registry
 
 import androidx.health.connect.client.permission.HealthPermission
+import de.steppicrew.healthconnectview.health.RecordKind
 import de.steppicrew.healthconnectview.health.Session
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.feature.ExperimentalMindfulnessSessionApi
@@ -99,6 +100,7 @@ object RecordRegistry {
                 TileSpec.Form.NUMBER,
                 cumulativeIntraday = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -142,6 +144,7 @@ object RecordRegistry {
                 defaultGoal = 5.0,
                 cumulativeIntraday = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -160,6 +163,7 @@ object RecordRegistry {
                 TileSpec.Form.NUMBER,
                 cumulativeIntraday = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -168,6 +172,7 @@ object RecordRegistry {
                 TileSpec.Form.SESSIONS,
                 smoothChart = false,
                 sessionKind = Session.Kind.EXERCISE,
+                personalRecord = RecordKind.LONGEST,
             ),
             displayNameRes = R.string.type_exercise_session,
             category = Category.ACTIVITY,
@@ -197,6 +202,7 @@ object RecordRegistry {
                 cumulativeIntraday = true,
                 integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -259,6 +265,7 @@ object RecordRegistry {
                 integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
                 rollingBaseline = true,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -308,7 +315,7 @@ object RecordRegistry {
             startTime = { it.time },
             points = { listOf(Point(it.time, it.vo2MillilitersPerMinuteKilogram)) },
             summary = { Formatting.number(it.vo2MillilitersPerMinuteKilogram) + " mL/kg/min" },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, personalRecord = RecordKind.HIGHEST),
         ),
         RecordTypeSpec(
             type = WheelchairPushesRecord::class,
@@ -327,6 +334,7 @@ object RecordRegistry {
                 cumulativeIntraday = true,
                 integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,
+                personalRecord = RecordKind.MOST,
             ),
         ),
         RecordTypeSpec(
@@ -521,6 +529,7 @@ object RecordRegistry {
                 integralValues = true,
                 dailyValue = true,
                 rollingBaseline = true,
+                personalRecord = RecordKind.LOWEST,
             ),
         ),
         RecordTypeSpec(

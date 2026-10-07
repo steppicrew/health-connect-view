@@ -597,6 +597,12 @@
         <item quantity="other">Najdłuższa w ostatnim roku: %1$d dnia, %2$s</item>
     </plurals>
     <string name="streak_range">od %1$s do %2$s</string>
+    <string name="record_title_most">Najlepszy dzień w ostatnim roku</string>
+    <string name="record_title_lowest">Najniższa wartość w ostatnim roku</string>
+    <string name="record_title_highest">Najwyższa wartość w ostatnim roku</string>
+    <string name="record_title_longest">Najdłuższy trening w ostatnim roku</string>
+    <string name="record_value_on">%1$s, %2$s</string>
+    <string name="record_rule">Szukane wśród dni przed dzisiejszym w ostatnim roku; bez dostępu do starszych danych – w ostatnich 30 dniach. Wartości dzienne to sumy z Health Connect bez duplikatów, więc dzień zapisany przez kilka aplikacji liczy się raz, podobnie jak trening. Dzisiejszy dzień liczy się po jego zakończeniu.</string>
     <string name="streak_is_longest">Najdłuższa seria w ostatnim roku.</string>
     <string name="streak_active_rule">Liczy kolejne dni do tego dnia z co najmniej jedną zapisaną aktywnością. Dzień bez aktywności kończy serię, nawet jeśli tego dnia nie nosisz urządzenia: Health Connect nie odróżnia braku aktywności od braku zapisu. Dzisiejszy dzień liczy się, gdy tylko zostanie zapisana aktywność, a do tego czasu niczego nie przerywa. Najdłuższej serii szuka się w ostatnim roku; bez dostępu do starszych danych – w ostatnich 30 dniach.</string>
     <string name="chart_source_raw">Pojedyncze pomiary</string>

@@ -572,6 +572,12 @@
         <item quantity="other">La più lunga dell’ultimo anno: %1$d giorni, %2$s</item>
     </plurals>
     <string name="streak_range">dal %1$s al %2$s</string>
+    <string name="record_title_most">Giorno migliore dell’ultimo anno</string>
+    <string name="record_title_lowest">Valore più basso dell’ultimo anno</string>
+    <string name="record_title_highest">Valore più alto dell’ultimo anno</string>
+    <string name="record_title_longest">Allenamento più lungo dell’ultimo anno</string>
+    <string name="record_value_on">%1$s il %2$s</string>
+    <string name="record_rule">Cercato tra i giorni prima di oggi nell’ultimo anno; senza accesso ai dati più vecchi, negli ultimi 30 giorni. I valori giornalieri sono i totali di Connessione Salute senza duplicati, quindi un giorno registrato da più app conta una volta sola, come un allenamento. Oggi conta quando è finito.</string>
     <string name="streak_is_longest">La serie più lunga dell’ultimo anno.</string>
     <string name="streak_active_rule">Conta i giorni di fila fino a questo giorno con almeno un’attività registrata. Un giorno senza attività chiude la serie, anche se quel giorno non indossavi il dispositivo: Connessione Salute non distingue tra nessuna attività e nessuna registrazione. Oggi conta non appena viene registrata un’attività, e fino ad allora non interrompe nulla. La serie più lunga si cerca nell’ultimo anno; senza accesso ai dati meno recenti, negli ultimi 30 giorni.</string>
     <string name="chart_source_raw">Singole misurazioni</string>

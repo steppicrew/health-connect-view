@@ -547,6 +547,12 @@
         <item quantity="other">Langste in het afgelopen jaar: %1$d dagen, %2$s</item>
     </plurals>
     <string name="streak_range">%1$s tot %2$s</string>
+    <string name="record_title_most">Beste dag van het afgelopen jaar</string>
+    <string name="record_title_lowest">Laagste waarde van het afgelopen jaar</string>
+    <string name="record_title_highest">Hoogste waarde van het afgelopen jaar</string>
+    <string name="record_title_longest">Langste training van het afgelopen jaar</string>
+    <string name="record_value_on">%1$s op %2$s</string>
+    <string name="record_rule">Gezocht onder de dagen vóór vandaag in het afgelopen jaar; zonder toegang tot oudere gegevens in de laatste 30 dagen. Dagwaarden zijn de totalen van Health Connect zonder dubbelingen, dus een dag die meerdere apps hebben vastgelegd telt één keer, net als een training. Vandaag telt mee zodra de dag voorbij is.</string>
     <string name="streak_is_longest">De langste reeks in het afgelopen jaar.</string>
     <string name="streak_active_rule">Telt de dagen op rij tot en met deze dag met minstens één geregistreerde activiteit. Een dag zonder activiteit beëindigt de reeks, ook als je je apparaat die dag niet droeg: Health Connect kan geen activiteit niet onderscheiden van geen registratie. Vandaag telt zodra er een activiteit is geregistreerd en breekt tot dan niets. De langste reeks wordt gezocht in het afgelopen jaar; zonder toegang tot oudere gegevens in de laatste 30 dagen.</string>
     <string name="chart_source_raw">Losse metingen</string>

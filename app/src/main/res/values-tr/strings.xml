@@ -547,6 +547,12 @@
         <item quantity="other">Son bir yılın en uzunu: %1$d gün, %2$s</item>
     </plurals>
     <string name="streak_range">%1$s – %2$s</string>
+    <string name="record_title_most">Son bir yılın en iyi günü</string>
+    <string name="record_title_lowest">Son bir yılın en düşük değeri</string>
+    <string name="record_title_highest">Son bir yılın en yüksek değeri</string>
+    <string name="record_title_longest">Son bir yılın en uzun antrenmanı</string>
+    <string name="record_value_on">%1$s, %2$s</string>
+    <string name="record_rule">Son bir yıl içinde bugünden önceki günler arasında aranır; daha eski verilere erişim yoksa son 30 günde. Günlük değerler, Health Connect’in tekrarlar çıkarılmış toplamlarıdır; birkaç uygulamanın kaydettiği bir gün bir kez sayılır, bir antrenman da öyle. Bugün, gün bitince sayılır.</string>
     <string name="streak_is_longest">Son bir yıldaki en uzun seri.</string>
     <string name="streak_active_rule">Bu güne kadar en az bir etkinliğin kaydedildiği art arda günleri sayar. Etkinliksiz bir gün, o gün cihazınızı takmamış olsanız bile seriyi bitirir: Health Connect etkinlik olmamasını kayıt olmamasından ayırt edemez. Bugün, bir etkinlik kaydedildiği anda sayılır ve o zamana kadar hiçbir şeyi bozmaz. En uzun seri son bir yılda aranır; eski verilere erişim yoksa son 30 günde.</string>
     <string name="chart_source_raw">Tekil ölçümler</string>
