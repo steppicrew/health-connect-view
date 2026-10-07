@@ -253,10 +253,15 @@ open items below and `FEATURE-IDEAS.md`.
     window's first reading. Daily means for a week or four weeks, weekly means in a year; each
     type follows its own tile's source. Lean mass is never called muscle. Opened from the body
     types' screens (top bar), Pro.
-38. [ ] **Two metrics on one timeline** -- from `FEATURE-IDEAS.md`. Any two types over the same
-    window, e.g. weight and steps. Two y-axes read badly on a phone and invite cause-and-effect
-    readings the data cannot carry; worth doing only for pairs that share a unit (step 37) or
-    as two charts stacked on one time axis. Pro.
+38. [x] **Two metrics on one timeline** -- built 08.10.2026, seen on the phone (resting heart
+    rate beside sleep over four weeks, steps beside heart rate over a day). From
+    `FEATURE-IDEAS.md`. Any two types with a chart, as **two charts stacked on one time axis**,
+    never two y-axes on one: those read badly on a phone and invite cause-and-effect readings
+    the data cannot carry, and the note beneath says that moving together is not causing. Each
+    chart is the one its own screen draws, from the same loader and the same source choice;
+    across days the shared axis starts half a bucket early, so bars and points sit on the same
+    day. Opened from any chart's top bar, the second type picked from a list; swap and change in
+    the comparison's own bar. Pro.
 39. [x] **Goal streaks** -- built 27.09.2026. A flame and the count on a ring tile, "Ziel an
     12 Tagen hintereinander erreicht" on its screen, from two days up. A day with no data
     bridges the run without counting: missing is not failed. A gap of more than 30 days ends

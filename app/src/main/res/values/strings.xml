@@ -739,4 +739,9 @@
     <string name="body_composition_one">One reading in this period</string>
     <string name="body_fat_mass">Fat mass</string>
     <string name="body_fat_mass_note">Calculated: body fat percentage × that day\'s weight</string>
+    <string name="compare_title">Compare</string>
+    <string name="compare_pick">Compare with</string>
+    <string name="compare_swap">Swap order</string>
+    <string name="compare_none">No values in this period</string>
+    <string name="compare_note">Two charts on one time axis, each with its own scale. Two values moving together does not mean that one causes the other.</string>
 </resources>

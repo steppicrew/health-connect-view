@@ -706,4 +706,9 @@
     <string name="body_composition_one">Ein Messwert in diesem Zeitraum</string>
     <string name="body_fat_mass">Fettmasse</string>
     <string name="body_fat_mass_note">Berechnet: Körperfettanteil × Gewicht desselben Tages</string>
+    <string name="compare_title">Vergleichen</string>
+    <string name="compare_pick">Vergleichen mit</string>
+    <string name="compare_swap">Reihenfolge tauschen</string>
+    <string name="compare_none">Keine Werte in diesem Zeitraum</string>
+    <string name="compare_note">Zwei Diagramme auf einer Zeitachse, jedes mit eigener Skala. Dass sich zwei Werte gemeinsam bewegen, heißt nicht, dass einer den anderen verursacht.</string>
 </resources>

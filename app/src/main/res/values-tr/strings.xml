@@ -706,4 +706,9 @@
     <string name="body_composition_one">Bu dönemde bir ölçüm</string>
     <string name="body_fat_mass">Yağ kütlesi</string>
     <string name="body_fat_mass_note">Hesaplanan: vücut yağ oranı × aynı günün kilosu</string>
+    <string name="compare_title">Karşılaştır</string>
+    <string name="compare_pick">Şununla karşılaştır</string>
+    <string name="compare_swap">Sırayı değiştir</string>
+    <string name="compare_none">Bu dönemde değer yok</string>
+    <string name="compare_note">Tek bir zaman ekseninde iki grafik, her birinin kendi ölçeği var. İki değerin birlikte değişmesi, birinin diğerine neden olduğu anlamına gelmez.</string>
 </resources>

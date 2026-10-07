@@ -756,4 +756,9 @@
     <string name="body_composition_one">Одно измерение за этот период</string>
     <string name="body_fat_mass">Жировая масса</string>
     <string name="body_fat_mass_note">Рассчитано: процент жира × вес в тот же день</string>
+    <string name="compare_title">Сравнить</string>
+    <string name="compare_pick">Сравнить с</string>
+    <string name="compare_swap">Поменять местами</string>
+    <string name="compare_none">Нет значений за этот период</string>
+    <string name="compare_note">Два графика на одной оси времени, у каждого своя шкала. Если два значения меняются вместе, это не значит, что одно вызывает другое.</string>
 </resources>
