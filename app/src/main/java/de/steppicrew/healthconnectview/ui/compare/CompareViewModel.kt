@@ -1,14 +1,13 @@
 package de.steppicrew.healthconnectview.ui.compare
 
 import android.app.Application
-import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
+import de.steppicrew.healthconnectview.dashboard.openingSource
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
-import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -19,7 +18,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
@@ -145,23 +143,14 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         return UiState.Data(Compared(firstData, secondData, sharedExtent(span, offset, firstData, secondData)))
     }
 
-    /** The source the type's own screen would open on: its own choice, or the preferred app where it wrote this type. */
     private suspend fun sourceFor(spec: RecordTypeSpec<*>, span: Span, offset: Int): String? {
-        val typeName = spec.type.simpleName.orEmpty()
-        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-        selections[typeName]?.let { return it.takeUnless { chosen -> chosen == SourceStore.ALL_SOURCES } }
-        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull() ?: return null
         val zone = HealthRepository.DEFAULT_ZONE
-        val wrote = runCatching {
-            repository.recordsIn(
-                spec,
-                span.startDate(offset).atStartOfDay(zone).toInstant(),
-                span.endDate(offset).atStartOfDay(zone).toInstant(),
-                setOf(DataOrigin(preferred)),
-                maxRecords = 1,
-            ).isNotEmpty()
-        }.getOrDefault(false)
-        return preferred.takeIf { wrote }
+        return sourceStore.openingSource(
+            repository,
+            spec,
+            span.startDate(offset).atStartOfDay(zone).toInstant(),
+            span.endDate(offset).atStartOfDay(zone).toInstant(),
+        )
     }
 }
 

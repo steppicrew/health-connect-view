@@ -6,7 +6,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.health.connect.client.records.metadata.DataOrigin
+import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.recordsIn
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import java.time.Instant
 import kotlinx.coroutines.flow.map
 import org.json.JSONObject
 
@@ -131,4 +137,26 @@ class SourceStore(private val context: Context) {
         private val KEY_SOURCES = stringPreferencesKey("selected_sources")
         private val KEY_PREFERRED = stringPreferencesKey("preferred_source")
     }
+}
+
+/**
+ * The source a type's own screen opens on over [start]..[end], for a view built beside it --
+ * a comparison, the insights -- so the same type never shows two different figures: its own
+ * choice, or else the preferred app where that app wrote the type in the window, else all.
+ * Costs one single-record read, and only where a preferred app is set.
+ */
+suspend fun SourceStore.openingSource(
+    repository: HealthRepository,
+    spec: RecordTypeSpec<*>,
+    start: Instant,
+    end: Instant,
+): String? {
+    val typeName = spec.type.simpleName.orEmpty()
+    val selections = runCatching { selections.first() }.getOrDefault(emptyMap())
+    selections[typeName]?.let { return it.takeUnless { chosen -> chosen == SourceStore.ALL_SOURCES } }
+    val preferred = runCatching { preferred.first() }.getOrNull() ?: return null
+    val wrote = runCatching {
+        repository.recordsIn(spec, start, end, setOf(DataOrigin(preferred)), maxRecords = 1).isNotEmpty()
+    }.getOrDefault(false)
+    return preferred.takeIf { wrote }
 }
