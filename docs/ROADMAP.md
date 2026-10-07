@@ -10,6 +10,9 @@ The working plan, in order. Each step is one branch, merged fast-forward when it
 and has been seen on a device; tick it here in the same merge. Ranked on 26.09.2026 from the
 open items below and `FEATURE-IDEAS.md`.
 
+**Version:** the owner's decision, 07.10.2026 -- once step 49 is built, the next release is
+1.0 (versionName "1.x"), not 0.12. The versionCode keeps counting as before.
+
 1. [x] **Cycle overview** -- section 12. Merged 26.09.2026.
 2. [x] **See the cycle overview on the phone.** Done 26.09.2026 with the in-memory fixture
    (`-e route "'cycle?fixture=true'"`), since the phone has no cycle data and seeding would
