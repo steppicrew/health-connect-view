@@ -142,6 +142,7 @@ import de.steppicrew.healthconnectview.health.RecordKind
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.ui.components.InfoGroup
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import androidx.compose.material3.TextButton
 
@@ -453,7 +454,7 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
     val unit = unitRes?.let { " " + stringResource(it) }.orEmpty()
     val explanation = rememberExplanation("trend")
 
-    Column(Modifier.padding(top = 8.dp)) {
+    InfoGroup {
         // The headline and the averages always show: they are the data. The rule is behind the
         // "i", closed until asked for, so the numbers are what is seen at first glance.
         Row(verticalAlignment = Alignment.Top) {
@@ -519,7 +520,7 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
             Formatting.date(it.last.atStartOfDay(zone).toInstant(), zone),
         )
     }
-    Column(Modifier.padding(top = 8.dp)) {
+    InfoGroup {
         Row(verticalAlignment = Alignment.Top) {
             Icon(
                 imageVector = Icons.Default.EmojiEvents,
@@ -607,7 +608,7 @@ private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
         Formatting.number(record.value, spec.valueDecimals) +
             (spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
     }
-    Column(Modifier.padding(top = 8.dp)) {
+    InfoGroup {
         Row(verticalAlignment = Alignment.Top) {
             Icon(
                 imageVector = Icons.Default.MilitaryTech,
@@ -688,7 +689,7 @@ private fun PressureLegend() {
 private fun DayPartsSection(split: DayPartSplit) {
     val explanation = rememberExplanation("dayparts")
 
-    Column(Modifier.padding(top = 8.dp)) {
+    InfoGroup {
         Row(verticalAlignment = Alignment.Top) {
             Text(
                 text = stringResource(R.string.bp_parts_title),
