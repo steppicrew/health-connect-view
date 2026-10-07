@@ -386,6 +386,7 @@
     <string name="span_year">Jahr</string>
     <string name="span_previous">Früher</string>
     <string name="span_next">Später</string>
+    <string name="span_now">Zum aktuellen Zeitraum</string>
     <string name="span_total">Gesamt</string>
     <string name="span_daily_value">Tageswert</string>
     <string name="legend_rolling_mean">4-Wochen-Mittel</string>
@@ -567,6 +568,7 @@
     <string name="record_title_highest">Höchster Wert im vergangenen Jahr</string>
     <string name="record_title_longest">Längstes Training im vergangenen Jahr</string>
     <string name="record_value_on">%1$s am %2$s</string>
+    <string name="record_show">Diesen Tag anzeigen</string>
     <string name="record_rule">Gesucht wird unter den Tagen vor heute im vergangenen Jahr. Tageswerte sind die Summen von Health Connect ohne Doppelungen: Ein Tag, den mehrere Apps aufgezeichnet haben, zählt einmal, ebenso ein Training. Heute zählt, sobald der Tag vorbei ist.</string>
     <string name="history_limit_note">Ohne Zugriff auf ältere Daten wurden nur die letzten 30 Tage durchsucht.</string>
     <string name="history_grant">Ältere Daten freigeben</string>

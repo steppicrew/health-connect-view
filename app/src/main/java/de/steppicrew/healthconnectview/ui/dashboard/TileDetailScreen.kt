@@ -109,6 +109,7 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.Span
+import java.time.LocalDate
 import de.steppicrew.healthconnectview.registry.readingGap
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import de.steppicrew.healthconnectview.registry.Formatting
@@ -248,10 +249,17 @@ fun TileDetailScreen(
                 canStepForward = offset > 0,
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
+                onNow = viewModel::stepToNow,
             )
 
             // Read by every note that depends on how far back the app may look.
-            CompositionLocalProvider(LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions)) {
+            CompositionLocalProvider(
+                LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions),
+                LocalDayJump provides DayJump(
+                    shown = span.startDate(offset).takeIf { span == Span.DAY },
+                    onShow = viewModel::showDay,
+                ),
+            ) {
                 when (val current = state) {
                     is UiState.Loading -> LoadingView(progress = progress)
 
@@ -549,6 +557,11 @@ private class HistoryAccess(val granted: Boolean, val onGrant: () -> Unit)
 
 private val LocalHistoryAccess = staticCompositionLocalOf { HistoryAccess(granted = true, onGrant = {}) }
 
+/** The day on screen when one day is shown, else null; and how to open another day. */
+private class DayJump(val shown: LocalDate?, val onShow: (LocalDate) -> Unit)
+
+private val LocalDayJump = staticCompositionLocalOf { DayJump(shown = null, onShow = {}) }
+
 /**
  * Under an explanation that searches the past year: said only where the search was in fact cut
  * to 30 days, with the way to lift it. With older data allowed, the rule above is the whole
@@ -616,6 +629,13 @@ private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
             ),
             style = MaterialTheme.typography.bodyMedium,
         )
+        // Not on the record's own day: there the button would open what is already shown.
+        val jump = LocalDayJump.current
+        if (jump.shown != record.date) {
+            TextButton(onClick = { jump.onShow(record.date) }) {
+                Text(stringResource(R.string.record_show))
+            }
+        }
         if (explanation.expanded == true) {
             Text(
                 text = stringResource(R.string.record_rule),

@@ -104,6 +104,7 @@ fun CycleScreen(
                 canStepForward = offset > 0,
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
+                onNow = viewModel::stepToNow,
             )
             HorizontalDivider()
 

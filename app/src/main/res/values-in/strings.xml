@@ -383,6 +383,7 @@
     <string name="span_year">Tahun</string>
     <string name="span_previous">Sebelumnya</string>
     <string name="span_next">Berikutnya</string>
+    <string name="span_now">Ke periode saat ini</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Nilai hari itu</string>
     <string name="legend_rolling_mean">Rata-rata 4 minggu</string>
@@ -549,6 +550,7 @@
     <string name="record_title_highest">Nilai tertinggi dalam setahun terakhir</string>
     <string name="record_title_longest">Latihan terlama dalam setahun terakhir</string>
     <string name="record_value_on">%1$s pada %2$s</string>
+    <string name="record_show">Tampilkan hari ini</string>
     <string name="record_rule">Dicari di antara hari-hari sebelum hari ini dalam setahun terakhir. Nilai harian adalah total Health Connect tanpa duplikat, jadi hari yang dicatat oleh beberapa aplikasi dihitung sekali, begitu pula latihan. Hari ini dihitung setelah berakhir.</string>
     <string name="history_limit_note">Tanpa akses ke data yang lebih lama, hanya 30 hari terakhir yang dicari.</string>
     <string name="history_grant">Izinkan data lama</string>

@@ -401,6 +401,7 @@
     <string name="span_year">Année</string>
     <string name="span_previous">Avant</string>
     <string name="span_next">Après</string>
+    <string name="span_now">Revenir à aujourd’hui</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valeur du jour</string>
     <string name="legend_rolling_mean">Moyenne sur 4 semaines</string>
@@ -599,6 +600,7 @@
     <string name="record_title_highest">Valeur la plus haute de l’année écoulée</string>
     <string name="record_title_longest">Entraînement le plus long de l’année écoulée</string>
     <string name="record_value_on">%1$s le %2$s</string>
+    <string name="record_show">Afficher ce jour</string>
     <string name="record_rule">Recherché parmi les jours précédant aujourd’hui sur l’année écoulée. Les valeurs quotidiennes sont les totaux de Santé Connect sans doublons : un jour enregistré par plusieurs applications ne compte qu’une fois, de même qu’un entraînement. Aujourd’hui compte une fois la journée terminée.</string>
     <string name="history_limit_note">Sans accès aux données plus anciennes, seuls les 30 derniers jours ont été examinés.</string>
     <string name="history_grant">Autoriser les données plus anciennes</string>

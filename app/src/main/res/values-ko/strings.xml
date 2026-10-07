@@ -383,6 +383,7 @@
     <string name="span_year">년</string>
     <string name="span_previous">이전</string>
     <string name="span_next">이후</string>
+    <string name="span_now">현재 기간으로 이동</string>
     <string name="span_total">합계</string>
     <string name="span_daily_value">그날의 값</string>
     <string name="legend_rolling_mean">4주 평균</string>
@@ -549,6 +550,7 @@
     <string name="record_title_highest">지난 1년 중 최고값</string>
     <string name="record_title_longest">지난 1년 중 가장 긴 운동</string>
     <string name="record_value_on">%2$s: %1$s</string>
+    <string name="record_show">이 날 보기</string>
     <string name="record_rule">지난 1년 동안 오늘 이전의 날 중에서 찾습니다. 하루 값은 헬스 커넥트의 중복을 제거한 합계이므로 여러 앱이 기록한 날도 한 번만 계산되며, 운동도 마찬가지입니다. 오늘은 하루가 끝난 뒤에 포함됩니다.</string>
     <string name="history_limit_note">이전 데이터에 대한 액세스가 없어 최근 30일만 검색했습니다.</string>
     <string name="history_grant">이전 데이터 허용</string>

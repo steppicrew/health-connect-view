@@ -428,6 +428,7 @@
     <string name="span_year">سنة</string>
     <string name="span_previous">أقدم</string>
     <string name="span_next">أحدث</string>
+    <string name="span_now">الانتقال إلى الفترة الحالية</string>
     <string name="span_total">الإجمالي</string>
     <string name="span_daily_value">قيمة اليوم</string>
     <string name="legend_rolling_mean">متوسط 4 أسابيع</string>
@@ -674,6 +675,7 @@
     <string name="record_title_highest">أعلى قيمة في العام الماضي</string>
     <string name="record_title_longest">أطول تمرين في العام الماضي</string>
     <string name="record_value_on">%1$s في %2$s</string>
+    <string name="record_show">عرض هذا اليوم</string>
     <string name="record_rule">يُبحث بين الأيام السابقة لليوم خلال العام الماضي. القيم اليومية هي مجاميع Health Connect بعد إزالة التكرار، لذا يُحتسب اليوم الذي سجّلته عدة تطبيقات مرة واحدة، وكذلك التمرين. يُحتسب اليوم بعد انتهائه.</string>
     <string name="history_limit_note">من دون الوصول إلى البيانات الأقدم، بُحث في آخر 30 يومًا فقط.</string>
     <string name="history_grant">السماح بالبيانات الأقدم</string>

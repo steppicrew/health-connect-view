@@ -401,6 +401,7 @@
     <string name="span_year">Anno</string>
     <string name="span_previous">Prima</string>
     <string name="span_next">Dopo</string>
+    <string name="span_now">Vai al periodo attuale</string>
     <string name="span_total">Totale</string>
     <string name="span_daily_value">Valore del giorno</string>
     <string name="legend_rolling_mean">Media 4 settimane</string>
@@ -599,6 +600,7 @@
     <string name="record_title_highest">Valore più alto dell’ultimo anno</string>
     <string name="record_title_longest">Allenamento più lungo dell’ultimo anno</string>
     <string name="record_value_on">%1$s il %2$s</string>
+    <string name="record_show">Mostra questo giorno</string>
     <string name="record_rule">Cercato tra i giorni prima di oggi nell’ultimo anno. I valori giornalieri sono i totali di Connessione Salute senza duplicati, quindi un giorno registrato da più app conta una volta sola, come un allenamento. Oggi conta quando è finito.</string>
     <string name="history_limit_note">Senza accesso ai dati più vecchi, sono stati esaminati solo gli ultimi 30 giorni.</string>
     <string name="history_grant">Consenti dati meno recenti</string>

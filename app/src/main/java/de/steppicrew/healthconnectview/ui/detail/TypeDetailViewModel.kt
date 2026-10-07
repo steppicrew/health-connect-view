@@ -78,6 +78,13 @@ class TypeDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /** Stepping forward past the current window would show an empty future. */
+    /** Back to the window holding today. */
+    fun stepToNow() {
+        if (_offset.value == 0) return
+        _offset.value = 0
+        reload()
+    }
+
     fun stepForward() {
         if (_offset.value == 0) return
         _offset.update { (it - 1).coerceAtLeast(0) }

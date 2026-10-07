@@ -410,6 +410,7 @@
     <string name="span_year">Год</string>
     <string name="span_previous">Раньше</string>
     <string name="span_next">Позже</string>
+    <string name="span_now">К текущему периоду</string>
     <string name="span_total">Итого</string>
     <string name="span_daily_value">Значение за день</string>
     <string name="legend_rolling_mean">Среднее за 4 недели</string>
@@ -624,6 +625,7 @@
     <string name="record_title_highest">Самое высокое значение за последний год</string>
     <string name="record_title_longest">Самая долгая тренировка за последний год</string>
     <string name="record_value_on">%1$s, %2$s</string>
+    <string name="record_show">Показать этот день</string>
     <string name="record_rule">Поиск идёт среди дней до сегодняшнего за последний год. Дневные значения — это суммы Health Connect без повторов, поэтому день, записанный несколькими приложениями, учитывается один раз, как и тренировка. Сегодняшний день учитывается после его окончания.</string>
     <string name="history_limit_note">Без доступа к более старым данным просмотрены только последние 30 дней.</string>
     <string name="history_grant">Разрешить старые данные</string>
