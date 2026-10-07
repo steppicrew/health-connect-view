@@ -216,12 +216,13 @@ The Xiaomi test phone (HyperOS) blocks **input injection** -- `adb shell input t
 `settings put system` and `wm size` from the shell (`WRITE_SETTINGS`/`WRITE_SECURE_SETTINGS`).
 See `docs/ROADMAP.md` §9. So:
 
-- **Install:** not from the host. Since October 2026 HyperOS refuses `adb install -r` and
-  `pm install` from `/data/local/tmp` alike (`INSTALL_FAILED_USER_RESTRICTED: Install canceled
-  by user`, with no prompt on the phone), and `pm` cannot read shared storage at all. Push the
-  APK to `/sdcard/Download/`, have the owner tap it, and delete it once
-  `pm list packages` shows the install. Both had worked until 19.09.2026, so do not trust a
-  note saying they do.
+- **Install:** updates yes, a first install no. With the debug app already on the phone,
+  `adb install -r` works ("Success", 07.10.2026). A package not yet installed is refused by
+  every adb route (`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user`, no prompt), since
+  "Install via USB" needs a Xiaomi account the owner does not use: push the APK to
+  `/sdcard/Download/`, have the owner tap it, and delete it once `pm list packages` shows it.
+  So never uninstall `de.steppicrew.healthconnectview.debug`; `pm clear` it instead. An
+  install refused this way usually means the package went missing.
 - **Drive the UI:** anything reachable by route, drive from the host with the nav backdoor
   below. Anything needing a tap -- a span chip, a settings toggle, Back -- needs a person.
 - **Rotation cannot be forced from the host.** Both `user_rotation` and `wm size` are refused,
