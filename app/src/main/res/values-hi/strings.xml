@@ -699,4 +699,11 @@
     <string name="chart_source_hrv_nights">लाइन: पिछली 7 रातों का औसत; बिंदु: अलग-अलग रातें; शेड किया गया: आपकी सामान्य रेंज</string>
     <string name="legend_hrv_night">एक रात</string>
     <string name="hrv_show_nights">अलग-अलग रातें दिखाएं</string>
+    <string name="body_composition">शरीर की संरचना</string>
+    <string name="body_composition_empty">इस अवधि में वज़न या शरीर की संरचना का कोई माप नहीं</string>
+    <string name="body_composition_note">हर बिंदु एक दिन का औसत है, उस प्रकार के लिए चुने गए स्रोत से। हर चार्ट का अपना पैमाना है।</string>
+    <string name="body_composition_note_weekly">हर बिंदु एक सप्ताह के दिनों का औसत है, उस प्रकार के लिए चुने गए स्रोत से। हर चार्ट का अपना पैमाना है।</string>
+    <string name="body_composition_one">इस अवधि में एक माप</string>
+    <string name="body_fat_mass">वसा द्रव्यमान</string>
+    <string name="body_fat_mass_note">गणना: शरीर में वसा का प्रतिशत × उसी दिन का वज़न</string>
 </resources>

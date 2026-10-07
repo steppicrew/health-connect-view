@@ -724,4 +724,11 @@
     <string name="chart_source_hrv_nights">Ligne : moyenne des 7 dernières nuits ; points : nuits individuelles ; zone ombrée : votre plage habituelle</string>
     <string name="legend_hrv_night">Nuit individuelle</string>
     <string name="hrv_show_nights">Afficher les nuits individuelles</string>
+    <string name="body_composition">Composition corporelle</string>
+    <string name="body_composition_empty">Aucune mesure de poids ou de composition corporelle sur cette période</string>
+    <string name="body_composition_note">Chaque point est la moyenne d\'une journée, issue de la source choisie pour ce type. Chaque graphique a sa propre échelle.</string>
+    <string name="body_composition_note_weekly">Chaque point est la moyenne d\'une semaine sur ses jours, issue de la source choisie pour ce type. Chaque graphique a sa propre échelle.</string>
+    <string name="body_composition_one">Une mesure sur cette période</string>
+    <string name="body_fat_mass">Masse grasse (poids)</string>
+    <string name="body_fat_mass_note">Calculé : pourcentage de masse grasse × poids du même jour</string>
 </resources>

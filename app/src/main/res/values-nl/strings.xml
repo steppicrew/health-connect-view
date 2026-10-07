@@ -699,4 +699,11 @@
     <string name="chart_source_hrv_nights">Lijn: gemiddelde van de laatste 7 nachten; stippen: losse nachten; gearceerd: je gebruikelijke bereik</string>
     <string name="legend_hrv_night">Losse nacht</string>
     <string name="hrv_show_nights">Losse nachten tonen</string>
+    <string name="body_composition">Lichaamssamenstelling</string>
+    <string name="body_composition_empty">Geen metingen van gewicht of lichaamssamenstelling in deze periode</string>
+    <string name="body_composition_note">Elk punt is het gemiddelde van een dag, uit de bron die voor dat type is gekozen. Elke grafiek heeft een eigen schaal.</string>
+    <string name="body_composition_note_weekly">Elk punt is het gemiddelde van een week over haar dagen, uit de bron die voor dat type is gekozen. Elke grafiek heeft een eigen schaal.</string>
+    <string name="body_composition_one">Eén meting in deze periode</string>
+    <string name="body_fat_mass">Vetmassa</string>
+    <string name="body_fat_mass_note">Berekend: vetpercentage × gewicht van dezelfde dag</string>
 </resources>

@@ -799,4 +799,11 @@
     <string name="chart_source_hrv_nights">الخط: متوسط آخر 7 ليالٍ؛ النقاط: الليالي المنفردة؛ المنطقة المظلّلة: نطاقك المعتاد</string>
     <string name="legend_hrv_night">ليلة منفردة</string>
     <string name="hrv_show_nights">إظهار الليالي المنفردة</string>
+    <string name="body_composition">تركيب الجسم</string>
+    <string name="body_composition_empty">لا توجد قياسات للوزن أو تركيب الجسم في هذه الفترة</string>
+    <string name="body_composition_note">كل نقطة هي متوسط يوم، من المصدر المختار لهذا النوع. لكل مخطط مقياسه الخاص.</string>
+    <string name="body_composition_note_weekly">كل نقطة هي متوسط أسبوع على أيامه، من المصدر المختار لهذا النوع. لكل مخطط مقياسه الخاص.</string>
+    <string name="body_composition_one">قياس واحد في هذه الفترة</string>
+    <string name="body_fat_mass">كتلة الدهون</string>
+    <string name="body_fat_mass_note">محسوبة: نسبة الدهون في الجسم × وزن اليوم نفسه</string>
 </resources>

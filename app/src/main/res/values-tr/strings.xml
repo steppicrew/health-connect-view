@@ -699,4 +699,11 @@
     <string name="chart_source_hrv_nights">Çizgi: son 7 gecenin ortalaması; noktalar: tekil geceler; gölgeli: olağan aralığınız</string>
     <string name="legend_hrv_night">Tek gece</string>
     <string name="hrv_show_nights">Tekil geceleri göster</string>
+    <string name="body_composition">Vücut kompozisyonu</string>
+    <string name="body_composition_empty">Bu dönemde kilo veya vücut kompozisyonu ölçümü yok</string>
+    <string name="body_composition_note">Her nokta, o tür için seçilen kaynaktan bir günün ortalamasıdır. Her grafiğin kendi ölçeği vardır.</string>
+    <string name="body_composition_note_weekly">Her nokta, o tür için seçilen kaynaktan bir haftanın günlerinin ortalamasıdır. Her grafiğin kendi ölçeği vardır.</string>
+    <string name="body_composition_one">Bu dönemde bir ölçüm</string>
+    <string name="body_fat_mass">Yağ kütlesi</string>
+    <string name="body_fat_mass_note">Hesaplanan: vücut yağ oranı × aynı günün kilosu</string>
 </resources>

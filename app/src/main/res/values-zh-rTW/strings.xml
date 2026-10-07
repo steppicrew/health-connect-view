@@ -674,4 +674,11 @@
     <string name="chart_source_hrv_nights">曲線：最近 7 晚平均值；圓點：單晚；陰影：您的平常範圍</string>
     <string name="legend_hrv_night">單晚</string>
     <string name="hrv_show_nights">顯示單晚數值</string>
+    <string name="body_composition">身體組成</string>
+    <string name="body_composition_empty">此期間沒有體重或身體組成測量值</string>
+    <string name="body_composition_note">每個點是一天的平均值，來自為該類型選擇的來源。每張圖表都有自己的刻度。</string>
+    <string name="body_composition_note_weekly">每個點是一週內各天的平均值，來自為該類型選擇的來源。每張圖表都有自己的刻度。</string>
+    <string name="body_composition_one">此期間有一次測量</string>
+    <string name="body_fat_mass">脂肪量</string>
+    <string name="body_fat_mass_note">計算值：體脂率 × 同一天的體重</string>
 </resources>

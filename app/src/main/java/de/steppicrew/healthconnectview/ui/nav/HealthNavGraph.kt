@@ -3,6 +3,8 @@ package de.steppicrew.healthconnectview.ui.nav
 import android.net.Uri
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.ui.body.BodyCompositionScreen
+import de.steppicrew.healthconnectview.ui.body.BodyCompositionViewModel
 import de.steppicrew.healthconnectview.ui.session.SessionScreen
 import de.steppicrew.healthconnectview.ui.session.SessionViewModel
 import de.steppicrew.healthconnectview.ui.session.WorkoutsScreen
@@ -50,6 +52,8 @@ object Routes {
     const val WORKOUTS = "workouts?family={family}"
 
     fun workouts() = "workouts"
+
+    const val BODY = "body"
 
     fun session(session: Session) = "session/${session.kind.name}/${Uri.encode(session.recordId)}"
 
@@ -179,6 +183,7 @@ fun HealthNavGraph(
                 openSession = entry.arguments?.getString("session").orEmpty(),
                 onOpenSession = { navController.navigate(Routes.session(it)) },
                 onOpenWorkouts = { navController.navigate(Routes.workouts()) },
+                onOpenBody = { navController.navigate(Routes.BODY) },
             )
         }
 
@@ -196,6 +201,15 @@ fun HealthNavGraph(
             val viewModel: SessionViewModel = viewModel()
             LaunchedEffect(kind, id) { viewModel.load(kind, id) }
             SessionScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.BODY) {
+            val viewModel: BodyCompositionViewModel = viewModel()
+            BodyCompositionScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
         }
 
         composable(
