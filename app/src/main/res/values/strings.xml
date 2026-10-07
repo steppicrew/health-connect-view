@@ -423,6 +423,7 @@
     <string name="span_year">Year</string>
     <string name="span_previous">Earlier</string>
     <string name="span_next">Later</string>
+    <string name="span_now">Jump to now</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Value for the day</string>
     <string name="legend_rolling_mean">4-week mean</string>
@@ -607,6 +608,7 @@
     <string name="record_title_highest">Highest of the past year</string>
     <string name="record_title_longest">Longest workout of the past year</string>
     <string name="record_value_on">%1$s on %2$s</string>
+    <string name="record_show">Show this day</string>
     <string name="record_rule">Searched among the days before today in the past year. Daily figures are Health Connect\'s totals with duplicates removed, so a day several apps recorded counts once, and so does a workout. Today counts once it is over.</string>
     <string name="history_limit_note">Without access to older data, only the last 30 days were searched.</string>
     <string name="history_grant">Allow older data</string>

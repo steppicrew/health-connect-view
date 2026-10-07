@@ -490,6 +490,13 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         reload()
     }
 
+    /** Opens one day, whatever span is shown: the day a record was set, from its note. */
+    fun showDay(date: LocalDate) {
+        _span.value = Span.DAY
+        _offset.value = Span.DAY.offsetOf(date)
+        reload()
+    }
+
     /**
      * The day of the newest record before [start], in the selected source, or null.
      *
@@ -519,6 +526,13 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     /** Stepping forward past the current window would show an empty future. */
+    /** Back to the window holding today. */
+    fun stepToNow() {
+        if (_offset.value == 0) return
+        _offset.value = 0
+        reload()
+    }
+
     fun stepForward() {
         if (_offset.value == 0) return
         _offset.update { (it - 1).coerceAtLeast(0) }

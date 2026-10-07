@@ -401,6 +401,7 @@
     <string name="span_year">Año</string>
     <string name="span_previous">Antes</string>
     <string name="span_next">Después</string>
+    <string name="span_now">Ir al periodo actual</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valor del día</string>
     <string name="legend_rolling_mean">Media de 4 semanas</string>
@@ -599,6 +600,7 @@
     <string name="record_title_highest">Valor más alto del último año</string>
     <string name="record_title_longest">Entrenamiento más largo del último año</string>
     <string name="record_value_on">%1$s el %2$s</string>
+    <string name="record_show">Mostrar este día</string>
     <string name="record_rule">Se busca entre los días anteriores a hoy en el último año. Los valores diarios son los totales de Health Connect sin duplicados, así que un día registrado por varias aplicaciones cuenta una vez, igual que un entrenamiento. Hoy cuenta cuando termine.</string>
     <string name="history_limit_note">Sin acceso a datos más antiguos, solo se han revisado los últimos 30 días.</string>
     <string name="history_grant">Permitir datos antiguos</string>

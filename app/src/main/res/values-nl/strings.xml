@@ -392,6 +392,7 @@
     <string name="span_year">Jaar</string>
     <string name="span_previous">Eerder</string>
     <string name="span_next">Later</string>
+    <string name="span_now">Naar de huidige periode</string>
     <string name="span_total">Totaal</string>
     <string name="span_daily_value">Waarde van de dag</string>
     <string name="legend_rolling_mean">4-weeks gemiddelde</string>
@@ -574,6 +575,7 @@
     <string name="record_title_highest">Hoogste waarde van het afgelopen jaar</string>
     <string name="record_title_longest">Langste training van het afgelopen jaar</string>
     <string name="record_value_on">%1$s op %2$s</string>
+    <string name="record_show">Deze dag tonen</string>
     <string name="record_rule">Gezocht onder de dagen vóór vandaag in het afgelopen jaar. Dagwaarden zijn de totalen van Health Connect zonder dubbelingen, dus een dag die meerdere apps hebben vastgelegd telt één keer, net als een training. Vandaag telt mee zodra de dag voorbij is.</string>
     <string name="history_limit_note">Zonder toegang tot oudere gegevens zijn alleen de laatste 30 dagen doorzocht.</string>
     <string name="history_grant">Oudere gegevens toestaan</string>

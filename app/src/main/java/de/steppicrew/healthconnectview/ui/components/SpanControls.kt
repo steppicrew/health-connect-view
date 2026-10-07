@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NavigateBefore
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
+import androidx.compose.material.icons.automirrored.filled.LastPage
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -66,6 +68,8 @@ fun WindowStepper(
     canStepForward: Boolean,
     onBack: () -> Unit,
     onForward: () -> Unit,
+    /** Straight back to the window holding today, from however far back. */
+    onNow: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -80,11 +84,24 @@ fun WindowStepper(
                 contentDescription = stringResource(R.string.span_previous),
             )
         }
-        Text(text = label, style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+        )
         IconButton(onClick = onForward, enabled = canStepForward) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = stringResource(R.string.span_next),
+            )
+        }
+        // Always there, disabled at today like the arrow beside it, so the label never shifts
+        // when stepping back makes it usable.
+        IconButton(onClick = onNow, enabled = canStepForward) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.LastPage,
+                contentDescription = stringResource(R.string.span_now),
             )
         }
     }

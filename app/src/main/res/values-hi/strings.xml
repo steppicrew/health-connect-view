@@ -392,6 +392,7 @@
     <string name="span_year">साल</string>
     <string name="span_previous">पहले</string>
     <string name="span_next">बाद में</string>
+    <string name="span_now">मौजूदा अवधि पर जाएँ</string>
     <string name="span_total">कुल</string>
     <string name="span_daily_value">दिन की वैल्यू</string>
     <string name="legend_rolling_mean">4 हफ़्ते का औसत</string>
@@ -574,6 +575,7 @@
     <string name="record_title_highest">पिछले एक साल का सबसे ज़्यादा मान</string>
     <string name="record_title_longest">पिछले एक साल की सबसे लंबी ट्रेनिंग</string>
     <string name="record_value_on">%2$s को %1$s</string>
+    <string name="record_show">यह दिन दिखाएँ</string>
     <string name="record_rule">पिछले एक साल में आज से पहले के दिनों में खोजा जाता है। दैनिक मान Health Connect के दोहराव हटाकर बने कुल योग हैं, इसलिए कई ऐप्स द्वारा दर्ज किया गया दिन एक ही बार गिना जाता है, ट्रेनिंग भी। आज का दिन खत्म होने के बाद गिना जाता है।</string>
     <string name="history_limit_note">पुराने डेटा तक पहुंच न होने से केवल पिछले 30 दिन खोजे गए।</string>
     <string name="history_grant">पुराने डेटा की अनुमति दें</string>

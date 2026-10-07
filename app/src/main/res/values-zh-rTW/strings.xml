@@ -383,6 +383,7 @@
     <string name="span_year">年</string>
     <string name="span_previous">較早</string>
     <string name="span_next">較晚</string>
+    <string name="span_now">跳到目前時段</string>
     <string name="span_total">總計</string>
     <string name="span_daily_value">當天的數值</string>
     <string name="legend_rolling_mean">4 週平均值</string>
@@ -549,6 +550,7 @@
     <string name="record_title_highest">過去一年中的最高值</string>
     <string name="record_title_longest">過去一年中最長的運動</string>
     <string name="record_value_on">%2$s：%1$s</string>
+    <string name="record_show">顯示這一天</string>
     <string name="record_rule">在過去一年中今天之前的日子裡尋找。每日數值是 Health Connect 去除重複後的總計，因此由多個應用程式記錄的一天只算一次，運動也是如此。今天在結束後才計入。</string>
     <string name="history_limit_note">由於無法存取更早的資料，僅搜尋了最近 30 天。</string>
     <string name="history_grant">允許存取較舊的資料</string>

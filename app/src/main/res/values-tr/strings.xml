@@ -392,6 +392,7 @@
     <string name="span_year">Yıl</string>
     <string name="span_previous">Önceki</string>
     <string name="span_next">Sonraki</string>
+    <string name="span_now">Güncel döneme git</string>
     <string name="span_total">Toplam</string>
     <string name="span_daily_value">Günün değeri</string>
     <string name="legend_rolling_mean">4 haftalık ortalama</string>
@@ -574,6 +575,7 @@
     <string name="record_title_highest">Son bir yılın en yüksek değeri</string>
     <string name="record_title_longest">Son bir yılın en uzun antrenmanı</string>
     <string name="record_value_on">%1$s, %2$s</string>
+    <string name="record_show">Bu günü göster</string>
     <string name="record_rule">Son bir yıl içinde bugünden önceki günler arasında aranır. Günlük değerler, Health Connect’in tekrarlar çıkarılmış toplamlarıdır; birkaç uygulamanın kaydettiği bir gün bir kez sayılır, bir antrenman da öyle. Bugün, gün bitince sayılır.</string>
     <string name="history_limit_note">Daha eski verilere erişim olmadığından yalnızca son 30 gün tarandı.</string>
     <string name="history_grant">Eski verilere izin verin</string>

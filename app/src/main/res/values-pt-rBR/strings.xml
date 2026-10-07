@@ -401,6 +401,7 @@
     <string name="span_year">Ano</string>
     <string name="span_previous">Antes</string>
     <string name="span_next">Depois</string>
+    <string name="span_now">Ir para o período atual</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valor do dia</string>
     <string name="legend_rolling_mean">Média de 4 semanas</string>
@@ -599,6 +600,7 @@
     <string name="record_title_highest">Maior valor do último ano</string>
     <string name="record_title_longest">Treino mais longo do último ano</string>
     <string name="record_value_on">%1$s em %2$s</string>
+    <string name="record_show">Mostrar este dia</string>
     <string name="record_rule">Buscado entre os dias antes de hoje no último ano. Os valores diários são os totais do Conexão Saúde sem duplicatas, então um dia registrado por vários apps conta uma vez, assim como um treino. Hoje conta quando terminar.</string>
     <string name="history_limit_note">Sem acesso a dados mais antigos, só os últimos 30 dias foram pesquisados.</string>
     <string name="history_grant">Permitir dados antigos</string>

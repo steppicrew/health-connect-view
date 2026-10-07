@@ -383,6 +383,7 @@
     <string name="span_year">年</string>
     <string name="span_previous">前へ</string>
     <string name="span_next">次へ</string>
+    <string name="span_now">現在の期間に移動</string>
     <string name="span_total">合計</string>
     <string name="span_daily_value">その日の値</string>
     <string name="legend_rolling_mean">4 週間平均</string>
@@ -549,6 +550,7 @@
     <string name="record_title_highest">過去1年の最高値</string>
     <string name="record_title_longest">過去1年で最長のトレーニング</string>
     <string name="record_value_on">%2$s：%1$s</string>
+    <string name="record_show">この日を表示</string>
     <string name="record_rule">過去1年のうち今日より前の日から探します。1日の値はヘルスコネクトの重複を除いた合計なので、複数のアプリが記録した日も1回として数えます。トレーニングも同様です。今日は1日が終わってから含めます。</string>
     <string name="history_limit_note">過去のデータへのアクセスがないため、直近30日間のみを検索しました。</string>
     <string name="history_grant">過去のデータを許可</string>

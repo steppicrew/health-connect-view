@@ -410,6 +410,7 @@
     <string name="span_year">Rok</string>
     <string name="span_previous">Wcześniej</string>
     <string name="span_next">Później</string>
+    <string name="span_now">Przejdź do bieżącego okresu</string>
     <string name="span_total">Łącznie</string>
     <string name="span_daily_value">Wartość dnia</string>
     <string name="legend_rolling_mean">Średnia 4-tygodniowa</string>
@@ -624,6 +625,7 @@
     <string name="record_title_highest">Najwyższa wartość w ostatnim roku</string>
     <string name="record_title_longest">Najdłuższy trening w ostatnim roku</string>
     <string name="record_value_on">%1$s, %2$s</string>
+    <string name="record_show">Pokaż ten dzień</string>
     <string name="record_rule">Szukane wśród dni przed dzisiejszym w ostatnim roku. Wartości dzienne to sumy z Health Connect bez duplikatów, więc dzień zapisany przez kilka aplikacji liczy się raz, podobnie jak trening. Dzisiejszy dzień liczy się po jego zakończeniu.</string>
     <string name="history_limit_note">Bez dostępu do starszych danych przeszukano tylko ostatnie 30 dni.</string>
     <string name="history_grant">Zezwól na starsze dane</string>

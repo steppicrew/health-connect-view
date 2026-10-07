@@ -66,6 +66,13 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
         reload()
     }
 
+    /** Back to the window holding today. */
+    fun stepToNow() {
+        if (_offset.value == 0) return
+        _offset.value = 0
+        reload()
+    }
+
     fun stepForward() {
         if (_offset.value == 0) return
         _offset.update { (it - 1).coerceAtLeast(0) }
