@@ -374,7 +374,7 @@ open items below and `FEATURE-IDEAS.md`.
       previous weigh-in behind it as a shadow, and a range where the day had several
       readings -- or something better. Applies alike to the other measured-now-and-then types
       (body fat, the other body measurements, blood pressure on a day of one reading).
-50. [ ] **From an empty window to the nearest one with data** -- the owner's idea, 07.10.2026.
+50. [x] **From an empty window to the nearest one with data** -- built 07.10.2026; seen on the phone with VO2 max, four weeks empty, "Zuletzt aufgezeichnet am 16.08.2026". -- the owner's idea, 07.10.2026.
     A day, week or four weeks with nothing recorded today mostly means stepping back through
     more empty ones (VO2 max, weight, blood pressure are measured now and then). Not by
     skipping automatically -- the arrows must stay predictable, one window per tap -- but as
