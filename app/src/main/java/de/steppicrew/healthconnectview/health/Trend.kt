@@ -29,7 +29,19 @@ data class TrendResult(
     val recent: Double,
     /** Mean over the recorded days of all [TREND_DAYS]. */
     val baseline: Double,
-)
+    /** The ordinary day-to-day spread (standard deviation) the difference is measured against. */
+    val spread: Double = 0.0,
+) {
+    /**
+     * How unusual the difference is, in day-to-day spreads: 0.5 is where "level" ends. What
+     * insights are ranked by -- a percentage would put a 3 % change in a steady weight below a
+     * 10 % one in a restless step count, the wrong way round.
+     */
+    val weight: Double get() = if (spread > 0.0) kotlin.math.abs(recent - baseline) / spread else 0.0
+
+    /** The difference as a percentage of the baseline, or null where that has no meaning. */
+    val percent: Double? get() = if (baseline > 0.0) (recent - baseline) / baseline * 100.0 else null
+}
 
 /**
  * Compares the mean of the last [SHORT_DAYS] of [daily] with the mean of all of it.
@@ -58,7 +70,7 @@ fun trendOf(daily: List<Double?>): TrendResult? {
         difference > 0 -> Trend.UP
         else -> Trend.DOWN
     }
-    return TrendResult(direction, recent = shortMean, baseline = longMean)
+    return TrendResult(direction, recent = shortMean, baseline = longMean, spread = spread)
 }
 
 /**

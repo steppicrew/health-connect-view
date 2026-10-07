@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.HealthAndSafety
+import androidx.compose.material.icons.filled.Insights
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,6 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.activity.compose.LocalActivity
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Category
@@ -56,8 +60,12 @@ fun CatalogScreen(
     onOpenPermissions: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    /** What moved this week across every type; Pro. */
+    onOpenInsights: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
 
     OnResume { viewModel.refresh() }
 
@@ -98,6 +106,11 @@ fun CatalogScreen(
             )
 
             else -> LazyColumn(modifier = Modifier.padding(padding)) {
+                // Across every type, so it leads the list of them rather than sitting in one.
+                item(key = "insights") {
+                    val unlocked = pro.allows(Feature.INSIGHTS)
+                    InsightsRow(unlocked) { if (unlocked) onOpenInsights() else activity?.let(AppEntitlements.current::buy) }
+                }
                 RecordRegistry.byCategory.forEach { (category, specs) ->
                     item(key = "header_${category.name}") { CategoryHeader(category) }
                     // The cycle types mean little one at a time; the overview is how they are
@@ -128,6 +141,38 @@ private fun CategoryHeader(category: Category) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
     )
+}
+
+@Composable
+private fun InsightsRow(unlocked: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Insights,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, 20.dp))
+                .size(20.dp),
+        )
+        Column(Modifier.padding(start = 12.dp)) {
+            val title = stringResource(R.string.insights_title)
+            Text(
+                text = if (unlocked) title else stringResource(R.string.export_premium, title),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = stringResource(R.string.insights_open_body),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @Composable

@@ -711,4 +711,12 @@
     <string name="compare_swap">Sırayı değiştir</string>
     <string name="compare_none">Bu dönemde değer yok</string>
     <string name="compare_note">Tek bir zaman ekseninde iki grafik, her birinin kendi ölçeği var. İki değerin birlikte değişmesi, birinin diğerine neden olduğu anlamına gelmez.</string>
+    <string name="insights_title">Bu haftaki değişiklikler</string>
+    <string name="insights_open_body">Her türün son 7 günü, 30 günlük ortalamasına göre</string>
+    <string name="insight_above">Son 7 gün, 30 günlük ortalamanın %1$s üzerinde</string>
+    <string name="insight_below">Son 7 gün, 30 günlük ortalamanın %1$s altında</string>
+    <string name="insights_level">30 günlük ortalama düzeyinde: %1$s</string>
+    <string name="insights_none">Öne çıkan bir şey yok: yeterli verisi olan her tür 30 günlük ortalaması düzeyinde.</string>
+    <string name="insights_empty">Henüz yeterli veri yok: bir değişiklik için son 30 günün en az 15\'inde kayıt gerekir.</string>
+    <string name="insights_rule">Bugünden önceki 7 günü, ondan önceki 30 günle karşılaştırır. Her türün olağan günlük dalgalanmasına göre ne kadar değiştiğine göre sıralanır. Değişiklik bir konumdur, bir yargı değildir: artışın iyi olup olmadığı türe ve size bağlıdır.</string>
 </resources>

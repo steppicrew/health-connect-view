@@ -736,4 +736,12 @@
     <string name="compare_swap">Invertir el orden</string>
     <string name="compare_none">No hay valores en este periodo</string>
     <string name="compare_note">Dos gráficos en un mismo eje de tiempo, cada uno con su propia escala. Que dos valores cambien juntos no significa que uno cause el otro.</string>
+    <string name="insights_title">Cambios de esta semana</string>
+    <string name="insights_open_body">Los últimos 7 días de cada tipo frente a su media de 30 días</string>
+    <string name="insight_above">Últimos 7 días: %1$s por encima de la media de 30 días</string>
+    <string name="insight_below">Últimos 7 días: %1$s por debajo de la media de 30 días</string>
+    <string name="insights_level">Al nivel de la media de 30 días: %1$s</string>
+    <string name="insights_none">Nada destaca: cada tipo con datos suficientes está al nivel de su media de 30 días.</string>
+    <string name="insights_empty">Aún no hay datos suficientes: un cambio necesita registros en al menos 15 de los últimos 30 días.</string>
+    <string name="insights_rule">Compara los 7 días anteriores a hoy con los 30 días anteriores. Ordenado según cuánto se movió cada tipo frente a su variación habitual de un día a otro. Un cambio es una posición, no un juicio: que subir sea bueno depende del tipo y de ti.</string>
 </resources>

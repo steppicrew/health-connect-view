@@ -711,4 +711,12 @@
     <string name="compare_swap">Volgorde omwisselen</string>
     <string name="compare_none">Geen waarden in deze periode</string>
     <string name="compare_note">Twee grafieken op één tijdas, elk met een eigen schaal. Dat twee waarden samen bewegen, betekent niet dat de ene de andere veroorzaakt.</string>
+    <string name="insights_title">Veranderingen deze week</string>
+    <string name="insights_open_body">De laatste 7 dagen van elk type tegenover het 30-daagse gemiddelde</string>
+    <string name="insight_above">Laatste 7 dagen %1$s boven het 30-daagse gemiddelde</string>
+    <string name="insight_below">Laatste 7 dagen %1$s onder het 30-daagse gemiddelde</string>
+    <string name="insights_level">Gelijk aan het 30-daagse gemiddelde: %1$s</string>
+    <string name="insights_none">Niets valt op: elk type met genoeg gegevens ligt gelijk met zijn 30-daagse gemiddelde.</string>
+    <string name="insights_empty">Nog niet genoeg gegevens: een verandering vraagt metingen op minstens 15 van de laatste 30 dagen.</string>
+    <string name="insights_rule">Vergelijkt de 7 dagen vóór vandaag met de 30 dagen daarvoor. Gerangschikt naar hoe ver elk type bewoog tegenover zijn gewone schommeling van dag tot dag. Een verandering is een positie, geen oordeel: of omhoog goed is, hangt af van het type en van jou.</string>
 </resources>

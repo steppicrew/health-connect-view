@@ -5,6 +5,8 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionScreen
 import de.steppicrew.healthconnectview.ui.compare.CompareScreen
+import de.steppicrew.healthconnectview.ui.insights.InsightsScreen
+import de.steppicrew.healthconnectview.ui.insights.InsightsViewModel
 import de.steppicrew.healthconnectview.ui.compare.CompareViewModel
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionViewModel
 import de.steppicrew.healthconnectview.ui.session.SessionScreen
@@ -36,6 +38,7 @@ import de.steppicrew.healthconnectview.ui.permissions.PermissionsViewModel
 import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
 import de.steppicrew.healthconnectview.ui.settings.SettingsScreen
 import de.steppicrew.healthconnectview.ui.settings.SettingsViewModel
+import java.time.LocalDate
 
 object Routes {
     const val DASHBOARD = "dashboard"
@@ -56,6 +59,8 @@ object Routes {
     fun workouts() = "workouts"
 
     const val BODY = "body"
+
+    const val INSIGHTS = "insights"
 
     const val COMPARE = "compare/{first}/{second}?span={span}&date={date}"
 
@@ -107,6 +112,7 @@ fun HealthNavGraph(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.typeDetail(it)) },
                 onOpenCycles = { navController.navigate(Routes.cycle()) },
+                onOpenInsights = { navController.navigate(Routes.INSIGHTS) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 onBack = { navController.popBackStack() },
             )
@@ -240,6 +246,18 @@ fun HealthNavGraph(
             CompareScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
+        }
+
+        composable(Routes.INSIGHTS) {
+            val viewModel: InsightsViewModel = viewModel()
+            InsightsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                // The four weeks, not today: they are what the card compares, and today may hold
+                // nothing yet just after midnight.
+                onOpenType = { type -> navController.navigate(Routes.tileDetail(type, LocalDate.now().toString(), Span.MONTH)) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
             )
         }

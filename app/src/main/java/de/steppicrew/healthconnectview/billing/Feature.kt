@@ -39,4 +39,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** Two types' charts stacked on one time axis. */
     COMPARE(isPremium = true),
+
+    /** Every type's last week against its month, the unusual moves first. */
+    INSIGHTS(isPremium = true),
 }
