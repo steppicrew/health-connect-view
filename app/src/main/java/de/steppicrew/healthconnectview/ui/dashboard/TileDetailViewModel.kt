@@ -370,6 +370,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * within a request. It moves in real jumps rather than a guessed time.
      */
     private val _progress = MutableStateFlow<Float?>(null)
+
+    /** The personal record to show under an empty window's message; null otherwise. */
+    private val _emptyRecord = MutableStateFlow<PersonalRecord?>(null)
+    val emptyRecord: StateFlow<PersonalRecord?> = _emptyRecord.asStateFlow()
     val progress: StateFlow<Float?> = _progress.asStateFlow()
 
     private val _span = MutableStateFlow(Span.DAY)
@@ -525,15 +529,12 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             _progress.value = null
             result.fold(
                 onSuccess = { data ->
-                    _state.update {
-                        if (data.points.isEmpty() && data.total == null &&
-                            data.records.isEmpty() && data.sessions.isEmpty()
-                        ) {
-                            UiState.Empty
-                        } else {
-                            UiState.Data(data)
-                        }
-                    }
+                    val empty = data.points.isEmpty() && data.total == null &&
+                        data.records.isEmpty() && data.sessions.isEmpty()
+                    // An empty window still has a best: VO2 max is measured now and then, and
+                    // most single days of it would otherwise never show its record.
+                    _emptyRecord.value = data.record.takeIf { empty }
+                    _state.update { if (empty) UiState.Empty else UiState.Data(data) }
                 },
                 onFailure = { error ->
                     _state.update { UiState.Error(error.message ?: "Could not read data") }
