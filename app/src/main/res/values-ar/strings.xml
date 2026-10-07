@@ -478,6 +478,7 @@
     <string name="detail_no_permission_body">لم تمنح هذا التطبيق إذن الوصول إلى هذا النوع من البيانات. يمكنك السماح به من شاشة الأذونات.</string>
     <string name="detail_empty_title">لم يُسجَّل شيء</string>
     <string name="detail_empty_body">الوصول مسموح، لكن لم تُكتب بيانات من هذا النوع في الفترة المحدّدة. جرِّب فترة أطول.</string>
+    <string name="detail_latest_value">آخر تسجيل في %1$s</string>
     <string name="detail_error_title">تعذّرت قراءة البيانات</string>
     <string name="detail_written_by">كتبها %1$s</string>
     <string name="source_phone_sensors">هذا الهاتف</string>

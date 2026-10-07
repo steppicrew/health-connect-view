@@ -423,6 +423,7 @@
     <string name="detail_no_permission_body">このデータタイプへのアクセスをこのアプリに許可していません。権限の画面から許可できます。</string>
     <string name="detail_empty_title">記録はありません</string>
     <string name="detail_empty_body">アクセスは許可されていますが、選択した期間にこのタイプのデータは書き込まれていません。期間を長くしてみてください。</string>
+    <string name="detail_latest_value">最後の記録：%1$s</string>
     <string name="detail_error_title">データを読み取れませんでした</string>
     <string name="detail_written_by">書き込み元: %1$s</string>
     <string name="source_phone_sensors">このスマートフォン</string>

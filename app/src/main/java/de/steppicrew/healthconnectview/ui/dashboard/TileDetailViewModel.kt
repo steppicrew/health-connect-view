@@ -61,6 +61,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import java.time.Duration
+import androidx.health.connect.client.records.SleepSessionRecord
 import de.steppicrew.healthconnectview.health.personalRecord
 import de.steppicrew.healthconnectview.health.PersonalRecord
 import kotlinx.coroutines.delay
@@ -387,6 +389,13 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      */
     private val _progress = MutableStateFlow<Float?>(null)
 
+    /**
+     * The day of the newest record before an empty window, offered as a way to it; null while
+     * the window has data or nothing older exists.
+     */
+    private val _latestBefore = MutableStateFlow<LocalDate?>(null)
+    val latestBefore: StateFlow<LocalDate?> = _latestBefore.asStateFlow()
+
     /** The personal record to show under an empty window's message; null otherwise. */
     private val _emptyRecord = MutableStateFlow<PersonalRecord?>(null)
     val emptyRecord: StateFlow<PersonalRecord?> = _emptyRecord.asStateFlow()
@@ -476,6 +485,28 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private fun offsetForDate(date: String, span: Span = _span.value): Int =
         runCatching { LocalDate.parse(date) }.getOrNull()?.let(span::offsetOf) ?: 0
 
+    /** Opens the window of the current span that holds [date]. */
+    fun showDate(date: LocalDate) {
+        _offset.value = _span.value.offsetOf(date)
+        reload()
+    }
+
+    /**
+     * The day of the newest record before [start], in the selected source, or null.
+     *
+     * One request: reads come newest first, so the first record of a long range ending at the
+     * window is the one wanted. A night counts by the morning it ended on, as everywhere else;
+     * other records by when they began. Without the history permission Health Connect returns
+     * nothing older than 30 days, so the offer reaches back that far only.
+     */
+    private suspend fun latestBefore(spec: RecordTypeSpec<*>, start: Instant): LocalDate? = runCatching {
+        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val record = repository.recordsIn(spec, start.minus(LATEST_LOOKBACK), start, origins, maxRecords = 1)
+            .firstOrNull() ?: return@runCatching null
+        val time = if (spec.type == SleepSessionRecord::class) spec.endTimeOf(record) ?: spec.timeOf(record) else spec.timeOf(record)
+        time.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate()
+    }.getOrNull()
+
     /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
     fun setSpan(span: Span) {
         _span.update { span }
@@ -514,6 +545,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             _state.update { UiState.Loading }
+            _latestBefore.value = null
 
             val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
             if (spec.permission !in granted) {
@@ -552,6 +584,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
                     // most single days of it would otherwise never show its record.
                     _emptyRecord.value = data.record.takeIf { empty }
                     _state.update { if (empty) UiState.Empty else UiState.Data(data) }
+                    if (empty) _latestBefore.value = latestBefore(spec, windowStart(span, offset))
                 },
                 onFailure = { error ->
                     _state.update { UiState.Error(error.message ?: "Could not read data") }
@@ -867,6 +900,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     private companion object {
         const val TAG = "TileDetail"
+
+        /** How far back [latestBefore] looks: far enough for a reading taken once a year. */
+        val LATEST_LOOKBACK: Duration = Duration.ofDays(3650)
         /** How long a zoom must settle before the list is re-read for it. */
         const val LIST_DEBOUNCE_MS = 400L
         /**

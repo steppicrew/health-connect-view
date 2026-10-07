@@ -456,6 +456,7 @@
     <string name="detail_no_permission_body">Ta aplikacja nie ma dostępu do tego typu danych. Możesz na niego zezwolić na ekranie uprawnień.</string>
     <string name="detail_empty_title">Nic nie zapisano</string>
     <string name="detail_empty_body">Dostęp jest dozwolony, ale w wybranym okresie nie zapisano danych tego typu. Spróbuj dłuższego okresu.</string>
+    <string name="detail_latest_value">Ostatni zapis: %1$s</string>
     <string name="detail_error_title">Nie udało się odczytać danych</string>
     <string name="detail_written_by">Zapisane przez: %1$s</string>
     <string name="source_phone_sensors">Ten telefon</string>

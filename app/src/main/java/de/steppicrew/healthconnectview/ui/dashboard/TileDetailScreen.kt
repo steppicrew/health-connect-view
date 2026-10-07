@@ -186,6 +186,7 @@ fun TileDetailScreen(
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val emptyRecord by viewModel.emptyRecord.collectAsStateWithLifecycle()
+    val latestBefore by viewModel.latestBefore.collectAsStateWithLifecycle()
     // Back from the permission screen with older data allowed, the capped window is re-read.
     OnResume { viewModel.onResume() }
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
@@ -295,11 +296,19 @@ fun TileDetailScreen(
                     // look" are the distinction UiState draws, and sharing an icon collapses it
                     // on the one screen where the difference is actionable.
                     is UiState.Empty -> Column(Modifier.fillMaxSize()) {
+                        val latest = latestBefore
                         MessageView(
                             icon = Icons.Default.EventBusy,
                             title = stringResource(R.string.detail_empty_title),
                             body = stringResource(R.string.detail_empty_body),
                             modifier = Modifier.weight(1f),
+                            // Not by skipping empty windows on the arrows, which must stay one
+                            // window per tap: an offer to go where the data is.
+                            actionLabel = latest?.let {
+                                val zone = HealthRepository.DEFAULT_ZONE
+                                stringResource(R.string.detail_latest_value, Formatting.date(it.atStartOfDay(zone).toInstant(), zone))
+                            },
+                            onAction = latest?.let { date -> { viewModel.showDate(date) } },
                         )
                         val shownSpec = spec
                         val record = emptyRecord

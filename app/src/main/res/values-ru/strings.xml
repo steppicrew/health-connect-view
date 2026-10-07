@@ -456,6 +456,7 @@
     <string name="detail_no_permission_body">Вы не дали этому приложению доступ к этому типу данных. Разрешить его можно на экране разрешений.</string>
     <string name="detail_empty_title">Ничего не записано</string>
     <string name="detail_empty_body">Доступ разрешён, но за выбранный период данные этого типа не записывались. Попробуйте период подлиннее.</string>
+    <string name="detail_latest_value">Последняя запись: %1$s</string>
     <string name="detail_error_title">Не удалось прочитать данные</string>
     <string name="detail_written_by">Записано: %1$s</string>
     <string name="source_phone_sensors">Этот телефон</string>

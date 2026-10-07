@@ -434,6 +434,7 @@
     <string name="detail_no_permission_body">आपने इस ऐप को इस डेटा टाइप का ऐक्सेस नहीं दिया है। आप अनुमतियों वाली स्क्रीन से अनुमति दे सकते हैं।</string>
     <string name="detail_empty_title">कुछ रिकॉर्ड नहीं हुआ</string>
     <string name="detail_empty_body">ऐक्सेस की अनुमति है, लेकिन चुनी गई अवधि में इस टाइप का कोई डेटा नहीं लिखा गया। लंबी अवधि चुनकर देखें।</string>
+    <string name="detail_latest_value">आखिरी रिकॉर्ड: %1$s</string>
     <string name="detail_error_title">डेटा नहीं पढ़ा जा सका</string>
     <string name="detail_written_by">%1$s ने लिखा</string>
     <string name="source_phone_sensors">यह फ़ोन</string>

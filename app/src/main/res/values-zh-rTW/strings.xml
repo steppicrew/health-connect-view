@@ -423,6 +423,7 @@
     <string name="detail_no_permission_body">您尚未允許這個應用程式存取這個資料類型。您可以在權限畫面中允許。</string>
     <string name="detail_empty_title">沒有記錄</string>
     <string name="detail_empty_body">已允許存取，但所選期間內沒有寫入這個類型的資料。請試試更長的期間。</string>
+    <string name="detail_latest_value">最近紀錄：%1$s</string>
     <string name="detail_error_title">無法讀取資料</string>
     <string name="detail_written_by">寫入者：%1$s</string>
     <string name="source_phone_sensors">這支手機</string>
