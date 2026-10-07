@@ -686,4 +686,12 @@
     <string name="compare_swap">交換順序</string>
     <string name="compare_none">此期間沒有數值</string>
     <string name="compare_note">兩張圖表共用一條時間軸，各有自己的刻度。兩個數值一起變化並不代表其中一個導致了另一個。</string>
+    <string name="insights_title">本週變化</string>
+    <string name="insights_open_body">每種類型最近 7 天與其 30 天平均值的比較</string>
+    <string name="insight_above">最近 7 天比 30 天平均值高 %1$s</string>
+    <string name="insight_below">最近 7 天比 30 天平均值低 %1$s</string>
+    <string name="insights_level">與 30 天平均值持平：%1$s</string>
+    <string name="insights_none">沒有突出的變化：每種資料充足的類型都與其 30 天平均值持平。</string>
+    <string name="insights_empty">資料還不夠：顯示變化需要最近 30 天中至少 15 天有記錄。</string>
+    <string name="insights_rule">將今天之前的 7 天與再之前的 30 天比較。依每種類型相對於其平常的日間波動變化了多少排序。變化是一種位置，而不是評判：上升是否是好事，取決於類型和您自己。</string>
 </resources>

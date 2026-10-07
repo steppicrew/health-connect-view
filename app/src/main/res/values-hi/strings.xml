@@ -711,4 +711,12 @@
     <string name="compare_swap">क्रम बदलें</string>
     <string name="compare_none">इस अवधि में कोई मान नहीं</string>
     <string name="compare_note">एक ही समय-अक्ष पर दो चार्ट, हर एक का अपना पैमाना। दो मानों का साथ बदलना यह नहीं दर्शाता कि एक दूसरे का कारण है।</string>
+    <string name="insights_title">इस सप्ताह के बदलाव</string>
+    <string name="insights_open_body">हर प्रकार के पिछले 7 दिन, उसके 30 दिन के औसत की तुलना में</string>
+    <string name="insight_above">पिछले 7 दिन 30 दिन के औसत से %1$s ऊपर</string>
+    <string name="insight_below">पिछले 7 दिन 30 दिन के औसत से %1$s नीचे</string>
+    <string name="insights_level">30 दिन के औसत के बराबर: %1$s</string>
+    <string name="insights_none">कुछ खास नहीं: पर्याप्त डेटा वाला हर प्रकार अपने 30 दिन के औसत के बराबर है।</string>
+    <string name="insights_empty">अभी पर्याप्त डेटा नहीं: बदलाव के लिए पिछले 30 में से कम से कम 15 दिनों का रिकॉर्ड चाहिए।</string>
+    <string name="insights_rule">आज से पहले के 7 दिनों की तुलना उससे पहले के 30 दिनों से करता है। क्रम इस पर है कि हर प्रकार अपने सामान्य दिन-प्रतिदिन के उतार-चढ़ाव की तुलना में कितना बदला। बदलाव एक स्थिति है, कोई फ़ैसला नहीं: बढ़ना अच्छा है या नहीं, यह प्रकार पर और आप पर निर्भर करता है।</string>
 </resources>

@@ -811,4 +811,12 @@
     <string name="compare_swap">تبديل الترتيب</string>
     <string name="compare_none">لا توجد قيم في هذه الفترة</string>
     <string name="compare_note">مخططان على محور زمني واحد، لكل منهما مقياسه الخاص. تغيّر قيمتين معًا لا يعني أن إحداهما سبب الأخرى.</string>
+    <string name="insights_title">تغييرات هذا الأسبوع</string>
+    <string name="insights_open_body">آخر 7 أيام لكل نوع مقارنةً بمتوسطه خلال 30 يومًا</string>
+    <string name="insight_above">آخر 7 أيام: أعلى من متوسط 30 يومًا بنسبة %1$s</string>
+    <string name="insight_below">آخر 7 أيام: أقل من متوسط 30 يومًا بنسبة %1$s</string>
+    <string name="insights_level">عند مستوى متوسط 30 يومًا: %1$s</string>
+    <string name="insights_none">لا شيء لافت: كل نوع لديه بيانات كافية عند مستوى متوسطه خلال 30 يومًا.</string>
+    <string name="insights_empty">لا توجد بيانات كافية بعد: يحتاج التغيير إلى تسجيلات في 15 يومًا على الأقل من آخر 30 يومًا.</string>
+    <string name="insights_rule">يقارن الأيام السبعة السابقة لليوم بالأيام الثلاثين التي قبلها. الترتيب بحسب مقدار تغيّر كل نوع مقارنةً بتقلّبه المعتاد من يوم لآخر. التغيير موضع وليس حكمًا: كون الارتفاع جيدًا يعتمد على النوع وعليك.</string>
 </resources>

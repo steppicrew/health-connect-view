@@ -761,4 +761,12 @@
     <string name="compare_swap">Zamień kolejność</string>
     <string name="compare_none">Brak wartości w tym okresie</string>
     <string name="compare_note">Dwa wykresy na jednej osi czasu, każdy z własną skalą. To, że dwie wartości zmieniają się razem, nie znaczy, że jedna powoduje drugą.</string>
+    <string name="insights_title">Zmiany w tym tygodniu</string>
+    <string name="insights_open_body">Ostatnie 7 dni każdego typu wobec jego średniej z 30 dni</string>
+    <string name="insight_above">Ostatnie 7 dni: %1$s powyżej średniej z 30 dni</string>
+    <string name="insight_below">Ostatnie 7 dni: %1$s poniżej średniej z 30 dni</string>
+    <string name="insights_level">Na poziomie średniej z 30 dni: %1$s</string>
+    <string name="insights_none">Nic się nie wyróżnia: każdy typ z wystarczającą ilością danych jest na poziomie swojej średniej z 30 dni.</string>
+    <string name="insights_empty">Za mało danych: zmiana wymaga zapisów z co najmniej 15 z ostatnich 30 dni.</string>
+    <string name="insights_rule">Porównuje 7 dni przed dzisiejszym dniem z 30 dniami wcześniej. Kolejność według tego, jak bardzo dany typ się zmienił w stosunku do zwykłych wahań z dnia na dzień. Zmiana to położenie, nie ocena: to, czy wzrost jest dobry, zależy od typu i od Ciebie.</string>
 </resources>

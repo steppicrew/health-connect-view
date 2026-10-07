@@ -272,9 +272,16 @@ open items below and `FEATURE-IDEAS.md`.
     Activities tile: there a day without a session ends the run, because Health Connect
     cannot tell no activity from no recording, and the rule behind the "i" says so. Seen on
     the emulator. Mindfulness could get the same streak with a string of its own.
-40. [ ] **Insights** -- from `FEATURE-IDEAS.md`. A tile or a section naming notable changes,
-    "Ruhepuls diese Woche 8 % über dem 30-Tage-Mittel", built on the trend arrows' numbers.
-    Worded as a position, never a diagnosis, and never compared to a brand's score. Pro.
+40. [x] **Insights** -- built 08.10.2026, seen on the phone (every type level that week) and on
+    the seeded emulator (three cards). From `FEATURE-IDEAS.md`. "Veränderungen dieser Woche":
+    every type's last 7 days against its 30-day average, from the trend arrows' own
+    computation and each type's own source choice, so a card never disagrees with its screen.
+    Ranked by how far each moved against its ordinary day-to-day spread, not by percentage --
+    3 % on a steady weight outranks 10 % on a restless step count. A card says "Letzte 7 Tage
+    8 % über dem 30-Tage-Mittel" with both averages and opens the type's four weeks; the level
+    types are named in one line beneath. Worded as a position, never a verdict, and no brand.
+    Sessions and basal metabolic rate are left out, as on the arrows. Opened from the top of the
+    catalog -- the dashboard's bar has no room left -- Pro.
 41. [x] **Blood pressure daily spread** -- built 07.10.2026, seen on the emulator's seeded
     month (the phone has one day of readings, and one day draws no ribbon). Left over from
     step 19: a min-max band for systolic and one for diastolic, from the same daily buckets as

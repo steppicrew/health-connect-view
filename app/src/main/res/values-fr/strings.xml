@@ -736,4 +736,12 @@
     <string name="compare_swap">Inverser l\'ordre</string>
     <string name="compare_none">Aucune valeur sur cette période</string>
     <string name="compare_note">Deux graphiques sur un même axe du temps, chacun avec sa propre échelle. Que deux valeurs évoluent ensemble ne signifie pas que l\'une cause l\'autre.</string>
+    <string name="insights_title">Évolutions de la semaine</string>
+    <string name="insights_open_body">Les 7 derniers jours de chaque type comparés à sa moyenne sur 30 jours</string>
+    <string name="insight_above">7 derniers jours : %1$s au-dessus de la moyenne sur 30 jours</string>
+    <string name="insight_below">7 derniers jours : %1$s en dessous de la moyenne sur 30 jours</string>
+    <string name="insights_level">Au niveau de la moyenne sur 30 jours : %1$s</string>
+    <string name="insights_none">Rien ne ressort : chaque type disposant d\'assez de données est au niveau de sa moyenne sur 30 jours.</string>
+    <string name="insights_empty">Pas encore assez de données : une évolution demande des mesures sur au moins 15 des 30 derniers jours.</string>
+    <string name="insights_rule">Compare les 7 jours précédant aujourd\'hui avec les 30 jours précédents. Classé selon l\'ampleur du changement par rapport à la variation habituelle d\'un jour à l\'autre. Une évolution est une position, pas un jugement : que la hausse soit bonne dépend du type et de vous.</string>
 </resources>

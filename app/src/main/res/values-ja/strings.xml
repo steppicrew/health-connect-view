@@ -686,4 +686,12 @@
     <string name="compare_swap">順序を入れ替え</string>
     <string name="compare_none">この期間の値はありません</string>
     <string name="compare_note">1つの時間軸に2つのグラフ（目盛りはそれぞれ独自）。2つの値が一緒に動いても、一方が他方の原因とは限りません。</string>
+    <string name="insights_title">今週の変化</string>
+    <string name="insights_open_body">各種類の直近7日間と30日間の平均との比較</string>
+    <string name="insight_above">直近7日間は30日間の平均より%1$s高い</string>
+    <string name="insight_below">直近7日間は30日間の平均より%1$s低い</string>
+    <string name="insights_level">30日間の平均と同程度：%1$s</string>
+    <string name="insights_none">目立った変化はありません。十分なデータがある種類はすべて30日間の平均と同程度です。</string>
+    <string name="insights_empty">データがまだ足りません。変化を示すには、直近30日のうち15日以上の記録が必要です。</string>
+    <string name="insights_rule">今日より前の7日間を、その前の30日間と比較します。各種類のふだんの日ごとの変動に対してどれだけ動いたかの順に並べています。変化は位置であり、評価ではありません。上がることが良いかどうかは、種類とご自身によります。</string>
 </resources>
