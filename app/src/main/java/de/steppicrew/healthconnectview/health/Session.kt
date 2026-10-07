@@ -11,6 +11,7 @@ import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import java.time.Duration
+import kotlinx.coroutines.CancellationException
 import java.time.Instant
 
 /**
@@ -42,9 +43,20 @@ data class Session(
      * would be tens of megabytes of coordinates nobody asked to see.
      */
     val route: RouteRef? = null,
+    /**
+     * The id of the record this session was built from -- the copy [dedupeSessions] kept --
+     * so a session can be opened again by its id alone, from any screen or from the debug
+     * route. Empty only in tests.
+     */
+    val recordId: String = "",
+    /** An exercise session's laps where its writer recorded them; empty otherwise. */
+    val laps: List<Lap> = emptyList(),
 ) {
     enum class Kind { SLEEP, EXERCISE, MINDFULNESS }
 }
+
+/** One lap of a workout, with its length where the writer recorded one. */
+data class Lap(val start: Instant, val end: Instant, val meters: Double?)
 
 /**
  * Where a session's route is: the exercise record holding it. Whether reading it needs the
@@ -84,8 +96,13 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
             else -> existing
         }
         // The copy that wins by its name need not be the one with the track: a machine's own
-        // app names the workout, the watch recorded where it went. Keep the route either way.
-        kept[overlapping] = if (winner.route == null) winner.copy(route = existing.route ?: candidate.route) else winner
+        // app names the workout, the watch recorded where it went. Keep the route either way,
+        // and the laps likewise.
+        val loser = if (winner === existing) candidate else existing
+        kept[overlapping] = winner.copy(
+            route = winner.route ?: loser.route,
+            laps = winner.laps.ifEmpty { loser.laps },
+        )
     }
     return kept
 }
@@ -116,6 +133,8 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     title = title ?: exerciseTypeName(exerciseType),
     kind = Session.Kind.EXERCISE,
     origin = metadata.dataOrigin.packageName,
+    recordId = metadata.id,
+    laps = laps.map { Lap(it.startTime, it.endTime, it.length?.inMeters) },
     exerciseType = exerciseType,
     route = when (exerciseRouteResult) {
         is ExerciseRouteResult.Data, is ExerciseRouteResult.ConsentRequired -> RouteRef(metadata.id)
@@ -135,6 +154,7 @@ fun MindfulnessSessionRecord.toSession(): Session = Session(
     title = title ?: MINDFULNESS_TYPE_NAMES[mindfulnessSessionType],
     kind = Session.Kind.MINDFULNESS,
     origin = metadata.dataOrigin.packageName,
+    recordId = metadata.id,
 )
 
 @OptIn(ExperimentalMindfulnessSessionApi::class)
@@ -152,6 +172,7 @@ fun SleepSessionRecord.toSession(): Session = Session(
     title = title,
     kind = Session.Kind.SLEEP,
     origin = metadata.dataOrigin.packageName,
+    recordId = metadata.id,
     stages = stages.mapNotNull { it.toSleepStage() },
 )
 
@@ -234,6 +255,31 @@ suspend fun HealthRepository.sessionsIn(
         sleepSessions.filter { it.end > start && it.end <= end }
 
     return kept.sortedBy { it.start }
+}
+
+/**
+ * One session by the id of its record, as the lists show it: deduplicated against the other
+ * writers' copies, so it carries the route or laps another app recorded. Null where the
+ * record is gone or cannot be read.
+ */
+suspend fun HealthRepository.sessionById(kind: Session.Kind, id: String): Session? {
+    val single = try {
+        when (kind) {
+            Session.Kind.EXERCISE -> readOne(ExerciseSessionRecord::class, id).toSession()
+            Session.Kind.SLEEP -> readOne(SleepSessionRecord::class, id).toSession()
+            Session.Kind.MINDFULNESS -> {
+                @OptIn(ExperimentalMindfulnessSessionApi::class)
+                readOne(MindfulnessSessionRecord::class, id).toSession()
+            }
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        return null
+    }
+    // Its own window, read again for the other copies: [dedupeSessions] keeps the id of the
+    // copy it prefers, which is the one the list opened -- so the same id finds it here.
+    return sessionsIn(single.start, single.end, setOf(kind)).firstOrNull { it.recordId == id } ?: single
 }
 
 /**

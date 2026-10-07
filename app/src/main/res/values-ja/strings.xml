@@ -429,8 +429,10 @@
     <string name="source_phone_sensors">このスマートフォン</string>
     <string name="session_sleep">睡眠</string>
     <string name="session_untitled">アクティビティ</string>
-    <string name="session_loading">収集しています…</string>
     <string name="session_no_stats">このセッション中にほかの記録はありません。</string>
+    <string name="session_gone">このセッションは見つかりません。</string>
+    <string name="session_laps">ラップ</string>
+    <string name="session_lap">ラップ %1$d</string>
     <string name="session_overlap_note">このセッション中に測定された値です。ヘルスコネクトは測定値をセッションに関連付けないため、時刻で照合しています。</string>
     <string name="session_statistics">このセッション中に記録されたもの</string>
     <string name="zones_title">カラーゾーン</string>

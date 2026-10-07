@@ -1,4 +1,4 @@
-package de.steppicrew.healthconnectview.ui.dashboard
+package de.steppicrew.healthconnectview.ui.session
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column

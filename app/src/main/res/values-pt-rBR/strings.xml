@@ -451,8 +451,10 @@
     <string name="source_phone_sensors">Este smartphone</string>
     <string name="session_sleep">Sono</string>
     <string name="session_untitled">Atividade</string>
-    <string name="session_loading">Reunindo…</string>
     <string name="session_no_stats">Nada mais foi registrado durante esta sessão.</string>
+    <string name="session_gone">Esta sessão não foi encontrada.</string>
+    <string name="session_laps">Voltas</string>
+    <string name="session_lap">Volta %1$d</string>
     <string name="session_overlap_note">Estas são as medições feitas durante esta sessão. O Conexão Saúde não vincula medições a uma sessão, então elas são associadas pelo horário.</string>
     <string name="session_statistics">O que foi registrado durante esta sessão</string>
     <string name="zones_title">Zonas de cor</string>

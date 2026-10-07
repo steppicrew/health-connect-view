@@ -440,8 +440,10 @@
     <string name="source_phone_sensors">यह फ़ोन</string>
     <string name="session_sleep">नींद</string>
     <string name="session_untitled">गतिविधि</string>
-    <string name="session_loading">इकट्ठा किया जा रहा है…</string>
     <string name="session_no_stats">इस सेशन के दौरान और कुछ रिकॉर्ड नहीं हुआ।</string>
+    <string name="session_gone">यह सेशन अब नहीं मिल रहा।</string>
+    <string name="session_laps">लैप</string>
+    <string name="session_lap">लैप %1$d</string>
     <string name="session_overlap_note">ये इस सेशन के दौरान ली गई रीडिंग हैं। Health Connect रीडिंग को किसी सेशन से नहीं जोड़ता, इसलिए इन्हें समय के हिसाब से मिलाया गया है।</string>
     <string name="session_statistics">इस सेशन के दौरान क्या रिकॉर्ड हुआ</string>
     <string name="zones_title">रंग वाले ज़ोन</string>

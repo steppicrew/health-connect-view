@@ -451,8 +451,10 @@
     <string name="source_phone_sensors">Este teléfono</string>
     <string name="session_sleep">Sueño</string>
     <string name="session_untitled">Actividad</string>
-    <string name="session_loading">Recopilando…</string>
     <string name="session_no_stats">No se registró nada más durante esta sesión.</string>
+    <string name="session_gone">Ya no se encuentra esta sesión.</string>
+    <string name="session_laps">Vueltas</string>
+    <string name="session_lap">Vuelta %1$d</string>
     <string name="session_overlap_note">Estas son las mediciones tomadas durante esta sesión. Health Connect no vincula las mediciones a una sesión, así que se asignan por la hora.</string>
     <string name="session_statistics">Lo que se registró durante esta sesión</string>
     <string name="zones_title">Zonas de color</string>

@@ -429,8 +429,10 @@
     <string name="source_phone_sensors">Ponsel ini</string>
     <string name="session_sleep">Tidur</string>
     <string name="session_untitled">Aktivitas</string>
-    <string name="session_loading">Mengumpulkan…</string>
     <string name="session_no_stats">Tidak ada lagi yang dicatat selama sesi ini.</string>
+    <string name="session_gone">Sesi ini tidak ditemukan lagi.</string>
+    <string name="session_laps">Putaran</string>
+    <string name="session_lap">Putaran %1$d</string>
     <string name="session_overlap_note">Ini adalah hasil ukur yang diambil selama sesi ini. Health Connect tidak mengaitkan hasil ukur dengan sesi, jadi hasil ukur dicocokkan berdasarkan waktu.</string>
     <string name="session_statistics">Yang dicatat selama sesi ini</string>
     <string name="zones_title">Zona warna</string>

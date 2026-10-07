@@ -440,8 +440,10 @@
     <string name="source_phone_sensors">Deze telefoon</string>
     <string name="session_sleep">Slaap</string>
     <string name="session_untitled">Activiteit</string>
-    <string name="session_loading">Verzamelen…</string>
     <string name="session_no_stats">Tijdens deze sessie is verder niets geregistreerd.</string>
+    <string name="session_gone">Deze sessie is niet meer te vinden.</string>
+    <string name="session_laps">Ronden</string>
+    <string name="session_lap">Ronde %1$d</string>
     <string name="session_overlap_note">Dit zijn de metingen die tijdens deze sessie zijn gedaan. Health Connect koppelt metingen niet aan een sessie, dus ze worden op tijd gekoppeld.</string>
     <string name="session_statistics">Wat er tijdens deze sessie is geregistreerd</string>
     <string name="zones_title">Kleurzones</string>

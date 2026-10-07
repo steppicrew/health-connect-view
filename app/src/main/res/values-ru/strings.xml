@@ -462,8 +462,10 @@
     <string name="source_phone_sensors">Этот телефон</string>
     <string name="session_sleep">Сон</string>
     <string name="session_untitled">Активность</string>
-    <string name="session_loading">Сбор данных…</string>
     <string name="session_no_stats">Во время этого сеанса больше ничего не записано.</string>
+    <string name="session_gone">Этот сеанс больше не найден.</string>
+    <string name="session_laps">Круги</string>
+    <string name="session_lap">Круг %1$d</string>
     <string name="session_overlap_note">Это измерения, сделанные во время этого сеанса. Health Connect не связывает измерения с сеансом, поэтому они сопоставлены по времени.</string>
     <string name="session_statistics">Что было записано во время этого сеанса</string>
     <string name="zones_title">Цветовые зоны</string>

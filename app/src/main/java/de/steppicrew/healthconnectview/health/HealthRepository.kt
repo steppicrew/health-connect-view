@@ -284,6 +284,11 @@ class HealthRepository(private val context: Context) {
         client.readRecord(ExerciseSessionRecord::class, recordId).record.exerciseRouteResult
     }
 
+    /** One record by its id; throws where it is gone or not readable. */
+    suspend fun <T : Record> readOne(type: KClass<T>, id: String): T = withContext(Dispatchers.IO) {
+        client.readRecord(type, id).record
+    }
+
     /** Which apps contributed to a range, so a total can be explained to the user. */
     suspend fun contributingApps(
         metric: AggregateMetric<*>,

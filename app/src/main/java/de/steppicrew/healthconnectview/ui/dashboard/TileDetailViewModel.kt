@@ -32,6 +32,8 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.ui.session.MAX_CONCURRENT_READS
+import de.steppicrew.healthconnectview.ui.session.heartRateDuring
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.DayPartSplit
@@ -231,9 +233,6 @@ data class TileDetailData(
         get() = points.isNotEmpty() && !(spec.tile.dailyValue && extent != null)
 }
 
-
-/** One metric measured over a session's window, for the session detail sheet. */
-data class SessionStat(val spec: RecordTypeSpec<*>, val value: Double)
 
 /**
  * One type, over a span that can be stepped backwards and forwards.
@@ -595,115 +594,18 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
 
     /**
-     * The route of [session], read now that the session is open: its points, a note that the
-     * user must consent to this one first, or nothing. Held by the open sheet only.
-     */
-    suspend fun routeFor(session: Session): RouteLoad {
-        val ref = session.route ?: return RouteLoad.Missing
-        // Read now rather than trusting the list's note: consent given for this session
-        // earlier, or the standing permission granted since, makes the route readable.
-        return when (val result = runCatching { repository.routeOf(ref.recordId) }.getOrNull()) {
-            is ExerciseRouteResult.Data -> RouteLoad.Shown(result.exerciseRoute.toPoints())
-            is ExerciseRouteResult.ConsentRequired -> RouteLoad.NeedsConsent
-            null -> RouteLoad.Failed
-            else -> RouteLoad.Missing
-        }
-    }
-
-    /**
-     * Writes a route the user is looking at to [uri] as GPX. The points come from the open
-     * sheet, so nothing is read again; like every export, a failure removes the file.
-     */
-    fun exportRoute(points: List<RoutePoint>, name: String, uri: Uri) {
-        viewModelScope.launch {
-            val resolver = getApplication<Application>().contentResolver
-            val result = runCatching {
-                withContext(Dispatchers.IO) {
-                    requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
-                        Gpx.write(points, name, out.bufferedWriter(Charsets.UTF_8))
-                    }
-                }
-                ExportResult.Written(points.size, uri, GPX_MIME)
-            }
-            result.onFailure {
-                Log.w(TAG, "route export failed: ${it.javaClass.simpleName}")
-                runCatching { DocumentsContract.deleteDocument(resolver, uri) }
-            }
-            _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
-        }
-    }
-
-    /**
-     * Everything recorded during one session, assembled by time overlap.
-     *
-     * ExerciseSessionRecord itself carries no distance, power or calories -- only its type,
-     * title, notes, segments, laps and route. Those metrics are separate record types written
-     * over the same window, so a session's statistics exist but have to be gathered rather
-     * than read. On a real indoor bike session this found 647 kcal active, 25.5 km and a mean
-     * of 138 bpm across 54 heart-rate records.
-     */
-    suspend fun statisticsFor(session: Session): List<SessionStat> = coroutineScope {
-        val window = TimeRangeFilter.between(session.start, session.end)
-        val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
-        val gate = Semaphore(MAX_CONCURRENT_STATS)
-
-        RecordRegistry.all
-            .filter { it.permission in granted && it.aggregate != null && it.isChartable }
-            .map { spec ->
-                async {
-                    gate.withPermit {
-                        val metric = spec.aggregate ?: return@withPermit null
-                        val value = runCatching { repository.total(metric, window) }.getOrNull()
-                        value?.let { SessionStat(spec = spec, value = it) }
-                    }
-                }
-            }
-            .awaitAll()
-            .filterNotNull()
-    }
-
-    /**
-     * Heart rate through each session's own window, keyed by the session's start.
-     *
-     * Read raw rather than aggregated, and that is safe here in a way it would not be for a
-     * total: heart rate is instantaneous, so two apps writing the same beat duplicate a point
-     * on the curve rather than inflating a sum. Sessions with nothing recorded are left out
-     * of the map entirely, so the UI can say "none was recorded" rather than draw an empty
-     * box.
-     *
-     * The association is by time, like every other session statistic in this app: Health
-     * Connect stores no session id on a sample, so these are the readings taken during the
-     * session and deliberately not readings tagged as belonging to it.
-     */
-    /**
      * Heart rate through one session's own window, read when its row comes on screen.
      *
      * Reading every session's curve up front made the year view of Trainings wait for all 728
      * of them before showing anything -- about 66 ms each on the phone, so near 48 s -- for rows
      * mostly never scrolled to. Now the list appears at once and each curve is read as its row
-     * is shown, at most [MAX_CONCURRENT_STATS] at a time, and kept for this screen only: memory,
+     * is shown, at most [MAX_CONCURRENT_READS] at a time, and kept for this screen only: memory,
      * like every other reading here, never disk. Null means no heart rate was recorded then,
      * which the row says in its own words.
      */
     suspend fun curveFor(session: Session): List<Point>? {
         curveCache[session]?.let { return it.points }
-        val spec = heartRateSpec() ?: return null
-        val points = curveGate.withPermit {
-            val records = runCatching {
-                repository.readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
-            }.getOrDefault(emptyList())
-
-            // One writer's samples rather than everyone's merged. Heart rate is
-            // instantaneous, so aggregation cannot deduplicate it: two apps mirroring the
-            // same session sample at slightly different instants and values would interleave
-            // into a zigzag between two accounts of one heart rate.
-            fullestWriter(
-                records.groupBy { spec.originOf(it) }
-                    .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
-                session.start,
-                session.end,
-            ).takeIf { it.size > 1 }
-        }
+        val points = curveGate.withPermit { repository.heartRateDuring(session) }
         curveCache[session] = CachedCurve(points)
         return points
     }
@@ -712,7 +614,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private class CachedCurve(val points: List<Point>?)
 
     private val curveCache = java.util.concurrent.ConcurrentHashMap<Session, CachedCurve>()
-    private val curveGate = Semaphore(MAX_CONCURRENT_STATS)
+    private val curveGate = Semaphore(MAX_CONCURRENT_READS)
 
     /** The whole window's list, kept to restore when the chart is zoomed back out. */
     private var windowList: List<Record>? = null
@@ -905,22 +807,6 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val LATEST_LOOKBACK: Duration = Duration.ofDays(3650)
         /** How long a zoom must settle before the list is re-read for it. */
         const val LIST_DEBOUNCE_MS = 400L
-        /**
-         * A record at least this long is a whole-day summary rather than an event, and says
-         * nothing about when within the day it happened.
-         */
-        const val MAX_CONCURRENT_STATS = 4
     }
 
 }
-
-/** An open session's route: its points, consent needed first, none recorded, or a failed read. */
-sealed interface RouteLoad {
-    data class Shown(val points: List<RoutePoint>) : RouteLoad
-    data object NeedsConsent : RouteLoad
-    data object Missing : RouteLoad
-    data object Failed : RouteLoad
-}
-
-/** GPX's registered type; save dialogs and track apps both know it. */
-const val GPX_MIME = "application/gpx+xml"
