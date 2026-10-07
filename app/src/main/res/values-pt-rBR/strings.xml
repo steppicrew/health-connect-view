@@ -555,7 +555,7 @@
         <item quantity="many">Meta cumprida %d dias seguidos</item>
         <item quantity="other">Meta cumprida %d dias seguidos</item>
     </plurals>
-    <string name="streak_rule">Conta os dias seguidos até este dia em que a meta foi cumprida. Um dia sem registros nem interrompe a sequência nem conta para ela; depois de um mês sem registros, começa uma nova sequência. Hoje conta assim que a meta é atingida e, até lá, não interrompe nada. A sequência mais longa é procurada no último ano; sem acesso aos dados mais antigos, nos últimos 30 dias.</string>
+    <string name="streak_rule">Conta os dias seguidos até este dia em que a meta foi cumprida. Um dia sem registros nem interrompe a sequência nem conta para ela; depois de um mês sem registros, começa uma nova sequência. Hoje conta assim que a meta é atingida e, até lá, não interrompe nada. A sequência mais longa é procurada no último ano.</string>
     <plurals name="streak_active_days">
         <item quantity="one">Ativo %d dia seguido</item>
         <item quantity="many">Ativo %d dias seguidos</item>
@@ -577,9 +577,11 @@
     <string name="record_title_highest">Maior valor do último ano</string>
     <string name="record_title_longest">Treino mais longo do último ano</string>
     <string name="record_value_on">%1$s em %2$s</string>
-    <string name="record_rule">Buscado entre os dias antes de hoje no último ano; sem acesso a dados mais antigos, nos últimos 30 dias. Os valores diários são os totais do Conexão Saúde sem duplicatas, então um dia registrado por vários apps conta uma vez, assim como um treino. Hoje conta quando terminar.</string>
+    <string name="record_rule">Buscado entre os dias antes de hoje no último ano. Os valores diários são os totais do Conexão Saúde sem duplicatas, então um dia registrado por vários apps conta uma vez, assim como um treino. Hoje conta quando terminar.</string>
+    <string name="history_limit_note">Sem acesso a dados mais antigos, só os últimos 30 dias foram pesquisados.</string>
+    <string name="history_grant">Permitir dados antigos</string>
     <string name="streak_is_longest">A sequência mais longa do último ano.</string>
-    <string name="streak_active_rule">Conta os dias seguidos até este dia com pelo menos uma atividade registrada. Um dia sem nenhuma encerra a sequência, mesmo que você não estivesse usando o dispositivo naquele dia: o Conexão Saúde não distingue entre nenhuma atividade e nenhum registro. Hoje conta assim que uma atividade é registrada e, até lá, não interrompe nada. A sequência mais longa é procurada no último ano; sem acesso aos dados mais antigos, nos últimos 30 dias.</string>
+    <string name="streak_active_rule">Conta os dias seguidos até este dia com pelo menos uma atividade registrada. Um dia sem nenhuma encerra a sequência, mesmo que você não estivesse usando o dispositivo naquele dia: o Conexão Saúde não distingue entre nenhuma atividade e nenhum registro. Hoje conta assim que uma atividade é registrada e, até lá, não interrompe nada. A sequência mais longa é procurada no último ano.</string>
     <string name="chart_source_raw">Medições individuais</string>
     <string name="chart_source_readings_daily">Médias diárias das medições, um app por dia</string>
     <string name="chart_source_readings_weekly">Médias semanais das medições, um app por dia</string>

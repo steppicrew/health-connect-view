@@ -336,6 +336,22 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private val _historyGranted = MutableStateFlow(true)
     val historyGranted: StateFlow<Boolean> = _historyGranted.asStateFlow()
 
+    /** Whether [_historyGranted] has been read yet; until then there is nothing to compare. */
+    private var historyKnown = false
+
+    /**
+     * Re-reads when access to older data changed while the screen was away -- typically allowed
+     * on the permission screen its own button leads to. A window cut to 30 days would
+     * otherwise stay cut until the next swipe.
+     */
+    fun onResume() {
+        if (!historyKnown) return
+        viewModelScope.launch {
+            val granted = runCatching { repository.grantedPermissions() }.getOrNull() ?: return@launch
+            if ((RecordRegistry.HISTORY_PERMISSION in granted) != _historyGranted.value) reload()
+        }
+    }
+
     /**
      * The report for [period] as PDF bytes in memory, for the print preview; null if it failed.
      * Read now, while the app is in front: Health Connect refuses reads once the preview covers
@@ -506,6 +522,7 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             }
 
             _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted
+            historyKnown = true
             val span = _span.value
             val offset = _offset.value
             val capped = span.needsHistoryPermission(offset) &&
@@ -829,7 +846,8 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         val extras = withContext(Dispatchers.Default) { loader.extras() }
         // Last, and once per type and source: it does not depend on the window on screen, and
         // reading a year again on every swipe would queue behind the next window's chart.
-        val recordKey = "${spec.type.simpleName}|$source|${LocalDate.now()}"
+        // With the history permission in the key: allowing older data changes the answer.
+        val recordKey = "${spec.type.simpleName}|$source|${LocalDate.now()}|${_historyGranted.value}"
         // containsKey, not getOrPut: "no record" is an answer too, and must not be read again.
         val record = if (personalRecords.containsKey(recordKey)) {
             personalRecords[recordKey]

@@ -555,7 +555,7 @@
         <item quantity="many">Obiettivo raggiunto %d giorni di fila</item>
         <item quantity="other">Obiettivo raggiunto %d giorni di fila</item>
     </plurals>
-    <string name="streak_rule">Conta i giorni di fila fino a questo giorno in cui l’obiettivo è stato raggiunto. Un giorno senza registrazioni non interrompe la serie né vi contribuisce; dopo un mese senza registrazioni inizia una nuova serie. Oggi conta non appena l’obiettivo è raggiunto, e fino ad allora non interrompe nulla. La serie più lunga si cerca nell’ultimo anno; senza accesso ai dati meno recenti, negli ultimi 30 giorni.</string>
+    <string name="streak_rule">Conta i giorni di fila fino a questo giorno in cui l’obiettivo è stato raggiunto. Un giorno senza registrazioni non interrompe la serie né vi contribuisce; dopo un mese senza registrazioni inizia una nuova serie. Oggi conta non appena l’obiettivo è raggiunto, e fino ad allora non interrompe nulla. La serie più lunga si cerca nell’ultimo anno.</string>
     <plurals name="streak_active_days">
         <item quantity="one">Attivo %d giorno di fila</item>
         <item quantity="many">Attivo %d giorni di fila</item>
@@ -577,9 +577,11 @@
     <string name="record_title_highest">Valore più alto dell’ultimo anno</string>
     <string name="record_title_longest">Allenamento più lungo dell’ultimo anno</string>
     <string name="record_value_on">%1$s il %2$s</string>
-    <string name="record_rule">Cercato tra i giorni prima di oggi nell’ultimo anno; senza accesso ai dati più vecchi, negli ultimi 30 giorni. I valori giornalieri sono i totali di Connessione Salute senza duplicati, quindi un giorno registrato da più app conta una volta sola, come un allenamento. Oggi conta quando è finito.</string>
+    <string name="record_rule">Cercato tra i giorni prima di oggi nell’ultimo anno. I valori giornalieri sono i totali di Connessione Salute senza duplicati, quindi un giorno registrato da più app conta una volta sola, come un allenamento. Oggi conta quando è finito.</string>
+    <string name="history_limit_note">Senza accesso ai dati più vecchi, sono stati esaminati solo gli ultimi 30 giorni.</string>
+    <string name="history_grant">Consenti dati meno recenti</string>
     <string name="streak_is_longest">La serie più lunga dell’ultimo anno.</string>
-    <string name="streak_active_rule">Conta i giorni di fila fino a questo giorno con almeno un’attività registrata. Un giorno senza attività chiude la serie, anche se quel giorno non indossavi il dispositivo: Connessione Salute non distingue tra nessuna attività e nessuna registrazione. Oggi conta non appena viene registrata un’attività, e fino ad allora non interrompe nulla. La serie più lunga si cerca nell’ultimo anno; senza accesso ai dati meno recenti, negli ultimi 30 giorni.</string>
+    <string name="streak_active_rule">Conta i giorni di fila fino a questo giorno con almeno un’attività registrata. Un giorno senza attività chiude la serie, anche se quel giorno non indossavi il dispositivo: Connessione Salute non distingue tra nessuna attività e nessuna registrazione. Oggi conta non appena viene registrata un’attività, e fino ad allora non interrompe nulla. La serie più lunga si cerca nell’ultimo anno.</string>
     <string name="chart_source_raw">Singole misurazioni</string>
     <string name="chart_source_readings_daily">Medie giornaliere delle misurazioni, un’app al giorno</string>
     <string name="chart_source_readings_weekly">Medie settimanali delle misurazioni, un’app al giorno</string>

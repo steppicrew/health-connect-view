@@ -526,7 +526,7 @@
         <item quantity="one">Ziel an %d Tag hintereinander erreicht</item>
         <item quantity="other">Ziel an %d Tagen hintereinander erreicht</item>
     </plurals>
-    <string name="streak_rule">Gezählt werden die aufeinanderfolgenden Tage bis zu diesem Tag, an denen das Ziel erreicht wurde. Ein Tag ohne Aufzeichnung unterbricht die Serie nicht und zählt nicht mit; nach einem Monat ohne Aufzeichnung beginnt eine neue. Heute zählt, sobald das Ziel erreicht ist, und unterbricht bis dahin nichts. Die längste Serie wird im vergangenen Jahr gesucht, ohne Zugriff auf ältere Daten in den letzten 30 Tagen.</string>
+    <string name="streak_rule">Gezählt werden die aufeinanderfolgenden Tage bis zu diesem Tag, an denen das Ziel erreicht wurde. Ein Tag ohne Aufzeichnung unterbricht die Serie nicht und zählt nicht mit; nach einem Monat ohne Aufzeichnung beginnt eine neue. Heute zählt, sobald das Ziel erreicht ist, und unterbricht bis dahin nichts. Die längste Serie wird im vergangenen Jahr gesucht.</string>
     <plurals name="streak_active_days">
         <item quantity="one">An %d Tag hintereinander aktiv</item>
         <item quantity="other">An %d Tagen hintereinander aktiv</item>
@@ -545,9 +545,11 @@
     <string name="record_title_highest">Höchster Wert im vergangenen Jahr</string>
     <string name="record_title_longest">Längstes Training im vergangenen Jahr</string>
     <string name="record_value_on">%1$s am %2$s</string>
-    <string name="record_rule">Gesucht wird unter den Tagen vor heute im vergangenen Jahr, ohne Zugriff auf ältere Daten in den letzten 30 Tagen. Tageswerte sind die Summen von Health Connect ohne Doppelungen: Ein Tag, den mehrere Apps aufgezeichnet haben, zählt einmal, ebenso ein Training. Heute zählt, sobald der Tag vorbei ist.</string>
+    <string name="record_rule">Gesucht wird unter den Tagen vor heute im vergangenen Jahr. Tageswerte sind die Summen von Health Connect ohne Doppelungen: Ein Tag, den mehrere Apps aufgezeichnet haben, zählt einmal, ebenso ein Training. Heute zählt, sobald der Tag vorbei ist.</string>
+    <string name="history_limit_note">Ohne Zugriff auf ältere Daten wurden nur die letzten 30 Tage durchsucht.</string>
+    <string name="history_grant">Ältere Daten freigeben</string>
     <string name="streak_is_longest">Die längste Serie im vergangenen Jahr.</string>
-    <string name="streak_active_rule">Gezählt werden die aufeinanderfolgenden Tage bis zu diesem Tag mit mindestens einer aufgezeichneten Aktivität. Ein Tag ohne Aktivität beendet die Serie, auch wenn Ihr Gerät an dem Tag nicht getragen wurde: Health Connect unterscheidet nicht zwischen keiner Aktivität und keiner Aufzeichnung. Heute zählt, sobald eine Aktivität aufgezeichnet ist, und unterbricht bis dahin nichts. Die längste Serie wird im vergangenen Jahr gesucht, ohne Zugriff auf ältere Daten in den letzten 30 Tagen.</string>
+    <string name="streak_active_rule">Gezählt werden die aufeinanderfolgenden Tage bis zu diesem Tag mit mindestens einer aufgezeichneten Aktivität. Ein Tag ohne Aktivität beendet die Serie, auch wenn Ihr Gerät an dem Tag nicht getragen wurde: Health Connect unterscheidet nicht zwischen keiner Aktivität und keiner Aufzeichnung. Heute zählt, sobald eine Aktivität aufgezeichnet ist, und unterbricht bis dahin nichts. Die längste Serie wird im vergangenen Jahr gesucht.</string>
     <string name="chart_source_raw">Einzelmessungen</string>
     <string name="chart_source_readings_daily">Tagesmittel der Messungen, je Tag eine App</string>
     <string name="chart_source_readings_weekly">Wochenmittel der Messungen, je Tag eine App</string>

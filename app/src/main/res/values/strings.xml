@@ -566,7 +566,7 @@
         <item quantity="one">Goal met %d day in a row</item>
         <item quantity="other">Goal met %d days in a row</item>
     </plurals>
-    <string name="streak_rule">Counts the days in a row up to this day on which the goal was met. A day with nothing recorded neither breaks the run nor counts towards it; after a month with nothing recorded a new run begins. Today counts once the goal is reached, and until then breaks nothing. The longest run is looked for in the past year; without access to older data, in the last 30 days.</string>
+    <string name="streak_rule">Counts the days in a row up to this day on which the goal was met. A day with nothing recorded neither breaks the run nor counts towards it; after a month with nothing recorded a new run begins. Today counts once the goal is reached, and until then breaks nothing. The longest run is looked for in the past year.</string>
     <plurals name="streak_active_days">
         <item quantity="one">Active %d day in a row</item>
         <item quantity="other">Active %d days in a row</item>
@@ -585,9 +585,11 @@
     <string name="record_title_highest">Highest of the past year</string>
     <string name="record_title_longest">Longest workout of the past year</string>
     <string name="record_value_on">%1$s on %2$s</string>
-    <string name="record_rule">Searched among the days before today in the past year; without access to older data, the last 30 days. Daily figures are Health Connect\'s totals with duplicates removed, so a day several apps recorded counts once, and so does a workout. Today counts once it is over.</string>
+    <string name="record_rule">Searched among the days before today in the past year. Daily figures are Health Connect\'s totals with duplicates removed, so a day several apps recorded counts once, and so does a workout. Today counts once it is over.</string>
+    <string name="history_limit_note">Without access to older data, only the last 30 days were searched.</string>
+    <string name="history_grant">Allow older data</string>
     <string name="streak_is_longest">The longest run in the past year.</string>
-    <string name="streak_active_rule">Counts the days in a row up to this day with at least one recorded activity. A day without one ends the run, even if your device was not worn that day: Health Connect cannot tell no activity from no recording. Today counts once an activity is recorded, and until then breaks nothing. The longest run is looked for in the past year; without access to older data, in the last 30 days.</string>
+    <string name="streak_active_rule">Counts the days in a row up to this day with at least one recorded activity. A day without one ends the run, even if your device was not worn that day: Health Connect cannot tell no activity from no recording. Today counts once an activity is recorded, and until then breaks nothing. The longest run is looked for in the past year.</string>
     <string name="chart_source_raw">Individual readings</string>
     <string name="chart_source_readings_daily">Daily averages of the readings, one app per day</string>
     <string name="chart_source_readings_weekly">Weekly averages of the readings, one app per day</string>

@@ -135,6 +135,10 @@ import java.time.Duration
 import androidx.compose.material.icons.filled.MilitaryTech
 import de.steppicrew.healthconnectview.health.PersonalRecord
 import de.steppicrew.healthconnectview.health.RecordKind
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import de.steppicrew.healthconnectview.ui.components.OnResume
+import androidx.compose.material3.TextButton
 
 /**
  * One type, full screen, over a span the user can step through.
@@ -148,6 +152,8 @@ fun TileDetailScreen(
     viewModel: TileDetailViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    /** The permission screen, where access to data older than 30 days is allowed. */
+    onOpenPermissions: () -> Unit = {},
     /** A session to open once loaded: an ISO instant it runs at, or "route"; see the nav route. */
     openSession: String = "",
 ) {
@@ -180,6 +186,8 @@ fun TileDetailScreen(
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val emptyRecord by viewModel.emptyRecord.collectAsStateWithLifecycle()
+    // Back from the permission screen with older data allowed, the capped window is re-read.
+    OnResume { viewModel.onResume() }
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -272,48 +280,51 @@ fun TileDetailScreen(
                 onForward = viewModel::stepForward,
             )
 
-            when (val current = state) {
-                is UiState.Loading -> LoadingView(progress = progress)
+            // Read by every note that depends on how far back the app may look.
+            CompositionLocalProvider(LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions)) {
+                when (val current = state) {
+                    is UiState.Loading -> LoadingView(progress = progress)
 
-                is UiState.NoPermission -> MessageView(
-                    icon = Icons.Default.Lock,
-                    title = stringResource(R.string.detail_no_permission_title),
-                    body = stringResource(R.string.detail_no_permission_body),
-                )
-
-                // Deliberately not the padlock: "nothing was recorded" and "not allowed to
-                // look" are the distinction UiState draws, and sharing an icon collapses it
-                // on the one screen where the difference is actionable.
-                is UiState.Empty -> Column(Modifier.fillMaxSize()) {
-                    MessageView(
-                        icon = Icons.Default.EventBusy,
-                        title = stringResource(R.string.detail_empty_title),
-                        body = stringResource(R.string.detail_empty_body),
-                        modifier = Modifier.weight(1f),
+                    is UiState.NoPermission -> MessageView(
+                        icon = Icons.Default.Lock,
+                        title = stringResource(R.string.detail_no_permission_title),
+                        body = stringResource(R.string.detail_no_permission_body),
                     )
-                    val shownSpec = spec
-                    val record = emptyRecord
-                    if (record != null && shownSpec != null) {
-                        Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
-                            RecordExplanation(record, shownSpec)
+
+                    // Deliberately not the padlock: "nothing was recorded" and "not allowed to
+                    // look" are the distinction UiState draws, and sharing an icon collapses it
+                    // on the one screen where the difference is actionable.
+                    is UiState.Empty -> Column(Modifier.fillMaxSize()) {
+                        MessageView(
+                            icon = Icons.Default.EventBusy,
+                            title = stringResource(R.string.detail_empty_title),
+                            body = stringResource(R.string.detail_empty_body),
+                            modifier = Modifier.weight(1f),
+                        )
+                        val shownSpec = spec
+                        val record = emptyRecord
+                        if (record != null && shownSpec != null) {
+                            Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+                                RecordExplanation(record, shownSpec)
+                            }
                         }
                     }
+
+                    is UiState.Error -> MessageView(
+                        icon = Icons.Default.ErrorOutline,
+                        title = stringResource(R.string.detail_error_title),
+                        body = current.message,
+                    )
+
+                    is UiState.Data -> SpanContent(
+                        data = current.value,
+                        onSelectSource = viewModel::selectSource,
+                        onOpenSession = { openSession = it },
+                        loadCurve = viewModel::curveFor,
+                        onVisibleRange = viewModel::showListFor,
+                        onOpenRecord = { openRecord = it },
+                    )
                 }
-
-                is UiState.Error -> MessageView(
-                    icon = Icons.Default.ErrorOutline,
-                    title = stringResource(R.string.detail_error_title),
-                    body = current.message,
-                )
-
-                is UiState.Data -> SpanContent(
-                    data = current.value,
-                    onSelectSource = viewModel::selectSource,
-                    onOpenSession = { openSession = it },
-                    loadCurve = viewModel::curveFor,
-                    onVisibleRange = viewModel::showListFor,
-                    onOpenRecord = { openRecord = it },
-                )
             }
         }
     }
@@ -550,7 +561,33 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            HistoryLimitNote()
         }
+    }
+}
+
+/** Whether reads reach back past 30 days, and the way to allow it where they do not. */
+private class HistoryAccess(val granted: Boolean, val onGrant: () -> Unit)
+
+private val LocalHistoryAccess = staticCompositionLocalOf { HistoryAccess(granted = true, onGrant = {}) }
+
+/**
+ * Under an explanation that searches the past year: said only where the search was in fact cut
+ * to 30 days, with the way to lift it. With older data allowed, the rule above is the whole
+ * story and a clause about a limit that does not apply only made it longer.
+ */
+@Composable
+private fun HistoryLimitNote() {
+    val access = LocalHistoryAccess.current
+    if (access.granted) return
+    Text(
+        text = stringResource(R.string.history_limit_note),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 4.dp),
+    )
+    TextButton(onClick = access.onGrant) {
+        Text(stringResource(R.string.history_grant))
     }
 }
 
@@ -607,6 +644,7 @@ private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            HistoryLimitNote()
         }
     }
 }
@@ -720,8 +758,10 @@ private fun SpanSummary(
                 text = stringResource(R.string.detail_history_capped),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(bottom = 8.dp),
             )
+            TextButton(onClick = LocalHistoryAccess.current.onGrant) {
+                Text(stringResource(R.string.history_grant))
+            }
         }
 
         data.total?.let { total ->

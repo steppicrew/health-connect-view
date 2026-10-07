@@ -511,7 +511,7 @@
     <plurals name="streak_days">
         <item quantity="other">%d 日連続で目標達成</item>
     </plurals>
-    <string name="streak_rule">この日までに目標を達成した連続日数を数えます。記録のない日は連続を途切れさせず、日数にも含めません。記録のない状態が 1 か月続くと新しい連続が始まります。今日は目標を達成した時点で数えられ、それまでは何も途切れさせません。最長の連続は過去 1 年間から探します。過去のデータへのアクセスがない場合は過去 30 日間です。</string>
+    <string name="streak_rule">この日までに目標を達成した連続日数を数えます。記録のない日は連続を途切れさせず、日数にも含めません。記録のない状態が 1 か月続くと新しい連続が始まります。今日は目標を達成した時点で数えられ、それまでは何も途切れさせません。最長の連続は過去 1 年間から探します。</string>
     <plurals name="streak_active_days">
         <item quantity="other">%d 日連続でアクティブ</item>
     </plurals>
@@ -527,9 +527,11 @@
     <string name="record_title_highest">過去1年の最高値</string>
     <string name="record_title_longest">過去1年で最長のトレーニング</string>
     <string name="record_value_on">%2$s：%1$s</string>
-    <string name="record_rule">過去1年のうち今日より前の日から探します。それより古いデータへのアクセスがない場合は直近30日間です。1日の値はヘルスコネクトの重複を除いた合計なので、複数のアプリが記録した日も1回として数えます。トレーニングも同様です。今日は1日が終わってから含めます。</string>
+    <string name="record_rule">過去1年のうち今日より前の日から探します。1日の値はヘルスコネクトの重複を除いた合計なので、複数のアプリが記録した日も1回として数えます。トレーニングも同様です。今日は1日が終わってから含めます。</string>
+    <string name="history_limit_note">過去のデータへのアクセスがないため、直近30日間のみを検索しました。</string>
+    <string name="history_grant">過去のデータを許可</string>
     <string name="streak_is_longest">過去 1 年間の最長連続です。</string>
-    <string name="streak_active_rule">この日までに、記録されたアクティビティが 1 つ以上ある連続日数を数えます。その日にデバイスを着けていなかった場合でも、アクティビティのない日で連続は途切れます。ヘルスコネクトでは、アクティビティがないことと記録がないことを区別できないためです。今日はアクティビティが記録された時点で数えられ、それまでは何も途切れさせません。最長の連続は過去 1 年間から探します。過去のデータへのアクセスがない場合は過去 30 日間です。</string>
+    <string name="streak_active_rule">この日までに、記録されたアクティビティが 1 つ以上ある連続日数を数えます。その日にデバイスを着けていなかった場合でも、アクティビティのない日で連続は途切れます。ヘルスコネクトでは、アクティビティがないことと記録がないことを区別できないためです。今日はアクティビティが記録された時点で数えられ、それまでは何も途切れさせません。最長の連続は過去 1 年間から探します。</string>
     <string name="chart_source_raw">個々の測定値</string>
     <string name="chart_source_readings_daily">測定値の 1 日の平均（1 日につき 1 つのアプリ）</string>
     <string name="chart_source_readings_weekly">測定値の 1 週間の平均（1 日につき 1 つのアプリ）</string>
