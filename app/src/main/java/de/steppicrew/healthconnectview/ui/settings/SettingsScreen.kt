@@ -399,7 +399,7 @@ private fun SwitchRow(
     ) {
         // The switch on the title's line, not centred on the explanation beneath; it is taller
         // than a line, so the text moves down to meet it.
-        Column(Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.bodyLarge, SWITCH_HEIGHT.dp))) {
+        Column(Modifier.weight(1f).padding(end = 12.dp, top = firstLineTextInset(MaterialTheme.typography.bodyLarge, SWITCH_HEIGHT.dp))) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge)
             body?.let {
                 Text(

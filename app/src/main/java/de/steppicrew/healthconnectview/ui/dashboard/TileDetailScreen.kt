@@ -1244,7 +1244,13 @@ private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Bool
             onCheckedChange = null,
             modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyMedium, TOGGLE_SIZE.dp)),
         )
-        Text(text = stringResource(label), style = MaterialTheme.typography.bodyMedium)
+        // The box has no touch target of its own here -- the row is the target -- so nothing
+        // keeps the label off it but this gap, as beside the export dialog's radio buttons.
+        Text(
+            text = stringResource(label),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(start = 12.dp),
+        )
     }
 }
 
