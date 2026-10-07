@@ -325,6 +325,27 @@ open items below and `FEATURE-IDEAS.md`.
     granted mark but has no box to tick: it says to open a workout with a route, tap "Route
     anzeigen" and allow it always; a tap opens the "i". The route dialog's text and the
     message after declining no longer point to the permission screen.
+49. [ ] **How each type is drawn, per window** -- the owner's request, 07.10.2026. Today each
+    type's look grew one fix at a time; review it as a whole. First a table for the owner to
+    decide on, then code:
+    - **Inventory:** for every type, what day, week, four weeks and year show now (line,
+      bars, ring, dots, sessions, stacked bars, bands) and from what (readings, daily
+      aggregates, daily means, sessions).
+    - **Rules by kind of data**, to check the inventory against: a quantity summed over time
+      (steps, energy, distance) as bars per bucket; a reading at a moment (heart rate, oxygen,
+      glucose) as a line or dots with the day's low-high band across days; one value a day
+      (resting heart rate, weight from one weigh-in) as dots with the four-week mean; sessions
+      (sleep, workouts) as a timeline within a day and a bar per day across days. Where a
+      type fits none of these, say why.
+    - **Ranges -- two different things, never drawn alike:** a *reference* range from
+      outside the data (oxygen saturation 95-100 %, blood pressure grades, a glucose target,
+      heart-rate zones), and the wearer's *usual* range from their own history (the middle
+      half of 28 days, as HRV has). Decide per type which one applies, if any, on which
+      windows, and how each is labelled: a reference range names where it comes from, a usual
+      range says it is the person's own. Worded as a position, never a diagnosis (CLAUDE.md:
+      no brand names, no comparison to a device's scores).
+    - **Per window:** what a year of a type should be (weekly totals, weekly means with the
+      spread, or the four-week mean alone), and where a day needs no chart at all (step 29).
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
