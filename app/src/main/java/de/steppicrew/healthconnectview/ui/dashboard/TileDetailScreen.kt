@@ -1931,8 +1931,7 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
     // As precise as the readings are shown, no more: "+0,37 kg" beside a weight of "81,9 kg"
     // claimed a precision the headline itself does not.
     val changeDecimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else 1
-    fun signed(value: Double): String =
-        (if (value > 0) "+" else "") + Formatting.number(value, changeDecimals)
+    fun signed(value: Double): String = Formatting.signed(value, changeDecimals)
 
     Column(Modifier.padding(top = 8.dp)) {
         if (context.dayHigh > context.dayLow) {
