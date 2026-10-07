@@ -580,6 +580,12 @@
         <item quantity="other">Longest in the past year: %1$d days, %2$s</item>
     </plurals>
     <string name="streak_range">%1$s to %2$s</string>
+    <string name="record_title_most">Best day of the past year</string>
+    <string name="record_title_lowest">Lowest of the past year</string>
+    <string name="record_title_highest">Highest of the past year</string>
+    <string name="record_title_longest">Longest workout of the past year</string>
+    <string name="record_value_on">%1$s on %2$s</string>
+    <string name="record_rule">Searched among the days before today in the past year; without access to older data, the last 30 days. Daily figures are Health Connect\'s totals with duplicates removed, so a day several apps recorded counts once, and so does a workout. Today counts once it is over.</string>
     <string name="streak_is_longest">The longest run in the past year.</string>
     <string name="streak_active_rule">Counts the days in a row up to this day with at least one recorded activity. A day without one ends the run, even if your device was not worn that day: Health Connect cannot tell no activity from no recording. Today counts once an activity is recorded, and until then breaks nothing. The longest run is looked for in the past year; without access to older data, in the last 30 days.</string>
     <string name="chart_source_raw">Individual readings</string>

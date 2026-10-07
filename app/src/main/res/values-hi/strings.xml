@@ -547,6 +547,12 @@
         <item quantity="other">पिछले एक साल में सबसे लंबा: %1$d दिन, %2$s</item>
     </plurals>
     <string name="streak_range">%1$s से %2$s</string>
+    <string name="record_title_most">पिछले एक साल का सबसे अच्छा दिन</string>
+    <string name="record_title_lowest">पिछले एक साल का सबसे कम मान</string>
+    <string name="record_title_highest">पिछले एक साल का सबसे ज़्यादा मान</string>
+    <string name="record_title_longest">पिछले एक साल की सबसे लंबी ट्रेनिंग</string>
+    <string name="record_value_on">%2$s को %1$s</string>
+    <string name="record_rule">पिछले एक साल में आज से पहले के दिनों में खोजा जाता है; पुराने डेटा तक पहुंच न होने पर पिछले 30 दिनों में। दैनिक मान Health Connect के दोहराव हटाकर बने कुल योग हैं, इसलिए कई ऐप्स द्वारा दर्ज किया गया दिन एक ही बार गिना जाता है, ट्रेनिंग भी। आज का दिन खत्म होने के बाद गिना जाता है।</string>
     <string name="streak_is_longest">पिछले एक साल का सबसे लंबा सिलसिला।</string>
     <string name="streak_active_rule">इस दिन तक लगातार उन दिनों को गिनता है जिनमें कम से कम एक गतिविधि रिकॉर्ड हुई। बिना गतिविधि वाला दिन सिलसिला खत्म कर देता है, भले ही उस दिन आपने अपना डिवाइस न पहना हो: Health Connect यह फ़र्क नहीं कर सकता कि कोई गतिविधि नहीं हुई या कुछ रिकॉर्ड नहीं हुआ। आज का दिन कोई गतिविधि रिकॉर्ड होते ही गिना जाता है, और तब तक कुछ नहीं तोड़ता। सबसे लंबा सिलसिला पिछले एक साल में खोजा जाता है; पुराने डेटा के ऐक्सेस के बिना, पिछले 30 दिनों में।</string>
     <string name="chart_source_raw">अलग-अलग रीडिंग</string>

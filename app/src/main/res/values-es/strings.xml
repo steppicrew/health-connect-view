@@ -572,6 +572,12 @@
         <item quantity="other">La más larga del último año: %1$d días, %2$s</item>
     </plurals>
     <string name="streak_range">del %1$s al %2$s</string>
+    <string name="record_title_most">Mejor día del último año</string>
+    <string name="record_title_lowest">Valor más bajo del último año</string>
+    <string name="record_title_highest">Valor más alto del último año</string>
+    <string name="record_title_longest">Entrenamiento más largo del último año</string>
+    <string name="record_value_on">%1$s el %2$s</string>
+    <string name="record_rule">Se busca entre los días anteriores a hoy en el último año; sin acceso a datos más antiguos, en los últimos 30 días. Los valores diarios son los totales de Health Connect sin duplicados, así que un día registrado por varias aplicaciones cuenta una vez, igual que un entrenamiento. Hoy cuenta cuando termine.</string>
     <string name="streak_is_longest">La racha más larga del último año.</string>
     <string name="streak_active_rule">Cuenta los días seguidos hasta este día con al menos una actividad registrada. Un día sin ninguna termina la racha, aunque no llevaras el dispositivo ese día: Health Connect no distingue entre no hacer actividad y no registrarla. Hoy cuenta en cuanto se registra una actividad, y hasta entonces no rompe nada. La racha más larga se busca en el último año; sin acceso a los datos antiguos, en los últimos 30 días.</string>
     <string name="chart_source_raw">Mediciones individuales</string>

@@ -647,6 +647,12 @@
         <item quantity="other">الأطول في العام الماضي: %1$d يوم، %2$s</item>
     </plurals>
     <string name="streak_range">من %1$s إلى %2$s</string>
+    <string name="record_title_most">أفضل يوم في العام الماضي</string>
+    <string name="record_title_lowest">أدنى قيمة في العام الماضي</string>
+    <string name="record_title_highest">أعلى قيمة في العام الماضي</string>
+    <string name="record_title_longest">أطول تمرين في العام الماضي</string>
+    <string name="record_value_on">%1$s في %2$s</string>
+    <string name="record_rule">يُبحث بين الأيام السابقة لليوم خلال العام الماضي؛ ومن دون الوصول إلى البيانات الأقدم، خلال آخر 30 يومًا. القيم اليومية هي مجاميع Health Connect بعد إزالة التكرار، لذا يُحتسب اليوم الذي سجّلته عدة تطبيقات مرة واحدة، وكذلك التمرين. يُحتسب اليوم بعد انتهائه.</string>
     <string name="streak_is_longest">أطول سلسلة في العام الماضي.</string>
     <string name="streak_active_rule">يحسب الأيام المتتالية حتى هذا اليوم التي سُجِّل فيها نشاط واحد على الأقل. اليوم الخالي من أي نشاط ينهي السلسلة، حتى لو لم ترتدِ جهازك في ذلك اليوم: لا يميّز Health Connect بين انعدام النشاط وانعدام التسجيل. يُحتسب اليوم الحالي بمجرد تسجيل نشاط، وحتى ذلك الحين لا يقطع شيئًا. يُبحث عن أطول سلسلة في العام الماضي؛ وبدون الوصول إلى البيانات الأقدم، في آخر 30 يومًا.</string>
     <string name="chart_source_raw">القراءات الفردية</string>

@@ -59,7 +59,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import de.steppicrew.healthconnectview.health.personalRecord
+import de.steppicrew.healthconnectview.health.PersonalRecord
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDate
@@ -123,6 +126,8 @@ data class TileDetailData(
      * an activity for exercise. Null where the tile has no streak.
      */
     val streak: StreakSummary? = null,
+    /** The type's best over the year before today, where it has one. See [RecordKind]. */
+    val record: PersonalRecord? = null,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
     /**
@@ -660,6 +665,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     /** The whole window's list, kept to restore when the chart is zoomed back out. */
     private var windowList: List<Record>? = null
+
+    /** Personal records already read, by type, source and day; see [loadData]. */
+    private val personalRecords = mutableMapOf<String, PersonalRecord?>()
     private var listJob: Job? = null
 
     /**
@@ -818,7 +826,24 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // and counting the sessions behind a 48-day activity streak then ran on it while the
         // screen was already in use -- dragging a route's marker turned visibly laggy.
         val extras = withContext(Dispatchers.Default) { loader.extras() }
-        listed.copy(baseline = extras.baseline, trend = extras.trend, streak = extras.streak)
+        // Last, and once per type and source: it does not depend on the window on screen, and
+        // reading a year again on every swipe would queue behind the next window's chart.
+        val recordKey = "${spec.type.simpleName}|$source|${LocalDate.now()}"
+        // containsKey, not getOrPut: "no record" is an answer too, and must not be read again.
+        val record = if (personalRecords.containsKey(recordKey)) {
+            personalRecords[recordKey]
+        } else {
+            // Only an answer is kept: a cancelled or failed read is tried again next time.
+            try {
+                withContext(Dispatchers.Default) { repository.personalRecord(spec, origins, LocalDate.now()) }
+                    .also { personalRecords[recordKey] = it }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+        }
+        listed.copy(baseline = extras.baseline, trend = extras.trend, streak = extras.streak, record = record)
     }
 
     private companion object {

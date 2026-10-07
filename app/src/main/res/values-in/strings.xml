@@ -522,6 +522,12 @@
         <item quantity="other">Terpanjang dalam setahun terakhir: %1$d hari, %2$s</item>
     </plurals>
     <string name="streak_range">%1$s sampai %2$s</string>
+    <string name="record_title_most">Hari terbaik dalam setahun terakhir</string>
+    <string name="record_title_lowest">Nilai terendah dalam setahun terakhir</string>
+    <string name="record_title_highest">Nilai tertinggi dalam setahun terakhir</string>
+    <string name="record_title_longest">Latihan terlama dalam setahun terakhir</string>
+    <string name="record_value_on">%1$s pada %2$s</string>
+    <string name="record_rule">Dicari di antara hari-hari sebelum hari ini dalam setahun terakhir; tanpa akses ke data yang lebih lama, dalam 30 hari terakhir. Nilai harian adalah total Health Connect tanpa duplikat, jadi hari yang dicatat oleh beberapa aplikasi dihitung sekali, begitu pula latihan. Hari ini dihitung setelah berakhir.</string>
     <string name="streak_is_longest">Rangkaian terpanjang dalam setahun terakhir.</string>
     <string name="streak_active_rule">Menghitung hari berturut-turut sampai hari ini dengan setidaknya satu aktivitas tercatat. Hari tanpa aktivitas mengakhiri rangkaian, meskipun Anda tidak memakai perangkat hari itu: Health Connect tidak bisa membedakan tidak ada aktivitas dengan tidak ada pencatatan. Hari ini dihitung begitu ada aktivitas yang tercatat, dan sampai saat itu tidak memutus apa pun. Rangkaian terpanjang dicari dalam setahun terakhir; tanpa akses ke data lama, dalam 30 hari terakhir.</string>
     <string name="chart_source_raw">Hasil ukur tunggal</string>

@@ -522,6 +522,12 @@
         <item quantity="other">過去一年最長：%1$d 天，%2$s</item>
     </plurals>
     <string name="streak_range">%1$s 至 %2$s</string>
+    <string name="record_title_most">過去一年中最好的一天</string>
+    <string name="record_title_lowest">過去一年中的最低值</string>
+    <string name="record_title_highest">過去一年中的最高值</string>
+    <string name="record_title_longest">過去一年中最長的運動</string>
+    <string name="record_value_on">%2$s：%1$s</string>
+    <string name="record_rule">在過去一年中今天之前的日子裡尋找；如果無法存取更早的資料，則在最近 30 天內尋找。每日數值是 Health Connect 去除重複後的總計，因此由多個應用程式記錄的一天只算一次，運動也是如此。今天在結束後才計入。</string>
     <string name="streak_is_longest">過去一年中最長的連續紀錄。</string>
     <string name="streak_active_rule">計算截至這一天至少有一項活動記錄的連續天數。沒有活動的日子會結束連續紀錄，即使當天您沒有配戴裝置也一樣：Health Connect 無法區分沒有活動和沒有記錄。今天在記錄到活動後即計入，在那之前不會中斷任何紀錄。最長連續紀錄會在過去一年中尋找；如果沒有較舊資料的存取權，則在最近 30 天中尋找。</string>
     <string name="chart_source_raw">單次測量值</string>
