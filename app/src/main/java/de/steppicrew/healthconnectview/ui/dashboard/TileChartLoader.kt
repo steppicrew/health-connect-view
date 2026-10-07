@@ -14,6 +14,7 @@ import de.steppicrew.healthconnectview.health.DIASTOLIC_ZONES
 import de.steppicrew.healthconnectview.health.SYSTOLIC_ZONES
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.aggregate.AggregateMetric
+import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.trendBefore
@@ -198,7 +199,7 @@ internal class TileChartLoader(
                 period != null -> {
                     val bandMetrics = spec.rangeAggregates
                     val stackMetrics = spec.stackComponents
-                    val buckets = repository.bucketedTotals(
+                    val buckets = bucketedInPieces(
                         metric,
                         span.localFilter(offset),
                         period,
@@ -207,6 +208,7 @@ internal class TileChartLoader(
                             bandMetrics?.toList().orEmpty() + stackMetrics.map { it.second } +
                                 listOfNotNull(spec.secondaryAggregate)
                             ).toSet(),
+                        onFraction = ::stepPart,
                     )
 
                     // The day's total split into its parts, from the same buckets as the
@@ -846,6 +848,38 @@ internal class TileChartLoader(
      * Set by [cumulativeFromRecords] when it took the curve's shape from a single writer.
      * Read straight afterwards on the same coroutine, so no synchronisation is needed.
      */
+    /**
+     * [HealthRepository.bucketedTotals] over [range], read a few buckets at a time so the
+     * progress bar can follow it.
+     *
+     * One request reports nothing until it is done, and a year of heart rate in weekly buckets
+     * took 32 s on the phone with the bar at 0 throughout. Pieces are whole multiples of
+     * [bucket] from the range's start, so every bucket begins where the single request would
+     * have begun it and the series is the same. A range given without local times, or a
+     * bucket not counted in days, is read in one piece as before.
+     */
+    private suspend fun bucketedInPieces(
+        metric: AggregateMetric<*>,
+        range: TimeRangeFilter,
+        bucket: Period,
+        origins: Set<DataOrigin>,
+        also: Set<AggregateMetric<*>>,
+        onFraction: (Float) -> Unit,
+    ): List<AggregationResultGroupedByPeriod> {
+        val start = range.localStartTime
+        val end = range.localEndTime
+        if (start == null || end == null || bucket.toTotalMonths() != 0L || bucket.days <= 0) {
+            return repository.bucketedTotals(metric, range, bucket, origins, also)
+        }
+        val piece = Period.ofDays(bucket.days * BUCKETS_PER_PIECE)
+        val bounds = generateSequence(start) { it.plus(piece) }.takeWhile { it.isBefore(end) }.toList()
+        return bounds.flatMapIndexed { index, from ->
+            val to = minOf(from.plus(piece), end)
+            repository.bucketedTotals(metric, TimeRangeFilter.between(from, to), bucket, origins, also)
+                .also { onFraction((index + 1).toFloat() / bounds.size) }
+        }
+    }
+
     /** Set by a [chart] that deferred its extras; read once by [extras]. */
     private var pendingExtras: (suspend () -> ChartExtras)? = null
 
@@ -997,6 +1031,12 @@ private fun List<Point>.runningTotal(): List<Point> {
 }
 
 /** The window's first instant, for reading raw records. */
+/**
+ * Buckets per request in [TileChartLoader.bucketedInPieces]: four weeks of a year's weekly
+ * buckets, so a year is 14 requests and the bar moves about every 7 %.
+ */
+private const val BUCKETS_PER_PIECE = 13
+
 /** The chart's share of the progress bar, against one for each single-request step. */
 private const val CHART_WEIGHT = 8
 
