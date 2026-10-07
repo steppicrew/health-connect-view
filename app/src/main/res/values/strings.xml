@@ -732,4 +732,11 @@
     <string name="chart_source_hrv_nights">Line: average of the last 7 nights; dots: single nights; shaded: your usual range</string>
     <string name="legend_hrv_night">Single night</string>
     <string name="hrv_show_nights">Show single nights</string>
+    <string name="body_composition">Body composition</string>
+    <string name="body_composition_empty">No weight or body composition readings in this period</string>
+    <string name="body_composition_note">Each point is a day\'s mean, from the source chosen for that type. Each chart has its own scale.</string>
+    <string name="body_composition_note_weekly">Each point is a week\'s mean of its days, from the source chosen for that type. Each chart has its own scale.</string>
+    <string name="body_composition_one">One reading in this period</string>
+    <string name="body_fat_mass">Fat mass</string>
+    <string name="body_fat_mass_note">Calculated: body fat percentage × that day\'s weight</string>
 </resources>

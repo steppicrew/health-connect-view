@@ -749,4 +749,11 @@
     <string name="chart_source_hrv_nights">Linia: średnia z ostatnich 7 nocy; kropki: pojedyncze noce; zacieniowane: twój zwykły zakres</string>
     <string name="legend_hrv_night">Pojedyncza noc</string>
     <string name="hrv_show_nights">Pokaż pojedyncze noce</string>
+    <string name="body_composition">Skład ciała</string>
+    <string name="body_composition_empty">Brak pomiarów wagi ani składu ciała w tym okresie</string>
+    <string name="body_composition_note">Każdy punkt to średnia z dnia, ze źródła wybranego dla tego typu. Każdy wykres ma własną skalę.</string>
+    <string name="body_composition_note_weekly">Każdy punkt to średnia tygodnia z jego dni, ze źródła wybranego dla tego typu. Każdy wykres ma własną skalę.</string>
+    <string name="body_composition_one">Jeden pomiar w tym okresie</string>
+    <string name="body_fat_mass">Masa tłuszczu</string>
+    <string name="body_fat_mass_note">Obliczone: procent tkanki tłuszczowej × waga z tego samego dnia</string>
 </resources>

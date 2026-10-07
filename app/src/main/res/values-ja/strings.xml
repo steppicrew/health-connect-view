@@ -674,4 +674,11 @@
     <string name="chart_source_hrv_nights">線: 過去 7 夜の平均。点: 各夜。網掛け: いつもの範囲</string>
     <string name="legend_hrv_night">各夜</string>
     <string name="hrv_show_nights">各夜を表示</string>
+    <string name="body_composition">体組成</string>
+    <string name="body_composition_empty">この期間の体重・体組成の測定値はありません</string>
+    <string name="body_composition_note">各点は、その種類に選択したソースからの1日の平均です。グラフごとに目盛りが異なります。</string>
+    <string name="body_composition_note_weekly">各点は、その種類に選択したソースからの1週間の日ごとの平均です。グラフごとに目盛りが異なります。</string>
+    <string name="body_composition_one">この期間の測定値は1件です</string>
+    <string name="body_fat_mass">脂肪量</string>
+    <string name="body_fat_mass_note">計算値：体脂肪率 × 同じ日の体重</string>
 </resources>

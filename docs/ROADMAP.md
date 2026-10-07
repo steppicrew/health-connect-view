@@ -242,13 +242,17 @@ open items below and `FEATURE-IDEAS.md`.
     without, like sizes. Picked from edit mode (paint bucket; padlock without Pro), applied in
     place without a reload. Seen on the phone with every colour at once from a throwaway
     build; picking needs a tap.
-37. [ ] **Body composition in one chart** -- the owner's idea, 27.09.2026, narrowing "two
-    metrics on one timeline". Weight with what it is made of, on one kilogram axis: body fat
-    (stored as a percentage, so as kilograms it is percentage times the same day's weight),
-    lean body mass, bone mass and body water. Health Connect has no muscle-mass type, so
-    muscle cannot be shown unless a writer's lean mass stands in for it, and the chart must
-    not call it muscle. Stacked or as lines to decide; a scale writes all of them at one
-    weigh-in, so the days line up. Pro.
+37. [x] **Body composition** -- built 08.10.2026, seen on the phone with a scale's weight,
+    fat and water. The owner's idea, 27.09.2026, narrowing "two metrics on one timeline":
+    weight with what it is made of -- body fat in kilograms (stored as a percentage, so the
+    percentage times the same day's weight, and the chart says so), lean body mass, body water,
+    bone mass, and the fat percentage itself. **Not one axis after all**: from bone's 3 kg to
+    weight's 80 kg a half-kilogram change in fat is a flat line, and stacking would count water
+    and bone twice, since both are part of lean mass. Instead a small chart per part on one
+    shared time axis, each with its own scale, under its latest value and its change since the
+    window's first reading. Daily means for a week or four weeks, weekly means in a year; each
+    type follows its own tile's source. Lean mass is never called muscle. Opened from the body
+    types' screens (top bar), Pro.
 38. [ ] **Two metrics on one timeline** -- from `FEATURE-IDEAS.md`. Any two types over the same
     window, e.g. weight and steps. Two y-axes read badly on a phone and invite cause-and-effect
     readings the data cannot carry; worth doing only for pairs that share a unit (step 37) or

@@ -749,4 +749,11 @@
     <string name="chart_source_hrv_nights">Линия: среднее за последние 7 ночей; точки: отдельные ночи; заливка: ваш обычный диапазон</string>
     <string name="legend_hrv_night">Отдельная ночь</string>
     <string name="hrv_show_nights">Показать отдельные ночи</string>
+    <string name="body_composition">Состав тела</string>
+    <string name="body_composition_empty">Нет измерений веса или состава тела за этот период</string>
+    <string name="body_composition_note">Каждая точка — среднее за день из источника, выбранного для этого типа. У каждого графика своя шкала.</string>
+    <string name="body_composition_note_weekly">Каждая точка — среднее за неделю по её дням из источника, выбранного для этого типа. У каждого графика своя шкала.</string>
+    <string name="body_composition_one">Одно измерение за этот период</string>
+    <string name="body_fat_mass">Жировая масса</string>
+    <string name="body_fat_mass_note">Рассчитано: процент жира × вес в тот же день</string>
 </resources>

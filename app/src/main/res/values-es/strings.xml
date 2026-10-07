@@ -724,4 +724,11 @@
     <string name="chart_source_hrv_nights">Línea: media de las últimas 7 noches; puntos: noches individuales; sombreado: tu rango habitual</string>
     <string name="legend_hrv_night">Noche individual</string>
     <string name="hrv_show_nights">Mostrar noches individuales</string>
+    <string name="body_composition">Composición corporal</string>
+    <string name="body_composition_empty">No hay mediciones de peso ni de composición corporal en este periodo</string>
+    <string name="body_composition_note">Cada punto es la media de un día, de la fuente elegida para ese tipo. Cada gráfico tiene su propia escala.</string>
+    <string name="body_composition_note_weekly">Cada punto es la media de una semana sobre sus días, de la fuente elegida para ese tipo. Cada gráfico tiene su propia escala.</string>
+    <string name="body_composition_one">Una medición en este periodo</string>
+    <string name="body_fat_mass">Masa grasa</string>
+    <string name="body_fat_mass_note">Calculado: porcentaje de grasa corporal × peso del mismo día</string>
 </resources>

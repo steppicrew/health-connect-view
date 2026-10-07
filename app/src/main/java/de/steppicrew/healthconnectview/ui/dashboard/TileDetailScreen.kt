@@ -126,6 +126,15 @@ import de.steppicrew.healthconnectview.ui.components.sessionName
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Star
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.BodyFatRecord
+import androidx.health.connect.client.records.LeanBodyMassRecord
+import androidx.health.connect.client.records.BodyWaterMassRecord
+import androidx.health.connect.client.records.BoneMassRecord
+import androidx.activity.compose.LocalActivity
+import de.steppicrew.healthconnectview.billing.AppEntitlements
+import de.steppicrew.healthconnectview.billing.Feature
+import androidx.compose.material.icons.filled.Layers
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.LineChart
@@ -171,6 +180,8 @@ fun TileDetailScreen(
     onOpenSession: (Session) -> Unit = {},
     /** The year's workouts by kind, offered on the workouts type only. */
     onOpenWorkouts: () -> Unit = {},
+    /** Weight and its parts together, from any of the body-composition types. */
+    onOpenBody: () -> Unit = {},
 ) {
     val requested = openSession
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -225,6 +236,7 @@ fun TileDetailScreen(
                             )
                         }
                     }
+                    if (spec?.type in BODY_TYPES) BodyCompositionAction(onOpenBody)
                     spec?.let { current ->
                         ExportAction(
                             typeName = current.type.simpleName.orEmpty().removeSuffix("Record"),
@@ -1981,5 +1993,29 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
                 color = muted,
             )
         }
+    }
+}
+
+/** The types whose screen offers weight and its parts together. */
+private val BODY_TYPES = setOf(
+    WeightRecord::class,
+    BodyFatRecord::class,
+    LeanBodyMassRecord::class,
+    BodyWaterMassRecord::class,
+    BoneMassRecord::class,
+)
+
+/** Opens the body-composition view, or Play's purchase sheet where Pro is not owned. */
+@Composable
+private fun BodyCompositionAction(onOpen: () -> Unit) {
+    val activity = LocalActivity.current
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
+    val unlocked = pro.allows(Feature.BODY_COMPOSITION)
+    val label = stringResource(R.string.body_composition)
+    IconButton(onClick = { if (unlocked) onOpen() else activity?.let(AppEntitlements.current::buy) }) {
+        Icon(
+            imageVector = Icons.Default.Layers,
+            contentDescription = if (unlocked) label else stringResource(R.string.export_premium, label),
+        )
     }
 }

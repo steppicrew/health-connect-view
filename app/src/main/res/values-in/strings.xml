@@ -674,4 +674,11 @@
     <string name="chart_source_hrv_nights">Garis: rata-rata 7 malam terakhir; titik: malam tunggal; arsiran: rentang biasa Anda</string>
     <string name="legend_hrv_night">Malam tunggal</string>
     <string name="hrv_show_nights">Tampilkan malam tunggal</string>
+    <string name="body_composition">Komposisi tubuh</string>
+    <string name="body_composition_empty">Tidak ada pengukuran berat atau komposisi tubuh pada periode ini</string>
+    <string name="body_composition_note">Setiap titik adalah rata-rata satu hari, dari sumber yang dipilih untuk jenis itu. Setiap grafik memiliki skalanya sendiri.</string>
+    <string name="body_composition_note_weekly">Setiap titik adalah rata-rata satu minggu atas hari-harinya, dari sumber yang dipilih untuk jenis itu. Setiap grafik memiliki skalanya sendiri.</string>
+    <string name="body_composition_one">Satu pengukuran pada periode ini</string>
+    <string name="body_fat_mass">Massa lemak</string>
+    <string name="body_fat_mass_note">Dihitung: persentase lemak tubuh × berat pada hari yang sama</string>
 </resources>

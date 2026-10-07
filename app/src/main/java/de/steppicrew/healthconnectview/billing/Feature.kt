@@ -33,4 +33,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** An exercise route as a GPX file, to open in a map or training app. */
     ROUTE_EXPORT(isPremium = true),
+
+    /** Weight with fat, lean mass, water and bone, a chart each on one time axis. */
+    BODY_COMPOSITION(isPremium = true),
 }

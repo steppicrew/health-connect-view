@@ -674,4 +674,11 @@
     <string name="chart_source_hrv_nights">선: 최근 7일 밤 평균, 점: 개별 밤, 음영: 평소 범위</string>
     <string name="legend_hrv_night">개별 밤</string>
     <string name="hrv_show_nights">개별 밤 보기</string>
+    <string name="body_composition">체성분</string>
+    <string name="body_composition_empty">이 기간에 체중 또는 체성분 측정값이 없습니다</string>
+    <string name="body_composition_note">각 점은 해당 유형에 선택한 소스의 하루 평균입니다. 그래프마다 눈금이 다릅니다.</string>
+    <string name="body_composition_note_weekly">각 점은 해당 유형에 선택한 소스의 한 주 동안 일별 평균입니다. 그래프마다 눈금이 다릅니다.</string>
+    <string name="body_composition_one">이 기간의 측정값 1개</string>
+    <string name="body_fat_mass">체지방량</string>
+    <string name="body_fat_mass_note">계산값: 체지방률 × 같은 날의 체중</string>
 </resources>
