@@ -53,6 +53,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -178,6 +179,7 @@ fun TileDetailScreen(
     }
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val emptyRecord by viewModel.emptyRecord.collectAsStateWithLifecycle()
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -282,11 +284,21 @@ fun TileDetailScreen(
                 // Deliberately not the padlock: "nothing was recorded" and "not allowed to
                 // look" are the distinction UiState draws, and sharing an icon collapses it
                 // on the one screen where the difference is actionable.
-                is UiState.Empty -> MessageView(
-                    icon = Icons.Default.EventBusy,
-                    title = stringResource(R.string.detail_empty_title),
-                    body = stringResource(R.string.detail_empty_body),
-                )
+                is UiState.Empty -> Column(Modifier.fillMaxSize()) {
+                    MessageView(
+                        icon = Icons.Default.EventBusy,
+                        title = stringResource(R.string.detail_empty_title),
+                        body = stringResource(R.string.detail_empty_body),
+                        modifier = Modifier.weight(1f),
+                    )
+                    val shownSpec = spec
+                    val record = emptyRecord
+                    if (record != null && shownSpec != null) {
+                        Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+                            RecordExplanation(record, shownSpec)
+                        }
+                    }
+                }
 
                 is UiState.Error -> MessageView(
                     icon = Icons.Default.ErrorOutline,
