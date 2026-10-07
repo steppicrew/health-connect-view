@@ -5,6 +5,11 @@ import androidx.annotation.StringRes
 import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.dashboard.Tile
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import androidx.compose.material.icons.filled.Insights
+import de.steppicrew.healthconnectview.ui.insights.notable
+import de.steppicrew.healthconnectview.ui.insights.insightAmount
 import de.steppicrew.healthconnectview.dashboard.TileColor
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -142,6 +147,8 @@ fun DashboardScreen(
     /** The permission list itself, one step closer than [onOpenSettings]. */
     onGrantAccess: () -> Unit,
     modifier: Modifier = Modifier,
+    /** The insights tile's full list. */
+    onOpenInsights: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
@@ -180,6 +187,8 @@ fun DashboardScreen(
             onDismiss = { addingTile = false },
             onAdd = viewModel::addTile,
             onBuy = { activity?.let(AppEntitlements.current::buy) },
+            insightsOffered = !viewModel.hasInsightsTile,
+            insightsUnlocked = pro.allows(Feature.INSIGHTS),
         )
     }
 
@@ -307,7 +316,7 @@ fun DashboardScreen(
                 modifier = Modifier.padding(padding),
             )
 
-            state.tiles.isEmpty() -> MessageView(
+            state.tiles.isEmpty() && state.insights == null -> MessageView(
                 icon = Icons.AutoMirrored.Filled.List,
                 title = stringResource(R.string.dashboard_empty_title),
                 body = stringResource(R.string.dashboard_empty_body),
@@ -316,7 +325,7 @@ fun DashboardScreen(
 
             // Distinct from "no tiles": the dashboard is configured, but nothing on it may be
             // read yet. Sending the user to the type list would be a dead end.
-            state.tiles.none { it.granted } -> MessageView(
+            state.insights == null && state.tiles.none { it.granted } -> MessageView(
                 icon = Icons.Default.Lock,
                 title = stringResource(R.string.detail_no_permission_title),
                 body = stringResource(R.string.detail_no_permission_body),
@@ -324,15 +333,21 @@ fun DashboardScreen(
             )
 
             else -> {
-                // During a drag, the order the drag has reached; the stored one otherwise.
+                // Every tile in the stored order, the insights tile among the types'; during a
+                // drag, in the order the drag has reached.
+                val entries = remember(state.tiles, state.insights, state.layout) {
+                    val all = state.tiles.map(GridEntry::Type) + listOfNotNull(state.insights?.let(GridEntry::Insights))
+                    val position = state.layout.withIndex().associate { (index, id) -> id to index }
+                    all.sortedBy { position[it.id] ?: Int.MAX_VALUE }
+                }
                 val shownTiles = drag.order?.let { ids ->
-                    val byId = state.tiles.associateBy { it.tile.id }
-                    ids.mapNotNull(byId::get) + state.tiles.filterNot { it.tile.id in ids }
-                } ?: state.tiles
+                    val byId = entries.associateBy { it.id }
+                    ids.mapNotNull(byId::get) + entries.filterNot { it.id in ids }
+                } ?: entries
                 // Without Pro every tile is drawn as one cell, but the stored sizes are kept: a
                 // refund or a restored backup should not cost the layout, and buying Pro again
                 // brings it back as it was.
-                fun drawnSize(tile: TileData) = if (resizable) tile.tile.width to tile.tile.height else 1 to 1
+                fun drawnSize(entry: GridEntry) = if (resizable) entry.tile.width to entry.tile.height else 1 to 1
                 TileGrid(
                     sizes = shownTiles.map(::drawnSize),
                     spacing = 12.dp,
@@ -344,76 +359,101 @@ fun DashboardScreen(
                         .padding(padding)
                         .onSizeChanged { drag.viewport = it.height },
                 ) {
-                    shownTiles.forEach { tile ->
+                    shownTiles.forEach { entry ->
                         // Keyed so a tile keeps its own state when a move or resize reorders the
                         // children, as the lazy grid's item keys did.
-                        key(tile.tile.id) {
-                            val id = tile.tile.id
+                        key(entry.id) {
+                            val id = entry.id
                             val lifted = drag.dragging == id
-                            // Without Pro drawn in the theme's colour, the chosen one kept, as
-                            // sizes are.
-                            TileColored(if (colorsUnlocked) tile.tile.color else TileColor.DEFAULT) {
-                                TileCard(
-                                    modifier = Modifier
-                                        .onGloballyPositioned { drag.bounds[id] = it.boundsInParent() }
-                                        .zIndex(if (lifted) 1f else 0f)
-                                        .graphicsLayer {
-                                            val moved = drag.translation(id)
-                                            translationX = moved.x
-                                            translationY = moved.y
-                                            if (lifted) {
-                                                scaleX = LIFTED_SCALE
-                                                scaleY = LIFTED_SCALE
-                                                shadowElevation = LIFTED_ELEVATION.dp.toPx()
-                                            }
-                                        },
-                                    onDragStart = {
-                                    drag.start(
-                                        id,
-                                        shownTiles.map { it.tile.id },
-                                        shownTiles.associate { it.tile.id to drawnSize(it) },
-                                    )
-                                },
+                            val placed = Modifier
+                                .onGloballyPositioned { drag.bounds[id] = it.boundsInParent() }
+                                .zIndex(if (lifted) 1f else 0f)
+                                .graphicsLayer {
+                                    val moved = drag.translation(id)
+                                    translationX = moved.x
+                                    translationY = moved.y
+                                    if (lifted) {
+                                        scaleX = LIFTED_SCALE
+                                        scaleY = LIFTED_SCALE
+                                        shadowElevation = LIFTED_ELEVATION.dp.toPx()
+                                    }
+                                }
+                            val startDrag = {
+                                drag.start(
+                                    id,
+                                    shownTiles.map { it.id },
+                                    shownTiles.associate { it.id to drawnSize(it) },
+                                )
+                            }
+                            if (entry is GridEntry.Insights) {
+                                InsightsTileCard(
+                                    data = entry.data,
+                                    modifier = placed,
+                                    editing = editing,
+                                    onDragStart = startDrag,
                                     onDrag = drag::drag,
                                     onDragEnd = { drag.end()?.let(viewModel::reorder) },
-                                    data = tile,
-                                    editing = editing,
-                                    resizable = resizable,
                                     onClick = {
-                                        // In edit mode a tap must not navigate away: the user is
-                                        // arranging tiles, not reading them.
-                                        // It opens on the window the tile shows, so the figure under
-                                        // the finger is the one at the top of the screen it opens.
-                                        if (!editing) {
-                                            onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+                                        when {
+                                            editing -> Unit
+                                            entry.data.locked -> activity?.let(AppEntitlements.current::buy)
+                                            else -> onOpenInsights()
                                         }
                                     },
                                     onLongClick = { editing = true },
-                                    onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
-                                    onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
-                                    onResize = {
-                                        // Locked, the button is where the purchase starts, as the
-                                        // export menu's locked entries are.
-                                        if (resizable) {
-                                            viewModel.resizeTile(tile.tile.id)
-                                        } else {
-                                            activity?.let(AppEntitlements.current::buy)
-                                        }
-                                    },
-                                    colorsUnlocked = colorsUnlocked,
-                                    onSetColor = {
-                                        if (colorsUnlocked) {
-                                            editingColorFor = tile
-                                        } else {
-                                            activity?.let(AppEntitlements.current::buy)
-                                        }
-                                    },
-                                    onRemove = { viewModel.removeTile(tile.tile.id) },
-                                    onSetGoal = { editingGoalFor = tile },
-                                    onSetZones = { editingZonesFor = tile },
-                                    onSetOptions = { editingOptionsFor = tile },
-                                    onGrantAccess = onGrantAccess,
+                                    onMoveUp = { viewModel.moveTile(id, forward = false) },
+                                    onMoveDown = { viewModel.moveTile(id, forward = true) },
+                                    onRemove = { viewModel.removeTile(id) },
                                 )
+                            } else {
+                                val tile = (entry as GridEntry.Type).data
+                                // Without Pro drawn in the theme's colour, the chosen one kept, as
+                                // sizes are.
+                                TileColored(if (colorsUnlocked) tile.tile.color else TileColor.DEFAULT) {
+                                    TileCard(
+                                        modifier = placed,
+                                        onDragStart = startDrag,
+                                        onDrag = drag::drag,
+                                        onDragEnd = { drag.end()?.let(viewModel::reorder) },
+                                        data = tile,
+                                        editing = editing,
+                                        resizable = resizable,
+                                        onClick = {
+                                            // In edit mode a tap must not navigate away: the user is
+                                            // arranging tiles, not reading them.
+                                            // It opens on the window the tile shows, so the figure under
+                                            // the finger is the one at the top of the screen it opens.
+                                            if (!editing) {
+                                                onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+                                            }
+                                        },
+                                        onLongClick = { editing = true },
+                                        onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
+                                        onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
+                                        onResize = {
+                                            // Locked, the button is where the purchase starts, as the
+                                            // export menu's locked entries are.
+                                            if (resizable) {
+                                                viewModel.resizeTile(tile.tile.id)
+                                            } else {
+                                                activity?.let(AppEntitlements.current::buy)
+                                            }
+                                        },
+                                        colorsUnlocked = colorsUnlocked,
+                                        onSetColor = {
+                                            if (colorsUnlocked) {
+                                                editingColorFor = tile
+                                            } else {
+                                                activity?.let(AppEntitlements.current::buy)
+                                            }
+                                        },
+                                        onRemove = { viewModel.removeTile(tile.tile.id) },
+                                        onSetGoal = { editingGoalFor = tile },
+                                        onSetZones = { editingZonesFor = tile },
+                                        onSetOptions = { editingOptionsFor = tile },
+                                        onGrantAccess = onGrantAccess,
+                                    )
+                                }
                             }
                         }
                     }
@@ -594,6 +634,146 @@ private fun TileCard(
 }
 
 /**
+ * The insights tile: the week's most unusual moves, up to [INSIGHT_ROWS] of them, each as an
+ * arrow, the type's name and how far it moved. A tap opens the whole list. One cell only for
+ * now; what a larger face should show is still to be decided.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun InsightsTileCard(
+    data: InsightsTileData,
+    modifier: Modifier,
+    editing: Boolean,
+    onDragStart: () -> Unit,
+    onDrag: (Offset) -> Unit,
+    onDragEnd: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    val moveUp = stringResource(R.string.tile_move_up)
+    val moveDown = stringResource(R.string.tile_move_down)
+    Card(
+        modifier = modifier
+            .fillMaxSize()
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .semantics {
+                if (editing) {
+                    customActions = listOf(
+                        CustomAccessibilityAction(moveUp) { onMoveUp(); true },
+                        CustomAccessibilityAction(moveDown) { onMoveDown(); true },
+                    )
+                }
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    ) {
+        Column(Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    text = stringResource(R.string.insights_tile_title),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    modifier = Modifier.weight(1f),
+                )
+                if (editing) DragHandle(onDragStart, onDrag, onDragEnd)
+            }
+            Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                if (editing) {
+                    Box(Modifier.matchParentSize().alpha(EDITING_CONTENT_ALPHA), contentAlignment = Alignment.Center) {
+                        InsightsTileBody(data)
+                    }
+                    TileEditControls(
+                        canSetGoal = false,
+                        canSetZones = false,
+                        canSetOptions = false,
+                        resizable = false,
+                        width = 1,
+                        height = 1,
+                        colorsUnlocked = false,
+                        onResize = {},
+                        onSetColor = {},
+                        onRemove = onRemove,
+                        onSetGoal = {},
+                        onSetZones = {},
+                        onSetOptions = {},
+                        canResize = false,
+                        canSetColor = false,
+                    )
+                } else {
+                    InsightsTileBody(data)
+                }
+            }
+            Text(
+                text = stringResource(R.string.insights_tile_caption),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+private fun InsightsTileBody(data: InsightsTileData) {
+    val insights = data.insights
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    when {
+        data.locked -> LockableIcon(Icons.Default.Insights, stringResource(R.string.settings_pro), locked = true)
+        insights == null -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
+        insights.isEmpty() -> Text(stringResource(R.string.insights_tile_few), style = MaterialTheme.typography.bodySmall, color = muted)
+        insights.notable().isEmpty() -> Text(stringResource(R.string.insights_tile_level), style = MaterialTheme.typography.bodyMedium)
+        else -> Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            val notable = insights.notable()
+            notable.take(INSIGHT_ROWS).forEach { insight ->
+                val style = MaterialTheme.typography.bodySmall
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(
+                        imageVector = insight.trend.direction.icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp, top = firstLineInset(style, INSIGHT_ICON.dp))
+                            .size(INSIGHT_ICON.dp),
+                    )
+                    Text(
+                        text = stringResource(insight.spec.displayNameRes),
+                        style = style,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        text = insightAmount(insight),
+                        style = style,
+                        maxLines = 1,
+                        modifier = Modifier.padding(start = 4.dp),
+                    )
+                }
+            }
+            val more = notable.size - INSIGHT_ROWS
+            if (more > 0) {
+                Text(
+                    text = pluralStringResource(R.plurals.insights_tile_more, more, more),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = muted,
+                )
+            }
+        }
+    }
+}
+
+/** Rows on a single-cell insights tile: three fit under the title at the smallest phone width. */
+private const val INSIGHT_ROWS = 3
+
+private const val INSIGHT_ICON = 16
+
+/**
  * The grip a tile is dragged by in edit mode. Only the grip starts a drag, so the rest of the
  * dashboard still scrolls under a finger.
  */
@@ -706,11 +886,14 @@ private fun TileEditControls(
     onSetGoal: () -> Unit,
     onSetZones: () -> Unit,
     onSetOptions: () -> Unit,
+    /** Off for the insights tile, which has one size and no colour of its own yet. */
+    canResize: Boolean = true,
+    canSetColor: Boolean = true,
 ) {
     val size = stringResource(R.string.tile_size, width, height)
     val resize = stringResource(R.string.tile_resize)
     FlowRow(horizontalArrangement = Arrangement.Center, verticalArrangement = Arrangement.Center) {
-        IconButton(
+        if (canResize) IconButton(
             onClick = onResize,
             modifier = if (resizable) Modifier.semantics { stateDescription = size } else Modifier,
         ) {
@@ -723,7 +906,7 @@ private fun TileEditControls(
                 locked = !resizable,
             )
         }
-        IconButton(onClick = onSetColor) {
+        if (canSetColor) IconButton(onClick = onSetColor) {
             LockableIcon(Icons.Default.FormatColorFill, stringResource(R.string.tile_color), locked = !colorsUnlocked)
         }
         if (canSetGoal) {
@@ -1175,3 +1358,17 @@ private const val EDITING_CONTENT_ALPHA = 0.3f
 /** A lifted tile stands slightly out of the grid, so it reads as held. */
 private const val LIFTED_SCALE = 1.04f
 private const val LIFTED_ELEVATION = 8
+
+/** One cell of the grid: a type's tile, or the insights tile that belongs to none. */
+private sealed interface GridEntry {
+    val tile: Tile
+    val id: String get() = tile.id
+
+    data class Type(val data: TileData) : GridEntry {
+        override val tile: Tile get() = data.tile
+    }
+
+    data class Insights(val data: InsightsTileData) : GridEntry {
+        override val tile: Tile get() = data.tile
+    }
+}

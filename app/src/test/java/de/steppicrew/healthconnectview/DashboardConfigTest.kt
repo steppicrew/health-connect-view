@@ -223,4 +223,26 @@ class DashboardConfigTest {
                 )
             }
     }
+
+    @Test
+    fun `the insights tile survives sanitising, once and as one cell`() {
+        val stored = DashboardConfig(
+            listOf(
+                Tile("StepsRecord"),
+                Tile(Tile.INSIGHTS, width = 2, height = 2),
+                Tile(Tile.INSIGHTS, id = "Insights#2"),
+                Tile("NoSuchRecord"),
+            ),
+        )
+        val clean = stored.sanitised()
+        assertEquals(listOf("StepsRecord", Tile.INSIGHTS), clean.tiles.map { it.typeName })
+        val insights = clean.tiles.single { it.isInsights }
+        assertEquals(1 to 1, insights.width to insights.height)
+    }
+
+    @Test
+    fun `the insights tile round-trips through the stored form`() {
+        val stored = DashboardConfig(listOf(Tile(Tile.INSIGHTS), Tile("StepsRecord")))
+        assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+    }
 }

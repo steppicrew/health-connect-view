@@ -16,6 +16,9 @@ import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
+import de.steppicrew.healthconnectview.ui.insights.readInsights
+import de.steppicrew.healthconnectview.ui.insights.insightTypes
+import de.steppicrew.healthconnectview.ui.insights.Insight
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -146,10 +149,24 @@ data class DashboardUiState(
     val date: LocalDate = LocalDate.now(),
     val tiles: List<TileData> = emptyList(),
     val loading: Boolean = true,
+    /** The insights tile where one is pinned; it sits among [tiles] at its place in [layout]. */
+    val insights: InsightsTileData? = null,
+    /** Every tile's id in the stored order, the insights tile's among them. */
+    val layout: List<String> = emptyList(),
 ) {
     /** Today is the newest day with data; stepping forward past it is meaningless. */
     val canStepForward: Boolean get() = date.isBefore(LocalDate.now())
 }
+
+/**
+ * The insights tile: what moved this week, across every type. [insights] is null while it is
+ * read; [locked] without Pro, where the tile offers the purchase instead.
+ */
+data class InsightsTileData(
+    val tile: Tile,
+    val insights: List<Insight>? = null,
+    val locked: Boolean = false,
+)
 
 /** A type the add picker offers, and whether a tile of it is already pinned. */
 data class AddCandidate(val spec: RecordTypeSpec<*>, val pinned: Boolean)
@@ -289,7 +306,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     fun setColor(id: String, color: TileColor) {
         config = config.withColor(id, color)
-        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles), layout = config.tiles.map(Tile::id)) }
         viewModelScope.launch { store.save(config) }
     }
 
@@ -305,6 +322,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * offers it locked otherwise, so this refuses rather than trusting the caller.
      */
     fun addTile(typeName: String) {
+        // One insights tile: a second would repeat the same list.
+        if (typeName == Tile.INSIGHTS && config.has(typeName)) return
         if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
         config = config.adding(typeName)
         viewModelScope.launch { store.save(config) }
@@ -336,7 +355,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val reordered = DashboardConfig(ordered + config.tiles.filterNot { it.id in ids })
         if (reordered == config) return
         config = reordered
-        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles), layout = config.tiles.map(Tile::id)) }
         viewModelScope.launch { store.save(config) }
     }
 
@@ -349,7 +368,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val before = config.tiles.firstOrNull { it.id == id }
         config = config.resized(id)
         val after = config.tiles.firstOrNull { it.id == id }
-        _state.update { it.copy(tiles = withCurrentLayout(it.tiles)) }
+        _state.update { it.copy(tiles = withCurrentLayout(it.tiles), layout = config.tiles.map(Tile::id)) }
         viewModelScope.launch { store.save(config) }
         // Except where the size decides *what* is shown: a tile growing into its stored week,
         // or shrinking back to the day, needs that window read.
@@ -374,6 +393,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      * Every pinnable type for the add picker, each marked whether it is on the dashboard
      * already: then it is offered again, as a further tile for a different window or face.
      */
+    /** Whether the insights tile is on the dashboard; there is only ever one. */
+    val hasInsightsTile: Boolean get() = config.has(Tile.INSIGHTS)
+
     fun addableTypes(): List<AddCandidate> = RecordRegistry.all
         .filter { it.isPinnable }
         .sortedBy { it.type.simpleName }
@@ -398,6 +420,15 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
      */
     private suspend fun loadTiles() {
         val date = _state.value.date
+        val insightsTile = config.tiles.firstOrNull { it.isInsights }
+        _state.update { state ->
+            state.copy(
+                layout = config.tiles.map(Tile::id),
+                insights = insightsTile?.let { tile ->
+                    InsightsTileData(tile, state.insights?.insights, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
+                },
+            )
+        }
         // Always re-read: permissions are authoritative from Health Connect and can be
         // revoked while backgrounded, so they are never taken from the cache.
         val granted = try {
@@ -530,6 +561,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
         Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
+
+        // Last: after the numbers and their arrows, so the tile never holds up a figure. Always
+        // this week, whatever day the dashboard shows -- the tile says "this week".
+        val insights = _state.value.insights
+        if (insights != null && !insights.locked) {
+            val read = readInsights(repository, sourceStore, insightTypes(granted), LocalDate.now(), gate)
+            currentCoroutineContext().ensureActive()
+            _state.update { state ->
+                state.insights?.takeIf { it.tile.id == insights.tile.id }
+                    ?.let { state.copy(insights = it.copy(insights = read)) } ?: state
+            }
+            Log.i(TAG, "insights (${read.size} types) in ${System.currentTimeMillis() - started} ms")
+        }
         // A failed tile is not an answer worth keeping: the next resume must read it again.
         if (loaded.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
     }

@@ -282,6 +282,12 @@ open items below and `FEATURE-IDEAS.md`.
     types are named in one line beneath. Worded as a position, never a verdict, and no brand.
     Sessions and basal metabolic rate are left out, as on the arrows. Opened from the top of the
     catalog -- the dashboard's bar has no room left -- Pro.
+    **As a tile too** (owner, 08.10.2026): the first tile that is not a type -- stored as type
+    name `Insights`, one at most, one cell -- with the week's top three moves as arrow, name and
+    percentage, "+N weitere" beneath, and a tap opening the full list. Always this week, whatever
+    day the dashboard shows, since it says "this week"; read after the numbers and their arrows,
+    so it never holds up a figure. Edit mode offers moving and removing only. Seen on the
+    emulator, including a drag. **Open:** what a larger insights tile should show.
 41. [x] **Blood pressure daily spread** -- built 07.10.2026, seen on the emulator's seeded
     month (the phone has one day of readings, and one day draws no ribbon). Left over from
     step 19: a min-max band for systolic and one for diastolic, from the same daily buckets as

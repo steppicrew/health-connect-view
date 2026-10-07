@@ -744,4 +744,13 @@
     <string name="insights_none">Niente spicca: ogni tipo con dati sufficienti è in linea con la sua media di 30 giorni.</string>
     <string name="insights_empty">Dati ancora insufficienti: un cambiamento richiede registrazioni in almeno 15 degli ultimi 30 giorni.</string>
     <string name="insights_rule">Confronta i 7 giorni prima di oggi con i 30 giorni precedenti. Ordinato in base a quanto si è mosso ogni tipo rispetto alla sua normale variazione da un giorno all\'altro. Un cambiamento è una posizione, non un giudizio: se salire sia un bene dipende dal tipo e da te.</string>
+    <string name="insights_tile_title">Cambiamenti della settimana</string>
+    <string name="insights_tile_caption">Ultimi 7 giorni contro 30</string>
+    <string name="insights_tile_level">Tutto al solito livello</string>
+    <string name="insights_tile_few">Ancora pochi dati</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d altro</item>
+        <item quantity="many">+%1$d altri</item>
+        <item quantity="other">+%1$d altri</item>
+    </plurals>
 </resources>

@@ -719,4 +719,12 @@
     <string name="insights_none">Nichts sticht heraus: Jeder Typ mit genug Daten liegt auf dem Niveau seines 30-Tage-Mittels.</string>
     <string name="insights_empty">Noch nicht genug Daten: Eine Veränderung braucht Aufzeichnungen an mindestens 15 der letzten 30 Tage.</string>
     <string name="insights_rule">Vergleicht die 7 Tage vor heute mit den 30 Tagen davor. Geordnet danach, wie weit sich ein Typ gemessen an seiner üblichen Schwankung von Tag zu Tag bewegt hat. Eine Veränderung ist eine Lage, keine Bewertung: Ob nach oben gut ist, hängt vom Typ und von Ihnen ab.</string>
+    <string name="insights_tile_title">Veränderungen dieser Woche</string>
+    <string name="insights_tile_caption">Letzte 7 gegen 30 Tage</string>
+    <string name="insights_tile_level">Alles auf üblichem Niveau</string>
+    <string name="insights_tile_few">Noch zu wenig Daten</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d weitere</item>
+        <item quantity="other">+%1$d weitere</item>
+    </plurals>
 </resources>

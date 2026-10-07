@@ -744,4 +744,13 @@
     <string name="insights_none">Rien ne ressort : chaque type disposant d\'assez de données est au niveau de sa moyenne sur 30 jours.</string>
     <string name="insights_empty">Pas encore assez de données : une évolution demande des mesures sur au moins 15 des 30 derniers jours.</string>
     <string name="insights_rule">Compare les 7 jours précédant aujourd\'hui avec les 30 jours précédents. Classé selon l\'ampleur du changement par rapport à la variation habituelle d\'un jour à l\'autre. Une évolution est une position, pas un jugement : que la hausse soit bonne dépend du type et de vous.</string>
+    <string name="insights_tile_title">Évolutions de la semaine</string>
+    <string name="insights_tile_caption">7 derniers jours contre 30</string>
+    <string name="insights_tile_level">Tout à son niveau habituel</string>
+    <string name="insights_tile_few">Pas encore assez de données</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d autre</item>
+        <item quantity="many">+%1$d autres</item>
+        <item quantity="other">+%1$d autres</item>
+    </plurals>
 </resources>

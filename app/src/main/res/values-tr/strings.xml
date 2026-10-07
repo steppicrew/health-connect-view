@@ -719,4 +719,12 @@
     <string name="insights_none">Öne çıkan bir şey yok: yeterli verisi olan her tür 30 günlük ortalaması düzeyinde.</string>
     <string name="insights_empty">Henüz yeterli veri yok: bir değişiklik için son 30 günün en az 15\'inde kayıt gerekir.</string>
     <string name="insights_rule">Bugünden önceki 7 günü, ondan önceki 30 günle karşılaştırır. Her türün olağan günlük dalgalanmasına göre ne kadar değiştiğine göre sıralanır. Değişiklik bir konumdur, bir yargı değildir: artışın iyi olup olmadığı türe ve size bağlıdır.</string>
+    <string name="insights_tile_title">Bu haftaki değişiklikler</string>
+    <string name="insights_tile_caption">Son 7 gün, 30 güne karşı</string>
+    <string name="insights_tile_level">Her şey olağan düzeyinde</string>
+    <string name="insights_tile_few">Henüz veri az</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d tane daha</item>
+        <item quantity="other">+%1$d tane daha</item>
+    </plurals>
 </resources>

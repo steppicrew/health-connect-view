@@ -719,4 +719,12 @@
     <string name="insights_none">Niets valt op: elk type met genoeg gegevens ligt gelijk met zijn 30-daagse gemiddelde.</string>
     <string name="insights_empty">Nog niet genoeg gegevens: een verandering vraagt metingen op minstens 15 van de laatste 30 dagen.</string>
     <string name="insights_rule">Vergelijkt de 7 dagen vóór vandaag met de 30 dagen daarvoor. Gerangschikt naar hoe ver elk type bewoog tegenover zijn gewone schommeling van dag tot dag. Een verandering is een positie, geen oordeel: of omhoog goed is, hangt af van het type en van jou.</string>
+    <string name="insights_tile_title">Veranderingen deze week</string>
+    <string name="insights_tile_caption">Laatste 7 dagen tegen 30</string>
+    <string name="insights_tile_level">Alles op het gewone niveau</string>
+    <string name="insights_tile_few">Nog te weinig gegevens</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d andere</item>
+        <item quantity="other">+%1$d andere</item>
+    </plurals>
 </resources>

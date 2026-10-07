@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
@@ -54,7 +54,6 @@ fun InsightsScreen(
     onOpenPermissions: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(viewModel) { viewModel.start() }
     OnResume { viewModel.onResume() }
 
     Scaffold(
@@ -134,11 +133,8 @@ private fun InsightCard(insight: Insight, onClick: () -> Unit) {
     val spec = insight.spec
     val trend = insight.trend
     val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
-    // As the type's own trend section shows them: by magnitude unless the unit fixes the places,
-    // so "2.952 kcal", not "2.952,4 kcal".
-    val decimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else null
-    val amount = trend.percent?.let { percent(abs(it)) }
-        ?: (Formatting.number(abs(trend.recent - trend.baseline), decimals) + unit)
+    val decimals = spec.insightDecimals
+    val amount = insightAmount(insight)
     val titleStyle = MaterialTheme.typography.titleSmall
 
     InfoGroup(Modifier.clickable(onClick = onClick)) {
@@ -170,6 +166,25 @@ private fun InsightCard(insight: Insight, onClick: () -> Unit) {
         }
     }
 }
+
+/**
+ * How far the week moved, unsigned -- the arrow or the words carry the direction: a
+ * percentage where the baseline gives one meaning, else the difference in the type's unit.
+ */
+@Composable
+internal fun insightAmount(insight: Insight): String {
+    val trend = insight.trend
+    trend.percent?.let { return percent(abs(it)) }
+    val unit = insight.spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    return Formatting.number(abs(trend.recent - trend.baseline), insight.spec.insightDecimals) + unit
+}
+
+/**
+ * As the type's own trend section shows its averages: by magnitude unless the unit fixes the
+ * places, so "2.952 kcal", not "2.952,4 kcal".
+ */
+private val RecordTypeSpec<*>.insightDecimals: Int?
+    get() = valueDecimals ?: if (tile.integralValues) 0 else null
 
 /** "8 %", "8%" or "%8" as the language writes it, whole percent: a finer figure is noise here. */
 private fun percent(value: Double): String =

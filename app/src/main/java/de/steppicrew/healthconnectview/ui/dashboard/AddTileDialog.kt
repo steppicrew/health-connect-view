@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.dashboard.Tile
 
 /**
  * Picks a type to pin.
@@ -40,6 +41,9 @@ fun AddTileDialog(
     onDismiss: () -> Unit,
     onAdd: (String) -> Unit,
     onBuy: () -> Unit,
+    /** Whether the insights tile may be offered: not while one is pinned. */
+    insightsOffered: Boolean = false,
+    insightsUnlocked: Boolean = false,
 ) {
     val (pinned, fresh) = candidates.partition { it.pinned }
     AlertDialog(
@@ -49,7 +53,16 @@ fun AddTileDialog(
             LazyColumn(modifier = Modifier.heightIn(max = LIST_MAX_HEIGHT.dp)) {
                 // Every type pinned: say so rather than open on an empty list, or on nothing
                 // but the locked repeats.
-                if (fresh.isEmpty()) {
+                // First: it is not a type, and the one tile that reads across all of them.
+                if (insightsOffered) {
+                    item(key = "insights") {
+                        NamedRow(stringResource(R.string.insights_tile_title), locked = !insightsUnlocked) {
+                            if (insightsUnlocked) onAdd(Tile.INSIGHTS) else onBuy()
+                            onDismiss()
+                        }
+                    }
+                }
+                if (fresh.isEmpty() && !insightsOffered) {
                     item(key = "all-pinned") {
                         Text(
                             text = stringResource(R.string.dashboard_add_none),
@@ -91,7 +104,11 @@ fun AddTileDialog(
 }
 
 @Composable
-private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -> Unit) {
+private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -> Unit) =
+    NamedRow(stringResource(candidate.spec.displayNameRes), locked, onClick)
+
+@Composable
+private fun NamedRow(name: String, locked: Boolean, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier
@@ -100,7 +117,7 @@ private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -
             .padding(vertical = 12.dp),
     ) {
         Text(
-            text = stringResource(candidate.spec.displayNameRes),
+            text = name,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )

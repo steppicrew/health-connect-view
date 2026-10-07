@@ -769,4 +769,14 @@
     <string name="insights_none">Nic się nie wyróżnia: każdy typ z wystarczającą ilością danych jest na poziomie swojej średniej z 30 dni.</string>
     <string name="insights_empty">Za mało danych: zmiana wymaga zapisów z co najmniej 15 z ostatnich 30 dni.</string>
     <string name="insights_rule">Porównuje 7 dni przed dzisiejszym dniem z 30 dniami wcześniej. Kolejność według tego, jak bardzo dany typ się zmienił w stosunku do zwykłych wahań z dnia na dzień. Zmiana to położenie, nie ocena: to, czy wzrost jest dobry, zależy od typu i od Ciebie.</string>
+    <string name="insights_tile_title">Zmiany w tym tygodniu</string>
+    <string name="insights_tile_caption">Ostatnie 7 dni wobec 30</string>
+    <string name="insights_tile_level">Wszystko na zwykłym poziomie</string>
+    <string name="insights_tile_few">Za mało danych</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d kolejny</item>
+        <item quantity="few">+%1$d kolejne</item>
+        <item quantity="many">+%1$d kolejnych</item>
+        <item quantity="other">+%1$d kolejnego</item>
+    </plurals>
 </resources>
