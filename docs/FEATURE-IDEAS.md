@@ -24,6 +24,25 @@ Worth its own logic since it behaves differently from other metrics:
 - *Built (ROADMAP §16):* separate display for morning vs. evening readings (standard guidance is twice daily) instead of one blended average.
 - *Built (ROADMAP §17):* a PDF report for a chosen date range — useful for doctor visits when they ask for a log.
 
+## Motivation
+
+Picked by the owner on 07.10.2026 from a list of ideas, alongside goal streaks (built):
+
+- Personal records: the best step day, the longest workout, the lowest resting heart rate,
+  each with its date, as a tile and on the type's screen. A max/min over the daily totals
+  already read; a record that comes from overlapping writers (one 90,000-step day from a
+  duplicated sync) must be ruled out by the same one-writer-per-day logic the charts use, or
+  the best day is a data fault.
+
+## Handling multiple sources, continued
+
+- Suggest which source suits each data type, the owner's idea of 07.10.2026. For every type
+  with more than one writer: how many days each covers, how many readings a day, how far back
+  it goes, and which details it fills (sleep stages, device, measurement context). From that,
+  name the one that covers most and offer it as the preferred app in one tap. Worded as what
+  the data shows ("schreibt an 98 % der Tage, mit Schlafphasen"), never as a verdict on a
+  device or app, and computed only on request, since it probes every type.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).

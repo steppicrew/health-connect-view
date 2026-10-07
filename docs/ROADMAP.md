@@ -303,6 +303,10 @@ open items below and `FEATURE-IDEAS.md`.
       show nothing for the first ~300 ms so a fast load does not flash a bar at all.
     Probably all three: pieces where the request is long, an estimate where it is one call,
     the animation everywhere.
+46. [ ] **Personal records** -- the owner's pick, 07.10.2026; see "Motivation" in
+    `FEATURE-IDEAS.md`. Free.
+47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
+    sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app (section 10).
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
