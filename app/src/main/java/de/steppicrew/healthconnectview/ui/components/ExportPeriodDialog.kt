@@ -124,7 +124,7 @@ private fun PeriodRow(@StringRes label: Int, detail: String, selected: Boolean, 
             onClick = null,
             modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, TOGGLE_SIZE.dp)),
         )
-        Column(Modifier.padding(start = 12.dp)) {
+        Column(Modifier.padding(start = 12.dp, top = firstLineTextInset(MaterialTheme.typography.bodyLarge, TOGGLE_SIZE.dp))) {
             Text(stringResource(label), style = MaterialTheme.typography.bodyLarge)
             Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

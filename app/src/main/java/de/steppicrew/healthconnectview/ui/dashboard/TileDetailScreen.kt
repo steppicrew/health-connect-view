@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material.icons.filled.Route
@@ -482,9 +483,14 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
                     },
                 ),
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
+                // The 24 dp icon is taller than the line, so the text comes down to its middle.
+                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
             )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+            InfoToggle(
+                explanation,
+                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
+                firstLine = MaterialTheme.typography.titleSmall,
+            )
         }
         Text(
             text = stringResource(
@@ -538,9 +544,14 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
+                // The 24 dp icon is taller than the line, so the text comes down to its middle.
+                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
             )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+            InfoToggle(
+                explanation,
+                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
+                firstLine = MaterialTheme.typography.titleSmall,
+            )
         }
         when {
             // The current run is the year's longest: saying both would repeat the number.
@@ -640,9 +651,14 @@ private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
+                // The 24 dp icon is taller than the line, so the text comes down to its middle.
+                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
             )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+            InfoToggle(
+                explanation,
+                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
+                firstLine = MaterialTheme.typography.titleSmall,
+            )
         }
         Text(
             text = stringResource(
@@ -1295,7 +1311,10 @@ private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Bool
         Text(
             text = stringResource(label),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 12.dp),
+            modifier = Modifier.padding(
+                start = 12.dp,
+                top = firstLineTextInset(MaterialTheme.typography.bodyMedium, TOGGLE_SIZE.dp),
+            ),
         )
     }
 }
@@ -1675,7 +1694,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                             text = stringResource(R.string.detail_written_by, context.appLabelFor(sources.first())),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 8.dp),
+                            modifier = Modifier.padding(start = 8.dp, top = firstLineTextInset(MaterialTheme.typography.bodySmall, SOURCE_ICON.dp)),
                         )
                     }
                 } else if (explanation.expanded == true) {
@@ -1716,7 +1735,7 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                                         .joinToString(" · "),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(start = 8.dp),
+                                    modifier = Modifier.padding(start = 8.dp, top = firstLineTextInset(MaterialTheme.typography.bodySmall, SOURCE_ICON.dp)),
                                 )
                             }
                         }

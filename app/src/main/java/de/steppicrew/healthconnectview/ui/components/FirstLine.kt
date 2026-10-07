@@ -13,6 +13,11 @@ import androidx.compose.ui.unit.isUnspecified
  *
  * Centred on the whole row instead, an icon drops between the lines once its text wraps, and
  * belongs to neither; on the first line it marks where the entry starts, as a bullet does.
+ *
+ * Zero where the icon is the taller of the two -- then the text has to move instead. A control
+ * whose size against the line depends on the style (a 24 dp checkbox beside a 20 dp line, but
+ * not beside a 24 dp one) takes both this and [firstLineTextInset]: one of them is always zero,
+ * and the other centres the pair. Only one of them left the label 2 dp high beside the box.
  */
 @Composable
 fun firstLineInset(style: TextStyle, size: Dp): Dp {
