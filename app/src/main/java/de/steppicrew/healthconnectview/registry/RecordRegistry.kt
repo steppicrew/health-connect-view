@@ -421,7 +421,10 @@ object RecordRegistry {
             quantity = Quantity.GLUCOSE,
             points = { listOf(Point(it.time, it.level.inMillimolesPerLiter)) },
             summary = { Units.format(Quantity.GLUCOSE, it.level.inMillimolesPerLiter) },
-            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true),
+            // Several readings a day, before and after meals: across days a mean per day with
+            // its low-high band, as oxygen saturation, rather than every reading in a zigzag.
+            // The band is what keeps a meal's peak visible behind the mean.
+            tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, dailyMeans = true),
         ),
         RecordTypeSpec(
             type = BloodPressureRecord::class,
@@ -555,6 +558,9 @@ object RecordRegistry {
                     )
                 }
             },
+            // Read through the night, every few minutes: across days a mean per day with its
+            // band, like the other frequent readings.
+            tile = TileSpec(TileSpec.Form.NUMBER, dailyMeans = true),
         ),
         RecordTypeSpec(
             type = HydrationRecord::class,
