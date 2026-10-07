@@ -814,7 +814,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         // The list is on screen before the extras: a streak reaching back a year took 12.5 s
         // on the phone, and holding the list behind it left the screen half empty for that long.
         onChartReady(listed)
-        val extras = loader.extras()
+        // Off the main thread: only the Health Connect calls themselves leave it, and building
+        // and counting the sessions behind a 48-day activity streak then ran on it while the
+        // screen was already in use -- dragging a route's marker turned visibly laggy.
+        val extras = withContext(Dispatchers.Default) { loader.extras() }
         listed.copy(baseline = extras.baseline, trend = extras.trend, streak = extras.streak)
     }
 
