@@ -519,6 +519,17 @@
     <string name="source_all_explained">All sources: combined and deduplicated by Health Connect. Not the same as any single app\'s figure.</string>
     <string name="source_showing_one">%1$s: only this app\'s figure, not your deduplicated total.</string>
     <string name="source_priority_hint">Which app wins where records overlap is set in Health Connect, under app priority.</string>
+    <string name="sources_compare">Compare sources</string>
+    <string name="sources_compare_title">Last 30 days</string>
+    <string name="sources_days">Days with data: %1$d/%2$d</string>
+    <string name="sources_per_day">Entries per day: %1$d</string>
+    <string name="sources_since">Since %1$s</string>
+    <string name="sources_stages">Nights with stages: %1$d/%2$d</string>
+    <string name="sources_most_days">Covers the most days</string>
+    <string name="sources_most_entries">Most entries per day</string>
+    <string name="sources_longest_history">Longest history</string>
+    <string name="sources_show_only">Show only %1$s</string>
+    <string name="sources_compare_failed">The sources could not be compared.</string>
     <string name="detail_history_capped">Showing only the last 30 days. Allow access to older data on the permissions screen to see the full period.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d record</item>

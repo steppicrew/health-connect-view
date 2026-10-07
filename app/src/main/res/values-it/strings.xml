@@ -498,6 +498,17 @@
     <string name="source_all_explained">Tutte le fonti: combinate e senza duplicati secondo Connessione Salute. Non è lo stesso del valore di una singola app.</string>
     <string name="source_showing_one">%1$s: solo il valore di questa app, non il tuo totale senza duplicati.</string>
     <string name="source_priority_hint">Quale app prevale dove le registrazioni si sovrappongono si imposta in Connessione Salute, alla voce priorità delle app.</string>
+    <string name="sources_compare">Confronta le fonti</string>
+    <string name="sources_compare_title">Ultimi 30 giorni</string>
+    <string name="sources_days">Giorni con dati: %1$d/%2$d</string>
+    <string name="sources_per_day">Voci al giorno: %1$d</string>
+    <string name="sources_since">Dal %1$s</string>
+    <string name="sources_stages">Notti con fasi: %1$d/%2$d</string>
+    <string name="sources_most_days">Copre più giorni</string>
+    <string name="sources_most_entries">Più voci al giorno</string>
+    <string name="sources_longest_history">Storico più lungo</string>
+    <string name="sources_show_only">Mostra solo %1$s</string>
+    <string name="sources_compare_failed">Impossibile confrontare le fonti.</string>
     <string name="detail_history_capped">Vengono mostrati solo gli ultimi 30 giorni. Consenti l’accesso ai dati meno recenti nella schermata delle autorizzazioni per vedere l’intero periodo.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d registrazione</item>

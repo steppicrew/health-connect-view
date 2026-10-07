@@ -486,6 +486,17 @@
     <string name="source_all_explained">Alle bronnen: gecombineerd en ontdubbeld door Health Connect. Niet hetzelfde als het cijfer van één app.</string>
     <string name="source_showing_one">%1$s: alleen het cijfer van deze app, niet je ontdubbelde totaal.</string>
     <string name="source_priority_hint">Welke app voorgaat waar registraties overlappen, stel je in Health Connect in, onder app-prioriteit.</string>
+    <string name="sources_compare">Bronnen vergelijken</string>
+    <string name="sources_compare_title">Afgelopen 30 dagen</string>
+    <string name="sources_days">Dagen met gegevens: %1$d/%2$d</string>
+    <string name="sources_per_day">Items per dag: %1$d</string>
+    <string name="sources_since">Sinds %1$s</string>
+    <string name="sources_stages">Nachten met fasen: %1$d/%2$d</string>
+    <string name="sources_most_days">Dekt de meeste dagen</string>
+    <string name="sources_most_entries">Meeste items per dag</string>
+    <string name="sources_longest_history">Langste geschiedenis</string>
+    <string name="sources_show_only">Alleen %1$s tonen</string>
+    <string name="sources_compare_failed">De bronnen konden niet worden vergeleken.</string>
     <string name="detail_history_capped">Alleen de laatste 30 dagen worden getoond. Sta toegang tot oudere gegevens toe op het toestemmingsscherm om de hele periode te zien.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d registratie</item>

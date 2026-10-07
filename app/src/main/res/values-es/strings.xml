@@ -498,6 +498,17 @@
     <string name="source_all_explained">Todas las fuentes: combinadas y sin duplicados según Health Connect. No es lo mismo que la cifra de una sola aplicación.</string>
     <string name="source_showing_one">%1$s: solo la cifra de esta aplicación, no tu total sin duplicados.</string>
     <string name="source_priority_hint">Qué aplicación prevalece cuando los registros se solapan se define en Health Connect, en la prioridad de aplicaciones.</string>
+    <string name="sources_compare">Comparar fuentes</string>
+    <string name="sources_compare_title">Últimos 30 días</string>
+    <string name="sources_days">Días con datos: %1$d/%2$d</string>
+    <string name="sources_per_day">Entradas por día: %1$d</string>
+    <string name="sources_since">Desde %1$s</string>
+    <string name="sources_stages">Noches con fases: %1$d/%2$d</string>
+    <string name="sources_most_days">Cubre más días</string>
+    <string name="sources_most_entries">Más entradas por día</string>
+    <string name="sources_longest_history">Historial más largo</string>
+    <string name="sources_show_only">Mostrar solo %1$s</string>
+    <string name="sources_compare_failed">No se pudieron comparar las fuentes.</string>
     <string name="detail_history_capped">Solo se muestran los últimos 30 días. Permite el acceso a los datos antiguos en la pantalla de permisos para ver el periodo completo.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d registro</item>

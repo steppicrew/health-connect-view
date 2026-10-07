@@ -480,6 +480,17 @@
     <string name="source_all_explained">Alle Quellen: von Health Connect zusammengeführt und entdoppelt. Nicht identisch mit dem Wert einer einzelnen App.</string>
     <string name="source_showing_one">%1$s: nur der Wert dieser App, nicht die entdoppelte Summe.</string>
     <string name="source_priority_hint">Welche App bei überlappenden Daten Vorrang hat, wird in Health Connect unter App-Priorität festgelegt.</string>
+    <string name="sources_compare">Quellen vergleichen</string>
+    <string name="sources_compare_title">Letzte 30 Tage</string>
+    <string name="sources_days">Tage mit Daten: %1$d/%2$d</string>
+    <string name="sources_per_day">Einträge pro Tag: %1$d</string>
+    <string name="sources_since">Seit %1$s</string>
+    <string name="sources_stages">Nächte mit Schlafphasen: %1$d/%2$d</string>
+    <string name="sources_most_days">Deckt die meisten Tage ab</string>
+    <string name="sources_most_entries">Meiste Einträge pro Tag</string>
+    <string name="sources_longest_history">Längster Verlauf</string>
+    <string name="sources_show_only">Nur %1$s anzeigen</string>
+    <string name="sources_compare_failed">Die Quellen konnten nicht verglichen werden.</string>
     <string name="detail_history_capped">Es werden nur die letzten 30 Tage angezeigt. Geben Sie auf dem Berechtigungs-Bildschirm ältere Daten frei, um den ganzen Zeitraum zu sehen.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d Datensatz</item>

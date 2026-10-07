@@ -284,6 +284,23 @@ class HealthRepository(private val context: Context) {
         client.readRecord(ExerciseSessionRecord::class, recordId).record.exerciseRouteResult
     }
 
+    /** The oldest record in [range], or null: one ascending page of one. */
+    suspend fun <T : Record> oldest(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        origins: Set<DataOrigin> = emptySet(),
+    ): T? = withContext(Dispatchers.IO) {
+        client.readRecords(
+            ReadRecordsRequest(
+                recordType = type,
+                timeRangeFilter = range,
+                dataOriginFilter = origins,
+                ascendingOrder = true,
+                pageSize = 1,
+            ),
+        ).records.firstOrNull()
+    }
+
     /** One record by its id; throws where it is gone or not readable. */
     suspend fun <T : Record> readOne(type: KClass<T>, id: String): T = withContext(Dispatchers.IO) {
         client.readRecord(type, id).record

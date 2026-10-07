@@ -474,6 +474,17 @@
     <string name="source_all_explained">모든 소스: 헬스 커넥트가 합치고 중복을 제거한 값입니다. 어느 한 앱의 수치와는 다릅니다.</string>
     <string name="source_showing_one">%1$s: 이 앱의 수치만 표시하며, 중복이 제거된 합계가 아닙니다.</string>
     <string name="source_priority_hint">기록이 겹칠 때 어느 앱을 우선할지는 헬스 커넥트의 앱 우선순위에서 설정합니다.</string>
+    <string name="sources_compare">소스 비교</string>
+    <string name="sources_compare_title">지난 30일</string>
+    <string name="sources_days">데이터가 있는 날: %1$d/%2$d</string>
+    <string name="sources_per_day">하루 항목 수: %1$d</string>
+    <string name="sources_since">%1$s부터</string>
+    <string name="sources_stages">수면 단계가 있는 밤: %1$d/%2$d</string>
+    <string name="sources_most_days">가장 많은 날을 기록함</string>
+    <string name="sources_most_entries">하루 항목 수가 가장 많음</string>
+    <string name="sources_longest_history">기록 기간이 가장 김</string>
+    <string name="sources_show_only">%1$s만 보기</string>
+    <string name="sources_compare_failed">소스를 비교할 수 없습니다.</string>
     <string name="detail_history_capped">최근 30일만 표시합니다. 전체 기간을 보려면 권한 화면에서 이전 데이터에 대한 액세스를 허용하세요.</string>
     <plurals name="detail_records_header">
         <item quantity="other">기록 %1$d개</item>

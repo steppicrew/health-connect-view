@@ -474,6 +474,17 @@
     <string name="source_all_explained">所有來源：由 Health Connect 合併並去除重複。與任何單一應用程式的數值都不同。</string>
     <string name="source_showing_one">%1$s：僅顯示這個應用程式的數值，並非您去除重複後的總計。</string>
     <string name="source_priority_hint">記錄重疊時以哪個應用程式為準，是在 Health Connect 的應用程式優先順序中設定。</string>
+    <string name="sources_compare">比較來源</string>
+    <string name="sources_compare_title">最近 30 天</string>
+    <string name="sources_days">有資料的天數：%1$d/%2$d</string>
+    <string name="sources_per_day">每天項目數：%1$d</string>
+    <string name="sources_since">自 %1$s 起</string>
+    <string name="sources_stages">含睡眠階段的夜晚：%1$d/%2$d</string>
+    <string name="sources_most_days">涵蓋天數最多</string>
+    <string name="sources_most_entries">每天項目最多</string>
+    <string name="sources_longest_history">歷史最長</string>
+    <string name="sources_show_only">只顯示 %1$s</string>
+    <string name="sources_compare_failed">無法比較來源。</string>
     <string name="detail_history_capped">僅顯示最近 30 天。請在權限畫面中允許存取較舊的資料，以查看整段期間。</string>
     <plurals name="detail_records_header">
         <item quantity="other">%1$d 筆記錄</item>

@@ -143,6 +143,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
+import de.steppicrew.healthconnectview.health.Suggestion
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import androidx.compose.material3.TextButton
 
@@ -192,6 +193,7 @@ fun TileDetailScreen(
     // Back from the permission screen with older data allowed, the capped window is re-read.
     OnResume { viewModel.onResume() }
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
+    val coverage by viewModel.coverage.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     ShowExportResults(viewModel.exportResults, snackbar)
 
@@ -256,6 +258,7 @@ fun TileDetailScreen(
             // Read by every note that depends on how far back the app may look.
             CompositionLocalProvider(
                 LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions),
+                LocalSourceCompare provides SourceCompare(coverage, viewModel::compareSources, viewModel::selectSource),
                 LocalDayJump provides DayJump(
                     shown = span.startDate(offset).takeIf { span == Span.DAY },
                     onShow = viewModel::showDay,
@@ -562,6 +565,15 @@ private val LocalHistoryAccess = staticCompositionLocalOf { HistoryAccess(grante
 private class DayJump(val shown: LocalDate?, val onShow: (LocalDate) -> Unit)
 
 private val LocalDayJump = staticCompositionLocalOf { DayJump(shown = null, onShow = {}) }
+
+/** The source comparison's state, how to start it, and how to pick the app it names. */
+private class SourceCompare(
+    val load: CoverageLoad?,
+    val onCompare: () -> Unit,
+    val onSelect: (String?) -> Unit,
+)
+
+private val LocalSourceCompare = staticCompositionLocalOf<SourceCompare?> { null }
 
 /**
  * Under an explanation that searches the past year: said only where the search was in fact cut
@@ -1647,6 +1659,10 @@ private fun SourceSection(data: TileDetailData, onSelectSource: (String?) -> Uni
                     }
                 }
 
+                if (sources.size > 1 && explanation.expanded == true) {
+                    LocalSourceCompare.current?.let { SourceComparison(it, data.selectedSource) }
+                }
+
                 // The overlap winner is Health Connect's own priority setting, not ours to define.
                 // Only for the combined view: with one app selected nothing is deduplicated, so
                 // which app would win an overlap says nothing about the figure shown.
@@ -1716,3 +1732,94 @@ private fun titleFor(spec: RecordTypeSpec<*>?): String =
 
 /** A session's heart-rate axis spans at least this many bpm, so a steady night reads flat. */
 private const val SESSION_CURVE_MIN_SPAN = 20.0
+
+/**
+ * Which app covers this type best, worded as what the data shows: per writer, on how many of
+ * the last 30 days it wrote anything, how many entries a day, since when, and for sleep how
+ * many nights carried stages. Never a verdict on a device or an app -- "covers the most days"
+ * is a count -- and only on request, since it reads every record of the type.
+ *
+ * The offer is the per-type source filter, the same as tapping the app's chip. It cannot make
+ * the app win overlaps in the combined total: that is Health Connect's priority list.
+ */
+@Composable
+private fun SourceComparison(compare: SourceCompare, selected: String?) {
+    val context = LocalContext.current
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    when (val load = compare.load) {
+        null -> TextButton(onClick = compare.onCompare) {
+            Text(stringResource(R.string.sources_compare))
+        }
+
+        CoverageLoad.Loading -> LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 12.dp))
+
+        CoverageLoad.Failed -> Text(
+            text = stringResource(R.string.sources_compare_failed),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+
+        is CoverageLoad.Done -> {
+            val coverage = load.coverage
+            val suggestion = coverage.suggestion
+            val suggested = suggestion?.packageName
+            Text(
+                text = stringResource(R.string.sources_compare_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                coverage.writers.forEach { writer ->
+                    Row(verticalAlignment = Alignment.Top) {
+                        SourceMark(
+                            writer.packageName,
+                            SOURCE_ICON,
+                            SOURCE_ICON_PX,
+                            Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyMedium, SOURCE_ICON.dp)),
+                        ) {}
+                        Column(Modifier.padding(start = 8.dp)) {
+                            Text(
+                                text = context.appLabelFor(writer.packageName),
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            if (suggestion != null && writer.packageName == suggested) {
+                                Text(
+                                    text = stringResource(
+                                        when (suggestion.reason) {
+                                            Suggestion.Reason.MOST_DAYS -> R.string.sources_most_days
+                                            Suggestion.Reason.MOST_ENTRIES -> R.string.sources_most_entries
+                                            Suggestion.Reason.LONGEST_HISTORY -> R.string.sources_longest_history
+                                        },
+                                    ),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                            Text(
+                                text = listOfNotNull(
+                                    stringResource(R.string.sources_days, writer.days, coverage.days),
+                                    stringResource(R.string.sources_per_day, writer.perDay),
+                                    writer.nightsWithStages?.let {
+                                        stringResource(R.string.sources_stages, it, writer.records)
+                                    },
+                                    writer.since?.let {
+                                        val zone = HealthRepository.DEFAULT_ZONE
+                                        stringResource(R.string.sources_since, Formatting.date(it.atStartOfDay(zone).toInstant(), zone))
+                                    },
+                                ).joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = muted,
+                            )
+                        }
+                    }
+                }
+            }
+            if (suggested != null && suggested != selected) {
+                TextButton(onClick = { compare.onSelect(suggested) }) {
+                    Text(stringResource(R.string.sources_show_only, context.appLabelFor(suggested)))
+                }
+            }
+        }
+    }
+}

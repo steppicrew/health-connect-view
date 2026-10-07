@@ -510,6 +510,17 @@
     <string name="source_all_explained">Wszystkie źródła: połączone i bez duplikatów według Health Connect. To nie to samo co wartość z jednej aplikacji.</string>
     <string name="source_showing_one">%1$s: tylko wartość tej aplikacji, nie twoja suma bez duplikatów.</string>
     <string name="source_priority_hint">To, która aplikacja ma pierwszeństwo przy nakładających się wpisach, ustawia się w Health Connect, w priorytecie aplikacji.</string>
+    <string name="sources_compare">Porównaj źródła</string>
+    <string name="sources_compare_title">Ostatnie 30 dni</string>
+    <string name="sources_days">Dni z danymi: %1$d/%2$d</string>
+    <string name="sources_per_day">Wpisy dziennie: %1$d</string>
+    <string name="sources_since">Od %1$s</string>
+    <string name="sources_stages">Noce z fazami: %1$d/%2$d</string>
+    <string name="sources_most_days">Obejmuje najwięcej dni</string>
+    <string name="sources_most_entries">Najwięcej wpisów dziennie</string>
+    <string name="sources_longest_history">Najdłuższa historia</string>
+    <string name="sources_show_only">Pokaż tylko %1$s</string>
+    <string name="sources_compare_failed">Nie udało się porównać źródeł.</string>
     <string name="detail_history_capped">Pokazano tylko ostatnie 30 dni. Zezwól na dostęp do starszych danych na ekranie uprawnień, aby zobaczyć cały okres.</string>
     <plurals name="detail_records_header">
         <item quantity="one">%1$d wpis</item>

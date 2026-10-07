@@ -66,6 +66,8 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import androidx.health.connect.client.records.SleepSessionRecord
 import de.steppicrew.healthconnectview.health.personalRecord
+import de.steppicrew.healthconnectview.health.SourceCoverage
+import de.steppicrew.healthconnectview.health.sourceCoverage
 import de.steppicrew.healthconnectview.health.PersonalRecord
 import kotlinx.coroutines.delay
 import java.time.Instant
@@ -420,6 +422,36 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
     private val _spec = MutableStateFlow<RecordTypeSpec<*>?>(null)
     val spec: StateFlow<RecordTypeSpec<*>?> = _spec.asStateFlow()
 
+    private val _coverage = MutableStateFlow<CoverageLoad?>(null)
+
+    /** The writers compared over the last 30 days, once asked for; null until then. */
+    val coverage: StateFlow<CoverageLoad?> = _coverage.asStateFlow()
+    private var coverageJob: Job? = null
+
+    /**
+     * Counts what each app wrote for this type over the last 30 days, on request only: it
+     * reads every record of the type, which for heart rate is tens of thousands.
+     */
+    fun compareSources() {
+        val spec = _spec.value ?: return
+        coverageJob?.cancel()
+        coverageJob = viewModelScope.launch {
+            _coverage.value = CoverageLoad.Loading
+            val started = System.nanoTime()
+            _coverage.value = try {
+                val coverage = repository.sourceCoverage(spec, Instant.now(), lookUpSince = _historyGranted.value)
+                // Timing and writer count only, never a reading.
+                Log.d(TAG, "compared ${coverage.writers.size} writers of ${spec.type.simpleName} in ${(System.nanoTime() - started) / 1_000_000} ms")
+                CoverageLoad.Done(coverage)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w(TAG, "source comparison failed: ${e.javaClass.simpleName}")
+                CoverageLoad.Failed
+            }
+        }
+    }
+
     /**
      * Filters every read and aggregate to one app.
      *
@@ -442,6 +474,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
      * unparseable value simply opens on today.
      */
     fun load(typeName: String, date: String = "", span: String = "") {
+        if (typeName != this.typeName) {
+            coverageJob?.cancel()
+            _coverage.value = null
+        }
         this.typeName = typeName
         _spec.update { RecordRegistry.specOrNull(typeName) }
         // Span first: the offset is counted in the span's own periods, so it cannot be
@@ -823,4 +859,11 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         const val LIST_DEBOUNCE_MS = 400L
     }
 
+}
+
+/** A source comparison in progress, done, or failed. */
+sealed interface CoverageLoad {
+    data object Loading : CoverageLoad
+    data class Done(val coverage: SourceCoverage) : CoverageLoad
+    data object Failed : CoverageLoad
 }
