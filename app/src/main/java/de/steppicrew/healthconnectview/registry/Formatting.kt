@@ -48,6 +48,17 @@ object Formatting {
      * labels read as different kinds of number. The step decides here, so every label on an
      * axis states the same precision -- and a whole-numbered step states none.
      */
+    /**
+     * A change, with "+" before a rise, to [decimals] places. The sign is taken from the
+     * rounded value, so a loss of 0,02 kg reads "0,0", not "-0,0": a minus before a zero
+     * claims a direction the shown figure does not have.
+     */
+    fun signed(value: Double, decimals: Int, locale: Locale = Locale.getDefault()): String {
+        val rounded = java.math.BigDecimal(value).setScale(decimals, java.math.RoundingMode.HALF_EVEN).toDouble()
+        if (rounded == 0.0) return axisLabel(0.0, decimals, locale)
+        return (if (rounded > 0) "+" else "") + axisLabel(rounded, decimals, locale)
+    }
+
     fun axisLabel(value: Double, decimals: Int, locale: Locale = Locale.getDefault()): String =
         NumberFormat.getInstance(locale).apply {
             maximumFractionDigits = decimals

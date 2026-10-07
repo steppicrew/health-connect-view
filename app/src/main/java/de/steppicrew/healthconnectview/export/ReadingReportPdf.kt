@@ -299,7 +299,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
 
     private fun day(time: Instant, zone: ZoneId) = time.atZone(zone).toLocalDate().format(dates)
 
-    private fun signed(value: Double) = (if (value > 0) "+" else "") + Formatting.axisLabel(value, 1)
+    private fun signed(value: Double) = Formatting.signed(value, 1)
 
     private fun start(first: LocalDate, zone: ZoneId) = first.atStartOfDay(zone).toInstant()
 
