@@ -720,11 +720,6 @@ private fun SpanSummary(
             )
         }
 
-        data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
-
-        // Beside the day's own total, which is what the tile's arrow was misread against.
-        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
-
         data.dayParts?.let { DayPartsSection(it) }
 
         if (data.listPending || data.contributingApps.isNotEmpty()) {
@@ -855,6 +850,12 @@ private fun SpanSummary(
                 )
             }
         }
+
+        // Under the chart, not beside the total: they are read after it (a streak reaching
+        // back a year took 12.5 s), and arriving above it pushed the chart a quarter of the
+        // screen down while it was being looked at.
+        data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
+        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
     }
 }
 
