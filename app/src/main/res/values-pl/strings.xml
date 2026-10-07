@@ -209,6 +209,7 @@
     </plurals>
     <string name="detail_records_loading">Wczytywanie wpisów…</string>
     <string name="span_average">Średnia</string>
+    <string name="span_per_night">Średnio na noc</string>
     <string name="chart_source_aggregated_mean">Średnie dzienne, bez duplikatów według Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Średnie tygodniowe, bez duplikatów według Health Connect</string>
     <string name="bp_grade_low">Niskie</string>
@@ -581,6 +582,11 @@
     <string name="legend_value_mean_weekly">Średnia tygodniowa</string>
     <string name="chart_source_aggregated">Sumy dzienne, bez duplikatów według Health Connect</string>
     <string name="chart_source_sessions_per_day">Sesje dziennie</string>
+    <string name="chart_source_sessions_per_week">Sesje w tygodniu</string>
+    <string name="chart_source_sleep_nights">Sen na noc, przypisany do poranka, w którym się skończył</string>
+    <string name="chart_source_sleep_weeks">Średnia na zapisaną noc, w tygodniu</string>
+    <string name="chart_source_session_time_daily">Łączny czas dziennie</string>
+    <string name="chart_source_session_time_weekly">Łączny czas w tygodniu</string>
     <string name="chart_source_aggregated_split">Sumy dzienne podzielone na części, bez duplikatów według Health Connect</string>
     <string name="calories_basal">Podstawowe</string>
     <string name="calories_active">Aktywne</string>

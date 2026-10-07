@@ -1,5 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.R
+import androidx.annotation.StringRes
+import java.time.temporal.ChronoUnit
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.StreakSummary
 import de.steppicrew.healthconnectview.health.TrendResult
@@ -476,26 +479,50 @@ internal class TileChartLoader(
         // like". Across four weeks they overlap into noise, and the honest question becomes
         // how much there was per day: hours slept, or how many sessions. One bar per day,
         // attributed by the same rule the list uses -- a night belongs to the day it ended on.
+        //
+        // A year is a bar per week instead: 365 bars of a day each drew as hairlines. Sleep's
+        // week is the mean of its recorded nights -- a total of 52 h says nothing a night does,
+        // and a week with three nights recorded is averaged over those three, not seven.
+        // Workouts are counted per week, mindfulness summed.
+        val bucketDays = span.bucket?.days ?: 1
         val perDayPoints = if (sessionKind != null && span.intradayBucket == null) {
             val zone = HealthRepository.DEFAULT_ZONE
+            val first = span.startDate(offset)
             sessions
-                .groupBy { it.end.atZone(zone).toLocalDate() }
+                .groupBy { session ->
+                    val day = session.end.atZone(zone).toLocalDate()
+                    first.plusDays(ChronoUnit.DAYS.between(first, day) / bucketDays * bucketDays)
+                }
                 .toSortedMap()
-                .map { (day, ofDay) ->
+                .map { (bucket, ofBucket) ->
                     Point(
-                        time = day.atStartOfDay(zone).toInstant(),
+                        time = bucket.atStartOfDay(zone).toInstant(),
                         value = when (sessionKind) {
-                            // Sleep is asked in hours; an exercise day is asked as a count,
-                            // since two rides of unequal length are still two rides.
-                            // Mindfulness is asked like sleep: how long, not how often.
-                            Session.Kind.SLEEP, Session.Kind.MINDFULNESS ->
-                                numericAggregate(ofDay.totalDuration()) ?: 0.0
-                            else -> ofDay.size.toDouble()
+                            Session.Kind.SLEEP -> {
+                                val nights = ofBucket.groupBy { it.end.atZone(zone).toLocalDate() }.size
+                                (numericAggregate(ofBucket.totalDuration()) ?: 0.0) / nights
+                            }
+                            // Mindfulness is asked like sleep, how long, but summed: two short
+                            // sessions in a day are more practice, not a shorter night.
+                            Session.Kind.MINDFULNESS -> numericAggregate(ofBucket.totalDuration()) ?: 0.0
+                            // An exercise day is asked as a count, since two rides of unequal
+                            // length are still two rides.
+                            else -> ofBucket.size.toDouble()
                         },
                     )
                 }
         } else {
             emptyList()
+        }
+        val weekly = bucketDays > 1
+        @StringRes val sessionCaption: Int? = if (perDayPoints.isEmpty()) {
+            null
+        } else {
+            when (sessionKind) {
+                Session.Kind.SLEEP -> if (weekly) R.string.chart_source_sleep_weeks else R.string.chart_source_sleep_nights
+                Session.Kind.MINDFULNESS -> if (weekly) R.string.chart_source_session_time_weekly else R.string.chart_source_session_time_daily
+                else -> if (weekly) R.string.chart_source_sessions_per_week else R.string.chart_source_sessions_per_day
+            }
         }
 
         // The samples are already there, taken during the session; drawing them per session
@@ -514,7 +541,11 @@ internal class TileChartLoader(
         // 2h 28m (the 21:30 tail before midnight) above a list whose sessions summed to
         // 16h 13m. One screen must not give two answers to the same question.
         val headlineTotal = if (spec.tile.form == TileSpec.Form.SESSIONS && sessions.isNotEmpty()) {
-            numericAggregate(sessions.totalDuration())
+            // Across days, sleep's figure is a night's: a year's 2836 h summed answered nothing
+            // anyone asks. Per recorded night, credited like the bars to the morning it ended.
+            val nights = sessions.groupBy { it.end.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate() }.size
+            val perNight = sessionKind == Session.Kind.SLEEP && span.intradayBucket == null
+            numericAggregate(sessions.totalDuration())?.let { if (perNight) it / nights else it }
         } else {
             headline
         }
@@ -607,6 +638,7 @@ internal class TileChartLoader(
             stack = stack,
             stackLabels = spec.stackComponents.map { it.first },
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind == Session.Kind.EXERCISE,
+            sessionCaption = sessionCaption,
             total = headlineTotal,
             secondaryPoints = secondaryPoints,
             secondaryTotal = secondaryTotal,

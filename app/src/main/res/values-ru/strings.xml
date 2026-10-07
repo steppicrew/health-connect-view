@@ -209,6 +209,7 @@
     </plurals>
     <string name="detail_records_loading">Загрузка записей…</string>
     <string name="span_average">Среднее</string>
+    <string name="span_per_night">В среднем за ночь</string>
     <string name="chart_source_aggregated_mean">Средние за день, без дубликатов по данным Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Средние за неделю, без дубликатов по данным Health Connect</string>
     <string name="bp_grade_low">Низкое</string>
@@ -581,6 +582,11 @@
     <string name="legend_value_mean_weekly">Среднее за неделю</string>
     <string name="chart_source_aggregated">Итоги за день, без дубликатов по данным Health Connect</string>
     <string name="chart_source_sessions_per_day">Сеансов в день</string>
+    <string name="chart_source_sessions_per_week">Сеансы в неделю</string>
+    <string name="chart_source_sleep_nights">Сон за ночь, отнесён к утру, когда он закончился</string>
+    <string name="chart_source_sleep_weeks">Среднее за записанную ночь, по неделям</string>
+    <string name="chart_source_session_time_daily">Общее время в день</string>
+    <string name="chart_source_session_time_weekly">Общее время в неделю</string>
     <string name="chart_source_aggregated_split">Итоги за день по составляющим, без дубликатов по данным Health Connect</string>
     <string name="calories_basal">Базальные</string>
     <string name="calories_active">Активные</string>

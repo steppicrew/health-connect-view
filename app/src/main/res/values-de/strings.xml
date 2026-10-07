@@ -205,6 +205,7 @@
     </plurals>
     <string name="detail_records_loading">Datensätze werden geladen …</string>
     <string name="span_average">Durchschnitt</string>
+    <string name="span_per_night">Durchschnitt pro Nacht</string>
     <string name="chart_source_aggregated_mean">Tagesmittel, von Health Connect entdoppelt</string>
     <string name="chart_source_aggregated_weekly_mean">Wochenmittel, von Health Connect entdoppelt</string>
     <string name="bp_grade_low">Niedrig</string>
@@ -536,6 +537,11 @@
     <string name="legend_value_mean_weekly">Wochenmittel</string>
     <string name="chart_source_aggregated">Tagessummen, von Health Connect entdoppelt</string>
     <string name="chart_source_sessions_per_day">Sitzungen pro Tag</string>
+    <string name="chart_source_sessions_per_week">Sitzungen pro Woche</string>
+    <string name="chart_source_sleep_nights">Schlaf pro Nacht, dem Morgen zugeordnet, an dem sie endete</string>
+    <string name="chart_source_sleep_weeks">Durchschnitt pro aufgezeichneter Nacht, je Woche</string>
+    <string name="chart_source_session_time_daily">Gesamtzeit pro Tag</string>
+    <string name="chart_source_session_time_weekly">Gesamtzeit pro Woche</string>
     <string name="chart_source_aggregated_split">Tagessummen nach Anteilen, von Health Connect entdoppelt</string>
     <string name="calories_basal">Grundumsatz</string>
     <string name="calories_active">Aktiv</string>

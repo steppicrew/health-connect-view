@@ -203,6 +203,7 @@
     </plurals>
     <string name="detail_records_loading">기록을 불러오는 중…</string>
     <string name="span_average">평균</string>
+    <string name="span_per_night">밤당 평균</string>
     <string name="chart_source_aggregated_mean">일일 평균, 헬스 커넥트가 중복 제거</string>
     <string name="chart_source_aggregated_weekly_mean">주간 평균, 헬스 커넥트가 중복 제거</string>
     <string name="bp_grade_low">낮음</string>
@@ -524,6 +525,11 @@
     <string name="legend_value_mean_weekly">주간 평균</string>
     <string name="chart_source_aggregated">일일 합계, 헬스 커넥트가 중복 제거</string>
     <string name="chart_source_sessions_per_day">일일 세션 수</string>
+    <string name="chart_source_sessions_per_week">주당 세션</string>
+    <string name="chart_source_sleep_nights">밤별 수면(끝난 아침 날짜 기준)</string>
+    <string name="chart_source_sleep_weeks">기록된 밤당 평균(주별)</string>
+    <string name="chart_source_session_time_daily">하루 총 시간</string>
+    <string name="chart_source_session_time_weekly">주간 총 시간</string>
     <string name="chart_source_aggregated_split">항목별로 나눈 일일 합계, 헬스 커넥트가 중복 제거</string>
     <string name="calories_basal">기초</string>
     <string name="calories_active">활동</string>

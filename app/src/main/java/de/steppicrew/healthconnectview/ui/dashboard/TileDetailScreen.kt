@@ -784,6 +784,7 @@ private fun SpanSummary(
                         // HRV's figure is computed, and says which: a night, or a week of them.
                         data.hrv != null && data.extent == null -> R.string.hrv_week_label
                         data.hrv != null -> R.string.hrv_night_label
+                        data.perNight -> R.string.span_per_night
                         // One value a day: a day of it has nothing to average.
                         data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
                         data.spec.isAveraged || data.dailyFromReadings -> R.string.span_average
@@ -891,7 +892,8 @@ private fun SpanSummary(
                     when {
                         // Counting sessions is not summing a metric, so "daily totals" would
                         // name the wrong operation.
-                        data.sessionCounts -> R.string.chart_source_sessions_per_day
+                        // Bars built from the sessions, not from an aggregate: say what each is.
+                        data.sessionCaption != null -> data.sessionCaption
                         shown.nightPoints.isNotEmpty() -> R.string.chart_source_hrv_nights
                         data.hrv != null && data.extent == null -> R.string.chart_source_hrv
                         data.approximated -> R.string.chart_source_cumulative_scaled
@@ -1011,8 +1013,8 @@ private fun ChartLegend(data: TileDetailData) {
         PressureLegend()
         return
     }
-    val sleepShown = data.sessions.any { it.kind == Session.Kind.SLEEP }
-    val exerciseShown = data.sessions.any { it.kind == Session.Kind.EXERCISE }
+    val sleepShown = data.bandSessions.any { it.kind == Session.Kind.SLEEP }
+    val exerciseShown = data.bandSessions.any { it.kind == Session.Kind.EXERCISE }
     val stacked = data.stack.isNotEmpty() && data.stackLabels.isNotEmpty()
 
     // The series' own name depends on what a point means, which is exactly what the mark
@@ -1022,7 +1024,11 @@ private fun ChartLegend(data: TileDetailData) {
         // named below like any other.
         data.points.isEmpty() -> null
         stacked -> null // The stack's own segments are named below; a total above them is noise.
+        data.sessionCounts && data.weeklyBuckets -> R.string.chart_source_sessions_per_week
         data.sessionCounts -> R.string.legend_value_sessions
+        data.spec.tile.form == TileSpec.Form.SESSIONS && data.bars &&
+            data.spec.tile.sessionKind == Session.Kind.MINDFULNESS ->
+            if (data.weeklyBuckets) R.string.chart_source_session_time_weekly else R.string.chart_source_session_time_daily
         data.spec.tile.form == TileSpec.Form.SESSIONS && data.bars ->
             R.string.legend_value_sleep_hours
         data.bars && data.weeklyBuckets -> R.string.legend_value_bars_weekly
@@ -1151,7 +1157,7 @@ internal fun DataLineChart(
         unitRes = data.spec.displayUnitRes,
         valueDecimals = data.spec.valueDecimals,
         emptyBuckets = data.emptyBuckets,
-        sessions = data.sessions,
+        sessions = data.bandSessions,
         zones = data.lineZones,
         secondaryPoints = data.secondaryPoints,
         secondaryZones = data.secondaryZones,

@@ -203,6 +203,7 @@
     </plurals>
     <string name="detail_records_loading">記録を読み込んでいます…</string>
     <string name="span_average">平均</string>
+    <string name="span_per_night">1晩あたりの平均</string>
     <string name="chart_source_aggregated_mean">1 日の平均（ヘルスコネクトが重複を除外）</string>
     <string name="chart_source_aggregated_weekly_mean">1 週間の平均（ヘルスコネクトが重複を除外）</string>
     <string name="bp_grade_low">低血圧</string>
@@ -524,6 +525,11 @@
     <string name="legend_value_mean_weekly">1 週間の平均</string>
     <string name="chart_source_aggregated">1 日の合計（ヘルスコネクトが重複を除外）</string>
     <string name="chart_source_sessions_per_day">1 日のセッション数</string>
+    <string name="chart_source_sessions_per_week">週あたりのセッション</string>
+    <string name="chart_source_sleep_nights">1晩あたりの睡眠（終了した朝の日付）</string>
+    <string name="chart_source_sleep_weeks">記録された1晩あたりの平均（週ごと）</string>
+    <string name="chart_source_session_time_daily">1日の合計時間</string>
+    <string name="chart_source_session_time_weekly">1週間の合計時間</string>
     <string name="chart_source_aggregated_split">内訳に分けた 1 日の合計（ヘルスコネクトが重複を除外）</string>
     <string name="calories_basal">基礎</string>
     <string name="calories_active">アクティブ</string>

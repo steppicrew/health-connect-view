@@ -205,6 +205,7 @@
     </plurals>
     <string name="detail_records_loading">Registraties laden…</string>
     <string name="span_average">Gemiddelde</string>
+    <string name="span_per_night">Gemiddeld per nacht</string>
     <string name="chart_source_aggregated_mean">Daggemiddelden, ontdubbeld door Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Weekgemiddelden, ontdubbeld door Health Connect</string>
     <string name="bp_grade_low">Laag</string>
@@ -543,6 +544,11 @@
     <string name="legend_value_mean_weekly">Weekgemiddelde</string>
     <string name="chart_source_aggregated">Dagtotalen, ontdubbeld door Health Connect</string>
     <string name="chart_source_sessions_per_day">Sessies per dag</string>
+    <string name="chart_source_sessions_per_week">Sessies per week</string>
+    <string name="chart_source_sleep_nights">Slaap per nacht, toegerekend aan de ochtend waarop die eindigde</string>
+    <string name="chart_source_sleep_weeks">Gemiddelde per vastgelegde nacht, per week</string>
+    <string name="chart_source_session_time_daily">Totale tijd per dag</string>
+    <string name="chart_source_session_time_weekly">Totale tijd per week</string>
     <string name="chart_source_aggregated_split">Dagtotalen opgesplitst in hun delen, ontdubbeld door Health Connect</string>
     <string name="calories_basal">Basaal</string>
     <string name="calories_active">Actief</string>

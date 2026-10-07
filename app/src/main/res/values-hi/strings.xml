@@ -205,6 +205,7 @@
     </plurals>
     <string name="detail_records_loading">रिकॉर्ड लोड हो रहे हैं…</string>
     <string name="span_average">औसत</string>
+    <string name="span_per_night">प्रति रात औसत</string>
     <string name="chart_source_aggregated_mean">रोज़ का औसत, Health Connect ने डुप्लीकेट हटाए</string>
     <string name="chart_source_aggregated_weekly_mean">हफ़्ते का औसत, Health Connect ने डुप्लीकेट हटाए</string>
     <string name="bp_grade_low">कम</string>
@@ -543,6 +544,11 @@
     <string name="legend_value_mean_weekly">हफ़्ते का औसत</string>
     <string name="chart_source_aggregated">रोज़ का कुल, Health Connect ने डुप्लीकेट हटाए</string>
     <string name="chart_source_sessions_per_day">हर दिन के सेशन</string>
+    <string name="chart_source_sessions_per_week">प्रति सप्ताह सेशन</string>
+    <string name="chart_source_sleep_nights">प्रति रात नींद, जिस सुबह खत्म हुई उस दिन में गिनी गई</string>
+    <string name="chart_source_sleep_weeks">रिकॉर्ड की गई प्रति रात औसत, सप्ताह के अनुसार</string>
+    <string name="chart_source_session_time_daily">प्रति दिन कुल समय</string>
+    <string name="chart_source_session_time_weekly">प्रति सप्ताह कुल समय</string>
     <string name="chart_source_aggregated_split">हिस्सों में बंटा रोज़ का कुल, Health Connect ने डुप्लीकेट हटाए</string>
     <string name="calories_basal">बेसल</string>
     <string name="calories_active">ऐक्टिव</string>

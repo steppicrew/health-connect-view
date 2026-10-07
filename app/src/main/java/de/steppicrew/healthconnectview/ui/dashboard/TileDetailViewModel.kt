@@ -49,6 +49,7 @@ import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.goalCrossing
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.ui.UiState
 import kotlinx.coroutines.coroutineScope
@@ -111,6 +112,8 @@ data class TileDetailData(
     val stackLabels: List<Int> = emptyList(),
     /** True where the bars count sessions per day rather than summing a metric. */
     val sessionCounts: Boolean = false,
+    /** What a session type's bars are, per day or per week, where it draws bars; else null. */
+    @param:StringRes val sessionCaption: Int? = null,
     /** True when the window reaches past 30 days without the history permission. */
     val historyCapped: Boolean,
     /** Apps that wrote into this window, so every number on screen names its source. */
@@ -233,6 +236,19 @@ data class TileDetailData(
      */
     val drawsChart: Boolean
         get() = points.isNotEmpty() && !(spec.tile.dailyValue && extent != null)
+
+    /**
+     * The sessions to shade behind the chart. Not behind a session type's own bars across
+     * days: there each bar already is its sessions, and a year of nights drew 366 hairline
+     * bands behind 52 bars.
+     */
+    val bandSessions: List<Session>
+        get() = if (spec.tile.form == TileSpec.Form.SESSIONS && extent == null) emptyList() else sessions
+
+    /** Sleep across days: the headline is the mean of the recorded nights, not their sum. */
+    val perNight: Boolean
+        get() = spec.tile.sessionKind == Session.Kind.SLEEP && spec.tile.form == TileSpec.Form.SESSIONS &&
+            extent == null
 }
 
 

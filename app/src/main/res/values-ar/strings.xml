@@ -213,6 +213,7 @@
     </plurals>
     <string name="detail_records_loading">جارٍ تحميل السجلات…</string>
     <string name="span_average">المتوسط</string>
+    <string name="span_per_night">المتوسط لكل ليلة</string>
     <string name="chart_source_aggregated_mean">المتوسطات اليومية، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">المتوسطات الأسبوعية، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="bp_grade_low">منخفض</string>
@@ -619,6 +620,11 @@
     <string name="legend_value_mean_weekly">المتوسط الأسبوعي</string>
     <string name="chart_source_aggregated">المجاميع اليومية، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="chart_source_sessions_per_day">الجلسات يوميًا</string>
+    <string name="chart_source_sessions_per_week">الجلسات في الأسبوع</string>
+    <string name="chart_source_sleep_nights">النوم لكل ليلة، منسوبًا إلى الصباح الذي انتهى فيه</string>
+    <string name="chart_source_sleep_weeks">المتوسط لكل ليلة مسجّلة، حسب الأسبوع</string>
+    <string name="chart_source_session_time_daily">إجمالي الوقت في اليوم</string>
+    <string name="chart_source_session_time_weekly">إجمالي الوقت في الأسبوع</string>
     <string name="chart_source_aggregated_split">المجاميع اليومية مقسّمة إلى أجزائها، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="calories_basal">الأساسية</string>
     <string name="calories_active">النشطة</string>

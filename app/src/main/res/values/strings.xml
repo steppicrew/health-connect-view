@@ -207,6 +207,7 @@
     </plurals>
     <string name="detail_records_loading">Loading records…</string>
     <string name="span_average">Average</string>
+    <string name="span_per_night">Average per night</string>
     <string name="chart_source_aggregated_mean">Daily averages, deduplicated by Health Connect</string>
     <string name="chart_source_aggregated_weekly_mean">Weekly averages, deduplicated by Health Connect</string>
     <string name="bp_grade_low">Low</string>
@@ -576,6 +577,11 @@
     <string name="legend_value_mean_weekly">Weekly average</string>
     <string name="chart_source_aggregated">Daily totals, deduplicated by Health Connect</string>
     <string name="chart_source_sessions_per_day">Sessions per day</string>
+    <string name="chart_source_sessions_per_week">Sessions per week</string>
+    <string name="chart_source_sleep_nights">Sleep per night, credited to the morning it ended</string>
+    <string name="chart_source_sleep_weeks">Average per recorded night, by week</string>
+    <string name="chart_source_session_time_daily">Total time per day</string>
+    <string name="chart_source_session_time_weekly">Total time per week</string>
     <string name="chart_source_aggregated_split">Daily totals split into their parts, deduplicated by Health Connect</string>
     <string name="calories_basal">Basal</string>
     <string name="calories_active">Active</string>
