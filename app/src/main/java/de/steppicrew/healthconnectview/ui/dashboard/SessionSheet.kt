@@ -104,7 +104,12 @@ fun SessionSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
-                when (val current = stats) {
+                // Stats and route arrive separately, and drawn as each came the route jumped
+                // down when the stats landed above it. Worse, the dialog sits centred, so any
+                // growth moved everything in it. One "gathering" line until both are in, then
+                // the whole sheet at once. Granting a route later still grows it, but on a tap.
+                val ready = stats != null && (session.route == null || route != null)
+                when (val current = stats.takeIf { ready }) {
                     null -> Text(
                         text = stringResource(R.string.session_loading),
                         style = MaterialTheme.typography.bodySmall,
@@ -148,7 +153,7 @@ fun SessionSheet(
                     }
                 }
 
-                session.route?.let { ref ->
+                session.route?.takeIf { ready }?.let { ref ->
                     Text(
                         text = stringResource(R.string.route_title),
                         style = MaterialTheme.typography.titleSmall,
