@@ -590,7 +590,7 @@
     <string name="privacy_sharing_title">Nada se comparte</string>
     <string name="privacy_sharing_body">Tus datos de salud nunca se comparten con nadie, tampoco con el desarrollador. Ningún SDK de terceros los recibe. Un archivo exportado es tuyo: adónde va después depende de ti.</string>
     <string name="permission_routes_title">Todas las rutas de ejercicio</string>
-    <string name="permission_routes_body">Muestra la ruta de cada sesión de inmediato. Sin esto, cada ruta solo se muestra cuando la pides, sesión por sesión.</string>
+    <string name="permission_routes_body">Se permite desde una sesión, no aquí: abre un entrenamiento con ruta y toca «%1$s». Cuando Android te pregunte, permítelo siempre y, a partir de entonces, se mostrarán todas las rutas.</string>
     <string name="permission_shared_with">Se concede junto con %1$s.</string>
     <string name="perm_info_closing">Solo lectura: la aplicación nunca modifica ni borra nada. Nada sale de tu dispositivo salvo que tú mismo lo exportes.</string>
     <string name="perm_info_history">Health Connect conserva los datos antiguos, pero solo da a las aplicaciones los últimos 30 días salvo que permitas más. Con esto, las vistas de semana, cuatro semanas y año, las tendencias y los informes llegan tan atrás como tus datos. Cambia hasta dónde puede mirar la aplicación, no qué tipos de datos.</string>
@@ -637,8 +637,8 @@
     <string name="route_heights">Altura %1$s–%2$s</string>
     <string name="route_no_map">Dibujada sin mapa: la aplicación no tiene acceso a internet para cargar uno.</string>
     <string name="route_export">Exportar ruta (GPX)</string>
-    <string name="route_consent_body">Esta sesión tiene una ruta. Android te la pide cada vez antes de que la aplicación pueda mostrarla; permite todas las rutas en la pantalla de permisos para saltarte la pregunta.</string>
-    <string name="route_declined">La ruta sigue oculta. Puedes permitirla aquí en cualquier momento, o todas las rutas en la pantalla de permisos.</string>
+    <string name="route_consent_body">Esta sesión tiene una ruta. Android te pregunta antes de que la aplicación pueda mostrarla; permítelo siempre y, desde entonces, todas las rutas se mostrarán sin preguntar.</string>
+    <string name="route_declined">La ruta sigue oculta. Puedes permitirla aquí en cualquier momento.</string>
     <string name="route_show">Mostrar ruta</string>
     <string name="route_available">Ruta registrada</string>
     <string name="route_unavailable">No se ha podido leer la ruta.</string>

@@ -540,7 +540,7 @@
     <string name="privacy_sharing_title">共有はしません</string>
     <string name="privacy_sharing_body">健康データは開発者を含め、誰とも共有されません。サードパーティの SDK がデータを受け取ることもありません。エクスポートしたファイルはあなたのものであり、その後の扱いはあなた次第です。</string>
     <string name="permission_routes_title">すべてのエクササイズ ルート</string>
-    <string name="permission_routes_body">各セッションのルートをすぐに表示します。これがない場合、各ルートはリクエストしたときに、1 セッションずつ表示されます。</string>
+    <string name="permission_routes_body">ここではなくセッションから許可します。ルートのあるトレーニングを開き、「%1$s」をタップしてください。Android から確認されたら常に許可を選ぶと、以降はすべてのルートがすぐに表示されます。</string>
     <string name="permission_shared_with">%1$s と一緒に許可されます。</string>
     <string name="perm_info_closing">読み取り専用: アプリが何かを変更したり削除したりすることはありません。ご自身でエクスポートしない限り、何もデバイスの外に出ません。</string>
     <string name="perm_info_history">ヘルスコネクトは過去のデータも保持していますが、許可しない限りアプリには過去 30 日間しか提供しません。これを許可すると、週・4 週間・年の表示、傾向、レポートがデータのある時点までさかのぼります。変わるのはアプリがさかのぼれる期間で、データの種類ではありません。</string>
@@ -587,8 +587,8 @@
     <string name="route_heights">標高 %1$s–%2$s</string>
     <string name="route_no_map">地図なしで描画: アプリには地図を読み込むためのインターネット アクセスがありません。</string>
     <string name="route_export">ルートをエクスポート（GPX）</string>
-    <string name="route_consent_body">このセッションにはルートがあります。アプリが表示する前に、Android が毎回確認します。権限の画面ですべてのルートを許可すると、この確認を省略できます。</string>
-    <string name="route_declined">ルートは非表示のままです。ここからいつでも許可できます。また、権限の画面ですべてのルートを許可することもできます。</string>
+    <string name="route_consent_body">このセッションにはルートがあります。アプリが表示する前に Android が確認します。そこで常に許可を選ぶと、以降はすべてのルートが確認なしで表示されます。</string>
+    <string name="route_declined">ルートは非表示のままです。ここからいつでも許可できます。</string>
     <string name="route_show">ルートを表示</string>
     <string name="route_available">ルートを記録済み</string>
     <string name="route_unavailable">ルートを読み取れませんでした。</string>

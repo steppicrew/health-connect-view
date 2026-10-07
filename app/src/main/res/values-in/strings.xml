@@ -540,7 +540,7 @@
     <string name="privacy_sharing_title">Tidak dibagikan</string>
     <string name="privacy_sharing_body">Data kesehatan Anda tidak pernah dibagikan kepada siapa pun, termasuk developer. Tidak ada SDK pihak ketiga yang menerimanya. File yang diekspor adalah milik Anda: ke mana file itu pergi selanjutnya terserah Anda.</string>
     <string name="permission_routes_title">Semua rute latihan</string>
-    <string name="permission_routes_body">Langsung menampilkan rute setiap sesi. Tanpa ini, setiap rute hanya ditampilkan saat Anda memintanya, satu sesi setiap kali.</string>
+    <string name="permission_routes_body">Diizinkan dari sesi, bukan di sini: buka latihan yang punya rute lalu ketuk “%1$s”. Saat Android bertanya, izinkan selalu, dan sejak itu setiap rute langsung ditampilkan.</string>
     <string name="permission_shared_with">Diberikan bersama %1$s.</string>
     <string name="perm_info_closing">Hanya baca: aplikasi ini tidak pernah mengubah atau menghapus apa pun. Tidak ada yang keluar dari perangkat Anda kecuali Anda sendiri yang mengekspornya.</string>
     <string name="perm_info_history">Health Connect menyimpan data lama, tetapi hanya memberikan 30 hari terakhir kepada aplikasi kecuali Anda mengizinkan lebih. Dengan izin ini, tampilan minggu, empat minggu, dan tahun, tren, serta laporan menjangkau sejauh data Anda. Izin ini mengubah seberapa jauh aplikasi boleh melihat ke belakang, bukan jenis datanya.</string>
@@ -587,8 +587,8 @@
     <string name="route_heights">Ketinggian %1$s–%2$s</string>
     <string name="route_no_map">Digambar tanpa peta: aplikasi tidak punya akses internet untuk memuatnya.</string>
     <string name="route_export">Ekspor rute (GPX)</string>
-    <string name="route_consent_body">Sesi ini punya rute. Android menanyakannya kepada Anda setiap kali sebelum aplikasi boleh menampilkannya; izinkan semua rute di layar izin untuk melewati pertanyaan ini.</string>
-    <string name="route_declined">Rute tetap tersembunyi. Anda dapat mengizinkannya di sini kapan saja, atau semua rute di layar izin.</string>
+    <string name="route_consent_body">Sesi ini punya rute. Android menanyakannya kepada Anda sebelum aplikasi boleh menampilkannya; izinkan selalu di sana, dan sejak itu semua rute ditampilkan tanpa bertanya.</string>
+    <string name="route_declined">Rute tetap tersembunyi. Anda dapat mengizinkannya di sini kapan saja.</string>
     <string name="route_show">Tampilkan rute</string>
     <string name="route_available">Rute tercatat</string>
     <string name="route_unavailable">Rute tidak dapat dibaca.</string>

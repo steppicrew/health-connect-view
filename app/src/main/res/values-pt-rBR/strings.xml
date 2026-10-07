@@ -590,7 +590,7 @@
     <string name="privacy_sharing_title">Nenhum compartilhamento</string>
     <string name="privacy_sharing_body">Seus dados de saúde nunca são compartilhados com ninguém, nem mesmo com o desenvolvedor. Nenhum SDK de terceiros os recebe. Um arquivo exportado é seu: para onde ele vai depois é com você.</string>
     <string name="permission_routes_title">Todos os trajetos de exercício</string>
-    <string name="permission_routes_body">Mostra o trajeto de cada sessão imediatamente. Sem isso, cada trajeto só é mostrado quando você pede, uma sessão de cada vez.</string>
+    <string name="permission_routes_body">É permitido a partir de uma sessão, não aqui: abra um treino com trajeto e toque em “%1$s”. Quando o Android perguntar, permita sempre, e todos os trajetos passam a ser mostrados.</string>
     <string name="permission_shared_with">Concedido junto com %1$s.</string>
     <string name="perm_info_closing">Somente leitura: o app nunca altera nem exclui nada. Nada sai do seu dispositivo, a menos que você mesmo exporte.</string>
     <string name="perm_info_history">O Conexão Saúde guarda os dados mais antigos, mas só entrega aos apps os últimos 30 dias, a menos que você permita mais. Com isso, as visualizações de semana, quatro semanas e ano, as tendências e os relatórios vão até onde seus dados alcançam. Isso muda até onde o app pode olhar para trás, não quais tipos de dados.</string>
@@ -637,8 +637,8 @@
     <string name="route_heights">Altitude %1$s–%2$s</string>
     <string name="route_no_map">Desenhado sem mapa: o app não tem acesso à internet para carregar um.</string>
     <string name="route_export">Exportar trajeto (GPX)</string>
-    <string name="route_consent_body">Esta sessão tem um trajeto. O Android pede sua autorização a cada vez antes que o app possa mostrá-lo; permita todos os trajetos na tela de permissões para pular a pergunta.</string>
-    <string name="route_declined">O trajeto continua oculto. Você pode permiti-lo aqui a qualquer momento, ou todos os trajetos na tela de permissões.</string>
+    <string name="route_consent_body">Esta sessão tem um trajeto. O Android pede sua autorização antes que o app possa mostrá-lo; permita sempre, e daí em diante todos os trajetos serão mostrados sem perguntar.</string>
+    <string name="route_declined">O trajeto continua oculto. Você pode permiti-lo aqui a qualquer momento.</string>
     <string name="route_show">Mostrar trajeto</string>
     <string name="route_available">Trajeto registrado</string>
     <string name="route_unavailable">Não foi possível ler o trajeto.</string>

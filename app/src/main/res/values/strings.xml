@@ -598,7 +598,7 @@
     <string name="privacy_sharing_title">No sharing</string>
     <string name="privacy_sharing_body">Your health data is never shared with anyone, including the developer. No third-party SDKs receive it. An exported file is yours: where it goes from there is up to you.</string>
     <string name="permission_routes_title">All exercise routes</string>
-    <string name="permission_routes_body">Shows the route of every session straight away. Without this, each route is shown only when you ask for it, one session at a time.</string>
+    <string name="permission_routes_body">Allowed from a session, not here: open a workout with a route and tap “%1$s”. When Android asks, allow it always, and every route is shown from then on.</string>
     <string name="permission_shared_with">Granted together with %1$s.</string>
     <string name="perm_info_closing">Read only: the app never changes or deletes anything. Nothing leaves your device unless you export it yourself.</string>
     <string name="perm_info_history">Health Connect keeps older data, but gives apps only the last 30 days unless you allow more. With this, week, four-week and year views, trends and reports reach back as far as your data goes. It changes how far back the app may look, not which kinds of data.</string>
@@ -645,8 +645,8 @@
     <string name="route_heights">Height %1$s–%2$s</string>
     <string name="route_no_map">Drawn without a map: the app has no internet access to load one.</string>
     <string name="route_export">Export route (GPX)</string>
-    <string name="route_consent_body">This session has a route. Android asks you for it each time before the app may show it; allow all routes on the permission screen to skip the question.</string>
-    <string name="route_declined">The route stays hidden. You can allow it here at any time, or all routes on the permission screen.</string>
+    <string name="route_consent_body">This session has a route. Android asks you before the app may show it; allow it always there, and every route is shown from then on without asking.</string>
+    <string name="route_declined">The route stays hidden. You can allow it here at any time.</string>
     <string name="route_show">Show route</string>
     <string name="route_available">Route recorded</string>
     <string name="route_unavailable">The route could not be read.</string>

@@ -565,7 +565,7 @@
     <string name="privacy_sharing_title">कोई शेयरिंग नहीं</string>
     <string name="privacy_sharing_body">आपका सेहत डेटा कभी किसी के साथ शेयर नहीं किया जाता, डेवलपर के साथ भी नहीं। कोई तीसरे पक्ष का SDK इसे नहीं पाता। एक्सपोर्ट की गई फ़ाइल आपकी है: वह वहां से कहां जाती है, यह आप तय करते हैं।</string>
     <string name="permission_routes_title">सभी कसरत रूट</string>
-    <string name="permission_routes_body">हर सेशन का रूट तुरंत दिखाता है। इसके बिना हर रूट सिर्फ़ तब दिखता है जब आप मांगते हैं, एक बार में एक सेशन।</string>
+    <string name="permission_routes_body">इसकी अनुमति यहां नहीं, किसी सेशन से दी जाती है: रूट वाली कोई ट्रेनिंग खोलें और “%1$s” पर टैप करें। जब Android पूछे, तो हमेशा की अनुमति दें — उसके बाद हर रूट तुरंत दिखेगा।</string>
     <string name="permission_shared_with">%1$s के साथ दी जाती है।</string>
     <string name="perm_info_closing">सिर्फ़ पढ़ने के लिए: यह ऐप कभी कुछ नहीं बदलता या मिटाता। जब तक आप खुद एक्सपोर्ट न करें, कुछ भी आपके डिवाइस से बाहर नहीं जाता।</string>
     <string name="perm_info_history">Health Connect पुराना डेटा रखता है, लेकिन जब तक आप ज़्यादा की अनुमति न दें, ऐप को सिर्फ़ पिछले 30 दिन का डेटा देता है। इससे हफ़्ते, चार हफ़्ते और साल वाले व्यू, रुझान और रिपोर्ट उतने पीछे तक जाते हैं जितना आपका डेटा जाता है। इससे यह बदलता है कि ऐप कितना पीछे देख सकता है, यह नहीं कि किस तरह का डेटा।</string>
@@ -612,8 +612,8 @@
     <string name="route_heights">ऊंचाई %1$s–%2$s</string>
     <string name="route_no_map">बिना मैप के बनाया गया: ऐप के पास मैप लोड करने के लिए इंटरनेट ऐक्सेस नहीं है।</string>
     <string name="route_export">रूट एक्सपोर्ट करें (GPX)</string>
-    <string name="route_consent_body">इस सेशन का एक रूट है। ऐप के इसे दिखाने से पहले Android हर बार आपसे पूछता है; यह सवाल छोड़ने के लिए अनुमतियों वाली स्क्रीन पर सभी रूट की अनुमति दें।</string>
-    <string name="route_declined">रूट छिपा रहता है। आप कभी भी यहां इसकी अनुमति दे सकते हैं, या अनुमतियों वाली स्क्रीन पर सभी रूट की।</string>
+    <string name="route_consent_body">इस सेशन का एक रूट है। ऐप के इसे दिखाने से पहले Android आपसे पूछता है; वहां हमेशा की अनुमति दें, तो उसके बाद हर रूट बिना पूछे दिखेगा।</string>
+    <string name="route_declined">रूट छिपा रहता है। आप कभी भी यहां इसकी अनुमति दे सकते हैं।</string>
     <string name="route_show">रूट दिखाएं</string>
     <string name="route_available">रूट रिकॉर्ड हुआ</string>
     <string name="route_unavailable">रूट पढ़ा नहीं जा सका।</string>

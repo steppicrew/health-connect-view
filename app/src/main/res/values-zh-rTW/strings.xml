@@ -540,7 +540,7 @@
     <string name="privacy_sharing_title">不分享</string>
     <string name="privacy_sharing_body">您的健康資料絕不會與任何人分享，包括開發人員在內。任何第三方 SDK 都不會收到這些資料。匯出的檔案屬於您：之後的去向由您決定。</string>
     <string name="permission_routes_title">所有運動路線</string>
-    <string name="permission_routes_body">立即顯示每次活動的路線。沒有這項權限時，每條路線只會在您要求時顯示，一次一次活動。</string>
+    <string name="permission_routes_body">需在活動中允許，而非此處：開啟一次有路線的運動並輕觸「%1$s」。Android 詢問時選擇一律允許，之後所有路線都會直接顯示。</string>
     <string name="permission_shared_with">與「%1$s」一併授予。</string>
     <string name="perm_info_closing">唯讀：這個應用程式絕不會變更或刪除任何內容。除非您自己匯出，否則任何內容都不會離開您的裝置。</string>
     <string name="perm_info_history">Health Connect 會保留較舊的資料，但除非您允許更多，否則只會向應用程式提供最近 30 天的資料。有了這項權限，週、四週和年檢視、趨勢以及報告都能追溯到您資料的最早時間。它改變的是這個應用程式能回溯多久，而不是資料的種類。</string>
@@ -587,8 +587,8 @@
     <string name="route_heights">海拔 %1$s–%2$s</string>
     <string name="route_no_map">不使用地圖繪製：這個應用程式沒有網路存取權，無法載入地圖。</string>
     <string name="route_export">匯出路線（GPX）</string>
-    <string name="route_consent_body">這次活動有路線。在這個應用程式顯示路線之前，Android 每次都會詢問您；在權限畫面中允許所有路線，就能略過這個詢問。</string>
-    <string name="route_declined">路線會維持隱藏。您可以隨時在這裡允許，或在權限畫面中允許所有路線。</string>
+    <string name="route_consent_body">這次活動有路線。在這個應用程式顯示路線之前，Android 會詢問您；在那裡選擇一律允許，之後所有路線都會直接顯示，不再詢問。</string>
+    <string name="route_declined">路線會維持隱藏。您可以隨時在這裡允許。</string>
     <string name="route_show">顯示路線</string>
     <string name="route_available">已記錄路線</string>
     <string name="route_unavailable">無法讀取路線。</string>

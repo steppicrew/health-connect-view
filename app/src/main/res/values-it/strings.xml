@@ -590,7 +590,7 @@
     <string name="privacy_sharing_title">Nessuna condivisione</string>
     <string name="privacy_sharing_body">I tuoi dati sanitari non vengono mai condivisi con nessuno, nemmeno con lo sviluppatore. Nessun SDK di terze parti li riceve. Un file esportato è tuo: dove va dopo dipende da te.</string>
     <string name="permission_routes_title">Tutti i percorsi degli allenamenti</string>
-    <string name="permission_routes_body">Mostra subito il percorso di ogni sessione. Senza questo, ogni percorso viene mostrato solo quando lo chiedi, una sessione alla volta.</string>
+    <string name="permission_routes_body">Si consente da una sessione, non qui: apri un allenamento con un percorso e tocca «%1$s». Quando Android te lo chiede, consentilo sempre: da allora ogni percorso verrà mostrato subito.</string>
     <string name="permission_shared_with">Concesso insieme a %1$s.</string>
     <string name="perm_info_closing">Sola lettura: l’app non modifica né elimina mai nulla. Nulla lascia il tuo dispositivo, a meno che non lo esporti tu.</string>
     <string name="perm_info_history">Connessione Salute conserva i dati meno recenti, ma alle app dà solo gli ultimi 30 giorni, a meno che tu non consenta di più. Con questo, le viste di settimana, quattro settimane e anno, le tendenze e i report arrivano indietro fin dove arrivano i tuoi dati. Cambia quanto indietro può guardare l’app, non quali tipi di dati.</string>
@@ -637,8 +637,8 @@
     <string name="route_heights">Altitudine %1$s–%2$s</string>
     <string name="route_no_map">Disegnato senza mappa: l’app non ha accesso a Internet per caricarne una.</string>
     <string name="route_export">Esporta percorso (GPX)</string>
-    <string name="route_consent_body">Questa sessione ha un percorso. Android te lo chiede ogni volta prima che l’app possa mostrarlo; consenti tutti i percorsi nella schermata delle autorizzazioni per saltare la domanda.</string>
-    <string name="route_declined">Il percorso resta nascosto. Puoi consentirlo qui in qualsiasi momento, oppure tutti i percorsi nella schermata delle autorizzazioni.</string>
+    <string name="route_consent_body">Questa sessione ha un percorso. Android te lo chiede prima che l’app possa mostrarlo; consentilo sempre e da allora tutti i percorsi verranno mostrati senza chiedere.</string>
+    <string name="route_declined">Il percorso resta nascosto. Puoi consentirlo qui in qualsiasi momento.</string>
     <string name="route_show">Mostra percorso</string>
     <string name="route_available">Percorso registrato</string>
     <string name="route_unavailable">Impossibile leggere il percorso.</string>

@@ -590,7 +590,7 @@
     <string name="privacy_sharing_title">Aucun partage</string>
     <string name="privacy_sharing_body">Vos données de santé ne sont jamais partagées avec personne, pas même avec le développeur. Aucun SDK tiers ne les reçoit. Un fichier exporté vous appartient : ce qu’il devient ensuite ne dépend que de vous.</string>
     <string name="permission_routes_title">Tous les parcours d’exercice</string>
-    <string name="permission_routes_body">Affiche immédiatement le parcours de chaque séance. Sans cela, chaque parcours n’est affiché que lorsque vous le demandez, une séance à la fois.</string>
+    <string name="permission_routes_body">S’autorise depuis une séance, pas ici : ouvrez un entraînement avec un parcours et touchez « %1$s ». Quand Android vous le demande, autorisez-le toujours, et chaque parcours s’affichera ensuite directement.</string>
     <string name="permission_shared_with">Accordé en même temps que %1$s.</string>
     <string name="perm_info_closing">Lecture seule : l’application ne modifie ni ne supprime jamais rien. Rien ne quitte votre appareil, sauf si vous l’exportez vous-même.</string>
     <string name="perm_info_history">Santé Connect conserve les données plus anciennes, mais ne donne aux applications que les 30 derniers jours, sauf si vous autorisez davantage. Avec cette autorisation, les vues semaine, quatre semaines et année, les tendances et les rapports remontent aussi loin que vos données. Elle change jusqu’où l’application peut remonter, pas les types de données.</string>
@@ -637,8 +637,8 @@
     <string name="route_heights">Altitude %1$s–%2$s</string>
     <string name="route_no_map">Dessiné sans carte : l’application n’a pas d’accès à Internet pour en charger une.</string>
     <string name="route_export">Exporter le parcours (GPX)</string>
-    <string name="route_consent_body">Cette séance a un parcours. Android vous le demande à chaque fois avant que l’application puisse l’afficher ; autorisez tous les parcours dans l’écran des autorisations pour ne plus avoir la question.</string>
-    <string name="route_declined">Le parcours reste masqué. Vous pouvez l’autoriser ici à tout moment, ou tous les parcours dans l’écran des autorisations.</string>
+    <string name="route_consent_body">Cette séance a un parcours. Android vous demande votre accord avant que l’application puisse l’afficher ; autorisez-le toujours, et tous les parcours s’afficheront ensuite sans question.</string>
+    <string name="route_declined">Le parcours reste masqué. Vous pouvez l’autoriser ici à tout moment.</string>
     <string name="route_show">Afficher le parcours</string>
     <string name="route_available">Parcours enregistré</string>
     <string name="route_unavailable">Le parcours n’a pas pu être lu.</string>

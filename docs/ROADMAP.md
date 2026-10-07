@@ -316,13 +316,15 @@ open items below and `FEATURE-IDEAS.md`.
     `FEATURE-IDEAS.md`. Free.
 47. [ ] **Suggest a source per type** -- the owner's idea, 07.10.2026; see "Handling multiple
     sources, continued" in `FEATURE-IDEAS.md`. Builds on the preferred app (section 10).
-48. [ ] **"Alle Trainingsrouten" unticks itself** -- the owner's report, 07.10.2026, on a fresh
-    debug install with every other permission granted: ticking it and tapping "Freigeben"
-    returns with the box clear. `READ_EXERCISE_ROUTES` stays `granted=false` without the
-    `USER_SET` flag, so Health Connect seems never to have asked; the Play install holds it
-    granted. Suspected: a request for routes alone, with `READ_EXERCISE` already granted, is
-    dropped -- recent Health Connect offers routes inside the exercise permission. Not yet
-    confirmed; a log captured during the attempt showed only the permission controller binding.
+48. [x] **"Alle Trainingsrouten" unticks itself** -- the owner's report, 07.10.2026: ticking it
+    and tapping "Freigeben" returned with the box clear. Health Connect drops
+    `READ_EXERCISE_ROUTES` from a permission request -- it stayed `granted=false` without even
+    the `USER_SET` flag -- and grants every route only from its own dialog when a route is
+    opened, by choosing "always" there (confirmed by the owner: after that the row shows it
+    granted). Section 5's "two ways of consent" was therefore one way. The row keeps its
+    granted mark but has no box to tick: it says to open a workout with a route, tap "Route
+    anzeigen" and allow it always; a tap opens the "i". The route dialog's text and the
+    message after declining no longer point to the permission screen.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
