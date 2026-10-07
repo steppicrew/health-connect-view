@@ -1,1 +1,3 @@
+1.0.0 — Novidades: o que mudou nesta semana em todos os tipos, também como bloco; composição corporal; dois tipos comparados no mesmo eixo de tempo (os três no Pro). Também: uma tela para cada treino, treinos por tipo, recordes pessoais, sua faixa habitual de frequência cardíaca em repouso e respiratória, uma faixa de referência para o oxigênio, a variação diária da pressão arterial e uma fonte sugerida por tipo.
+
 Sente falta de algum recurso? Escreva para hcview@steppicrew.de.

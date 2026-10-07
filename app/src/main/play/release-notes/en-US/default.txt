@@ -1,1 +1,3 @@
-0.11.0 — Now in 17 languages: added Spanish, French, Italian, Portuguese, Dutch, Polish, Turkish, Russian, Japanese, Korean, Chinese, Hindi, Indonesian and Arabic. Numbers typed with Arabic or Hindi digits now work, and the day arrows point the right way in right-to-left languages.
+1.0.0 — New: what changed this week across all types, also as a dashboard tile; body composition; two types compared on one time axis (all three Pro). Also: a full screen for each workout, workouts by kind, personal records, your usual range for resting heart rate and breathing rate, a reference band for oxygen, blood pressure's daily spread and a suggested source per type. Plus many chart and layout fixes.
+
+Missing a feature? Write to hcview@steppicrew.de.

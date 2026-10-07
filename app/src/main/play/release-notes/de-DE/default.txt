@@ -1,1 +1,3 @@
-0.11.0 — Jetzt in 17 Sprachen: neu sind Spanisch, Französisch, Italienisch, Portugiesisch, Niederländisch, Polnisch, Türkisch, Russisch, Japanisch, Koreanisch, Chinesisch, Hindi, Indonesisch und Arabisch. Zahlen mit arabischen oder indischen Ziffern werden erkannt, und die Tagespfeile zeigen bei Schrift von rechts nach links in die richtige Richtung.
+1.0.0 — Neu: Was sich diese Woche über alle Typen verändert hat, auch als Kachel; Körperzusammensetzung; zwei Typen auf einer Zeitachse im Vergleich (alle drei Pro). Außerdem: eine eigene Ansicht je Training, Trainings nach Art, Bestwerte, Ihre übliche Spanne für Ruhepuls und Atemfrequenz, ein Referenzbereich für Sauerstoff, die Tagesspanne des Blutdrucks und eine Quellenempfehlung je Typ.
+
+Fehlt Ihnen eine Funktion? Schreiben Sie an hcview@steppicrew.de.

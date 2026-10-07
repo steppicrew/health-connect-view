@@ -1,1 +1,3 @@
+1.0.0 — Baru: apa yang berubah minggu ini di semua jenis, juga sebagai ubin; komposisi tubuh; dua jenis dibandingkan pada satu sumbu waktu (ketiganya Pro). Juga: layar untuk setiap latihan, latihan menurut jenis, rekor pribadi, rentang biasa Anda untuk denyut istirahat dan laju napas, rentang acuan untuk oksigen, sebaran harian tekanan darah, dan sumber yang disarankan per jenis. Serta banyak perbaikan.
+
 Ada fitur yang Anda perlukan? Kirim email ke hcview@steppicrew.de.

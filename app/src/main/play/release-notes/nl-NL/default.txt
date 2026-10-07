@@ -1,1 +1,3 @@
-0.11.0 — Nu in 17 talen, waaronder het Nederlands. Getallen met Arabische of Hindi-cijfers werken nu, en de dagpijlen wijzen de goede kant op in talen die van rechts naar links worden geschreven.
+1.0.0 — Nieuw: wat er deze week veranderde over alle typen, ook als tegel; lichaamssamenstelling; twee typen vergeleken op één tijdas (alle drie Pro). Verder: een eigen scherm per training, trainingen per soort, persoonlijke records, je gebruikelijke bereik voor rustpols en ademhalingsfrequentie, een referentiebereik voor zuurstof, de dagelijkse spreiding van de bloeddruk en een voorgestelde bron per type. Plus veel verbeteringen.
+
+Mis je een functie? Mail naar hcview@steppicrew.de.
