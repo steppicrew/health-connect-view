@@ -694,4 +694,11 @@
     <string name="insights_none">눈에 띄는 변화가 없습니다. 데이터가 충분한 모든 유형이 30일 평균과 같은 수준입니다.</string>
     <string name="insights_empty">아직 데이터가 부족합니다. 변화를 보려면 최근 30일 중 15일 이상의 기록이 필요합니다.</string>
     <string name="insights_rule">오늘 이전 7일을 그 전 30일과 비교합니다. 각 유형이 평소의 일별 변동에 비해 얼마나 움직였는지에 따라 정렬합니다. 변화는 위치일 뿐 평가가 아닙니다. 올라가는 것이 좋은지는 유형과 사용자에 따라 다릅니다.</string>
+    <string name="insights_tile_title">이번 주의 변화</string>
+    <string name="insights_tile_caption">최근 7일 대 30일</string>
+    <string name="insights_tile_level">모두 평소 수준</string>
+    <string name="insights_tile_few">아직 데이터가 부족합니다</string>
+    <plurals name="insights_tile_more">
+        <item quantity="other">외 %1$d개</item>
+    </plurals>
 </resources>

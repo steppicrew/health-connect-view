@@ -60,7 +60,9 @@ object Routes {
 
     const val BODY = "body"
 
-    const val INSIGHTS = "insights"
+    const val INSIGHTS = "insights?date={date}"
+
+    fun insights(date: String = "") = "insights?date=$date"
 
     const val COMPARE = "compare/{first}/{second}?span={span}&date={date}"
 
@@ -102,6 +104,7 @@ fun HealthNavGraph(
                 },
                 onOpenCatalog = { navController.navigate(Routes.CATALOG) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                onOpenInsights = { navController.navigate(Routes.insights()) },
                 onGrantAccess = { navController.navigate(Routes.PERMISSIONS) },
             )
         }
@@ -112,7 +115,7 @@ fun HealthNavGraph(
                 viewModel = viewModel,
                 onOpenType = { navController.navigate(Routes.typeDetail(it)) },
                 onOpenCycles = { navController.navigate(Routes.cycle()) },
-                onOpenInsights = { navController.navigate(Routes.INSIGHTS) },
+                onOpenInsights = { navController.navigate(Routes.insights()) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 onBack = { navController.popBackStack() },
             )
@@ -250,14 +253,24 @@ fun HealthNavGraph(
             )
         }
 
-        composable(Routes.INSIGHTS) {
+        composable(
+            route = Routes.INSIGHTS,
+            arguments = listOf(
+                navArgument("date") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+            ),
+        ) { entry ->
+            val date = entry.arguments?.getString("date")?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
             val viewModel: InsightsViewModel = viewModel()
+            LaunchedEffect(viewModel) { viewModel.start(date) }
             InsightsScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
                 // The four weeks, not today: they are what the card compares, and today may hold
                 // nothing yet just after midnight.
-                onOpenType = { type -> navController.navigate(Routes.tileDetail(type, LocalDate.now().toString(), Span.MONTH)) },
+                onOpenType = { type -> navController.navigate(Routes.tileDetail(type, (date ?: LocalDate.now()).toString(), Span.MONTH)) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
             )
         }

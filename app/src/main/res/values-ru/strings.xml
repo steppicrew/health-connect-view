@@ -769,4 +769,14 @@
     <string name="insights_none">Ничего не выделяется: каждый тип с достаточными данными на уровне своего среднего за 30 дней.</string>
     <string name="insights_empty">Пока недостаточно данных: для изменения нужны записи хотя бы за 15 из последних 30 дней.</string>
     <string name="insights_rule">Сравнивает 7 дней до сегодняшнего дня с 30 днями до них. Порядок — по тому, насколько тип изменился относительно своих обычных колебаний от дня ко дню. Изменение — это положение, а не оценка: хорош ли рост, зависит от типа и от вас.</string>
+    <string name="insights_tile_title">Изменения за неделю</string>
+    <string name="insights_tile_caption">Последние 7 дней против 30</string>
+    <string name="insights_tile_level">Всё на обычном уровне</string>
+    <string name="insights_tile_few">Пока мало данных</string>
+    <plurals name="insights_tile_more">
+        <item quantity="one">+%1$d ещё</item>
+        <item quantity="few">+%1$d ещё</item>
+        <item quantity="many">+%1$d ещё</item>
+        <item quantity="other">+%1$d ещё</item>
+    </plurals>
 </resources>

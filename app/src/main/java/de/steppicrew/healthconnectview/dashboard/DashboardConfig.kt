@@ -63,6 +63,9 @@ data class Tile(
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
+    /** The one tile that is not a type: what moved this week, across all of them. */
+    val isInsights: Boolean get() = typeName == INSIGHTS
+
     /** The next size in [SIZES], wrapping; an unknown stored size starts over at 1x1. */
     fun nextSize(): Tile {
         val next = SIZES[(SIZES.indexOf(width to height) + 1) % SIZES.size]
@@ -77,6 +80,11 @@ data class Tile(
 
     /** Whether the tile spans more than one cell, which is what the options need room for. */
     val isLarge: Boolean get() = width > 1 || height > 1
+
+    companion object {
+        /** No record class has this simple name, so it cannot collide with a type's tile. */
+        const val INSIGHTS = "Insights"
+    }
 }
 
 /**
@@ -103,12 +111,18 @@ val SIZES: List<Pair<Int, Int>> = listOf(1 to 1, 2 to 1, 2 to 2)
 data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
     /**
-     * Drops tiles whose type no longer exists, so a removed type cannot break the screen;
+     * Drops tiles whose type no longer exists, so a removed type cannot break the screen, and
+     * any insights tile after the first;
      * gives a repeated id a fresh one, and each type's goal and zones to all its tiles, so a
      * hand-edited or merged layout cannot break the rules the edits keep.
      */
     fun sanitised(): DashboardConfig {
-        val known = tiles.filter { it.spec != null }
+        // One insights tile at most, one cell: a second would show the same list, and a larger
+        // face is still to be designed.
+        val insightsAt = tiles.indexOfFirst { it.isInsights }
+        val known = tiles.withIndex()
+            .filter { (index, tile) -> tile.spec != null || index == insightsAt }
+            .map { (_, tile) -> if (tile.isInsights) tile.copy(width = 1, height = 1) else tile }
         val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
         val seen = mutableSetOf<String>()
         val fixed = known.map { tile ->

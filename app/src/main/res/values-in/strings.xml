@@ -694,4 +694,11 @@
     <string name="insights_none">Tidak ada yang menonjol: setiap jenis dengan data cukup setara dengan rata-rata 30 harinya.</string>
     <string name="insights_empty">Data belum cukup: perubahan memerlukan catatan pada setidaknya 15 dari 30 hari terakhir.</string>
     <string name="insights_rule">Membandingkan 7 hari sebelum hari ini dengan 30 hari sebelumnya. Diurutkan menurut seberapa jauh setiap jenis bergerak dibandingkan variasi hariannya yang biasa. Perubahan adalah posisi, bukan penilaian: apakah naik itu baik bergantung pada jenisnya dan pada Anda.</string>
+    <string name="insights_tile_title">Perubahan minggu ini</string>
+    <string name="insights_tile_caption">7 hari terakhir vs 30</string>
+    <string name="insights_tile_level">Semua di tingkat biasanya</string>
+    <string name="insights_tile_few">Data masih sedikit</string>
+    <plurals name="insights_tile_more">
+        <item quantity="other">+%1$d lainnya</item>
+    </plurals>
 </resources>

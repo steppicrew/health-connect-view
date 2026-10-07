@@ -819,4 +819,16 @@
     <string name="insights_none">لا شيء لافت: كل نوع لديه بيانات كافية عند مستوى متوسطه خلال 30 يومًا.</string>
     <string name="insights_empty">لا توجد بيانات كافية بعد: يحتاج التغيير إلى تسجيلات في 15 يومًا على الأقل من آخر 30 يومًا.</string>
     <string name="insights_rule">يقارن الأيام السبعة السابقة لليوم بالأيام الثلاثين التي قبلها. الترتيب بحسب مقدار تغيّر كل نوع مقارنةً بتقلّبه المعتاد من يوم لآخر. التغيير موضع وليس حكمًا: كون الارتفاع جيدًا يعتمد على النوع وعليك.</string>
+    <string name="insights_tile_title">تغييرات هذا الأسبوع</string>
+    <string name="insights_tile_caption">آخر 7 أيام مقابل 30</string>
+    <string name="insights_tile_level">كل شيء عند مستواه المعتاد</string>
+    <string name="insights_tile_few">البيانات قليلة بعد</string>
+    <plurals name="insights_tile_more">
+        <item quantity="zero">+%1$d أخرى</item>
+        <item quantity="one">+%1$d أخرى</item>
+        <item quantity="two">+%1$d أخريان</item>
+        <item quantity="few">+%1$d أخرى</item>
+        <item quantity="many">+%1$d أخرى</item>
+        <item quantity="other">+%1$d أخرى</item>
+    </plurals>
 </resources>

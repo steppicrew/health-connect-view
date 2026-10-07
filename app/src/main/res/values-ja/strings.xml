@@ -694,4 +694,11 @@
     <string name="insights_none">目立った変化はありません。十分なデータがある種類はすべて30日間の平均と同程度です。</string>
     <string name="insights_empty">データがまだ足りません。変化を示すには、直近30日のうち15日以上の記録が必要です。</string>
     <string name="insights_rule">今日より前の7日間を、その前の30日間と比較します。各種類のふだんの日ごとの変動に対してどれだけ動いたかの順に並べています。変化は位置であり、評価ではありません。上がることが良いかどうかは、種類とご自身によります。</string>
+    <string name="insights_tile_title">今週の変化</string>
+    <string name="insights_tile_caption">直近7日間と30日間</string>
+    <string name="insights_tile_level">すべていつもどおり</string>
+    <string name="insights_tile_few">データがまだ足りません</string>
+    <plurals name="insights_tile_more">
+        <item quantity="other">ほか%1$d件</item>
+    </plurals>
 </resources>

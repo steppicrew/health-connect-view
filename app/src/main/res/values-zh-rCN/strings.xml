@@ -694,4 +694,11 @@
     <string name="insights_none">没有突出的变化：每种数据充足的类型都与其 30 天平均值持平。</string>
     <string name="insights_empty">数据还不够：显示变化需要最近 30 天中至少 15 天有记录。</string>
     <string name="insights_rule">将今天之前的 7 天与再之前的 30 天进行比较。按每种类型相对于其平常的日间波动变化了多少排序。变化是一种位置，而不是评判：上升是否是好事，取决于类型和您自己。</string>
+    <string name="insights_tile_title">本周变化</string>
+    <string name="insights_tile_caption">最近 7 天对比 30 天</string>
+    <string name="insights_tile_level">一切处于平常水平</string>
+    <string name="insights_tile_few">数据还不够</string>
+    <plurals name="insights_tile_more">
+        <item quantity="other">另有 %1$d 项</item>
+    </plurals>
 </resources>
