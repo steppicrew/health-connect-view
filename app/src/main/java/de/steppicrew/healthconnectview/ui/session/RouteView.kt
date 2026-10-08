@@ -116,8 +116,21 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
             drawCircle(surface, (MARKER + 2).dp.toPx(), projected[index])
             drawCircle(marker, MARKER.dp.toPx(), projected[index])
         }
+        // Each strip is named above itself, with its range: two unlabelled curves stacked under
+        // the route left the reader to guess which was height and which was speed.
+        val m = Quantity.ELEVATION
         if (heights != null && profile.size >= 2) {
-            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).padding(top = 8.dp)) {
+            Text(
+                text = stringResource(
+                    R.string.route_heights,
+                    Formatting.number(m.convert(heights.start)),
+                    Formatting.number(m.convert(heights.endInclusive)) + " " + m.symbol(),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = muted,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).padding(top = 4.dp)) {
                 val range = (heights.endInclusive - heights.start).takeIf { it > 0 } ?: 1.0
                 fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
                 fun y(height: Double) = (size.height - (height - heights.start) / range * size.height).toFloat()
@@ -133,8 +146,9 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
                 drawLine(marker, Offset(nowX, 0f), Offset(nowX, size.height), strokeWidth = 1.5.dp.toPx())
             }
         }
+        if (scale != null) SpeedLegend(scale, asPace, muted, onSwitch = { asPace = !asPace })
         if (speeds != null && scale != null && speedCurve.size >= 2) {
-            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).padding(top = 8.dp)) {
+            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp)) {
                 // Drawn to the top of the colour scale, not the fastest moment: a GPS jump would
                 // otherwise flatten every real change of pace into the floor of the strip.
                 val top = scale.endInclusive.takeIf { it > 0 } ?: 1.0
@@ -152,8 +166,6 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
         Slider(value = fraction, onValueChange = { fraction = it })
 
         val km = Quantity.DISTANCE
-        val m = Quantity.ELEVATION
-        val kmh = Quantity.SPEED
         val readout = listOfNotNull(
             Formatting.time(here.time),
             Formatting.number(km.convert(distances[index] / 1000)) + " " + km.symbol(),
@@ -161,18 +173,14 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
             here.altitude?.let { Formatting.number(m.convert(it)) + " " + m.symbol() },
         ).joinToString(" · ")
         Text(text = readout, style = MaterialTheme.typography.bodyMedium)
-        heights?.let {
+        if (scale != null) {
             Text(
-                text = stringResource(
-                    R.string.route_heights,
-                    Formatting.number(m.convert(it.start)),
-                    Formatting.number(m.convert(it.endInclusive)) + " " + m.symbol(),
-                ),
-                style = MaterialTheme.typography.bodySmall,
+                text = stringResource(if (recorded != null) R.string.route_speed_recorded else R.string.route_speed_source),
+                style = MaterialTheme.typography.labelSmall,
                 color = muted,
+                modifier = Modifier.padding(top = 2.dp),
             )
         }
-        if (scale != null) SpeedLegend(scale, asPace, recorded != null, muted, onSwitch = { asPace = !asPace })
         Text(
             text = stringResource(R.string.route_no_map),
             style = MaterialTheme.typography.labelSmall,
@@ -183,15 +191,14 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
 }
 
 /**
- * The colour scale beneath the drawing: its slow end, a strip running through the colours, and
- * its fast end, then a line saying where the speed comes from. Tapping it switches between
+ * The speed strip's label, which is also the colour scale of the route above it: its name, its
+ * slow end, a bar running through the colours, and its fast end. Tapping it switches between
  * speed and pace, and the swap mark says it can be tapped.
  */
 @Composable
 private fun SpeedLegend(
     scale: ClosedFloatingPointRange<Double>,
     pace: Boolean,
-    recorded: Boolean,
     muted: Color,
     onSwitch: () -> Unit,
 ) {
@@ -199,7 +206,6 @@ private fun SpeedLegend(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier
-            .padding(top = 4.dp)
             .clickable(onClickLabel = stringResource(R.string.route_switch_speed_pace), onClick = onSwitch)
             .heightIn(min = 48.dp),
     ) {
@@ -220,12 +226,6 @@ private fun SpeedLegend(
             color = muted,
         )
     }
-    Text(
-        text = stringResource(if (recorded) R.string.route_speed_recorded else R.string.route_speed_source),
-        style = MaterialTheme.typography.labelSmall,
-        color = muted,
-        modifier = Modifier.padding(top = 2.dp),
-    )
 }
 
 /** A speed as the readout shows it: a pace where [pace], else km/h or mph; "–" for a standstill. */
