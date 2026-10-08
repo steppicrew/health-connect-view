@@ -1,3 +1,1 @@
 1.1.0 — Les parcours sont colorés selon la vitesse, du bleu (lent) au rouge (rapide), avec un profil de vitesse en dessous ; la course et la marche affichent l'allure en min/km, un appui bascule en km/h. Chaque graphique s'ouvre en plein écran en paysage : appuyez deux fois ou utilisez l'icône d'agrandissement, puis touchez pour lire une valeur.
-
-Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.

@@ -1,3 +1,1 @@
 1.1.0 — Las rutas se colorean según la velocidad, de azul (lento) a rojo (rápido), con un perfil de velocidad debajo; correr y caminar muestran el ritmo en min/km, y un toque cambia a km/h. Cada gráfico se abre a pantalla completa en horizontal: toca dos veces o usa el icono de ampliar, y toca para leer cualquier valor.
-
-¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.
