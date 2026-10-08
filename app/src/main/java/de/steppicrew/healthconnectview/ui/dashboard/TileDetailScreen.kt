@@ -2042,7 +2042,14 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
             )
         }
         if (context.days.size > 1) {
-            val highlight = MaterialTheme.colorScheme.tertiary
+            // Named above the chart, not in small print beneath it: with readings weeks apart
+            // the last ten span about the year, and unlabelled the strip read as the year's
+            // chart repeated on the day.
+            Text(
+                text = stringResource(R.string.context_caption),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 12.dp),
+            )
             ExpandableChart(
                 chartTitle(
                     stringResource(spec.displayNameRes),
@@ -2052,24 +2059,22 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
             ) { expanded, onExpand ->
                 LineChart(
                     points = context.days,
-                    modifier = if (expanded) Modifier.fillMaxSize() else Modifier.padding(top = 12.dp),
+                    modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
                     smooth = false,
                     unitRes = spec.displayUnitRes,
                     valueDecimals = spec.valueDecimals,
                     integral = spec.tile.integralValues,
                     markReadings = true,
                     secondaryPoints = context.secondaryDays,
-                    pointColors = context.days.mapIndexed { i, _ -> highlight.takeIf { i == index } },
+                    // One step per reading with its date beneath, unlike any time axis: the
+                    // strip is a sequence of readings, and must not look like a period.
+                    evenlySpaced = true,
+                    highlight = index.takeIf { it >= 0 },
                     fillHeight = expanded,
                     onExpand = onExpand,
                     holdSelection = expanded,
                 )
             }
-            Text(
-                text = stringResource(R.string.context_caption),
-                style = MaterialTheme.typography.labelSmall,
-                color = muted,
-            )
         }
     }
 }
