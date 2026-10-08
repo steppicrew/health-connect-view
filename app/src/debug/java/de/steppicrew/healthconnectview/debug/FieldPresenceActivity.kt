@@ -3,7 +3,10 @@ package de.steppicrew.healthconnectview.debug
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TimeRange
@@ -11,6 +14,9 @@ import de.steppicrew.healthconnectview.registry.RecordRegistry
 import kotlinx.coroutines.launch
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.time.Duration
+import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * Debug-only. Reports which fields of each record type the apps on this device actually fill,
@@ -18,7 +24,8 @@ import java.lang.reflect.Modifier
  *
  * Per type and field it logs how many records have the field filled and how many distinct
  * values it takes; for lists, their average length; for a route, which result class came
- * back. Record metadata is reported the same way. It never logs a value, a timestamp, a
+ * back. Record metadata is reported the same way, and the ids of a few routed workouts are
+ * listed for the nav backdoor. It never logs a value, a timestamp, a
  * title or a note -- only counts.
  *
  * "Filled" means not null, not an empty list or string, and not 0 for a number: the
@@ -27,7 +34,7 @@ import java.lang.reflect.Modifier
  * Keep it short: Health Connect refuses reads once the activity backgrounds, and this one
  * finishes as soon as it has logged (see CLAUDE.md, reads require the foreground).
  *
- *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.FieldPresenceActivity
+ *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.FieldPresenceActivity [-e routedOn 2026-08-16]
  */
 class FieldPresenceActivity : ComponentActivity() {
 
@@ -47,7 +54,9 @@ class FieldPresenceActivity : ComponentActivity() {
                     Log.i(TAG, "$name records=${records.size}")
                     report(name, records)
                     reportMetadata(name, records)
+                    if (spec.type == ExerciseSessionRecord::class) reportRouted(records)
                 }
+            intent.getStringExtra("routedOn")?.let { reportRoutedOn(repository, LocalDate.parse(it)) }
             Log.i(TAG, "done")
             finish()
         }
@@ -67,6 +76,28 @@ class FieldPresenceActivity : ComponentActivity() {
             }
             Log.i(TAG, "  $name.$field filled=$filled/${records.size} $detail")
         }
+    }
+
+    /**
+     * The ids of the five newest sessions with a readable route, so one can be opened through
+     * the nav backdoor (`session/EXERCISE/<id>`). An id and a type code are no reading.
+     */
+    private fun reportRouted(records: List<Record>) {
+        records.filterIsInstance<ExerciseSessionRecord>()
+            .filter { it.exerciseRouteResult is ExerciseRouteResult.Data }
+            .sortedByDescending { it.startTime }
+            .take(5)
+            .forEach { Log.i(TAG, "  routed id=${it.metadata.id} type=${it.exerciseType}") }
+    }
+
+    /** With `-e routedOn 2026-08-16`: the routed sessions of that day, older than the month above. */
+    private suspend fun reportRoutedOn(repository: HealthRepository, day: LocalDate) {
+        val start = day.atStartOfDay(ZoneId.systemDefault()).toInstant()
+        val records = runCatching {
+            repository.read(ExerciseSessionRecord::class, TimeRangeFilter.between(start, start.plus(Duration.ofDays(1))))
+        }.getOrDefault(emptyList())
+        Log.i(TAG, "on $day:")
+        reportRouted(records)
     }
 
     private fun reportMetadata(name: String, records: List<Record>) {
