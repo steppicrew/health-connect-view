@@ -645,6 +645,7 @@
     <string name="route_no_map">地図なしで描画: アプリには地図を読み込むためのインターネット アクセスがありません。</string>
     <string name="route_speed">速度</string>
     <string name="route_speed_source">速度は記録された位置から算出しています。ルートには速度が保存されていません。</string>
+    <string name="route_speed_recorded">速度はお使いのデバイスが記録したものです。</string>
     <string name="route_pace">ペース</string>
     <string name="route_switch_speed_pace">速度とペースを切り替える</string>
     <string name="route_export">ルートをエクスポート（GPX）</string>

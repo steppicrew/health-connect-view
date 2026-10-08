@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.health
 
 import androidx.health.connect.client.records.ExerciseRoute
+import de.steppicrew.healthconnectview.registry.Point
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.PI
@@ -103,6 +104,31 @@ fun routeSpeeds(points: List<RoutePoint>, window: Duration = SPEED_WINDOW): Doub
         haversine(points[a], points[b]) / ((millis[b] - millis[a]) / 1000.0)
     }
 }
+
+/**
+ * Speed at each point as the device recorded it: the reading nearest in time, from [samples]
+ * in metres per second and in time order. Null unless readings lie within [reach] of most of
+ * the route -- a watch that stopped recording halfway would otherwise paint the second half
+ * in one stretched reading, and the positions tell that half better.
+ */
+fun recordedSpeeds(points: List<RoutePoint>, samples: List<Point>, reach: Duration = SAMPLE_REACH): DoubleArray? {
+    if (points.isEmpty() || samples.size < 2) return null
+    var near = 0
+    var j = 0
+    val speeds = DoubleArray(points.size) { i ->
+        val time = points[i].time
+        while (j < samples.lastIndex && samples[j + 1].time <= time) j++
+        val nearest = if (j < samples.lastIndex &&
+            Duration.between(samples[j].time, time).abs() > Duration.between(time, samples[j + 1].time).abs()
+        ) j + 1 else j
+        if (Duration.between(samples[nearest].time, time).abs() <= reach) near++
+        samples[nearest].value
+    }
+    return speeds.takeIf { near * 10 >= points.size * MIN_COVERED_TENTHS }
+}
+
+private val SAMPLE_REACH: Duration = Duration.ofSeconds(10)
+private const val MIN_COVERED_TENTHS = 8
 
 /**
  * The speeds a colour scale runs between: the 5th to the 95th percentile, not the extremes.

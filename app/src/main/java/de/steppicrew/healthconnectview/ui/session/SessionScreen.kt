@@ -45,6 +45,7 @@ import androidx.health.connect.client.records.ExerciseRoute
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
@@ -179,7 +180,7 @@ private fun SessionContent(
 
         if (session.route != null) {
             Section(stringResource(R.string.route_title))
-            Route(session, detail.route, onRouteGranted, onExportRoute)
+            Route(session, detail.route, detail.speed, onRouteGranted, onExportRoute)
         }
 
         if (session.laps.isNotEmpty()) {
@@ -264,6 +265,7 @@ private fun HeartRate(detail: SessionDetail) {
 private fun Route(
     session: Session,
     route: RouteLoad,
+    speed: List<Point>?,
     onRouteGranted: (ExerciseRoute) -> Unit,
     onExportRoute: (List<RoutePoint>, String, Uri) -> Unit,
 ) {
@@ -285,7 +287,7 @@ private fun Route(
 
     when (route) {
         is RouteLoad.Shown -> {
-            RouteView(route.points, pace = session.exerciseType in PACE_TYPES)
+            RouteView(route.points, speed, pace = session.exerciseType in PACE_TYPES)
             val unlocked = pro.allows(Feature.ROUTE_EXPORT)
             TextButton(
                 onClick = {

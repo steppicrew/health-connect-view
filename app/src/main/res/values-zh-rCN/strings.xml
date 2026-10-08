@@ -645,6 +645,7 @@
     <string name="route_no_map">无地图绘制：此应用没有联网权限，无法加载地图。</string>
     <string name="route_speed">速度</string>
     <string name="route_speed_source">速度根据记录的位置计算得出；路线本身不存储速度。</string>
+    <string name="route_speed_recorded">速度为您的设备记录的数据。</string>
     <string name="route_pace">配速</string>
     <string name="route_switch_speed_pace">在速度和配速之间切换</string>
     <string name="route_export">导出路线（GPX）</string>

@@ -703,6 +703,7 @@
     <string name="route_no_map">Drawn without a map: the app has no internet access to load one.</string>
     <string name="route_speed">Speed</string>
     <string name="route_speed_source">Speed worked out from the recorded positions; the route stores none.</string>
+    <string name="route_speed_recorded">Speed as your device recorded it.</string>
     <string name="route_pace">Pace</string>
     <string name="route_switch_speed_pace">Switch between speed and pace</string>
     <string name="route_export">Export route (GPX)</string>

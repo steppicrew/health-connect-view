@@ -645,6 +645,7 @@
     <string name="route_no_map">不使用地圖繪製：這個應用程式沒有網路存取權，無法載入地圖。</string>
     <string name="route_speed">速度</string>
     <string name="route_speed_source">速度根據記錄的位置計算得出；路線本身不儲存速度。</string>
+    <string name="route_speed_recorded">速度為您的裝置記錄的資料。</string>
     <string name="route_pace">配速</string>
     <string name="route_switch_speed_pace">在速度和配速之間切換</string>
     <string name="route_export">匯出路線（GPX）</string>

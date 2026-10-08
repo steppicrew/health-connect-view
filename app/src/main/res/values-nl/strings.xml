@@ -670,6 +670,7 @@
     <string name="route_no_map">Getekend zonder kaart: de app heeft geen internettoegang om er een te laden.</string>
     <string name="route_speed">Snelheid</string>
     <string name="route_speed_source">Snelheid berekend uit de vastgelegde posities; de route slaat er geen op.</string>
+    <string name="route_speed_recorded">Snelheid zoals je apparaat die heeft vastgelegd.</string>
     <string name="route_pace">Tempo</string>
     <string name="route_switch_speed_pace">Wisselen tussen snelheid en tempo</string>
     <string name="route_export">Route exporteren (GPX)</string>

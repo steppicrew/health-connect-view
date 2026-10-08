@@ -670,6 +670,7 @@
     <string name="route_no_map">Haritasız çizildi: uygulamanın harita yüklemek için internet erişimi yok.</string>
     <string name="route_speed">Hız</string>
     <string name="route_speed_source">Hız, kaydedilen konumlardan hesaplandı; rota hız bilgisi içermez.</string>
+    <string name="route_speed_recorded">Hız, cihazınızın kaydettiği şekliyle.</string>
     <string name="route_pace">Tempo</string>
     <string name="route_switch_speed_pace">Hız ile tempo arasında geçiş yap</string>
     <string name="route_export">Rotayı dışa aktar (GPX)</string>

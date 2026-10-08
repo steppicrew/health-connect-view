@@ -695,6 +695,7 @@
     <string name="route_no_map">Desenhado sem mapa: o app não tem acesso à internet para carregar um.</string>
     <string name="route_speed">Velocidade</string>
     <string name="route_speed_source">Velocidade calculada a partir das posições registradas; o trajeto não armazena nenhuma.</string>
+    <string name="route_speed_recorded">Velocidade como seu dispositivo a registrou.</string>
     <string name="route_pace">Ritmo</string>
     <string name="route_switch_speed_pace">Alternar entre velocidade e ritmo</string>
     <string name="route_export">Exportar trajeto (GPX)</string>

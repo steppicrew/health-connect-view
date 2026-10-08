@@ -664,6 +664,7 @@
     <string name="route_no_map">Ohne Karte gezeichnet: Die App hat keinen Internetzugang, um eine zu laden.</string>
     <string name="route_speed">Tempo</string>
     <string name="route_speed_source">Tempo aus den aufgezeichneten Positionen berechnet; die Route speichert keines.</string>
+    <string name="route_speed_recorded">Tempo, wie Ihr Gerät es aufgezeichnet hat.</string>
     <string name="route_pace">Pace</string>
     <string name="route_switch_speed_pace">Zwischen Tempo und Pace wechseln</string>
     <string name="route_export">Route exportieren (GPX)</string>

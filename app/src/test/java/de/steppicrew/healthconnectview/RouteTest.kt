@@ -11,6 +11,8 @@ import de.steppicrew.healthconnectview.health.heightProfile
 import de.steppicrew.healthconnectview.health.indexAt
 import de.steppicrew.healthconnectview.health.dedupeSessions
 import de.steppicrew.healthconnectview.health.projectRoute
+import de.steppicrew.healthconnectview.health.recordedSpeeds
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.health.routeLength
 import de.steppicrew.healthconnectview.health.routeSpeeds
 import de.steppicrew.healthconnectview.health.speedScale
@@ -154,5 +156,21 @@ class RouteTest {
         assertEquals("8:03 min/mi", Formatting.pace(1000.0 / 300, imperial = true))
         assertNull(Formatting.pace(0.0, imperial = false))
         assertNull(Formatting.pace(0.1, imperial = false))
+    }
+
+    @Test
+    fun `each route point takes the recorded reading nearest in time`() {
+        val points = (0..10).map { point(it, 50.0, 8.0) }
+        val samples = (0..100).map { Point(t0.plusSeconds(it.toLong()), it.toDouble()) }
+        val speeds = recordedSpeeds(points, samples)!!
+        assertEquals(30.0, speeds[3], 0.0)
+        assertEquals(100.0, speeds[10], 0.0)
+    }
+
+    @Test
+    fun `readings that stop halfway are not stretched over the rest`() {
+        val points = (0..10).map { point(it, 50.0, 8.0) }
+        val samples = (0..50).map { Point(t0.plusSeconds(it.toLong()), 3.0) }
+        assertNull(recordedSpeeds(points, samples))
     }
 }
