@@ -47,10 +47,12 @@ import de.steppicrew.healthconnectview.health.cumulativeDistances
 import de.steppicrew.healthconnectview.health.heightProfile
 import de.steppicrew.healthconnectview.health.indexAt
 import de.steppicrew.healthconnectview.health.projectRoute
+import de.steppicrew.healthconnectview.health.recordedSpeeds
 import de.steppicrew.healthconnectview.health.routeSpeeds
 import de.steppicrew.healthconnectview.health.speedProfile
 import de.steppicrew.healthconnectview.health.speedScale
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.Quantity
 import java.time.Instant
 
@@ -61,13 +63,14 @@ import java.time.Instant
  * start, a ring the end.
  *
  * Where the route moved through time, it is coloured by speed, blue through green and yellow
- * to red, with the speed profile beneath in the same colours. The speed is worked out from the
- * positions -- a route stores none -- and the drawing says so. It is read as a pace, minutes
+ * to red, with the speed profile beneath in the same colours. A route stores no speed: it is
+ * the device's own [recordedSpeed] where that covers the route, else worked out from the
+ * positions, and the drawing says which. It is read as a pace, minutes
  * per km, where [pace] -- the way runners and walkers count it -- and a tap on the colour scale
  * switches between the two.
  */
 @Composable
-fun RouteView(points: List<RoutePoint>, pace: Boolean, modifier: Modifier = Modifier) {
+fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boolean, modifier: Modifier = Modifier) {
     var asPace by rememberSaveable(points) { mutableStateOf(pace) }
     val line = MaterialTheme.colorScheme.primary
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -76,7 +79,8 @@ fun RouteView(points: List<RoutePoint>, pace: Boolean, modifier: Modifier = Modi
     val distances = remember(points) { cumulativeDistances(points) }
     val profile = remember(points) { heightProfile(points) }
     val heights = remember(points) { altitudeRange(points) }
-    val speeds = remember(points) { routeSpeeds(points) }
+    val recorded = remember(points, recordedSpeed) { recordedSpeed?.let { recordedSpeeds(points, it) } }
+    val speeds = remember(points, recorded) { recorded ?: routeSpeeds(points) }
     val scale = remember(speeds) { speeds?.let(::speedScale) }
     val speedCurve = remember(speeds) { speeds?.let { speedProfile(points, it) }.orEmpty() }
     // The slider's place in the session's time, 0 to 1; at the end until moved, so the
@@ -168,7 +172,7 @@ fun RouteView(points: List<RoutePoint>, pace: Boolean, modifier: Modifier = Modi
                 color = muted,
             )
         }
-        if (scale != null) SpeedLegend(scale, asPace, muted, onSwitch = { asPace = !asPace })
+        if (scale != null) SpeedLegend(scale, asPace, recorded != null, muted, onSwitch = { asPace = !asPace })
         Text(
             text = stringResource(R.string.route_no_map),
             style = MaterialTheme.typography.labelSmall,
@@ -184,7 +188,13 @@ fun RouteView(points: List<RoutePoint>, pace: Boolean, modifier: Modifier = Modi
  * speed and pace, and the swap mark says it can be tapped.
  */
 @Composable
-private fun SpeedLegend(scale: ClosedFloatingPointRange<Double>, pace: Boolean, muted: Color, onSwitch: () -> Unit) {
+private fun SpeedLegend(
+    scale: ClosedFloatingPointRange<Double>,
+    pace: Boolean,
+    recorded: Boolean,
+    muted: Color,
+    onSwitch: () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -211,7 +221,7 @@ private fun SpeedLegend(scale: ClosedFloatingPointRange<Double>, pace: Boolean, 
         )
     }
     Text(
-        text = stringResource(R.string.route_speed_source),
+        text = stringResource(if (recorded) R.string.route_speed_recorded else R.string.route_speed_source),
         style = MaterialTheme.typography.labelSmall,
         color = muted,
         modifier = Modifier.padding(top = 2.dp),

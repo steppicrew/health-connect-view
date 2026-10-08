@@ -720,6 +720,7 @@
     <string name="route_no_map">Нарисовано без карты: у приложения нет доступа в интернет, чтобы её загрузить.</string>
     <string name="route_speed">Скорость</string>
     <string name="route_speed_source">Скорость рассчитана по записанным координатам; маршрут её не хранит.</string>
+    <string name="route_speed_recorded">Скорость, записанная вашим устройством.</string>
     <string name="route_pace">Темп</string>
     <string name="route_switch_speed_pace">Переключить скорость и темп</string>
     <string name="route_export">Экспорт маршрута (GPX)</string>

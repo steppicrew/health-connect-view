@@ -720,6 +720,7 @@
     <string name="route_no_map">Narysowana bez mapy: aplikacja nie ma dostępu do internetu, by ją wczytać.</string>
     <string name="route_speed">Prędkość</string>
     <string name="route_speed_source">Prędkość obliczona z zapisanych pozycji; trasa jej nie przechowuje.</string>
+    <string name="route_speed_recorded">Prędkość zapisana przez Twoje urządzenie.</string>
     <string name="route_pace">Tempo</string>
     <string name="route_switch_speed_pace">Przełącz między prędkością a tempem</string>
     <string name="route_export">Eksportuj trasę (GPX)</string>

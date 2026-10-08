@@ -120,5 +120,32 @@ suspend fun HealthRepository.heartRateDuring(session: Session): List<Point>? {
     ).takeIf { it.size > 1 }
 }
 
+/**
+ * Speed through a session's window as one writer recorded it, in metres per second, or null
+ * where fewer than two readings were taken. A route stores no speed, but a watch that records
+ * one writes a speed record over the same window; on the phone each of 30 routed workouts had
+ * one, about 900 readings long. One writer's, for the reason [heartRateDuring] gives.
+ */
+suspend fun HealthRepository.speedDuring(session: Session): List<Point>? {
+    val spec = RecordRegistry.specOrNull(SPEED) ?: return null
+    if (spec.permission !in grantedPermissions()) return null
+    val records = try {
+        readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        emptyList()
+    }
+    return fullestWriter(
+        records.groupBy { spec.originOf(it) }
+            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
+        session.start,
+        session.end,
+    ).map { Point(it.time, it.value / MS_TO_KMH) }.takeIf { it.size > 1 }
+}
+
+private const val SPEED = "SpeedRecord"
+private const val MS_TO_KMH = 3.6
+
 /** How many of a session's reads run at once: Health Connect serves an app largely in turn. */
 const val MAX_CONCURRENT_READS = 4

@@ -43,6 +43,8 @@ data class SessionDetail(
     val session: Session,
     val stats: List<SessionStat>,
     val route: RouteLoad,
+    /** Speed through the session as the device recorded it, m/s, or null where none was. */
+    val speed: List<Point>?,
     /** Heart rate through the session, or null where none was recorded or it is not allowed. */
     val heartRate: List<Point>?,
     /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
@@ -97,6 +99,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         // Side by side: three independent questions about one window.
         val stats = async { repository.statisticsFor(session) }
         val route = async { repository.routeFor(session) }
+        val speed = async { if (session.route == null) null else repository.speedDuring(session) }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
         val zones = runCatching { dashboardStore.config.first() }.getOrNull()
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
@@ -106,6 +109,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             session = session,
             stats = stats.await(),
             route = route.await(),
+            speed = speed.await(),
             heartRate = heartRate.await(),
             heartRateLocked = heartRateLocked,
             heartRateZones = zones,

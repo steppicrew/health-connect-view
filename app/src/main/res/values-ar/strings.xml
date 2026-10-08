@@ -770,6 +770,7 @@
     <string name="route_no_map">مرسوم بدون خريطة: لا يملك التطبيق وصولًا إلى الإنترنت لتحميل خريطة.</string>
     <string name="route_speed">السرعة</string>
     <string name="route_speed_source">السرعة محسوبة من المواقع المسجلة؛ المسار لا يخزّن سرعة.</string>
+    <string name="route_speed_recorded">السرعة كما سجّلها جهازك.</string>
     <string name="route_pace">الإيقاع</string>
     <string name="route_switch_speed_pace">التبديل بين السرعة والإيقاع</string>
     <string name="route_export">تصدير المسار (GPX)</string>
