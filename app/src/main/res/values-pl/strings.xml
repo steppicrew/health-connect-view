@@ -212,6 +212,7 @@
     <string name="span_per_night">Średnio na noc</string>
     <string name="context_day_range">Zakres tego dnia: %1$s–%2$s</string>
     <string name="context_change">%1$s od %2$s</string>
+    <string name="context_unchanged">Bez zmian od %1$s</string>
     <string name="context_first">Pierwszy zapisany pomiar</string>
     <string name="context_caption">Ostatnie dni z pomiarem, ten wyróżniony</string>
     <string name="chart_source_aggregated_mean">Średnie dzienne, bez duplikatów według Health Connect</string>

@@ -208,6 +208,7 @@
     <string name="span_per_night">Gemiddeld per nacht</string>
     <string name="context_day_range">Bereik deze dag: %1$s–%2$s</string>
     <string name="context_change">%1$s sinds %2$s</string>
+    <string name="context_unchanged">Ongewijzigd sinds %1$s</string>
     <string name="context_first">De eerste vastgelegde meting</string>
     <string name="context_caption">Recente dagen met een meting, deze gemarkeerd</string>
     <string name="chart_source_aggregated_mean">Daggemiddelden, ontdubbeld door Health Connect</string>

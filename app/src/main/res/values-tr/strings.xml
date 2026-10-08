@@ -208,6 +208,7 @@
     <string name="span_per_night">Gece başına ortalama</string>
     <string name="context_day_range">Bu günün aralığı: %1$s–%2$s</string>
     <string name="context_change">%2$s tarihinden beri %1$s</string>
+    <string name="context_unchanged">%1$s tarihinden beri değişmedi</string>
     <string name="context_first">Kayıtlı ilk ölçüm</string>
     <string name="context_caption">Ölçüm olan son günler, bu gün vurgulu</string>
     <string name="chart_source_aggregated_mean">Günlük ortalamalar, Health Connect tarafından tekilleştirildi</string>
