@@ -1,3 +1,1 @@
 1.1.0 — Rotalar hıza göre renklendirilir, maviden (yavaş) kırmızıya (hızlı), altında hız profiliyle; koşu ve yürüyüşte tempo dk/km olarak gösterilir, bir dokunuş km/sa'e geçer. Her grafik yatay modda tam ekran açılır: iki kez dokunun veya büyütme simgesini kullanın, ardından bir değeri okumak için dokunun.
-
-Bir özellik mi eksik? hcview@steppicrew.de adresine yazın.

@@ -1,3 +1,1 @@
 1.1.0 — Routes zijn gekleurd op snelheid, van blauw (langzaam) tot rood (snel), met een snelheidsprofiel eronder; hardlopen en wandelen tonen je tempo in min/km, een tik schakelt naar km/u. Elke grafiek opent schermvullend in liggende stand: tik twee keer of gebruik het vergroot-icoon en tik om een waarde af te lezen.
-
-Mis je een functie? Schrijf naar hcview@steppicrew.de.

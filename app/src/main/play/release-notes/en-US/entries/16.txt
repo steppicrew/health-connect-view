@@ -1,3 +1,1 @@
 1.1.0 — Routes are coloured by speed, from blue (slow) to red (fast), with a speed profile beneath; running and walking show your pace in min/km, and a tap switches to km/h. Every chart opens full screen in landscape: double-tap it or use the expand icon, then tap to read any value.
-
-Missing a feature? Write to hcview@steppicrew.de.

@@ -1,3 +1,3 @@
-1.1.0 — Las rutas se colorean según la velocidad, de azul (lento) a rojo (rápido), con un perfil de velocidad debajo; correr y caminar muestran el ritmo en min/km, y un toque cambia a km/h. Cada gráfico se abre en pantalla completa en horizontal: toca dos veces o usa el ícono de ampliar, y toca para leer cualquier valor.
+1.1.1 — VO2máx, peso y otras mediciones ocasionales: un día muestra ahora su valor como titular y lo ubica entre tus últimas mediciones, cada una con su fecha, en lugar de un gráfico que parecía el del año. Un valor sin cambios ahora se indica así.
 
 ¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.

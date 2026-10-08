@@ -1,3 +1,1 @@
 1.1.0 — I percorsi sono colorati in base alla velocità, dal blu (lento) al rosso (veloce), con il profilo di velocità sotto; corsa e camminata mostrano il passo in min/km, un tocco passa a km/h. Ogni grafico si apre a schermo intero in orizzontale: tocca due volte o usa l'icona di ingrandimento, poi tocca per leggere un valore.
-
-Ti manca una funzione? Scrivi a hcview@steppicrew.de.

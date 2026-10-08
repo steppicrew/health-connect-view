@@ -1,3 +1,1 @@
 1.1.0 — Trasy są kolorowane według prędkości, od niebieskiego (wolno) do czerwonego (szybko), z profilem prędkości poniżej; bieg i marsz pokazują tempo w min/km, a dotknięcie przełącza na km/h. Każdy wykres otwiera się na pełnym ekranie w poziomie: dotknij dwukrotnie lub użyj ikony powiększenia, a potem dotknij, by odczytać wartość.
-
-Brakuje Ci funkcji? Napisz na hcview@steppicrew.de.

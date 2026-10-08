@@ -1,0 +1,3 @@
+1.1.1 — VO2max, berat badan, dan pengukuran sesekali lainnya: satu hari kini menampilkan nilainya sebagai judul dan menempatkannya di antara pengukuran terakhir Anda, masing-masing dengan tanggalnya, menggantikan grafik yang mirip grafik tahunan. Nilai yang tidak berubah kini disebut demikian.
+
+Ada fitur yang kurang? Tulis ke hcview@steppicrew.de.

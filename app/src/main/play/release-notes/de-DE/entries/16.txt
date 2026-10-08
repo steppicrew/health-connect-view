@@ -1,3 +1,1 @@
 1.1.0 — Routen sind nach Tempo eingefärbt, von Blau (langsam) bis Rot (schnell), mit einem Tempoverlauf darunter; Laufen und Gehen zeigen die Pace in min/km, ein Tippen wechselt zu km/h. Jedes Diagramm öffnet sich im Querformat als Vollbild: doppelt tippen oder das Vergrößern-Symbol nutzen, dann tippen, um einen Wert abzulesen.
-
-Fehlt Ihnen eine Funktion? Schreiben Sie an hcview@steppicrew.de.

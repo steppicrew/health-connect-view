@@ -1,0 +1,3 @@
+1.1.1 — VO2max, kilo ve diğer ara sıra yapılan ölçümler: bir gün artık değerini başlıkta gösterir ve onu tarihleriyle birlikte son ölçümleriniz arasına yerleştirir; yıllık görünüme benzeyen grafik kaldırıldı. Değişmeyen bir değer artık böyle belirtilir.
+
+Bir özellik mi eksik? hcview@steppicrew.de adresine yazın.

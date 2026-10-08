@@ -1,3 +1,3 @@
-1.1.0 — Trasy są kolorowane według prędkości, od niebieskiego (wolno) do czerwonego (szybko), z profilem prędkości poniżej; bieg i marsz pokazują tempo w min/km, a dotknięcie przełącza na km/h. Każdy wykres otwiera się na pełnym ekranie w poziomie: dotknij dwukrotnie lub użyj ikony powiększenia, a potem dotknij, by odczytać wartość.
+1.1.1 — VO2max, waga i inne okazjonalne pomiary: dzień pokazuje teraz swoją wartość jako nagłówek i umieszcza ją wśród ostatnich pomiarów, każdy z datą, zamiast wykresu podobnego do rocznego. Niezmieniona wartość jest teraz tak opisana.
 
 Brakuje Ci funkcji? Napisz na hcview@steppicrew.de.

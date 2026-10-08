@@ -1,3 +1,3 @@
-1.1.0 — Rute kini diwarnai menurut kecepatan, dari biru (lambat) hingga merah (cepat), dengan profil kecepatan di bawahnya; lari dan jalan kaki menampilkan pace dalam min/km, satu ketukan beralih ke km/j. Setiap grafik terbuka layar penuh dalam mode lanskap: ketuk dua kali atau gunakan ikon perbesar, lalu ketuk untuk membaca nilai.
+1.1.1 — VO2max, berat badan, dan pengukuran sesekali lainnya: satu hari kini menampilkan nilainya sebagai judul dan menempatkannya di antara pengukuran terakhir Anda, masing-masing dengan tanggalnya, menggantikan grafik yang mirip grafik tahunan. Nilai yang tidak berubah kini disebut demikian.
 
 Ada fitur yang kurang? Tulis ke hcview@steppicrew.de.

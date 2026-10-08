@@ -1,0 +1,3 @@
+1.1.1 — VO2max, gewicht en andere incidentele metingen: een dag toont zijn waarde nu als kop en zet die tussen je laatste metingen, elk met datum, in plaats van een grafiek die op die van het jaar leek. Een ongewijzigde waarde wordt nu zo benoemd.
+
+Mis je een functie? Schrijf naar hcview@steppicrew.de.

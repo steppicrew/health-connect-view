@@ -1,0 +1,3 @@
+1.1.1 — VO2max, poids et autres mesures ponctuelles : un jour affiche désormais sa valeur en titre et la place parmi vos dernières mesures, chacune avec sa date, au lieu d'un graphique qui ressemblait à celui de l'année. Une valeur inchangée est indiquée comme telle.
+
+Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.

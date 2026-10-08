@@ -1,0 +1,3 @@
+1.1.1 — VO2max, waga i inne okazjonalne pomiary: dzień pokazuje teraz swoją wartość jako nagłówek i umieszcza ją wśród ostatnich pomiarów, każdy z datą, zamiast wykresu podobnego do rocznego. Niezmieniona wartość jest teraz tak opisana.
+
+Brakuje Ci funkcji? Napisz na hcview@steppicrew.de.
