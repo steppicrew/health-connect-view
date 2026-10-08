@@ -698,6 +698,8 @@
     <string name="route_speed_recorded">Velocidad tal como la registró tu dispositivo.</string>
     <string name="route_pace">Ritmo</string>
     <string name="route_switch_speed_pace">Cambiar entre velocidad y ritmo</string>
+    <string name="chart_expand">Ver en pantalla completa</string>
+    <string name="chart_collapse">Salir de pantalla completa</string>
     <string name="route_export">Exportar ruta (GPX)</string>
     <string name="route_consent_body">Esta sesión tiene una ruta. Android te pregunta antes de que la aplicación pueda mostrarla; permítelo siempre y, desde entonces, todas las rutas se mostrarán sin preguntar.</string>
     <string name="route_declined">La ruta sigue oculta. Puedes permitirla aquí en cualquier momento.</string>

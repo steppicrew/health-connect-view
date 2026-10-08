@@ -698,6 +698,8 @@
     <string name="route_speed_recorded">Vitesse telle que votre appareil l’a enregistrée.</string>
     <string name="route_pace">Allure</string>
     <string name="route_switch_speed_pace">Basculer entre vitesse et allure</string>
+    <string name="chart_expand">Afficher en plein écran</string>
+    <string name="chart_collapse">Quitter le plein écran</string>
     <string name="route_export">Exporter le parcours (GPX)</string>
     <string name="route_consent_body">Cette séance a un parcours. Android vous demande votre accord avant que l’application puisse l’afficher ; autorisez-le toujours, et tous les parcours s’afficheront ensuite sans question.</string>
     <string name="route_declined">Le parcours reste masqué. Vous pouvez l’autoriser ici à tout moment.</string>

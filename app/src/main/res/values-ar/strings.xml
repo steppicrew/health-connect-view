@@ -773,6 +773,8 @@
     <string name="route_speed_recorded">السرعة كما سجّلها جهازك.</string>
     <string name="route_pace">الإيقاع</string>
     <string name="route_switch_speed_pace">التبديل بين السرعة والإيقاع</string>
+    <string name="chart_expand">عرض بملء الشاشة</string>
+    <string name="chart_collapse">إغلاق ملء الشاشة</string>
     <string name="route_export">تصدير المسار (GPX)</string>
     <string name="route_consent_body">لهذه الجلسة مسار. يسألك Android قبل أن يتمكن التطبيق من عرضه؛ اسمح دائمًا هناك، وبعدها تُعرض كل المسارات دون سؤال.</string>
     <string name="route_declined">يبقى المسار مخفيًا. يمكنك السماح به هنا في أي وقت.</string>

@@ -648,6 +648,8 @@
     <string name="route_speed_recorded">速度はお使いのデバイスが記録したものです。</string>
     <string name="route_pace">ペース</string>
     <string name="route_switch_speed_pace">速度とペースを切り替える</string>
+    <string name="chart_expand">全画面で表示</string>
+    <string name="chart_collapse">全画面表示を閉じる</string>
     <string name="route_export">ルートをエクスポート（GPX）</string>
     <string name="route_consent_body">このセッションにはルートがあります。アプリが表示する前に Android が確認します。そこで常に許可を選ぶと、以降はすべてのルートが確認なしで表示されます。</string>
     <string name="route_declined">ルートは非表示のままです。ここからいつでも許可できます。</string>

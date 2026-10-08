@@ -673,6 +673,8 @@
     <string name="route_speed_recorded">गति, जैसी आपके डिवाइस ने दर्ज की।</string>
     <string name="route_pace">पेस</string>
     <string name="route_switch_speed_pace">गति और पेस के बीच बदलें</string>
+    <string name="chart_expand">फ़ुल स्क्रीन में दिखाएं</string>
+    <string name="chart_collapse">फ़ुल स्क्रीन बंद करें</string>
     <string name="route_export">रूट एक्सपोर्ट करें (GPX)</string>
     <string name="route_consent_body">इस सेशन का एक रूट है। ऐप के इसे दिखाने से पहले Android आपसे पूछता है; वहां हमेशा की अनुमति दें, तो उसके बाद हर रूट बिना पूछे दिखेगा।</string>
     <string name="route_declined">रूट छिपा रहता है। आप कभी भी यहां इसकी अनुमति दे सकते हैं।</string>

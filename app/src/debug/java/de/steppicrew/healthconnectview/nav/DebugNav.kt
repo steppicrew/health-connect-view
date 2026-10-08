@@ -17,6 +17,9 @@ import android.util.Log
  * The route is a NavHost route string, so anything [de.steppicrew.healthconnectview.ui.nav.Routes]
  * can express is reachable. An unknown route is left to the NavHost, which throws -- loudly, in
  * a debug build, which is the right outcome for a typo in a developer tool.
+ *
+ * `-e expand <text>` also opens full screen the first chart whose title contains the text,
+ * since a double tap cannot be sent either.
  */
 object DebugNav {
 
@@ -27,6 +30,14 @@ object DebugNav {
         return route
     }
 
+    /** Title text of a chart to open full screen, or null. */
+    fun expandChart(intent: Intent?): String? {
+        val text = intent?.getStringExtra(EXTRA_EXPAND)?.takeIf { it.isNotBlank() }
+        if (text != null) Log.i(TAG, "expanding chart: $text")
+        return text
+    }
+
     private const val EXTRA_ROUTE = "route"
+    private const val EXTRA_EXPAND = "expand"
     private const val TAG = "DebugNav"
 }

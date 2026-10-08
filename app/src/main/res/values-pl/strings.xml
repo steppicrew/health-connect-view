@@ -723,6 +723,8 @@
     <string name="route_speed_recorded">Prędkość zapisana przez Twoje urządzenie.</string>
     <string name="route_pace">Tempo</string>
     <string name="route_switch_speed_pace">Przełącz między prędkością a tempem</string>
+    <string name="chart_expand">Pokaż na pełnym ekranie</string>
+    <string name="chart_collapse">Zamknij pełny ekran</string>
     <string name="route_export">Eksportuj trasę (GPX)</string>
     <string name="route_consent_body">Ta sesja ma trasę. Android pyta o zgodę, zanim aplikacja może ją pokazać; zezwól tam zawsze, a od tej chwili wszystkie trasy będą widoczne bez pytania.</string>
     <string name="route_declined">Trasa pozostaje ukryta. Możesz w każdej chwili zezwolić na nią tutaj.</string>

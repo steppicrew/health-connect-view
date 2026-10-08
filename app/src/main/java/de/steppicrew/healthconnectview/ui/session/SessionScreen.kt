@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +46,6 @@ import androidx.health.connect.client.records.ExerciseRoute
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
-import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
@@ -53,8 +53,10 @@ import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
@@ -236,20 +238,27 @@ private fun Header(session: Session) {
 @Composable
 private fun HeartRate(detail: SessionDetail) {
     val spec = heartRateSpec() ?: return
-    Section(stringResource(spec.displayNameRes))
+    val title = stringResource(spec.displayNameRes)
+    Section(title)
     val curve = detail.heartRate
     when {
-        curve != null -> LineChart(
-            points = curve,
-            smooth = false,
-            unitRes = detail.heartRateUnitRes,
-            zones = detail.heartRateZones,
-            // A session curve is heart rate at full resolution: a dot per sample buries it.
-            markReadings = false,
-            integral = true,
-            minSpan = CURVE_MIN_SPAN,
-            extent = detail.session.start..detail.session.end,
-        )
+        curve != null -> ExpandableChart(title = title + " · " + sessionName(detail.session)) { expanded, onExpand ->
+            LineChart(
+                points = curve,
+                smooth = false,
+                unitRes = detail.heartRateUnitRes,
+                zones = detail.heartRateZones,
+                // A session curve is heart rate at full resolution: a dot per sample buries it.
+                markReadings = false,
+                integral = true,
+                minSpan = CURVE_MIN_SPAN,
+                extent = detail.session.start..detail.session.end,
+                fillHeight = expanded,
+                onExpand = onExpand,
+                holdSelection = expanded,
+                modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
+            )
+        }
 
         else -> Text(
             text = stringResource(
