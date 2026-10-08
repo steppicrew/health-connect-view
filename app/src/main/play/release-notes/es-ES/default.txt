@@ -1,3 +1,3 @@
-1.0.0 — Novedades: qué ha cambiado esta semana en todos los tipos, también como mosaico; composición corporal; dos tipos comparados en un mismo eje de tiempo (los tres, Pro). Además: una pantalla para cada entrenamiento, entrenamientos por tipo, récords personales, tu rango habitual de pulso en reposo y respiración, un rango de referencia para el oxígeno, la variación diaria de la presión arterial y una fuente sugerida por tipo.
+1.1.0 — Las rutas se colorean según la velocidad, de azul (lento) a rojo (rápido), con un perfil de velocidad debajo; correr y caminar muestran el ritmo en min/km, y un toque cambia a km/h. Cada gráfico se abre a pantalla completa en horizontal: toca dos veces o usa el icono de ampliar, y toca para leer cualquier valor.
 
 ¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.

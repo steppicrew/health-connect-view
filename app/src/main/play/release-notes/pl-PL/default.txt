@@ -1,3 +1,3 @@
-1.0.0 — Nowość: co zmieniło się w tym tygodniu we wszystkich typach, także jako kafelek; skład ciała; dwa typy porównane na jednej osi czasu (wszystkie trzy w Pro). Ponadto: osobny ekran każdego treningu, treningi według rodzaju, rekordy osobiste, Twój zwykły zakres tętna spoczynkowego i częstości oddechu, zakres referencyjny tlenu, dzienny rozrzut ciśnienia i sugerowane źródło dla każdego typu. Oraz wiele poprawek.
+1.1.0 — Trasy są kolorowane według prędkości, od niebieskiego (wolno) do czerwonego (szybko), z profilem prędkości poniżej; bieg i marsz pokazują tempo w min/km, a dotknięcie przełącza na km/h. Każdy wykres otwiera się na pełnym ekranie w poziomie: dotknij dwukrotnie lub użyj ikony powiększenia, a potem dotknij, by odczytać wartość.
 
-Brakuje Ci jakiejś funkcji? Napisz na hcview@steppicrew.de.
+Brakuje Ci funkcji? Napisz na hcview@steppicrew.de.

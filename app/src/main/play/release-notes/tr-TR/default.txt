@@ -1,3 +1,3 @@
-1.0.0 — Yeni: bu hafta tüm türlerde neyin değiştiği, kutucuk olarak da; vücut kompozisyonu; iki türün tek zaman ekseninde karşılaştırılması (üçü de Pro). Ayrıca: her antrenman için ayrı ekran, türe göre antrenmanlar, kişisel rekorlar, dinlenme nabzı ve solunum hızı için olağan aralığınız, oksijen için referans aralığı, tansiyonun günlük aralığı ve her tür için önerilen kaynak. Ve birçok düzeltme.
+1.1.0 — Rotalar hıza göre renklendirilir, maviden (yavaş) kırmızıya (hızlı), altında hız profiliyle; koşu ve yürüyüşte tempo dk/km olarak gösterilir, bir dokunuş km/sa'e geçer. Her grafik yatay modda tam ekran açılır: iki kez dokunun veya büyütme simgesini kullanın, ardından bir değeri okumak için dokunun.
 
-Eksik bir özellik mi var? hcview@steppicrew.de adresine yazın.
+Bir özellik mi eksik? hcview@steppicrew.de adresine yazın.
