@@ -399,6 +399,13 @@ internal class TileChartLoader(
         } else {
             // Readings reduced to daily means: the window's mean of the same counted readings.
             dailyReadings?.overallMean()
+                // A type measured now and then with no aggregate at all -- VO2max -- had no
+                // headline on its detail screen, only a value in the list at the bottom. Its
+                // readings' mean is safe where a sum would not be: an average does not grow
+                // when two writers copy the same reading. Detail screen only; a tile keeps
+                // its own latest-reading display.
+                ?: chartPoints.takeIf { deferExtras && metric == null && spec.tile.occasional && it.isNotEmpty() }
+                    ?.map { it.value }?.average()
         }
         // HRV has no aggregate, so its headline is computed: the night's own value on a day,
         // the week's mean at the window's end across days -- the figure the chart ends on.
