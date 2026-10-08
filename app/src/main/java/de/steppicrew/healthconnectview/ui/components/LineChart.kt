@@ -37,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -230,6 +231,17 @@ fun LineChart(
      * a fast stretch was a dip and the colours, red for fast, ran against the shape.
      */
     invertAxis: Boolean = false,
+    /**
+     * One even step per reading, its date beneath it, instead of a time axis. For a sequence of
+     * readings taken weeks apart -- the recent days a weigh-in is set against -- where a time
+     * axis made the strip look like the year's chart and crowded close readings together.
+     */
+    evenlySpaced: Boolean = false,
+    /**
+     * The reading being looked at, marked with a rule through it, a larger dot and its date
+     * set off on the axis, so it is found among the others without reading every date.
+     */
+    highlight: Int? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -321,7 +333,11 @@ fun LineChart(
 
     // Each point's horizontal position as a fraction of the width. Computed once here so the
     // touch handler and the drawing agree exactly on where a point sits.
-    val fractions = remember(points, plotExtent) { horizontalFractions(points, plotExtent) }
+    val fractions = remember(points, plotExtent, evenlySpaced) {
+        // Half a step in from each edge, so the first and last dates sit under their points
+        // rather than being pushed inward off them.
+        if (evenlySpaced) points.indices.map { (it + 0.5f) / points.size } else horizontalFractions(points, plotExtent)
+    }
     // The plot's own time range, shared with the icon row so an icon lands on the band it
     // names. Null where the series has no elapsed time and the fractions fall back to even
     // spacing, which no time can be mapped onto.
@@ -731,10 +747,17 @@ fun LineChart(
             // The second line, straight and coloured by its own bands like the first. It has no
             // gaps to honour: the types that carry one are readings, joined across empty days.
             if (secondaryPoints.isNotEmpty()) {
-                val secondFractions = horizontalFractions(
-                    secondaryPoints,
-                    plotExtent ?: (points.first().time..points.last().time),
-                )
+                val secondFractions = if (evenlySpaced) {
+                    // Placed on its partner's step: both values of a day share its instant.
+                    secondaryPoints.map { second ->
+                        fractions.getOrNull(points.indexOfFirst { it.time == second.time }) ?: 0f
+                    }
+                } else {
+                    horizontalFractions(
+                        secondaryPoints,
+                        plotExtent ?: (points.first().time..points.last().time),
+                    )
+                }
                 val secondOffsets = secondaryPoints.mapIndexed { index, point ->
                     Offset(xForFraction(secondFractions[index]), yFor(point.value))
                 }
@@ -779,6 +802,22 @@ fun LineChart(
                     radius = (GOAL_MARKER_RADIUS - GOAL_MARKER_RING).dp.toPx(),
                     center = Offset(crossingX, y),
                 )
+            }
+
+            highlight?.takeIf { it in points.indices }?.let { index ->
+                val x = xFor(index)
+                drawLine(
+                    color = goalColor,
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
+                    strokeWidth = 1.5.dp.toPx(),
+                )
+                drawCircle(color = surfaceColor, radius = 7.dp.toPx(), center = Offset(x, yFor(points[index].value)))
+                drawCircle(color = goalColor, radius = 5.dp.toPx(), center = Offset(x, yFor(points[index].value)))
+                secondaryPoints.firstOrNull { it.time == points[index].time }?.let { second ->
+                    drawCircle(color = surfaceColor, radius = 7.dp.toPx(), center = Offset(x, yFor(second.value)))
+                    drawCircle(color = goalColor, radius = 5.dp.toPx(), center = Offset(x, yFor(second.value)))
+                }
             }
 
             // The selected point: a full-height rule plus a marker, so the position is
@@ -931,7 +970,65 @@ fun LineChart(
             SessionAxisIcons(sessions = sessions, extent = timeExtent, zoom = zoom, pan = pan)
         }
 
-        TimeAxis(points = points, extent = plotExtent, zoom = zoom, pan = pan, datesOnDayChange = extent == null)
+        if (evenlySpaced) {
+            ReadingAxis(points = points, fractions = fractions, highlight = highlight, zoom = zoom, pan = pan)
+        } else {
+            TimeAxis(points = points, extent = plotExtent, zoom = zoom, pan = pan, datesOnDayChange = extent == null)
+        }
+    }
+}
+
+/**
+ * Each reading's date beneath its step, for an [evenlySpaced] chart. The highlighted one is
+ * placed first and in the highlight's colour, so it is never the label left out; the others
+ * fill in where they do not overprint a label already placed.
+ */
+@Composable
+private fun ReadingAxis(points: List<Point>, fractions: List<Float>, highlight: Int?, zoom: Float, pan: Float) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val marked = MaterialTheme.colorScheme.tertiary
+    // Readings weeks apart can cross a new year, and "27 Okt." then "10 Sept." does not say
+    // which of the two years each is: the year goes under the first date and each first date
+    // of a new year, and only where the readings span more than one.
+    val zone = java.time.ZoneId.systemDefault()
+    val years = points.map { it.time.atZone(zone).year }
+    val spansYears = years.distinct().size > 1
+    Layout(
+        content = {
+            points.forEachIndexed { index, point ->
+                val newYear = spansYears && (index == 0 || years[index] != years[index - 1])
+                Text(
+                    text = Formatting.dayAndMonth(point.time) + if (newYear) "\n" + years[index] else "",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (index == highlight) marked else muted,
+                    fontWeight = if (index == highlight) FontWeight.Bold else null,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+    ) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0)) }
+        val height = placeables.maxOfOrNull { it.height } ?: 0
+        val gap = LABEL_GAP.dp.roundToPx()
+        layout(constraints.maxWidth, height) {
+            val taken = mutableListOf<IntRange>()
+            val order = listOfNotNull(highlight?.takeIf { it in placeables.indices }) +
+                placeables.indices.filter { it != highlight }
+            order.forEach { index ->
+                val placeable = placeables[index]
+                val centre = visibleFraction(fractions[index], zoom, pan) * constraints.maxWidth
+                if (centre < 0f || centre > constraints.maxWidth) return@forEach
+                val x = (centre - placeable.width / 2f).toInt()
+                    .coerceIn(0, (constraints.maxWidth - placeable.width).coerceAtLeast(0))
+                val span = (x - gap)..(x + placeable.width + gap)
+                if (taken.none { it.first < span.last && span.first < it.last }) {
+                    placeable.place(x, 0)
+                    taken += span
+                }
+            }
+        }
     }
 }
 
