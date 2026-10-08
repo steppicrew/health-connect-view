@@ -143,8 +143,16 @@ object Formatting {
     fun pace(metresPerSecond: Double, imperial: Boolean = Quantity.DISTANCE.alternateShown): String? {
         val metres = if (imperial) METRES_PER_MILE else 1000.0
         val seconds = (metres / metresPerSecond).takeIf { it.isFinite() && it < MAX_PACE_SECONDS } ?: return null
-        val total = kotlin.math.round(seconds).toLong()
-        return String.format(Locale.getDefault(), "%d:%02d min/%s", total / 60, total % 60, if (imperial) "mi" else "km")
+        return minutes(seconds / 60) + " " + paceUnit(imperial)
+    }
+
+    /** The unit a [pace] is in: "min/km", or "min/mi" where distance shows in miles. */
+    fun paceUnit(imperial: Boolean = Quantity.DISTANCE.alternateShown): String = if (imperial) "min/mi" else "min/km"
+
+    /** [minutes] as minutes and seconds, "7:44": a pace's number, on an axis as in a readout. */
+    fun minutes(minutes: Double): String {
+        val total = kotlin.math.round(minutes * 60).toLong()
+        return String.format(Locale.getDefault(), "%d:%02d", total / 60, total % 60)
     }
 
     private const val METRES_PER_MILE = 1609.344

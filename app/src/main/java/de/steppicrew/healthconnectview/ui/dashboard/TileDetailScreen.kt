@@ -1,166 +1,169 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
-import de.steppicrew.healthconnectview.ui.components.firstLineInset
-import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
-import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.material.icons.filled.Route
-import androidx.health.connect.client.records.Record
-import de.steppicrew.healthconnectview.registry.deviceName
-import de.steppicrew.healthconnectview.registry.DeviceKind
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.SnackbarDuration
-import android.content.Intent
 import android.content.ActivityNotFoundException
-import java.time.Instant
-import de.steppicrew.healthconnectview.ui.components.DotText
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.map
-import de.steppicrew.healthconnectview.settings.SettingsStore
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material3.Checkbox
-import de.steppicrew.healthconnectview.health.HrvSummary
-import de.steppicrew.healthconnectview.health.HrvStanding
+import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import de.steppicrew.healthconnectview.ui.components.SourceMark
-import androidx.compose.material3.Surface
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.ui.semantics.Role
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.produceState
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.runtime.LaunchedEffect
-import de.steppicrew.healthconnectview.export.ExportPeriod
-import de.steppicrew.healthconnectview.export.ExportResult
-import de.steppicrew.healthconnectview.export.Exporter
-import de.steppicrew.healthconnectview.ui.components.ExportAction
-import de.steppicrew.healthconnectview.ui.components.Hypnogram
-import de.steppicrew.healthconnectview.ui.components.InfoToggle
-import de.steppicrew.healthconnectview.ui.components.rememberExplanation
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.CompareArrows
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.EventBusy
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Route
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import de.steppicrew.healthconnectview.R
-import de.steppicrew.healthconnectview.health.pressureCategory
-import de.steppicrew.healthconnectview.health.labelRes
-import de.steppicrew.healthconnectview.health.PressureCategory
-import kotlin.math.roundToInt
-import de.steppicrew.healthconnectview.health.PartAverage
-import de.steppicrew.healthconnectview.health.DayPartSplit
-import de.steppicrew.healthconnectview.health.HealthRepository
-import de.steppicrew.healthconnectview.health.StreakSummary
-import de.steppicrew.healthconnectview.health.Trend
-import de.steppicrew.healthconnectview.health.TrendResult
-import de.steppicrew.healthconnectview.health.Session
-import de.steppicrew.healthconnectview.health.duration
-import de.steppicrew.healthconnectview.health.totalDuration
-import de.steppicrew.healthconnectview.health.Span
-import java.time.LocalDate
-import de.steppicrew.healthconnectview.registry.readingGap
-import de.steppicrew.healthconnectview.registry.segmentAtGaps
-import de.steppicrew.healthconnectview.registry.Formatting
-import de.steppicrew.healthconnectview.registry.Quantity
-import de.steppicrew.healthconnectview.registry.RecordTypeSpec
-import de.steppicrew.healthconnectview.registry.ValueZones
-import de.steppicrew.healthconnectview.registry.Point
-import de.steppicrew.healthconnectview.registry.TileSpec
-import de.steppicrew.healthconnectview.ui.UiState
-import de.steppicrew.healthconnectview.ui.detail.RecordRow
-import de.steppicrew.healthconnectview.ui.components.iconFor
-import de.steppicrew.healthconnectview.ui.components.sessionName
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Star
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.BodyFatRecord
-import androidx.health.connect.client.records.LeanBodyMassRecord
 import androidx.health.connect.client.records.BodyWaterMassRecord
 import androidx.health.connect.client.records.BoneMassRecord
-import androidx.activity.compose.LocalActivity
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.LeanBodyMassRecord
+import androidx.health.connect.client.records.Record
+import androidx.health.connect.client.records.WeightRecord
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.automirrored.filled.CompareArrows
+import de.steppicrew.healthconnectview.export.ExportPeriod
+import de.steppicrew.healthconnectview.export.ExportResult
+import de.steppicrew.healthconnectview.export.Exporter
+import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.HrvStanding
+import de.steppicrew.healthconnectview.health.HrvSummary
+import de.steppicrew.healthconnectview.health.PartAverage
+import de.steppicrew.healthconnectview.health.PersonalRecord
+import de.steppicrew.healthconnectview.health.PressureCategory
+import de.steppicrew.healthconnectview.health.RecordKind
+import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.health.StreakSummary
+import de.steppicrew.healthconnectview.health.Suggestion
+import de.steppicrew.healthconnectview.health.Trend
+import de.steppicrew.healthconnectview.health.TrendResult
+import de.steppicrew.healthconnectview.health.duration
+import de.steppicrew.healthconnectview.health.labelRes
+import de.steppicrew.healthconnectview.health.pressureCategory
+import de.steppicrew.healthconnectview.health.totalDuration
+import de.steppicrew.healthconnectview.registry.DeviceKind
+import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.Quantity
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.TileSpec
+import de.steppicrew.healthconnectview.registry.ValueZones
+import de.steppicrew.healthconnectview.registry.deviceName
+import de.steppicrew.healthconnectview.registry.readingGap
+import de.steppicrew.healthconnectview.registry.segmentAtGaps
+import de.steppicrew.healthconnectview.settings.SettingsStore
+import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.compare.CompareTypeDialog
 import de.steppicrew.healthconnectview.ui.components.AppIcon
-import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
+import de.steppicrew.healthconnectview.ui.components.DotText
+import de.steppicrew.healthconnectview.ui.components.ExpandableChart
+import de.steppicrew.healthconnectview.ui.components.ExportAction
+import de.steppicrew.healthconnectview.ui.components.Hypnogram
+import de.steppicrew.healthconnectview.ui.components.InfoGroup
+import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.LineChart
-import de.steppicrew.healthconnectview.ui.components.SessionTimeline
-import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.ui.components.REFERENCE_COLOR
+import de.steppicrew.healthconnectview.ui.components.SessionTimeline
+import de.steppicrew.healthconnectview.ui.components.ShowExportResults
+import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
+import de.steppicrew.healthconnectview.ui.components.SparkCurve
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.chartTitle
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
+import de.steppicrew.healthconnectview.ui.components.iconFor
+import de.steppicrew.healthconnectview.ui.components.periodLabel
+import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
+import de.steppicrew.healthconnectview.ui.components.rememberExplanation
+import de.steppicrew.healthconnectview.ui.components.sessionName
 import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
+import de.steppicrew.healthconnectview.ui.detail.RecordRow
+import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
 import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
-import androidx.compose.material.icons.filled.MilitaryTech
-import de.steppicrew.healthconnectview.health.PersonalRecord
-import de.steppicrew.healthconnectview.health.RecordKind
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import de.steppicrew.healthconnectview.ui.components.OnResume
-import de.steppicrew.healthconnectview.ui.components.InfoGroup
-import de.steppicrew.healthconnectview.ui.components.REFERENCE_COLOR
-import de.steppicrew.healthconnectview.health.Suggestion
-import de.steppicrew.healthconnectview.ui.components.ShowExportResults
-import androidx.compose.material3.TextButton
+import java.time.Instant
+import java.time.LocalDate
+import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 /**
  * One type, full screen, over a span the user can step through.
@@ -340,6 +343,7 @@ fun TileDetailScreen(
 
                     is UiState.Data -> SpanContent(
                         data = current.value,
+                        period = windowLabel(span, offset),
                         onSelectSource = viewModel::selectSource,
                         onOpenSession = onOpenSession,
                         loadCurve = viewModel::curveFor,
@@ -357,6 +361,7 @@ fun TileDetailScreen(
 @Composable
 private fun SpanContent(
     data: TileDetailData,
+    period: String,
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
     loadCurve: suspend (Session) -> List<Point>?,
@@ -364,7 +369,7 @@ private fun SpanContent(
     onOpenRecord: (String) -> Unit,
 ) {
     LazyColumn {
-        item(key = "summary") { SpanSummary(data, onSelectSource, onOpenSession, onVisibleRange) }
+        item(key = "summary") { SpanSummary(data, period, onSelectSource, onOpenSession, onVisibleRange) }
 
         // A session type's own screen: the sessions are the content, not context behind a
         // chart, so they get a row each with the heart rate recorded during them.
@@ -809,6 +814,7 @@ private fun DayPartRow(label: String, average: PartAverage?) {
 @Composable
 private fun SpanSummary(
     data: TileDetailData,
+    period: String,
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
     onVisibleRange: (ClosedRange<Instant>?) -> Unit,
@@ -942,7 +948,7 @@ private fun SpanSummary(
                 rangeBand = data.usualBand.ifEmpty { data.rangeBand },
             )
             // Zoomed, the list below follows the stretch on screen.
-            DataLineChart(shown, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
+            ExpandableDataChart(shown, period, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
             Text(
                 text = stringResource(
                     when {
@@ -1211,6 +1217,8 @@ internal fun DataLineChart(
      * [data]: its own extent also says "this is a day", which decides the session bands.
      */
     axis: ClosedRange<Instant>? = data.extent,
+    onExpand: (() -> Unit)? = null,
+    holdSelection: Boolean = false,
 ) {
     LineChart(
         points = data.points,
@@ -1247,8 +1255,39 @@ internal fun DataLineChart(
         scatter = data.nightPoints,
         baseline = data.baseline,
         onVisibleRange = onVisibleRange,
+        onExpand = onExpand,
+        holdSelection = holdSelection,
         modifier = modifier,
     )
+}
+
+/**
+ * [DataLineChart] that opens full screen, titled with its type, unit and days. Full screen it
+ * fills the page and keeps a tapped value; it does not report its zoom, which is its own and
+ * must not move the list on the page behind it.
+ */
+@Composable
+internal fun ExpandableDataChart(
+    data: TileDetailData,
+    /** The window as the screen names it, for the title. */
+    period: String,
+    modifier: Modifier = Modifier,
+    onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
+    axis: ClosedRange<Instant>? = data.extent,
+) {
+    if (data.points.isEmpty()) return
+    val title = chartTitle(stringResource(data.spec.displayNameRes), data.spec.displayUnitRes, period)
+    ExpandableChart(title) { expanded, onExpand ->
+        DataLineChart(
+            data,
+            if (expanded) Modifier.fillMaxSize() else modifier,
+            onVisibleRange = if (expanded) null else onVisibleRange,
+            axis = axis,
+            fillHeight = expanded,
+            onExpand = onExpand,
+            holdSelection = expanded,
+        )
+    }
 }
 
 /**
@@ -1528,19 +1567,28 @@ private fun SessionRow(
             // The full chart rather than a spark line: at this size the samples are dense
             // enough to be worth reading individually, and the readout answers "what was my
             // rate at that dip" -- which a curve you cannot touch only poses.
-            curve != null -> LineChart(
-                points = curve,
-                smooth = false,
-                unitRes = heartRateUnitRes,
-                zones = zones,
-                // Never on a session curve: it is heart rate at full resolution by
-                // definition, so every sample would carry a dot.
-                markReadings = false,
-                // The curve is heart rate whatever type opened the session.
-                integral = true,
-                minSpan = SESSION_CURVE_MIN_SPAN,
-                extent = session.start..session.end,
-            )
+            curve != null -> ExpandableChart(
+                chartTitle(stringResource(R.string.type_heart_rate), heartRateUnitRes, periodLabel(session.start, session.end)) +
+                    " · " + sessionName(session),
+            ) { expanded, onExpand ->
+                LineChart(
+                    points = curve,
+                    smooth = false,
+                    unitRes = heartRateUnitRes,
+                    zones = zones,
+                    // Never on a session curve: it is heart rate at full resolution by
+                    // definition, so every sample would carry a dot.
+                    markReadings = false,
+                    // The curve is heart rate whatever type opened the session.
+                    integral = true,
+                    minSpan = SESSION_CURVE_MIN_SPAN,
+                    extent = session.start..session.end,
+                    fillHeight = expanded,
+                    onExpand = onExpand,
+                    holdSelection = expanded,
+                    modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
+                )
+            }
 
             // Distinct explanations for the same blank space: nothing was recorded, versus
             // the app is not allowed to look. The locked case is said once for the whole
@@ -1995,17 +2043,28 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
         }
         if (context.days.size > 1) {
             val highlight = MaterialTheme.colorScheme.tertiary
-            LineChart(
-                points = context.days,
-                modifier = Modifier.padding(top = 12.dp),
-                smooth = false,
-                unitRes = spec.displayUnitRes,
-                valueDecimals = spec.valueDecimals,
-                integral = spec.tile.integralValues,
-                markReadings = true,
-                secondaryPoints = context.secondaryDays,
-                pointColors = context.days.mapIndexed { i, _ -> highlight.takeIf { i == index } },
-            )
+            ExpandableChart(
+                chartTitle(
+                    stringResource(spec.displayNameRes),
+                    spec.displayUnitRes,
+                    periodLabel(context.days.first().time, context.days.last().time),
+                ),
+            ) { expanded, onExpand ->
+                LineChart(
+                    points = context.days,
+                    modifier = if (expanded) Modifier.fillMaxSize() else Modifier.padding(top = 12.dp),
+                    smooth = false,
+                    unitRes = spec.displayUnitRes,
+                    valueDecimals = spec.valueDecimals,
+                    integral = spec.tile.integralValues,
+                    markReadings = true,
+                    secondaryPoints = context.secondaryDays,
+                    pointColors = context.days.mapIndexed { i, _ -> highlight.takeIf { i == index } },
+                    fillHeight = expanded,
+                    onExpand = onExpand,
+                    holdSelection = expanded,
+                )
+            }
             Text(
                 text = stringResource(R.string.context_caption),
                 style = MaterialTheme.typography.labelSmall,

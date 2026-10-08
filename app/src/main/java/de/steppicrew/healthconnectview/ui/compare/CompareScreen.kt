@@ -39,6 +39,7 @@ import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 import de.steppicrew.healthconnectview.ui.dashboard.DataLineChart
+import de.steppicrew.healthconnectview.ui.dashboard.ExpandableDataChart
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailData
 
 /**
@@ -118,7 +119,7 @@ fun CompareScreen(
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
-                is UiState.Data -> Charts(current.value, historyNeeded, onOpenPermissions)
+                is UiState.Data -> Charts(current.value, windowLabel(span, offset), historyNeeded, onOpenPermissions)
             }
         }
     }
@@ -135,15 +136,15 @@ fun CompareScreen(
 }
 
 @Composable
-private fun Charts(data: Compared, historyNeeded: Boolean, onOpenPermissions: () -> Unit) {
+private fun Charts(data: Compared, period: String, historyNeeded: Boolean, onOpenPermissions: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Chart(data.first, data)
-        Chart(data.second, data)
+        Chart(data.first, data, period)
+        Chart(data.second, data, period)
         Text(
             text = stringResource(R.string.compare_note),
             style = MaterialTheme.typography.bodySmall,
@@ -164,7 +165,7 @@ private fun Charts(data: Compared, historyNeeded: Boolean, onOpenPermissions: ()
 
 /** One type's chart, as on its own screen, drawn on the shared axis. */
 @Composable
-private fun Chart(chart: TileDetailData, data: Compared) {
+private fun Chart(chart: TileDetailData, data: Compared, period: String) {
     InfoGroup {
         val name = stringResource(chart.spec.displayNameRes)
         // "Schritte (Schritte)" says nothing twice; "Schlaf (h)" needs its unit.
@@ -180,7 +181,7 @@ private fun Chart(chart: TileDetailData, data: Compared) {
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
-            DataLineChart(chart, Modifier.padding(top = 8.dp), axis = data.extent)
+            ExpandableDataChart(chart, period, Modifier.padding(top = 8.dp), axis = data.extent)
         }
     }
 }

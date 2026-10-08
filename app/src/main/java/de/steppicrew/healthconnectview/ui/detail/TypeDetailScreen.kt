@@ -1,36 +1,27 @@
 package de.steppicrew.healthconnectview.ui.detail
 
-import de.steppicrew.healthconnectview.ui.components.firstLineInset
-import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MonitorHeart
 import androidx.compose.material.icons.filled.MonitorWeight
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.ViewInAr
-import androidx.compose.material.icons.filled.Watch
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.vector.ImageVector
-import de.steppicrew.healthconnectview.registry.DeviceKind
-import de.steppicrew.healthconnectview.registry.RecordingMethod
-import de.steppicrew.healthconnectview.registry.readingContext
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Inbox
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -41,25 +32,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.records.Record
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
+import de.steppicrew.healthconnectview.registry.RecordingMethod
+import de.steppicrew.healthconnectview.registry.readingContext
 import de.steppicrew.healthconnectview.ui.UiState
-import de.steppicrew.healthconnectview.util.appLabelFor
+import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.chartTitle
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import de.steppicrew.healthconnectview.ui.components.periodLabel
 import de.steppicrew.healthconnectview.ui.components.swipeToStep
 import de.steppicrew.healthconnectview.ui.components.windowLabel
+import de.steppicrew.healthconnectview.ui.record.RecordDetailOverlay
+import de.steppicrew.healthconnectview.util.appLabelFor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -161,13 +165,25 @@ private fun DetailContent(
         if (data.points.isNotEmpty()) {
             item(key = "chart") {
                 Column(Modifier.padding(16.dp)) {
-                    LineChart(
-                        points = data.points,
-                        smooth = data.spec.tile.smoothChart,
-                        unitRes = data.spec.displayUnitRes,
-                        valueDecimals = data.spec.valueDecimals,
-                        integral = data.spec.tile.integralValues,
-                    )
+                    ExpandableChart(
+                        chartTitle(
+                            stringResource(data.spec.displayNameRes),
+                            data.spec.displayUnitRes,
+                            periodLabel(data.points.first().time, data.points.last().time),
+                        ),
+                    ) { expanded, onExpand ->
+                        LineChart(
+                            points = data.points,
+                            smooth = data.spec.tile.smoothChart,
+                            unitRes = data.spec.displayUnitRes,
+                            valueDecimals = data.spec.valueDecimals,
+                            integral = data.spec.tile.integralValues,
+                            fillHeight = expanded,
+                            onExpand = onExpand,
+                            holdSelection = expanded,
+                            modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
+                        )
+                    }
                     Text(
                         text = stringResource(
                             when {

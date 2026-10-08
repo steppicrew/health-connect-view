@@ -16,40 +16,40 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.layout.Layout
-import java.time.Duration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.registry.AxisScale
 import de.steppicrew.healthconnectview.registry.Formatting
-import de.steppicrew.healthconnectview.health.Session
-import de.steppicrew.healthconnectview.ui.dashboard.StackedBucket
-import de.steppicrew.healthconnectview.ui.dashboard.ValueBand
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.readingGap
 import de.steppicrew.healthconnectview.registry.segmentAtGaps
+import de.steppicrew.healthconnectview.ui.dashboard.StackedBucket
+import de.steppicrew.healthconnectview.ui.dashboard.ValueBand
+import java.time.Duration
 import java.time.Instant
 
 /**
@@ -218,6 +218,18 @@ fun LineChart(
      * chart, where a tap is how a value is read; inline it would leave a stale highlight.
      */
     holdSelection: Boolean = false,
+    /**
+     * How a value is written, on the axis and in the readout, where a plain number would be
+     * wrong: a pace is minutes and seconds, and 7,73 reads as nothing a runner knows.
+     */
+    valueText: ((Double) -> String)? = null,
+    /** A unit with no string resource -- "min/km" -- used in place of [unitRes]. */
+    unitText: String? = null,
+    /**
+     * Low values at the top. For a pace, where the smaller number is the faster one: upright,
+     * a fast stretch was a dip and the colours, red for fast, ran against the shape.
+     */
+    invertAxis: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -366,6 +378,8 @@ fun LineChart(
                 // means of a day's bucket.
                 secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
                 onExpand = onExpand,
+                valueText = valueText,
+                unitText = unitText,
             )
         }
 
@@ -446,8 +460,10 @@ fun LineChart(
                 return xForFraction(((millis - firstTime).toDouble() / span).toFloat())
             }
 
-            fun yFor(value: Double): Float =
-                (size.height * (1.0 - (value - minValue) / span)).toFloat()
+            fun yFor(value: Double): Float {
+                val fraction = (value - minValue) / span
+                return (size.height * (if (invertAxis) fraction else 1.0 - fraction)).toFloat()
+            }
 
             val offsets = points.mapIndexed { index, point ->
                 Offset(xFor(index), yFor(point.value))
@@ -861,7 +877,7 @@ fun LineChart(
                 // middle two were 127 and 114 with their last digit cut off. An axis that
                 // silently drops digits is worse than no axis.
                 val label = textMeasurer.measure(
-                    text = Formatting.axisLabel(guide, scale.decimals),
+                    text = valueText?.invoke(guide) ?: Formatting.axisLabel(guide, scale.decimals),
                     style = labelStyle,
                     maxLines = 1,
                     softWrap = false,
@@ -870,7 +886,7 @@ fun LineChart(
                 // puts it on top of the line and whatever the series does there, which on a
                 // rising chart is exactly where the data starts. Below the axis it is clear
                 // of both, and the padding reserved beneath the canvas leaves room for it.
-                val labelY = if (guide == guides.first()) {
+                val labelY = if (guide == (if (invertAxis) guides.last() else guides.first())) {
                     size.height
                 } else {
                     (y - label.size.height / 2f).coerceAtLeast(0f)
@@ -1382,8 +1398,11 @@ private fun SelectionReadout(
     secondary: Point? = null,
     decimals: Int? = null,
     onExpand: (() -> Unit)? = null,
+    valueText: ((Double) -> String)? = null,
+    unitText: String? = null,
 ) {
-    val unit = unitRes?.let { stringResource(it) }
+    val unit = unitText ?: unitRes?.let { stringResource(it) }
+    fun text(value: Double) = valueText?.invoke(value) ?: Formatting.number(value, decimals)
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -1391,8 +1410,8 @@ private fun SelectionReadout(
     ) {
         Text(
             text = point?.let { selected ->
-                Formatting.number(selected.value, decimals) +
-                    (secondary?.let { "/" + Formatting.number(it.value, decimals) } ?: "") +
+                text(selected.value) +
+                    (secondary?.let { "/" + text(it.value) } ?: "") +
                     (unit?.let { " $it" } ?: "")
             }.orEmpty(),
             style = MaterialTheme.typography.titleSmall,
