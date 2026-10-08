@@ -845,6 +845,8 @@ private fun SpanSummary(
                         // One value a day: a day of it has nothing to average.
                         data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
                         data.spec.isAveraged || data.dailyFromReadings -> R.string.span_average
+                        // The readings' own mean, where the type has no aggregate; see the loader.
+                        data.spec.aggregate == null && data.spec.tile.occasional -> R.string.span_average
                         else -> R.string.span_total
                     },
                 ),
