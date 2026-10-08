@@ -770,6 +770,8 @@
     <string name="route_no_map">مرسوم بدون خريطة: لا يملك التطبيق وصولًا إلى الإنترنت لتحميل خريطة.</string>
     <string name="route_speed">السرعة</string>
     <string name="route_speed_source">السرعة محسوبة من المواقع المسجلة؛ المسار لا يخزّن سرعة.</string>
+    <string name="route_pace">الإيقاع</string>
+    <string name="route_switch_speed_pace">التبديل بين السرعة والإيقاع</string>
     <string name="route_export">تصدير المسار (GPX)</string>
     <string name="route_consent_body">لهذه الجلسة مسار. يسألك Android قبل أن يتمكن التطبيق من عرضه؛ اسمح دائمًا هناك، وبعدها تُعرض كل المسارات دون سؤال.</string>
     <string name="route_declined">يبقى المسار مخفيًا. يمكنك السماح به هنا في أي وقت.</string>

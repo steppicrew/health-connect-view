@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
@@ -284,7 +285,7 @@ private fun Route(
 
     when (route) {
         is RouteLoad.Shown -> {
-            RouteView(route.points)
+            RouteView(route.points, pace = session.exerciseType in PACE_TYPES)
             val unlocked = pro.allows(Feature.ROUTE_EXPORT)
             TextButton(
                 onClick = {
@@ -400,3 +401,11 @@ private const val HEADER_ICON = 28
 
 /** As on the session rows: a floor so a steady session does not draw each beat as a cliff. */
 private const val CURVE_MIN_SPAN = 20.0
+
+/** Activities whose speed is read as a pace, minutes per km; the rest stay in km/h. */
+private val PACE_TYPES = setOf(
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+    ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL,
+    ExerciseSessionRecord.EXERCISE_TYPE_WALKING,
+    ExerciseSessionRecord.EXERCISE_TYPE_HIKING,
+)

@@ -695,6 +695,8 @@
     <string name="route_no_map">Dessiné sans carte : l’application n’a pas d’accès à Internet pour en charger une.</string>
     <string name="route_speed">Vitesse</string>
     <string name="route_speed_source">Vitesse calculée à partir des positions enregistrées ; le parcours n’en contient aucune.</string>
+    <string name="route_pace">Allure</string>
+    <string name="route_switch_speed_pace">Basculer entre vitesse et allure</string>
     <string name="route_export">Exporter le parcours (GPX)</string>
     <string name="route_consent_body">Cette séance a un parcours. Android vous demande votre accord avant que l’application puisse l’afficher ; autorisez-le toujours, et tous les parcours s’afficheront ensuite sans question.</string>
     <string name="route_declined">Le parcours reste masqué. Vous pouvez l’autoriser ici à tout moment.</string>

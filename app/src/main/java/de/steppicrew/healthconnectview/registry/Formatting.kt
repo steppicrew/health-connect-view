@@ -134,4 +134,19 @@ object Formatting {
             else -> "${duration.seconds}s"
         }
     }
+
+    /**
+     * [metresPerSecond] as a pace, minutes and seconds per km or per mile, the way runners
+     * read speed: "5:12 min/km". Null when barely moving -- a pause is hours per km, and a number
+     * that large says nothing a runner can use.
+     */
+    fun pace(metresPerSecond: Double, imperial: Boolean = Quantity.DISTANCE.alternateShown): String? {
+        val metres = if (imperial) METRES_PER_MILE else 1000.0
+        val seconds = (metres / metresPerSecond).takeIf { it.isFinite() && it < MAX_PACE_SECONDS } ?: return null
+        val total = kotlin.math.round(seconds).toLong()
+        return String.format(Locale.getDefault(), "%d:%02d min/%s", total / 60, total % 60, if (imperial) "mi" else "km")
+    }
+
+    private const val METRES_PER_MILE = 1609.344
+    private const val MAX_PACE_SECONDS = 60.0 * 60
 }

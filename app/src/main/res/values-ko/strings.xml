@@ -645,6 +645,8 @@
     <string name="route_no_map">지도 없이 그림: 앱에는 지도를 불러올 인터넷 액세스가 없습니다.</string>
     <string name="route_speed">속도</string>
     <string name="route_speed_source">속도는 기록된 위치로 계산했습니다. 경로에는 속도가 저장되지 않습니다.</string>
+    <string name="route_pace">페이스</string>
+    <string name="route_switch_speed_pace">속도와 페이스 전환</string>
     <string name="route_export">경로 내보내기(GPX)</string>
     <string name="route_consent_body">이 세션에는 경로가 있습니다. 앱이 경로를 표시하기 전에 Android가 묻습니다. 거기서 항상 허용을 선택하면 이후 모든 경로가 묻지 않고 표시됩니다.</string>
     <string name="route_declined">경로는 숨겨진 상태로 유지됩니다. 언제든지 여기에서 허용할 수 있습니다.</string>
