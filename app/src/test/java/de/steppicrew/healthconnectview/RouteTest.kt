@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.RoutePoint
+import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.health.RouteRef
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.altitudeRange
@@ -145,5 +146,13 @@ class RouteTest {
     fun `the colour scale leaves out a single GPS jump`() {
         val speeds = DoubleArray(100) { 3.0 + it * 0.01 }.also { it[50] = 80.0 }
         assertTrue(speedScale(speeds)!!.endInclusive < 5.0)
+    }
+
+    @Test
+    fun `a pace is minutes and seconds per km or mile, and none for a standstill`() {
+        assertEquals("5:00 min/km", Formatting.pace(1000.0 / 300, imperial = false))
+        assertEquals("8:03 min/mi", Formatting.pace(1000.0 / 300, imperial = true))
+        assertNull(Formatting.pace(0.0, imperial = false))
+        assertNull(Formatting.pace(0.1, imperial = false))
     }
 }

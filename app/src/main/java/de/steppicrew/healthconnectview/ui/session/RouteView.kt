@@ -2,21 +2,29 @@ package de.steppicrew.healthconnectview.ui.session
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,10 +62,13 @@ import java.time.Instant
  *
  * Where the route moved through time, it is coloured by speed, blue through green and yellow
  * to red, with the speed profile beneath in the same colours. The speed is worked out from the
- * positions -- a route stores none -- and the drawing says so.
+ * positions -- a route stores none -- and the drawing says so. It is read as a pace, minutes
+ * per km, where [pace] -- the way runners and walkers count it -- and a tap on the colour scale
+ * switches between the two.
  */
 @Composable
-fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
+fun RouteView(points: List<RoutePoint>, pace: Boolean, modifier: Modifier = Modifier) {
+    var asPace by rememberSaveable(points) { mutableStateOf(pace) }
     val line = MaterialTheme.colorScheme.primary
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val surface = MaterialTheme.colorScheme.surface
@@ -142,7 +153,7 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
         val readout = listOfNotNull(
             Formatting.time(here.time),
             Formatting.number(km.convert(distances[index] / 1000)) + " " + km.symbol(),
-            speeds?.let { Formatting.number(kmh.convert(it[index] * MS_TO_KMH)) + " " + kmh.symbol() },
+            speeds?.let { speedText(it[index], asPace) },
             here.altitude?.let { Formatting.number(m.convert(it)) + " " + m.symbol() },
         ).joinToString(" · ")
         Text(text = readout, style = MaterialTheme.typography.bodyMedium)
@@ -157,7 +168,7 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
                 color = muted,
             )
         }
-        if (scale != null) SpeedLegend(scale, muted)
+        if (scale != null) SpeedLegend(scale, asPace, muted, onSwitch = { asPace = !asPace })
         Text(
             text = stringResource(R.string.route_no_map),
             style = MaterialTheme.typography.labelSmall,
@@ -169,24 +180,32 @@ fun RouteView(points: List<RoutePoint>, modifier: Modifier = Modifier) {
 
 /**
  * The colour scale beneath the drawing: its slow end, a strip running through the colours, and
- * its fast end, then a line saying where the speed comes from.
+ * its fast end, then a line saying where the speed comes from. Tapping it switches between
+ * speed and pace, and the swap mark says it can be tapped.
  */
 @Composable
-private fun SpeedLegend(scale: ClosedFloatingPointRange<Double>, muted: Color) {
-    val kmh = Quantity.SPEED
+private fun SpeedLegend(scale: ClosedFloatingPointRange<Double>, pace: Boolean, muted: Color, onSwitch: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = Modifier.padding(top = 4.dp),
+        modifier = Modifier
+            .padding(top = 4.dp)
+            .clickable(onClickLabel = stringResource(R.string.route_switch_speed_pace), onClick = onSwitch)
+            .heightIn(min = 48.dp),
     ) {
-        Text(stringResource(R.string.route_speed), style = MaterialTheme.typography.bodySmall, color = muted)
-        Text(Formatting.number(kmh.convert(scale.start * MS_TO_KMH)), style = MaterialTheme.typography.bodySmall, color = muted)
+        Icon(Icons.Default.SwapHoriz, contentDescription = null, tint = muted, modifier = Modifier.size(18.dp))
+        Text(
+            stringResource(if (pace) R.string.route_pace else R.string.route_speed),
+            style = MaterialTheme.typography.bodySmall,
+            color = muted,
+        )
+        Text(speedText(scale.start, pace), style = MaterialTheme.typography.bodySmall, color = muted)
         Box(
             Modifier.weight(1f).height(6.dp).clip(RoundedCornerShape(3.dp))
                 .background(Brush.horizontalGradient(SPEED_COLOURS)),
         )
         Text(
-            Formatting.number(kmh.convert(scale.endInclusive * MS_TO_KMH)) + " " + kmh.symbol(),
+            speedText(scale.endInclusive, pace),
             style = MaterialTheme.typography.bodySmall,
             color = muted,
         )
@@ -197,6 +216,13 @@ private fun SpeedLegend(scale: ClosedFloatingPointRange<Double>, muted: Color) {
         color = muted,
         modifier = Modifier.padding(top = 2.dp),
     )
+}
+
+/** A speed as the readout shows it: a pace where [pace], else km/h or mph; "–" for a standstill. */
+private fun speedText(metresPerSecond: Double, pace: Boolean): String {
+    if (pace) return Formatting.pace(metresPerSecond) ?: "–"
+    val kmh = Quantity.SPEED
+    return Formatting.number(kmh.convert(metresPerSecond * MS_TO_KMH)) + " " + kmh.symbol()
 }
 
 /**

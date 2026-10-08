@@ -645,6 +645,8 @@
     <string name="route_no_map">Digambar tanpa peta: aplikasi tidak punya akses internet untuk memuatnya.</string>
     <string name="route_speed">Kecepatan</string>
     <string name="route_speed_source">Kecepatan dihitung dari posisi yang direkam; rute tidak menyimpannya.</string>
+    <string name="route_pace">Pace</string>
+    <string name="route_switch_speed_pace">Beralih antara kecepatan dan pace</string>
     <string name="route_export">Ekspor rute (GPX)</string>
     <string name="route_consent_body">Sesi ini punya rute. Android menanyakannya kepada Anda sebelum aplikasi boleh menampilkannya; izinkan selalu di sana, dan sejak itu semua rute ditampilkan tanpa bertanya.</string>
     <string name="route_declined">Rute tetap tersembunyi. Anda dapat mengizinkannya di sini kapan saja.</string>
