@@ -206,6 +206,7 @@
     <string name="span_per_night">1晩あたりの平均</string>
     <string name="context_day_range">この日の範囲: %1$s～%2$s</string>
     <string name="context_change">%2$s から %1$s</string>
+    <string name="context_unchanged">%1$s から変化なし</string>
     <string name="context_first">記録された最初の測定</string>
     <string name="context_caption">測定のある最近の日（この日を強調）</string>
     <string name="chart_source_aggregated_mean">1 日の平均（ヘルスコネクトが重複を除外）</string>

@@ -161,6 +161,7 @@ import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -2029,11 +2030,20 @@ private fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) {
             val second = context.secondaryDays
             val secondNow = second.firstOrNull { it.time == current.time }
             val secondBefore = second.firstOrNull { it.time == previous.time }
-            val change = signed(current.value - previous.value) +
-                (if (secondNow != null && secondBefore != null) "/" + signed(secondNow.value - secondBefore.value) else "") +
-                unit
+            val secondChange = if (secondNow != null && secondBefore != null) secondNow.value - secondBefore.value else null
+            // Zero as shown, not as stored: two readings of 44 and 44,02 still read "0,0".
+            fun shownZero(value: Double) = kotlin.math.abs(value) < 0.5 * 10.0.pow(-changeDecimals)
+            val unchanged = shownZero(current.value - previous.value) && (secondChange == null || shownZero(secondChange))
+            val since = Formatting.date(previous.time, zone)
             Text(
-                text = stringResource(R.string.context_change, change, Formatting.date(previous.time, zone)),
+                // "0,0 mL/kg/min since" read as a measurement of nothing; say it in words.
+                text = if (unchanged) {
+                    stringResource(R.string.context_unchanged, since)
+                } else {
+                    val change = signed(current.value - previous.value) +
+                        (secondChange?.let { "/" + signed(it) } ?: "") + unit
+                    stringResource(R.string.context_change, change, since)
+                },
                 style = MaterialTheme.typography.bodyMedium,
             )
         } else if (current != null) {

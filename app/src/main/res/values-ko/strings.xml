@@ -206,6 +206,7 @@
     <string name="span_per_night">밤당 평균</string>
     <string name="context_day_range">이날 범위: %1$s–%2$s</string>
     <string name="context_change">%2$s 이후 %1$s</string>
+    <string name="context_unchanged">%1$s 이후 변화 없음</string>
     <string name="context_first">기록된 첫 측정</string>
     <string name="context_caption">측정이 있는 최근 날짜(이날 강조)</string>
     <string name="chart_source_aggregated_mean">일일 평균, 헬스 커넥트가 중복 제거</string>

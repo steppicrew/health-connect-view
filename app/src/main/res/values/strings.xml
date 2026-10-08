@@ -210,6 +210,7 @@
     <string name="span_per_night">Average per night</string>
     <string name="context_day_range">Range this day: %1$s–%2$s</string>
     <string name="context_change">%1$s since %2$s</string>
+    <string name="context_unchanged">Unchanged since %1$s</string>
     <string name="context_first">The first reading on record</string>
     <string name="context_caption">Recent days with a reading, this one highlighted</string>
     <string name="chart_source_aggregated_mean">Daily averages, deduplicated by Health Connect</string>

@@ -208,6 +208,7 @@
     <string name="span_per_night">प्रति रात औसत</string>
     <string name="context_day_range">इस दिन की सीमा: %1$s–%2$s</string>
     <string name="context_change">%2$s से %1$s</string>
+    <string name="context_unchanged">%1$s से कोई बदलाव नहीं</string>
     <string name="context_first">रिकॉर्ड का पहला माप</string>
     <string name="context_caption">माप वाले हाल के दिन, यह दिन हाइलाइट</string>
     <string name="chart_source_aggregated_mean">रोज़ का औसत, Health Connect ने डुप्लीकेट हटाए</string>
