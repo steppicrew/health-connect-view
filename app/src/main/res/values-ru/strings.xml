@@ -718,6 +718,8 @@
     <string name="route_title">Маршрут</string>
     <string name="route_heights">Высота %1$s–%2$s</string>
     <string name="route_no_map">Нарисовано без карты: у приложения нет доступа в интернет, чтобы её загрузить.</string>
+    <string name="route_speed">Скорость</string>
+    <string name="route_speed_source">Скорость рассчитана по записанным координатам; маршрут её не хранит.</string>
     <string name="route_export">Экспорт маршрута (GPX)</string>
     <string name="route_consent_body">У этого сеанса есть маршрут. Android спрашивает вас, прежде чем приложение сможет его показать; разрешите всегда, и после этого все маршруты будут показываться без вопроса.</string>
     <string name="route_declined">Маршрут остаётся скрытым. Вы можете в любой момент разрешить его здесь.</string>

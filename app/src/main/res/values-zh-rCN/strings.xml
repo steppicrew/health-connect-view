@@ -643,6 +643,8 @@
     <string name="route_title">路线</string>
     <string name="route_heights">海拔 %1$s–%2$s</string>
     <string name="route_no_map">无地图绘制：此应用没有联网权限，无法加载地图。</string>
+    <string name="route_speed">速度</string>
+    <string name="route_speed_source">速度根据记录的位置计算得出；路线本身不存储速度。</string>
     <string name="route_export">导出路线（GPX）</string>
     <string name="route_consent_body">此次锻炼有路线。在此应用显示路线之前，Android 会询问您；在那里选择始终允许，此后所有路线都会直接显示，不再询问。</string>
     <string name="route_declined">路线保持隐藏。您可以随时在这里允许它。</string>

@@ -668,6 +668,8 @@
     <string name="route_title">Route</string>
     <string name="route_heights">Hoogte %1$s–%2$s</string>
     <string name="route_no_map">Getekend zonder kaart: de app heeft geen internettoegang om er een te laden.</string>
+    <string name="route_speed">Snelheid</string>
+    <string name="route_speed_source">Snelheid berekend uit de vastgelegde posities; de route slaat er geen op.</string>
     <string name="route_export">Route exporteren (GPX)</string>
     <string name="route_consent_body">Deze sessie heeft een route. Android vraagt je erom voordat de app hem mag tonen; sta het daar altijd toe, dan worden alle routes voortaan zonder vraag getoond.</string>
     <string name="route_declined">De route blijft verborgen. Je kunt hem hier op elk moment toestaan.</string>
