@@ -31,6 +31,7 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
@@ -38,6 +39,7 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
+import de.steppicrew.healthconnectview.ui.components.chartTitle
 import de.steppicrew.healthconnectview.ui.components.windowLabel
 
 /**
@@ -108,21 +110,21 @@ fun BodyCompositionScreen(
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
-                is UiState.Data -> Parts(current.value, historyNeeded, onOpenPermissions)
+                is UiState.Data -> Parts(current.value, windowLabel(span, offset), historyNeeded, onOpenPermissions)
             }
         }
     }
 }
 
 @Composable
-private fun Parts(data: BodyComposition, historyNeeded: Boolean, onOpenPermissions: () -> Unit) {
+private fun Parts(data: BodyComposition, period: String, historyNeeded: Boolean, onOpenPermissions: () -> Unit) {
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        data.parts.forEach { part -> PartChart(part, data) }
+        data.parts.forEach { part -> PartChart(part, data, period) }
         Text(
             text = stringResource(
                 if (data.weekly) R.string.body_composition_note_weekly else R.string.body_composition_note,
@@ -145,7 +147,7 @@ private fun Parts(data: BodyComposition, historyNeeded: Boolean, onOpenPermissio
 
 /** A part's latest value, its change over the window, and its own chart beneath. */
 @Composable
-private fun PartChart(part: BodyPart, data: BodyComposition) {
+private fun PartChart(part: BodyPart, data: BodyComposition, period: String) {
     val unit = " " + stringResource(part.unitRes)
     val first = part.points.first()
     val last = part.points.last()
@@ -174,16 +176,24 @@ private fun PartChart(part: BodyPart, data: BodyComposition) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        LineChart(
-            points = part.points,
-            unitRes = part.unitRes,
-            valueDecimals = CHANGE_DECIMALS,
-            markReadings = true,
-            extent = data.extent,
-            compactAxis = true,
-            fillHeight = true,
-            modifier = Modifier.fillMaxWidth().height(PART_CHART_HEIGHT.dp).padding(top = 8.dp),
-        )
+        ExpandableChart(chartTitle(stringResource(part.labelRes), part.unitRes, period)) { expanded, onExpand ->
+            LineChart(
+                points = part.points,
+                unitRes = part.unitRes,
+                valueDecimals = CHANGE_DECIMALS,
+                markReadings = true,
+                extent = data.extent,
+                compactAxis = !expanded,
+                fillHeight = true,
+                onExpand = onExpand,
+                holdSelection = expanded,
+                modifier = if (expanded) {
+                    Modifier.fillMaxSize()
+                } else {
+                    Modifier.fillMaxWidth().height(PART_CHART_HEIGHT.dp).padding(top = 8.dp)
+                },
+            )
+        }
     }
 }
 

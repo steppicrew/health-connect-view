@@ -62,9 +62,11 @@ import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
+import de.steppicrew.healthconnectview.ui.components.chartTitle
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import de.steppicrew.healthconnectview.ui.components.iconFor
+import de.steppicrew.healthconnectview.ui.components.periodLabel
 import de.steppicrew.healthconnectview.ui.components.sessionName
 import de.steppicrew.healthconnectview.ui.dashboard.heartRateSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -242,7 +244,10 @@ private fun HeartRate(detail: SessionDetail) {
     Section(title)
     val curve = detail.heartRate
     when {
-        curve != null -> ExpandableChart(title = title + " · " + sessionName(detail.session)) { expanded, onExpand ->
+        curve != null -> ExpandableChart(
+            title = chartTitle(title, detail.heartRateUnitRes, periodLabel(detail.session.start, detail.session.end)) +
+                " · " + sessionName(detail.session),
+        ) { expanded, onExpand ->
             LineChart(
                 points = curve,
                 smooth = false,

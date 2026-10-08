@@ -3,10 +3,12 @@ package de.steppicrew.healthconnectview.ui.session
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
@@ -54,6 +57,10 @@ import de.steppicrew.healthconnectview.health.speedScale
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.Quantity
+import de.steppicrew.healthconnectview.ui.components.ExpandButton
+import de.steppicrew.healthconnectview.ui.components.ExpandableChart
+import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.periodLabel
 import java.time.Instant
 
 /**
@@ -119,49 +126,84 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
         // Each strip is named above itself, with its range: two unlabelled curves stacked under
         // the route left the reader to guess which was height and which was speed.
         val m = Quantity.ELEVATION
+        val period = periodLabel(points.first().time, points.last().time)
+        val extent = points.first().time..points.last().time
+        // A double tap on a strip opens it full screen, as on every chart: there it is a line
+        // chart with axes and a value under the finger, which a strip this small cannot carry.
+        fun Modifier.expandOnDoubleTap(onExpand: (() -> Unit)?) =
+            if (onExpand == null) this else pointerInput(onExpand) { detectTapGestures(onDoubleTap = { onExpand() }) }
         if (heights != null && profile.size >= 2) {
-            Text(
-                text = stringResource(
-                    R.string.route_heights,
-                    Formatting.number(m.convert(heights.start)),
-                    Formatting.number(m.convert(heights.endInclusive)) + " " + m.symbol(),
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = muted,
-                modifier = Modifier.padding(top = 8.dp),
+            val heightLabel = stringResource(
+                R.string.route_heights,
+                Formatting.number(m.convert(heights.start)),
+                Formatting.number(m.convert(heights.endInclusive)) + " " + m.symbol(),
             )
-            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).padding(top = 4.dp)) {
-                val range = (heights.endInclusive - heights.start).takeIf { it > 0 } ?: 1.0
-                fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
-                fun y(height: Double) = (size.height - (height - heights.start) / range * size.height).toFloat()
-                val path = profileShape.forSize(size.width, size.height) {
-                    Path().apply {
-                        profile.forEachIndexed { i, (time, height) ->
-                            if (i == 0) moveTo(x(time), y(height)) else lineTo(x(time), y(height))
+            ExpandableChart("$heightLabel · $period") { expanded, onExpand ->
+                if (expanded) {
+                    LineChart(
+                        points = profile.map { (time, height) -> Point(time, m.convert(height)) },
+                        unitRes = m.unitRes(),
+                        extent = extent,
+                        fillHeight = true,
+                        holdSelection = true,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    return@ExpandableChart
+                }
+                // One line that cannot wrap, so the mark may sit centred on it.
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+                    Text(
+                        text = heightLabel,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = muted,
+                        modifier = Modifier.weight(1f),
+                    )
+                    onExpand?.let { ExpandButton(it) }
+                }
+                Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).padding(top = 4.dp).expandOnDoubleTap(onExpand)) {
+                    val range = (heights.endInclusive - heights.start).takeIf { it > 0 } ?: 1.0
+                    fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
+                    fun y(height: Double) = (size.height - (height - heights.start) / range * size.height).toFloat()
+                    val path = profileShape.forSize(size.width, size.height) {
+                        Path().apply {
+                            profile.forEachIndexed { i, (time, height) ->
+                                if (i == 0) moveTo(x(time), y(height)) else lineTo(x(time), y(height))
+                            }
                         }
                     }
+                    drawPath(path, muted, style = Stroke(width = 1.5.dp.toPx(), join = StrokeJoin.Round))
+                    val nowX = x(at)
+                    drawLine(marker, Offset(nowX, 0f), Offset(nowX, size.height), strokeWidth = 1.5.dp.toPx())
                 }
-                drawPath(path, muted, style = Stroke(width = 1.5.dp.toPx(), join = StrokeJoin.Round))
-                val nowX = x(at)
-                drawLine(marker, Offset(nowX, 0f), Offset(nowX, size.height), strokeWidth = 1.5.dp.toPx())
             }
         }
-        if (scale != null) SpeedLegend(scale, asPace, muted, onSwitch = { asPace = !asPace })
+        val onSwitch = { asPace = !asPace }
         if (speeds != null && scale != null && speedCurve.size >= 2) {
-            Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp)) {
-                // Drawn to the top of the colour scale, not the fastest moment: a GPS jump would
-                // otherwise flatten every real change of pace into the floor of the strip.
-                val top = scale.endInclusive.takeIf { it > 0 } ?: 1.0
-                fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
-                fun y(speed: Double) = (size.height - (speed / top).coerceAtMost(1.0) * size.height).toFloat()
-                val paths = speedShape.forSize(size.width, size.height) {
-                    val curve = speedCurve.map { (time, speed) -> Offset(x(time), y(speed)) }
-                    colouredPaths(curve, speedCurve.map { it.second }.toDoubleArray(), scale, line)
+            val name = stringResource(if (asPace) R.string.route_pace else R.string.route_speed)
+            val unit = if (asPace) Formatting.paceUnit() else Quantity.SPEED.symbol()
+            ExpandableChart("$name ($unit) · $period") { expanded, onExpand ->
+                if (expanded) {
+                    SpeedChart(speedCurve, scale, asPace, extent, line)
+                    return@ExpandableChart
                 }
-                drawColoured(paths, 1.5.dp.toPx())
-                val nowX = x(at)
-                drawLine(marker, Offset(nowX, 0f), Offset(nowX, size.height), strokeWidth = 1.5.dp.toPx())
+                SpeedLegend(scale, asPace, muted, onSwitch, onExpand)
+                Canvas(Modifier.fillMaxWidth().height(PROFILE_HEIGHT.dp).expandOnDoubleTap(onExpand)) {
+                    // Drawn to the top of the colour scale, not the fastest moment: a GPS jump would
+                    // otherwise flatten every real change of pace into the floor of the strip.
+                    val top = scale.endInclusive.takeIf { it > 0 } ?: 1.0
+                    fun x(time: Instant) = (time.toEpochMilli() - start).toFloat() / span * size.width
+                    fun y(speed: Double) = (size.height - (speed / top).coerceAtMost(1.0) * size.height).toFloat()
+                    val paths = speedShape.forSize(size.width, size.height) {
+                        val curve = speedCurve.map { (time, speed) -> Offset(x(time), y(speed)) }
+                        colouredPaths(curve, speedCurve.map { it.second }.toDoubleArray(), scale, line)
+                    }
+                    drawColoured(paths, 1.5.dp.toPx())
+                    val nowX = x(at)
+                    drawLine(marker, Offset(nowX, 0f), Offset(nowX, size.height), strokeWidth = 1.5.dp.toPx())
+                }
             }
+        } else if (scale != null) {
+            SpeedLegend(scale, asPace, muted, onSwitch, onExpand = null)
         }
         Slider(value = fraction, onValueChange = { fraction = it })
 
@@ -201,6 +243,7 @@ private fun SpeedLegend(
     pace: Boolean,
     muted: Color,
     onSwitch: () -> Unit,
+    onExpand: (() -> Unit)?,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -225,8 +268,49 @@ private fun SpeedLegend(
             style = MaterialTheme.typography.bodySmall,
             color = muted,
         )
+        onExpand?.let { ExpandButton(it) }
     }
 }
+
+/**
+ * The speed strip full screen: a line chart with axes, coloured as on the route, in km/h or
+ * as a pace. A pace leaves out the near-standstills -- a pause is hours per km, and one such
+ * point would stretch the axis until every real change of pace lay flat along its floor.
+ */
+@Composable
+private fun SpeedChart(
+    curve: List<Pair<Instant, Double>>,
+    scale: ClosedFloatingPointRange<Double>,
+    pace: Boolean,
+    extent: ClosedRange<Instant>,
+    plain: Color,
+) {
+    val range = (scale.endInclusive - scale.start).takeIf { it > 0 } ?: 1.0
+    val shown = if (pace) curve.filter { it.second >= maxOf(scale.start / 2, MIN_PACE_SPEED) } else curve
+    if (shown.size < 2) return
+    val metresPerUnit = if (Quantity.DISTANCE.alternateShown) METRES_PER_MILE else 1000.0
+    LineChart(
+        points = shown.map { (time, speed) ->
+            Point(time, if (pace) metresPerUnit / speed / 60 else Quantity.SPEED.convert(speed * MS_TO_KMH))
+        },
+        pointColors = shown.map { (_, speed) ->
+            if (scale.endInclusive > scale.start) speedColour(((speed - scale.start) / range).toFloat()) else plain
+        },
+        unitRes = if (pace) null else Quantity.SPEED.unitRes(),
+        unitText = if (pace) Formatting.paceUnit() else null,
+        valueText = if (pace) Formatting::minutes else null,
+        // Faster higher, as in the strip and as runners read a pace chart.
+        invertAxis = pace,
+        extent = extent,
+        fillHeight = true,
+        holdSelection = true,
+        modifier = Modifier.fillMaxSize(),
+    )
+}
+
+/** Slower than this, 0.5 m/s or over half an hour per km, a pace is a pause. */
+private const val MIN_PACE_SPEED = 0.5
+private const val METRES_PER_MILE = 1609.344
 
 /** A speed as the readout shows it: a pace where [pace], else km/h or mph; "–" for a standstill. */
 private fun speedText(metresPerSecond: Double, pace: Boolean): String {

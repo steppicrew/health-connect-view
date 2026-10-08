@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.ui.components
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.LocalActivity
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.Formatting
+import java.time.Instant
+import java.time.ZoneId
+import kotlinx.coroutines.delay
 
 /**
  * A chart that can be opened full screen, in landscape, with nothing but its [title] beside it.
@@ -52,8 +57,8 @@ import de.steppicrew.healthconnectview.R
  *
  * Landscape is requested rather than waited for: the chart is wide, and the phone's own
  * rotation lock would otherwise keep it narrow. The orientation the screen had is put back on
- * closing -- but not when the activity is only being recreated for the turn itself, or the
- * screen would turn back the moment it had turned.
+ * closing. MainActivity handles the turn in place; should the activity be recreated anyway,
+ * the orientation is left alone, or the screen would turn back the moment it had turned.
  */
 @Composable
 fun ExpandableChart(
@@ -67,6 +72,9 @@ fun ExpandableChart(
     val request = LocalExpandRequest.current
     LaunchedEffect(request.title) {
         if (request.title != null && request.title in title) {
+            // Claimed only by a chart that stays: a screen still settling draws a chart for a
+            // moment and replaces it, and that one would take the request with it.
+            delay(SETTLE_MILLIS)
             request.consume()
             expanded = true
         }
@@ -132,12 +140,41 @@ fun ExpandableChart(
 }
 
 /**
+ * A full-screen chart's title: what it shows, in what unit, over which [period]. Full screen
+ * there is nothing else on the page to say it. The unit is left out where it only repeats the
+ * name ("Schritte (Schritte)").
+ *
+ * The period is the one the screen names, not the chart's extent: a day's axis is widened to
+ * the night that began the evening before and ends at the next midnight, and titled by it the
+ * 16th read "15.08. – 17.08.".
+ */
+@Composable
+fun chartTitle(name: String, @StringRes unitRes: Int?, period: String): String {
+    val unit = unitRes?.let { stringResource(it) }
+        ?.takeUnless { it.equals(name, ignoreCase = true) }
+        ?.let { " ($it)" }.orEmpty()
+    return "$name$unit · $period"
+}
+
+/** The days from [first] to [last] reading, both included, for a chart with no window of its own. */
+fun periodLabel(first: Instant, last: Instant): String {
+    val zone = ZoneId.systemDefault()
+    return if (first.atZone(zone).toLocalDate() == last.atZone(zone).toLocalDate()) {
+        Formatting.date(first)
+    } else {
+        Formatting.date(first) + " – " + Formatting.date(last)
+    }
+}
+
+/**
  * A chart to open full screen without a touch: the debug backdoor's way in, since a double tap
  * cannot be sent from the host. [title] is null in release, where nothing can set it.
  */
 class ExpandRequest(val title: String?, val consume: () -> Unit)
 
 val LocalExpandRequest = staticCompositionLocalOf { ExpandRequest(null) {} }
+
+private const val SETTLE_MILLIS = 1_500L
 
 /** The mark that opens a chart full screen, beside its readout. */
 @Composable

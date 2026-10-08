@@ -92,8 +92,13 @@
         android:localeConfig="@xml/locales_config"
         tools:targetApi="tiramisu">
 
+        <!-- A turn is handled in place, not by recreating the activity: Compose lays itself out
+             again on its own, and a recreation passes through ON_RESUME, where the detail
+             screens reload - the chart just opened full screen vanished with its screen's
+             data and the phone turned straight back. -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.HealthConnectView">
