@@ -706,6 +706,8 @@
     <string name="route_speed_recorded">Speed as your device recorded it.</string>
     <string name="route_pace">Pace</string>
     <string name="route_switch_speed_pace">Switch between speed and pace</string>
+    <string name="chart_expand">Show full screen</string>
+    <string name="chart_collapse">Close full screen</string>
     <string name="route_export">Export route (GPX)</string>
     <string name="route_consent_body">This session has a route. Android asks you before the app may show it; allow it always there, and every route is shown from then on without asking.</string>
     <string name="route_declined">The route stays hidden. You can allow it here at any time.</string>

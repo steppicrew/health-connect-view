@@ -698,6 +698,8 @@
     <string name="route_speed_recorded">Velocità così come l’ha registrata il tuo dispositivo.</string>
     <string name="route_pace">Passo</string>
     <string name="route_switch_speed_pace">Passa tra velocità e passo</string>
+    <string name="chart_expand">Mostra a schermo intero</string>
+    <string name="chart_collapse">Chiudi schermo intero</string>
     <string name="route_export">Esporta percorso (GPX)</string>
     <string name="route_consent_body">Questa sessione ha un percorso. Android te lo chiede prima che l’app possa mostrarlo; consentilo sempre e da allora tutti i percorsi verranno mostrati senza chiedere.</string>
     <string name="route_declined">Il percorso resta nascosto. Puoi consentirlo qui in qualsiasi momento.</string>

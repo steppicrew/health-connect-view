@@ -648,6 +648,8 @@
     <string name="route_speed_recorded">速度為您的裝置記錄的資料。</string>
     <string name="route_pace">配速</string>
     <string name="route_switch_speed_pace">在速度和配速之間切換</string>
+    <string name="chart_expand">全螢幕顯示</string>
+    <string name="chart_collapse">關閉全螢幕</string>
     <string name="route_export">匯出路線（GPX）</string>
     <string name="route_consent_body">這次活動有路線。在這個應用程式顯示路線之前，Android 會詢問您；在那裡選擇一律允許，之後所有路線都會直接顯示，不再詢問。</string>
     <string name="route_declined">路線會維持隱藏。您可以隨時在這裡允許。</string>

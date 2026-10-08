@@ -207,6 +207,17 @@ fun LineChart(
      * takes part in the scale, so a reading below it is seen to be below it.
      */
     referenceRange: ClosedFloatingPointRange<Double>? = null,
+    /**
+     * Opens the chart full screen, by a double tap or the mark beside the readout; null where
+     * it cannot be. A single tap still reads a value at once: the value shows on touch-down,
+     * so waiting to rule out a second tap costs nothing.
+     */
+    onExpand: (() -> Unit)? = null,
+    /**
+     * Keep a read value shown after the finger lifts, until the next touch. For the full-screen
+     * chart, where a tap is how a value is read; inline it would leave a stale highlight.
+     */
+    holdSelection: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -354,6 +365,7 @@ fun LineChart(
                 // Matched by time: both values of a reading share its instant, as do both
                 // means of a day's bucket.
                 secondary = selectedPoint?.let { point -> secondaryPoints.firstOrNull { it.time == point.time } },
+                onExpand = onExpand,
             )
         }
 
@@ -396,17 +408,18 @@ fun LineChart(
                                     onDrag = { change, _ ->
                                         selected = nearestIndex(change.position.x, size.width)
                                     },
-                                    onDragEnd = { selected = null },
-                                    onDragCancel = { selected = null },
+                                    onDragEnd = { if (!holdSelection) selected = null },
+                                    onDragCancel = { if (!holdSelection) selected = null },
                                 )
                             }
-                            .pointerInput(points) {
+                            .pointerInput(points, onExpand) {
                                 detectTapGestures(
+                                    onDoubleTap = onExpand?.let { expand -> { expand() } },
                                     onPress = { offset ->
                                         selected = nearestIndex(offset.x, size.width)
                                         // Held highlight while the finger is down, cleared on release.
                                         tryAwaitRelease()
-                                        selected = null
+                                        if (!holdSelection) selected = null
                                     },
                                 )
                             }
@@ -1363,7 +1376,13 @@ internal fun horizontalFractions(
  * disorienting: the thing being pointed at moves out from under the finger.
  */
 @Composable
-private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary: Point? = null, decimals: Int? = null) {
+private fun SelectionReadout(
+    point: Point?,
+    @StringRes unitRes: Int?,
+    secondary: Point? = null,
+    decimals: Int? = null,
+    onExpand: (() -> Unit)? = null,
+) {
     val unit = unitRes?.let { stringResource(it) }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -1383,7 +1402,9 @@ private fun SelectionReadout(point: Point?, @StringRes unitRes: Int?, secondary:
             text = point?.let { Formatting.dateTime(it.time) }.orEmpty(),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
         )
+        if (onExpand != null) ExpandButton(onExpand)
     }
 }
 

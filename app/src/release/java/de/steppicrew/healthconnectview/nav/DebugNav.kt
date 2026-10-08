@@ -14,4 +14,7 @@ import android.content.Intent
 object DebugNav {
     /** Always null in release: the app opens on its own start destination. */
     fun startRoute(intent: Intent?): String? = null
+
+    /** Always null in release: no chart opens full screen on its own. */
+    fun expandChart(intent: Intent?): String? = null
 }

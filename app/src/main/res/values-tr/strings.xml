@@ -673,6 +673,8 @@
     <string name="route_speed_recorded">Hız, cihazınızın kaydettiği şekliyle.</string>
     <string name="route_pace">Tempo</string>
     <string name="route_switch_speed_pace">Hız ile tempo arasında geçiş yap</string>
+    <string name="chart_expand">Tam ekran göster</string>
+    <string name="chart_collapse">Tam ekrandan çık</string>
     <string name="route_export">Rotayı dışa aktar (GPX)</string>
     <string name="route_consent_body">Bu oturumun bir rotası var. Uygulama gösterebilmeden önce Android size sorar; orada her zaman izin verin, o andan itibaren tüm rotalar sorulmadan gösterilir.</string>
     <string name="route_declined">Rota gizli kalır. Burada istediğiniz zaman izin verebilirsiniz.</string>
