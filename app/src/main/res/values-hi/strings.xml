@@ -668,6 +668,8 @@
     <string name="route_title">रूट</string>
     <string name="route_heights">ऊंचाई %1$s–%2$s</string>
     <string name="route_no_map">बिना मैप के बनाया गया: ऐप के पास मैप लोड करने के लिए इंटरनेट ऐक्सेस नहीं है।</string>
+    <string name="route_speed">गति</string>
+    <string name="route_speed_source">गति दर्ज की गई स्थितियों से निकाली गई है; रूट में गति सहेजी नहीं जाती।</string>
     <string name="route_export">रूट एक्सपोर्ट करें (GPX)</string>
     <string name="route_consent_body">इस सेशन का एक रूट है। ऐप के इसे दिखाने से पहले Android आपसे पूछता है; वहां हमेशा की अनुमति दें, तो उसके बाद हर रूट बिना पूछे दिखेगा।</string>
     <string name="route_declined">रूट छिपा रहता है। आप कभी भी यहां इसकी अनुमति दे सकते हैं।</string>

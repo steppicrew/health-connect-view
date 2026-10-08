@@ -693,6 +693,8 @@
     <string name="route_title">Percorso</string>
     <string name="route_heights">Altitudine %1$s–%2$s</string>
     <string name="route_no_map">Disegnato senza mappa: l’app non ha accesso a Internet per caricarne una.</string>
+    <string name="route_speed">Velocità</string>
+    <string name="route_speed_source">Velocità calcolata dalle posizioni registrate; il percorso non ne memorizza.</string>
     <string name="route_export">Esporta percorso (GPX)</string>
     <string name="route_consent_body">Questa sessione ha un percorso. Android te lo chiede prima che l’app possa mostrarlo; consentilo sempre e da allora tutti i percorsi verranno mostrati senza chiedere.</string>
     <string name="route_declined">Il percorso resta nascosto. Puoi consentirlo qui in qualsiasi momento.</string>

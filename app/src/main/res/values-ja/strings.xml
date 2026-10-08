@@ -643,6 +643,8 @@
     <string name="route_title">ルート</string>
     <string name="route_heights">標高 %1$s–%2$s</string>
     <string name="route_no_map">地図なしで描画: アプリには地図を読み込むためのインターネット アクセスがありません。</string>
+    <string name="route_speed">速度</string>
+    <string name="route_speed_source">速度は記録された位置から算出しています。ルートには速度が保存されていません。</string>
     <string name="route_export">ルートをエクスポート（GPX）</string>
     <string name="route_consent_body">このセッションにはルートがあります。アプリが表示する前に Android が確認します。そこで常に許可を選ぶと、以降はすべてのルートが確認なしで表示されます。</string>
     <string name="route_declined">ルートは非表示のままです。ここからいつでも許可できます。</string>

@@ -643,6 +643,8 @@
     <string name="route_title">路線</string>
     <string name="route_heights">海拔 %1$s–%2$s</string>
     <string name="route_no_map">不使用地圖繪製：這個應用程式沒有網路存取權，無法載入地圖。</string>
+    <string name="route_speed">速度</string>
+    <string name="route_speed_source">速度根據記錄的位置計算得出；路線本身不儲存速度。</string>
     <string name="route_export">匯出路線（GPX）</string>
     <string name="route_consent_body">這次活動有路線。在這個應用程式顯示路線之前，Android 會詢問您；在那裡選擇一律允許，之後所有路線都會直接顯示，不再詢問。</string>
     <string name="route_declined">路線會維持隱藏。您可以隨時在這裡允許。</string>

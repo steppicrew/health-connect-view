@@ -668,6 +668,8 @@
     <string name="route_title">Rota</string>
     <string name="route_heights">Yükseklik %1$s–%2$s</string>
     <string name="route_no_map">Haritasız çizildi: uygulamanın harita yüklemek için internet erişimi yok.</string>
+    <string name="route_speed">Hız</string>
+    <string name="route_speed_source">Hız, kaydedilen konumlardan hesaplandı; rota hız bilgisi içermez.</string>
     <string name="route_export">Rotayı dışa aktar (GPX)</string>
     <string name="route_consent_body">Bu oturumun bir rotası var. Uygulama gösterebilmeden önce Android size sorar; orada her zaman izin verin, o andan itibaren tüm rotalar sorulmadan gösterilir.</string>
     <string name="route_declined">Rota gizli kalır. Burada istediğiniz zaman izin verebilirsiniz.</string>

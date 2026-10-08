@@ -718,6 +718,8 @@
     <string name="route_title">Trasa</string>
     <string name="route_heights">Wysokość %1$s–%2$s</string>
     <string name="route_no_map">Narysowana bez mapy: aplikacja nie ma dostępu do internetu, by ją wczytać.</string>
+    <string name="route_speed">Prędkość</string>
+    <string name="route_speed_source">Prędkość obliczona z zapisanych pozycji; trasa jej nie przechowuje.</string>
     <string name="route_export">Eksportuj trasę (GPX)</string>
     <string name="route_consent_body">Ta sesja ma trasę. Android pyta o zgodę, zanim aplikacja może ją pokazać; zezwól tam zawsze, a od tej chwili wszystkie trasy będą widoczne bez pytania.</string>
     <string name="route_declined">Trasa pozostaje ukryta. Możesz w każdej chwili zezwolić na nią tutaj.</string>

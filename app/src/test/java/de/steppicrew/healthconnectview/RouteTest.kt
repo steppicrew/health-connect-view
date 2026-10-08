@@ -11,6 +11,8 @@ import de.steppicrew.healthconnectview.health.indexAt
 import de.steppicrew.healthconnectview.health.dedupeSessions
 import de.steppicrew.healthconnectview.health.projectRoute
 import de.steppicrew.healthconnectview.health.routeLength
+import de.steppicrew.healthconnectview.health.routeSpeeds
+import de.steppicrew.healthconnectview.health.speedScale
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -111,5 +113,37 @@ class RouteTest {
         val profile = heightProfile(points)
         assertEquals(40.0, profile.first().second, 0.0)
         assertEquals(60.0, profile.last().second, 0.0)
+    }
+
+    @Test
+    fun `speed is distance over time, steady along a steady route`() {
+        // 0.001° of latitude every 10 s: 111.2 m per 10 s, 11.1 m/s.
+        val points = (0..30).map { point(it, 50.0 + it * 0.001, 8.0) }
+        val speeds = routeSpeeds(points)!!
+        assertTrue(speeds.all { kotlin.math.abs(it - 11.12) < 0.05 })
+    }
+
+    @Test
+    fun `GPS scatter between one-second fixes does not read as a sprint`() {
+        // Walking 1.4 m/s north, with every other fix 5 m off to the east.
+        val points = (0..120).map { i ->
+            RoutePoint(t0.plusSeconds(i.toLong()), 50.0 + i * 1.4 / 111_195.0, 8.0 + (i % 2) * 5 / 71_500.0, null)
+        }
+        val speeds = routeSpeeds(points)!!
+        // Neighbour to neighbour this is over 5 m/s; over the window it stays near walking pace.
+        assertTrue(speeds.drop(10).dropLast(10).all { it < 2.0 })
+    }
+
+    @Test
+    fun `fixes sharing an instant do not divide by zero`() {
+        val points = listOf(point(0, 50.0, 8.0), point(0, 50.0001, 8.0), point(1, 50.001, 8.0))
+        assertTrue(routeSpeeds(points)!!.all { it.isFinite() })
+        assertNull(routeSpeeds(listOf(point(0, 50.0, 8.0), point(0, 50.1, 8.0))))
+    }
+
+    @Test
+    fun `the colour scale leaves out a single GPS jump`() {
+        val speeds = DoubleArray(100) { 3.0 + it * 0.01 }.also { it[50] = 80.0 }
+        assertTrue(speedScale(speeds)!!.endInclusive < 5.0)
     }
 }

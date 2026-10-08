@@ -693,6 +693,8 @@
     <string name="route_title">Ruta</string>
     <string name="route_heights">Altura %1$s–%2$s</string>
     <string name="route_no_map">Dibujada sin mapa: la aplicación no tiene acceso a internet para cargar uno.</string>
+    <string name="route_speed">Velocidad</string>
+    <string name="route_speed_source">Velocidad calculada a partir de las posiciones registradas; la ruta no guarda ninguna.</string>
     <string name="route_export">Exportar ruta (GPX)</string>
     <string name="route_consent_body">Esta sesión tiene una ruta. Android te pregunta antes de que la aplicación pueda mostrarla; permítelo siempre y, desde entonces, todas las rutas se mostrarán sin preguntar.</string>
     <string name="route_declined">La ruta sigue oculta. Puedes permitirla aquí en cualquier momento.</string>

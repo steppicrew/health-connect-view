@@ -693,6 +693,8 @@
     <string name="route_title">Trajeto</string>
     <string name="route_heights">Altitude %1$s–%2$s</string>
     <string name="route_no_map">Desenhado sem mapa: o app não tem acesso à internet para carregar um.</string>
+    <string name="route_speed">Velocidade</string>
+    <string name="route_speed_source">Velocidade calculada a partir das posições registradas; o trajeto não armazena nenhuma.</string>
     <string name="route_export">Exportar trajeto (GPX)</string>
     <string name="route_consent_body">Esta sessão tem um trajeto. O Android pede sua autorização antes que o app possa mostrá-lo; permita sempre, e daí em diante todos os trajetos serão mostrados sem perguntar.</string>
     <string name="route_declined">O trajeto continua oculto. Você pode permiti-lo aqui a qualquer momento.</string>
