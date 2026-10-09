@@ -247,6 +247,15 @@ fun LineChart(
      * set off on the axis, so it is found among the others without reading every date.
      */
     highlight: Int? = null,
+    /**
+     * Further lines over this one -- breath rate over heart rate through a night -- placed by
+     * time, so only on a chart with a time axis. One that [OverlayLine.sharesScale] joins this
+     * line's scale; any other is fitted to its own, unlabelled, and read by touch. Drawn under
+     * this line, which owns the axis. See [MultiLineChart] for the chips that switch them.
+     */
+    overlays: List<OverlayLine> = emptyList(),
+    /** This line's colour where it is one of several, so it matches its chip; else the theme's. */
+    lineColorOverride: Color? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -272,8 +281,12 @@ fun LineChart(
     val baselineHigh = baseline.maxOfOrNull { it.value } ?: values.max()
     val referenceLow = referenceRange?.start ?: values.min()
     val referenceHigh = referenceRange?.endInclusive ?: values.max()
-    val fittedLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow, referenceLow)
-    val fittedHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh, referenceHigh)
+    // A line in the same unit is read off the same axis, so it must fit on it.
+    val shared = overlays.filter { it.sharesScale }.flatMap { it.points }.map { it.value }
+    val sharedLow = shared.minOrNull() ?: values.min()
+    val sharedHigh = shared.maxOrNull() ?: values.max()
+    val fittedLow = minOf(values.min(), goal ?: values.min(), bandLow ?: values.min(), secondLow ?: values.min(), scatterLow, baselineLow, referenceLow, sharedLow)
+    val fittedHigh = maxOf(values.max(), goal ?: values.max(), bandHigh ?: values.max(), secondHigh ?: values.max(), scatterHigh, baselineHigh, referenceHigh, sharedHigh)
     val widen = minSpan?.let { ((it - (fittedHigh - fittedLow)) / 2).coerceAtLeast(0.0) } ?: 0.0
     // Not below zero: a floor on the range must not invent negative heart rates.
     val dataLow = (fittedLow - widen).let { if (fittedLow >= 0.0) it.coerceAtLeast(0.0) else it }
@@ -298,7 +311,24 @@ fun LineChart(
     // A flat series would divide by zero; give it a nominal span so it draws as a centre line.
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
 
-    val lineColor = MaterialTheme.colorScheme.primary
+    val lineColor = lineColorOverride ?: MaterialTheme.colorScheme.primary
+    // Each other-unit line's own range, rounded like the axis, so its curve fills the plot the
+    // way it would on a chart of its own.
+    val overlayScales = remember(overlays) {
+        overlays.map { line ->
+            if (line.sharesScale || line.points.isEmpty()) {
+                null
+            } else {
+                AxisScale.of(
+                    low = line.points.minOf { it.value },
+                    high = line.points.maxOf { it.value },
+                    targetSteps = GUIDE_INTERVALS,
+                    integral = false,
+                    includeZero = false,
+                )
+            }
+        }
+    }
 
     /** A point's colour: the caller's where it gave one, else by zone, else the theme's. */
     fun colorAt(index: Int): Color =
@@ -392,6 +422,17 @@ fun LineChart(
         // chart that ignores touch, so there it would only be an empty row.
         if (interactive) {
             val selectedPoint = selected?.let(points::getOrNull)
+            if (overlays.isNotEmpty()) {
+                OverlayReadout(
+                    time = selectedPoint?.time,
+                    lines = overlays,
+                    ownColor = lineColor,
+                    ownValue = selectedPoint?.let { point ->
+                        (valueText?.invoke(point.value) ?: Formatting.number(point.value, valueDecimals)) +
+                            ((unitText ?: unitRes?.let { stringResource(it) })?.let { " $it" } ?: "")
+                    },
+                )
+            }
             SelectionReadout(
                 point = selectedPoint,
                 unitRes = unitRes,
@@ -690,6 +731,39 @@ fun LineChart(
                         pathEffect = dotted,
                         cap = StrokeCap.Round,
                     )
+                }
+            }
+
+            // The other lines first, so the one owning the axis is drawn over them. Each broken
+            // where its readings stop for longer than its own gap, like the main line.
+            overlays.forEachIndexed { index, line ->
+                val scale = overlayScales[index]
+                fun yOf(value: Double): Float = if (scale == null) {
+                    yFor(value)
+                } else {
+                    val own = (value - scale.min) / ((scale.max - scale.min).takeIf { it > 0.0 } ?: 1.0)
+                    yFor(minValue + own * span)
+                }
+                var previous: Point? = null
+                val path = Path()
+                line.points.forEach { point ->
+                    val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
+                    val y = yOf(point.value)
+                    val last = previous
+                    if (last == null || (line.maxGap != null && java.time.Duration.between(last.time, point.time) > line.maxGap)) {
+                        path.moveTo(x, y)
+                    } else {
+                        path.lineTo(x, y)
+                    }
+                    previous = point
+                }
+                drawPath(path, color = line.color, style = Stroke(width = LINE_WIDTH.dp.toPx(), cap = StrokeCap.Round))
+
+                // The touched moment on this line too, so the readout's value has a place.
+                selected?.let { at -> line.nearest(points[at].time) }?.let { point ->
+                    val x = xForTime(point.time.toEpochMilli()) ?: return@let
+                    drawCircle(color = surfaceColor, radius = 6.dp.toPx(), center = Offset(x, yOf(point.value)))
+                    drawCircle(color = line.color, radius = 4.dp.toPx(), center = Offset(x, yOf(point.value)))
                 }
             }
 
@@ -1515,6 +1589,63 @@ internal fun horizontalFractions(
         ((it.time.toEpochMilli() - first).toDouble() / span).toFloat().coerceIn(0f, 1f)
     }
 }
+
+/**
+ * A further line over a [LineChart]: its readings, its colour, how a value is written, and the
+ * longest gap it is drawn across.
+ */
+data class OverlayLine(
+    val points: List<Point>,
+    val color: Color,
+    /** A value as the readout writes it, number and unit: "14 /min". */
+    val format: (Double) -> String,
+    /** In the main line's unit, so on its scale; otherwise on a scale of its own. */
+    val sharesScale: Boolean = false,
+    /** Readings further apart than this are not joined; null joins them all. */
+    val maxGap: java.time.Duration? = null,
+) {
+    /**
+     * The reading nearest [time], or null where none is within [maxGap] of it -- a moment the
+     * line has no value for must not borrow one from an hour away.
+     */
+    fun nearest(time: Instant): Point? {
+        val best = points.minByOrNull { kotlin.math.abs(it.time.toEpochMilli() - time.toEpochMilli()) } ?: return null
+        val limit = maxGap ?: return best
+        return best.takeIf { java.time.Duration.between(it.time, time).abs() <= limit }
+    }
+}
+
+/**
+ * Every line's value at the touched moment, each beside a dot of its colour, in a row that is
+ * always present like [SelectionReadout]'s. Text stays in the text colour: the dot says which
+ * line, the number is read like any other.
+ */
+@Composable
+private fun OverlayReadout(time: Instant?, lines: List<OverlayLine>, ownColor: Color, ownValue: String?) {
+    val values = buildList {
+        add(ownColor to ownValue)
+        lines.forEach { line -> add(line.color to time?.let(line::nearest)?.let { line.format(it.value) }) }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth().height(OVERLAY_READOUT_HEIGHT.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (time != null) {
+            values.forEach { (color, text) ->
+                DotText(
+                    color = color,
+                    text = text ?: "–",
+                    style = MaterialTheme.typography.labelMedium,
+                    textColor = MaterialTheme.colorScheme.onSurface,
+                    gap = 4.dp,
+                )
+            }
+        }
+    }
+}
+
+private const val OVERLAY_READOUT_HEIGHT = 20
 
 /**
  * The touched point's value and time, in a row that is always present.

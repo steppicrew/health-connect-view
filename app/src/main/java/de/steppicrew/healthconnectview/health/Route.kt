@@ -62,6 +62,14 @@ fun heightProfile(points: List<RoutePoint>, slices: Int = PROFILE_SLICES): List<
 fun speedProfile(points: List<RoutePoint>, speeds: DoubleArray, slices: Int = PROFILE_SLICES): List<Pair<Instant, Double>> =
     sliceMedians(points.map { it.time }, speeds.toList(), slices)
 
+/**
+ * A series sliced like [speedProfile]: the median of each of [slices] equal stretches of time.
+ * For a recorded speed drawn over heart rate, where a reading a second jumped between 0 and 30
+ * km/h at every junction and buried the line beneath it.
+ */
+fun profileOf(points: List<Point>, slices: Int = PROFILE_SLICES): List<Point> =
+    sliceMedians(points.map { it.time }, points.map { it.value }, slices).map { (time, value) -> Point(time, value) }
+
 /** The median of each of [slices] equal stretches of time; [times] in order, one per value. */
 private fun sliceMedians(times: List<Instant>, values: List<Double>, slices: Int): List<Pair<Instant, Double>> {
     if (times.size < 2) return emptyList()

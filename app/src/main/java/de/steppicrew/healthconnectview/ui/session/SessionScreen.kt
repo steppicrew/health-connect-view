@@ -51,6 +51,7 @@ import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.profileOf
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
@@ -60,7 +61,9 @@ import de.steppicrew.healthconnectview.ui.components.BreakLegend
 import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
-import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.ChartSeries
+import de.steppicrew.healthconnectview.ui.components.MultiLineChart
+import de.steppicrew.healthconnectview.ui.components.SeriesColors
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
@@ -254,26 +257,52 @@ private fun HeartRate(detail: SessionDetail) {
     Section(title)
     val curve = detail.heartRate
     when {
-        curve != null -> ExpandableChart(
-            title = chartTitle(title, detail.heartRateUnitRes, periodLabel(detail.session.start, detail.session.end)) +
-                " · " + sessionName(detail.session),
-        ) { expanded, onExpand ->
-            LineChart(
-                points = curve,
-                smooth = false,
-                unitRes = detail.heartRateUnitRes,
-                zones = detail.heartRateZones,
-                // A session curve is heart rate at full resolution: a dot per sample buries it.
-                markReadings = false,
-                integral = true,
-                minSpan = CURVE_MIN_SPAN,
-                extent = detail.session.start..detail.session.end,
-                breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
-                fillHeight = expanded,
-                onExpand = onExpand,
-                holdSelection = expanded,
-                modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
+        curve != null -> {
+            val speedUnit = Quantity.SPEED
+            // Speed beside heart rate where the watch recorded one, as a chip: a climb reads
+            // as speed falling while the heart rate rises.
+            val series = listOfNotNull(
+                ChartSeries(
+                    key = LINE_HEART_RATE,
+                    label = title,
+                    points = curve,
+                    color = SeriesColors.orange(),
+                    unitKey = "bpm",
+                    unitRes = detail.heartRateUnitRes,
+                    integral = true,
+                    minSpan = CURVE_MIN_SPAN,
+                    zones = detail.heartRateZones,
+                    maxGap = LINE_GAP,
+                ),
+                detail.speed?.let { speed ->
+                    ChartSeries(
+                        key = LINE_SPEED,
+                        label = stringResource(R.string.type_speed),
+                        // Sliced like the route's speed profile below, so the two agree.
+                        points = profileOf(speed.map { Point(it.time, speedUnit.convert(it.value * MS_TO_KMH)) }),
+                        color = SeriesColors.blue(),
+                        unitKey = "speed",
+                        unitText = speedUnit.symbol(),
+                        valueDecimals = 1,
+                        maxGap = LINE_GAP,
+                    )
+                },
             )
+            ExpandableChart(
+                title = periodLabel(detail.session.start, detail.session.end) + " · " + sessionName(detail.session),
+            ) { expanded, onExpand ->
+                MultiLineChart(
+                    chartId = "session_exercise",
+                    series = series,
+                    defaultShown = listOf(LINE_HEART_RATE),
+                    extent = detail.session.start..detail.session.end,
+                    breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
+                    fillHeight = expanded,
+                    onExpand = onExpand,
+                    holdSelection = expanded,
+                    modifier = if (expanded) Modifier.fillMaxSize() else Modifier,
+                )
+            }
         }
 
         else -> Text(
@@ -475,6 +504,15 @@ private fun Section(title: String) {
 }
 
 private const val HEADER_ICON = 28
+
+/** Keys the remembered choice of lines by; see ChartLinesStore. */
+private const val LINE_HEART_RATE = "heart_rate"
+private const val LINE_SPEED = "speed"
+
+/** A line is broken where its readings stop for longer: a watch out of range, not a value. */
+private val LINE_GAP: Duration = Duration.ofMinutes(5)
+
+private const val MS_TO_KMH = 3.6
 
 /** As on the session rows: a floor so a steady session does not draw each beat as a cliff. */
 private const val CURVE_MIN_SPAN = 20.0

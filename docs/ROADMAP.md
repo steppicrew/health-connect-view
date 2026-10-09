@@ -480,7 +480,15 @@ The owner's list of 09.10.2026, accepted whole and in this order:
       left out of the figures (pieces aggregated alone, means weighted by time) and shaded on
       the heart-rate chart. Total and moving time are shown only where they differ. A writer
       recording 0 km/h while standing leaves no hole, so its halts count as moving.
-54. [ ] **Several lines in one chart, switched by chips** -- one chart component for sleep,
+54. [x] **Several lines in one chart, switched by chips** -- built 09.10.2026, first on the
+    workout screen (heart rate, and speed where recorded); seen on the phone for 18.09 with
+    both lines on. `MultiLineChart` over `LineChart`'s new overlays. The palette validator
+    passes three colours together for every kind of colour vision (blue, orange, aqua) and
+    fails six, so three lines at most: a fourth switched on drops the oldest. Colours follow
+    the measurement, not the order. Speed is drawn as 120 slice medians, like the route's
+    profile; per second it jumped between 0 and 30 km/h and buried the heart rate. Zones
+    colour a line only while it is alone. The choice is remembered per chart
+    (`ChartLinesStore`, line names only). Taps on the chips not tried from the host. -- -- one chart component for sleep,
     workouts and comparison. A chip per line in the line's colour, tapping it shows or hides the
     line; at least one stays on; the choice is remembered. Lines in one unit share a scale;
     otherwise the axis belongs to the last chip tapped and the others are scaled unlabelled.

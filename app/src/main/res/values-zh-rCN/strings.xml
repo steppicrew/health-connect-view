@@ -445,6 +445,7 @@
     <string name="session_break">休息</string>
     <string name="session_breaks_note">运动时间不含任何没有速度或距离数据的停顿。超过五分钟的停顿列为休息，不计入上方数值，并在心率图中以阴影标出。</string>
     <string name="session_break_legend">休息：未记录速度或距离</string>
+    <string name="chart_line_axis">显示其刻度</string>
     <string name="session_gone">找不到此次活动。</string>
     <string name="session_laps">圈</string>
     <string name="session_lap">第 %1$d 圈</string>
