@@ -4,7 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.CyclingPedalingCadenceRecord
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.BodyTemperatureRecord
+import androidx.health.connect.client.records.ElevationGainedRecord
+import androidx.health.connect.client.records.SkinTemperatureRecord
+import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.RespiratoryRateRecord
+import androidx.health.connect.client.records.StepsCadenceRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.PowerRecord
 import androidx.health.connect.client.records.Record
@@ -66,7 +73,8 @@ class SessionCurveShapeActivity : ComponentActivity() {
                     "session type=${session.exerciseType} length=${length.toMinutes()}m " +
                         "from=${offset(dayStart, session.startTime)}m " +
                         "writer=${session.metadata.dataOrigin.packageName} " +
-                        "segments=${session.segments.size} laps=${session.laps.size}",
+                        "segments=${session.segments.size} laps=${session.laps.size} " +
+                        "route=${routeShape(session.exerciseRouteResult)}",
                 )
                 // Where a writer recorded a pause it is a segment, so this is the first place
                 // to look for a break inside a session. Offsets from the session start only.
@@ -110,6 +118,12 @@ class SessionCurveShapeActivity : ComponentActivity() {
                     PowerRecord::class to { r: Record -> (r as PowerRecord).samples.map { it.time } },
                     StepsRecord::class to { r: Record -> listOf((r as StepsRecord).startTime) },
                     DistanceRecord::class to { r: Record -> listOf((r as DistanceRecord).startTime) },
+                    RespiratoryRateRecord::class to { r: Record -> listOf((r as RespiratoryRateRecord).time) },
+                    CyclingPedalingCadenceRecord::class to { r: Record -> (r as CyclingPedalingCadenceRecord).samples.map { it.time } },
+                    StepsCadenceRecord::class to { r: Record -> (r as StepsCadenceRecord).samples.map { it.time } },
+                    ElevationGainedRecord::class to { r: Record -> listOf((r as ElevationGainedRecord).startTime) },
+                    BodyTemperatureRecord::class to { r: Record -> listOf((r as BodyTemperatureRecord).time) },
+                    SkinTemperatureRecord::class to { r: Record -> (r as SkinTemperatureRecord).deltas.map { it.time } },
                 ).forEach { (type, timesOf) ->
                     val other = runCatching {
                         repository.read(type, TimeRangeFilter.between(session.startTime, session.endTime))
@@ -124,6 +138,17 @@ class SessionCurveShapeActivity : ComponentActivity() {
             Log.i(TAG, "done")
             finish()
         }
+    }
+
+    /**
+     * Whether the session carries its route and how many of its points have an altitude --
+     * counts only, never a position. A route of another app's needs consent, said as such.
+     */
+    private fun routeShape(result: ExerciseRouteResult): String = when (result) {
+        is ExerciseRouteResult.Data ->
+            "points=${result.exerciseRoute.route.size} withAltitude=${result.exerciseRoute.route.count { it.altitude != null }}"
+        is ExerciseRouteResult.ConsentRequired -> "consentRequired"
+        else -> "none"
     }
 
     /** Each gap of more than [LONG_GAP], as minutes from the session start. */
