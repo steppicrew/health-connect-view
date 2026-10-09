@@ -449,6 +449,10 @@
     <string name="session_untitled">Etkinlik</string>
     <string name="session_no_stats">Bu oturum sırasında başka bir şey kaydedilmedi.</string>
     <string name="session_stat_range">en düşük %1$s · en yüksek %2$s</string>
+    <string name="session_time_total">Toplam süre</string>
+    <string name="session_time_moving">Hareket süresi</string>
+    <string name="session_break">Mola</string>
+    <string name="session_breaks_note">Hareket süresi, hız veya mesafe verisi olmayan her duruşu dışarıda bırakır. Beş dakikadan uzun duruşlar mola olarak listelenir, yukarıdaki değerlere katılmaz ve nabız grafiğinde gölgeli gösterilir.</string>
     <string name="session_gone">Bu oturum artık bulunamıyor.</string>
     <string name="session_laps">Turlar</string>
     <string name="session_lap">Tur %1$d</string>

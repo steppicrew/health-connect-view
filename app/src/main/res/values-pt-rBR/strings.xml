@@ -460,6 +460,10 @@
     <string name="session_untitled">Atividade</string>
     <string name="session_no_stats">Nada mais foi registrado durante esta sessão.</string>
     <string name="session_stat_range">mín. %1$s · máx. %2$s</string>
+    <string name="session_time_total">Tempo total</string>
+    <string name="session_time_moving">Tempo em movimento</string>
+    <string name="session_break">Pausa</string>
+    <string name="session_breaks_note">O tempo em movimento exclui cada parada sem dados de velocidade ou distância. Paradas de mais de cinco minutos aparecem como pausas, ficam fora dos valores acima e são destacadas no gráfico de frequência cardíaca.</string>
     <string name="session_gone">Esta sessão não foi encontrada.</string>
     <string name="session_laps">Voltas</string>
     <string name="session_lap">Volta %1$d</string>

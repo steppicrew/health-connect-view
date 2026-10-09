@@ -463,7 +463,8 @@ open items below and `FEATURE-IDEAS.md`.
 
 The owner's list of 09.10.2026, accepted whole and in this order:
 
-53. [ ] **Breaks inside a workout** -- the owner's report: a ride on 18.09.2026, 09:37-17:27,
+53. [x] **Breaks inside a workout** -- built 09.10.2026; the shaded break seen on the phone
+    for 18.09 (10:41-16:22); the statistics below the fold not yet seen. -- the owner's report: a ride on 18.09.2026, 09:37-17:27,
     with a break from about 10:45 to 16:20. No writer stores a pause segment. Measured on the
     phone (`SessionCurveShapeActivity`): Health Sync's speed and distance stop from minute 64
     to 405 of the session (10:41-16:22); Garmin's own copy of the session is 121 minutes long
@@ -472,6 +473,13 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     minutes in the session writer's speed/distance is a break; shade it on the heart-rate and
     speed charts, show active time beside elapsed, keep it out of the statistics, and say it is
     inferred from missing readings.
+    - As built (`Breaks.kt`): the session writer's speed and distance times, else the writer
+      with most. Every gap over 20 s (or three of the writer's usual intervals) counts against
+      "In Bewegung" -- the owner's note that the watch pauses at every red light, and the 18.09
+      speed had seven such holes of 24 s to 1:52 min; gaps over 5 min are listed as breaks,
+      left out of the figures (pieces aggregated alone, means weighted by time) and shaded on
+      the heart-rate chart. Total and moving time are shown only where they differ. A writer
+      recording 0 km/h while standing leaves no hole, so its halts count as moving.
 54. [ ] **Several lines in one chart, switched by chips** -- one chart component for sleep,
     workouts and comparison. A chip per line in the line's colour, tapping it shows or hides the
     line; at least one stays on; the choice is remembered. Lines in one unit share a scale;
