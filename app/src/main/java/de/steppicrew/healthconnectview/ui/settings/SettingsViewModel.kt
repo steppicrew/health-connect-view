@@ -154,6 +154,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { store.setUnits(units) }
     }
 
+    /** A workout's zones' maximum; null leaves it to the data. */
+    fun setMaxHeartRate(bpm: Int?) {
+        viewModelScope.launch { store.setMaxHeartRate(bpm) }
+    }
+
     fun setGlucose(glucose: GlucoseChoice) {
         // At once, for the same reason as setUnits.
         Units.glucose = glucose.resolve(Locale.getDefault())

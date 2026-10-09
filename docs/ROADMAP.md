@@ -518,8 +518,13 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     temperature during a workout is the air's, which Health Connect has no type for -- no
     body or skin temperature falls inside any workout either.
 57. [ ] **Laps as markers** on the workout chart, where a writer recorded laps.
-58. [ ] **Time in heart-rate zones** per workout, a bar under the chart, from the tile's
-    zones, saying it is matched by time.
+58. [x] **Time in heart-rate zones** per workout, a bar under the chart, from the tile's
+    zones, saying it is matched by time. Built 09.10.2026 with a load figure, the owner's
+    choice: five zones of 50-60 % to 90-100 % of a maximum heart rate rather than the tile's
+    bands, which describe a day at rest, and as load each zone's minutes times its number,
+    added up. The maximum is the third-highest daily maximum of the past year, one grouped
+    aggregate, so a spike or two cannot raise every zone; settings take a value of one's
+    own. Breaks count in no zone, and a reading counts for a minute at most. No verdict.
 59. [ ] **Heart-rate recovery** -- the fall in the first one to two minutes after a workout
     ends, from the all-day readings after it. Shown as a number, no verdict.
 60. [ ] **Heart-rate drift** -- heart rate against speed or power, first half against second,

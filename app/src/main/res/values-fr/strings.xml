@@ -498,6 +498,14 @@
     <string name="session_overlap_note">Voici les mesures prises pendant cette séance. Santé Connect n’associe pas les mesures à une séance, elles sont donc rapprochées par l’heure.</string>
     <string name="session_statistics">Ce qui a été enregistré pendant cette séance</string>
     <string name="session_details">Détails</string>
+    <string name="session_zones_title">Zones de fréquence cardiaque</string>
+    <string name="session_zone">Zone %1$d</string>
+    <string name="session_load">Charge</string>
+    <string name="session_zones_note_data">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, la plus haute atteinte au moins trois jours de l’année écoulée ; vous pouvez fixer la vôtre dans les paramètres. Charge : les minutes dans chaque zone multipliées par son numéro, additionnées.</string>
+    <string name="session_zones_note_set">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, fixée dans les paramètres. Charge : les minutes dans chaque zone multipliées par son numéro, additionnées.</string>
+    <string name="settings_max_hr">Fréquence cardiaque maximale</string>
+    <string name="settings_max_hr_auto">D’après vos données</string>
+    <string name="settings_max_hr_body">Définit les zones de fréquence cardiaque de vos entraînements. D’après vos données, c’est la plus haute atteinte au moins trois jours de l’année écoulée.</string>
     <string name="whats_new_title">Nouveautés</string>
     <string name="whats_new_18">• Entraînements : les pauses sont détectées et retirées, seul le temps en mouvement compte, et les statistiques indiquent la fréquence cardiaque la plus basse et la plus haute.\n• Zones de fréquence cardiaque pour chaque entraînement : le temps dans chaque zone et une charge tirée de la durée et de l’effort.\n• Plusieurs lignes dans un graphique, activées et désactivées par des puces : fréquence cardiaque avec vitesse et altitude à vélo ; fréquence respiratoire, SpO₂ et VFC pendant la nuit.\n• Grandes vignettes (Pro) : les phases de sommeil de la nuit dernière avec la courbe de votre choix, et vos derniers entraînements en courbes.\n• Touchez la date pour choisir un jour dans le calendrier, et tirez une page vers le bas pour la recharger.</string>
     <string name="whats_new_dismiss">Compris</string>

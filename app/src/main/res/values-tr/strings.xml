@@ -487,6 +487,14 @@
     <string name="session_overlap_note">Bunlar bu oturum sırasında alınan ölçümlerdir. Health Connect ölçümleri bir oturumla ilişkilendirmez; bu yüzden zamana göre eşleştirilirler.</string>
     <string name="session_statistics">Bu oturum sırasında kaydedilenler</string>
     <string name="session_details">Ayrıntılar</string>
+    <string name="session_zones_title">Nabız bölgeleri</string>
+    <string name="session_zone">Bölge %1$d</string>
+    <string name="session_load">Yük</string>
+    <string name="session_zones_note_data">Bölgeler, son bir yılda en az üç gün ulaşılan en yüksek nabız olan %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlardan kendi değerinizi belirleyebilirsiniz. Yük: her bölgedeki dakikalar bölge numarasıyla çarpılıp toplanır.</string>
+    <string name="session_zones_note_set">Bölgeler, ayarlarda belirlenen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır. Yük: her bölgedeki dakikalar bölge numarasıyla çarpılıp toplanır.</string>
+    <string name="settings_max_hr">Maksimum nabız</string>
+    <string name="settings_max_hr_auto">Verilerinizden</string>
+    <string name="settings_max_hr_body">Antrenmanlarınızın nabız bölgelerini belirler. Verilerinizden alındığında, son bir yılda en az üç gün ulaşılan en yüksek nabızdır.</string>
     <string name="whats_new_title">Yenilikler</string>
     <string name="whats_new_18">• Antrenmanlar: molalar algılanıp düşülür, yalnızca hareket süresi sayılır ve istatistikler en düşük ve en yüksek nabzı gösterir.\n• Her antrenman için nabız bölgeleri: her bölgedeki süre ve süre ile eforden bir yük değeri.\n• Bir grafikte birden çok çizgi, çiplerle açılıp kapatılır: bisiklet sürüşünde hız ve yükseklikle nabız; gece boyunca solunum hızı, SpO₂ ve HRV.\n• Büyük kutucuklar (Pro): dün geceki uyku evreleri seçtiğiniz bir eğriyle ve son antrenmanlarınız eğri olarak.\n• Takvimden bir gün seçmek için tarihe dokunun, yeniden yüklemek için sayfayı aşağı çekin.</string>
     <string name="whats_new_dismiss">Anladım</string>

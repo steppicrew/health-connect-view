@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -71,6 +72,12 @@ data class Settings(
      * chart: a second line is clutter to anyone not looking for their own level.
      */
     val showRollingMean: Boolean = false,
+    /**
+     * The maximum heart rate a workout's zones are shares of, where set; null reads it from
+     * the data (see observedMaxHeartRate). A number the person chooses, like a tile's bands --
+     * not a reading.
+     */
+    val maxHeartRate: Int? = null,
 )
 
 /**
@@ -98,7 +105,14 @@ class SettingsStore(private val context: Context) {
                 ?: GlucoseChoice.SYSTEM,
             showSingleNights = prefs[KEY_SINGLE_NIGHTS] ?: true,
             showRollingMean = prefs[KEY_ROLLING_MEAN] ?: false,
+            maxHeartRate = prefs[KEY_MAX_HEART_RATE],
         )
+    }
+
+    suspend fun setMaxHeartRate(bpm: Int?) {
+        context.settingsDataStore.edit { prefs ->
+            if (bpm == null) prefs.remove(KEY_MAX_HEART_RATE) else prefs[KEY_MAX_HEART_RATE] = bpm
+        }
     }
 
     suspend fun setTheme(theme: ThemeChoice) {
@@ -142,6 +156,7 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_GLUCOSE] = settings.glucose.name
             prefs[KEY_SINGLE_NIGHTS] = settings.showSingleNights
             prefs[KEY_ROLLING_MEAN] = settings.showRollingMean
+            settings.maxHeartRate?.let { prefs[KEY_MAX_HEART_RATE] = it } ?: prefs.remove(KEY_MAX_HEART_RATE)
         }
     }
 
@@ -153,5 +168,6 @@ class SettingsStore(private val context: Context) {
         val KEY_GLUCOSE = stringPreferencesKey("glucose_unit")
         val KEY_SINGLE_NIGHTS = booleanPreferencesKey("show_single_nights")
         val KEY_ROLLING_MEAN = booleanPreferencesKey("show_rolling_mean")
+        val KEY_MAX_HEART_RATE = intPreferencesKey("max_heart_rate")
     }
 }

@@ -498,6 +498,14 @@
     <string name="session_overlap_note">Estas son las mediciones tomadas durante esta sesión. Health Connect no vincula las mediciones a una sesión, así que se asignan por la hora.</string>
     <string name="session_statistics">Lo que se registró durante esta sesión</string>
     <string name="session_details">Detalles</string>
+    <string name="session_zones_title">Zonas de frecuencia cardíaca</string>
+    <string name="session_zone">Zona %1$d</string>
+    <string name="session_load">Carga</string>
+    <string name="session_zones_note_data">Las zonas son del 50–60 %% al 90–100 %% de una frecuencia cardíaca máxima de %1$s, la más alta alcanzada en al menos tres días del último año; puedes fijar la tuya en los ajustes. Carga: los minutos en cada zona por su número, sumados.</string>
+    <string name="session_zones_note_set">Las zonas son del 50–60 %% al 90–100 %% de una frecuencia cardíaca máxima de %1$s, fijada en los ajustes. Carga: los minutos en cada zona por su número, sumados.</string>
+    <string name="settings_max_hr">Frecuencia cardíaca máxima</string>
+    <string name="settings_max_hr_auto">Según tus datos</string>
+    <string name="settings_max_hr_body">Define las zonas de frecuencia cardíaca de tus entrenamientos. Según tus datos, es la más alta alcanzada en al menos tres días del último año.</string>
     <string name="whats_new_title">Novedades</string>
     <string name="whats_new_18">• Entrenamientos: las pausas se detectan y se descuentan, solo cuenta el tiempo en movimiento, y las estadísticas muestran la frecuencia cardíaca mínima y máxima.\n• Zonas de frecuencia cardíaca en cada entrenamiento: el tiempo en cada zona y una carga a partir de duración y esfuerzo.\n• Varias líneas en un gráfico, que activas y desactivas con chips: frecuencia cardíaca con velocidad y altura en una salida en bici; frecuencia respiratoria, SpO₂ y VFC durante la noche.\n• Mosaicos grandes (Pro): las fases de sueño de anoche con la curva que elijas, y tus últimos entrenamientos como curvas.\n• Toca la fecha para elegir un día en el calendario y desliza una página hacia abajo para recargarla.</string>
     <string name="whats_new_dismiss">Entendido</string>

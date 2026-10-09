@@ -487,6 +487,14 @@
     <string name="session_overlap_note">Dit zijn de metingen die tijdens deze sessie zijn gedaan. Health Connect koppelt metingen niet aan een sessie, dus ze worden op tijd gekoppeld.</string>
     <string name="session_statistics">Wat er tijdens deze sessie is geregistreerd</string>
     <string name="session_details">Details</string>
+    <string name="session_zones_title">Hartslagzones</string>
+    <string name="session_zone">Zone %1$d</string>
+    <string name="session_load">Belasting</string>
+    <string name="session_zones_note_data">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, de hoogste die op minstens drie dagen van het afgelopen jaar werd bereikt; je kunt je eigen instellen in de instellingen. Belasting: de minuten in elke zone maal het nummer, opgeteld.</string>
+    <string name="session_zones_note_set">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, zoals ingesteld. Belasting: de minuten in elke zone maal het nummer, opgeteld.</string>
+    <string name="settings_max_hr">Maximale hartslag</string>
+    <string name="settings_max_hr_auto">Uit je gegevens</string>
+    <string name="settings_max_hr_body">Bepaalt de hartslagzones van je trainingen. Uit je gegevens is het de hoogste hartslag die op minstens drie dagen van het afgelopen jaar werd bereikt.</string>
     <string name="whats_new_title">Wat is er nieuw</string>
     <string name="whats_new_18">• Trainingen: pauzes worden herkend en weggelaten, alleen tijd in beweging telt, en de statistieken tonen de laagste en hoogste hartslag.\n• Hartslagzones bij elke training: de tijd in elke zone en een belasting uit duur en inspanning.\n• Meerdere lijnen in één grafiek, aan- en uitgezet met chips: hartslag met snelheid en hoogte bij een fietsrit; ademhalingsfrequentie, SpO₂ en HRV door de nacht.\n• Grote tegels (Pro): de slaapfasen van afgelopen nacht met een curve naar keuze, en je laatste trainingen als curves.\n• Tik op de datum om een dag in de kalender te kiezen, en trek een pagina omlaag om hem opnieuw te laden.</string>
     <string name="whats_new_dismiss">Begrepen</string>

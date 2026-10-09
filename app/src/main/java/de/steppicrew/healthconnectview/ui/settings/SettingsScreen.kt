@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.settings
 
+import de.steppicrew.healthconnectview.registry.Formatting
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -87,6 +91,7 @@ fun SettingsScreen(
     val ownSourceCount by viewModel.ownSourceCount.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmRevoke by remember { mutableStateOf(false) }
+    var editingMaxHeartRate by remember { mutableStateOf(false) }
     val pendingRestore by viewModel.pendingRestore.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -322,6 +327,26 @@ fun SettingsScreen(
                 )
             }
 
+            // The maximum a workout's heart-rate zones are shares of. Left to the data unless
+            // someone knows better -- from a test, say -- since no formula of age fits everyone.
+            LinkRow(
+                title = stringResource(R.string.settings_max_hr),
+                body = settings.maxHeartRate
+                    ?.let { Formatting.number(it.toDouble()) + " " + stringResource(R.string.unit_bpm) }
+                    ?: stringResource(R.string.settings_max_hr_auto),
+                onClick = { editingMaxHeartRate = true },
+            )
+            if (editingMaxHeartRate) {
+                MaxHeartRateDialog(
+                    current = settings.maxHeartRate,
+                    onDismiss = { editingMaxHeartRate = false },
+                    onSave = {
+                        viewModel.setMaxHeartRate(it)
+                        editingMaxHeartRate = false
+                    },
+                )
+            }
+
             // The overlap winner is Health Connect's own priority list, which is not readable
             // or writable through the Jetpack client -- so this points at it rather than
             // inventing a ranking that would disagree with the platform.
@@ -383,6 +408,47 @@ fun SettingsScreen(
         }
     }
 }
+
+/**
+ * The maximum heart rate as a number, or left to the data. Only a plausible one is taken: a
+ * typo of 1800 would put every workout below the first zone.
+ */
+@Composable
+private fun MaxHeartRateDialog(current: Int?, onDismiss: () -> Unit, onSave: (Int?) -> Unit) {
+    var text by remember { mutableStateOf(current?.toString().orEmpty()) }
+    val value = text.toIntOrNull()?.takeIf { it in MAX_HR_RANGE }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_max_hr)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.settings_max_hr_body), style = MaterialTheme.typography.bodyMedium)
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { input -> text = input.filter(Char::isDigit).take(3) },
+                    label = { Text(stringResource(R.string.unit_bpm)) },
+                    singleLine = true,
+                    isError = text.isNotEmpty() && value == null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(value) }, enabled = value != null) {
+                Text(stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            Row {
+                TextButton(onClick = { onSave(null) }) { Text(stringResource(R.string.settings_max_hr_auto)) }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+            }
+        },
+    )
+}
+
+/** Beats per minute a maximum heart rate can plausibly be. */
+private val MAX_HR_RANGE = 100..230
 
 @Composable
 private fun SectionHeader(text: String) {

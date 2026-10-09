@@ -498,6 +498,14 @@
     <string name="session_overlap_note">Estas são as medições feitas durante esta sessão. O Conexão Saúde não vincula medições a uma sessão, então elas são associadas pelo horário.</string>
     <string name="session_statistics">O que foi registrado durante esta sessão</string>
     <string name="session_details">Detalhes</string>
+    <string name="session_zones_title">Zonas de frequência cardíaca</string>
+    <string name="session_zone">Zona %1$d</string>
+    <string name="session_load">Carga</string>
+    <string name="session_zones_note_data">As zonas vão de 50–60 %% a 90–100 %% de uma frequência cardíaca máxima de %1$s, a mais alta atingida em pelo menos três dias do último ano; você pode definir a sua nas configurações. Carga: os minutos em cada zona vezes o número dela, somados.</string>
+    <string name="session_zones_note_set">As zonas vão de 50–60 %% a 90–100 %% de uma frequência cardíaca máxima de %1$s, definida nas configurações. Carga: os minutos em cada zona vezes o número dela, somados.</string>
+    <string name="settings_max_hr">Frequência cardíaca máxima</string>
+    <string name="settings_max_hr_auto">Pelos seus dados</string>
+    <string name="settings_max_hr_body">Define as zonas de frequência cardíaca dos seus treinos. Pelos seus dados, é a mais alta atingida em pelo menos três dias do último ano.</string>
     <string name="whats_new_title">Novidades</string>
     <string name="whats_new_18">• Treinos: as pausas são detectadas e descontadas, só conta o tempo em movimento, e as estatísticas mostram a frequência cardíaca mínima e máxima.\n• Zonas de frequência cardíaca em cada treino: o tempo em cada zona e uma carga a partir de duração e esforço.\n• Várias linhas em um gráfico, ligadas e desligadas por chips: frequência cardíaca com velocidade e altitude no pedal; frequência respiratória, SpO₂ e VFC durante a noite.\n• Blocos grandes (Pro): as fases do sono da última noite com a curva que você escolher, e seus últimos treinos como curvas.\n• Toque na data para escolher um dia no calendário e puxe uma página para baixo para recarregá-la.</string>
     <string name="whats_new_dismiss">Entendi</string>

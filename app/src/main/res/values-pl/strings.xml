@@ -509,6 +509,14 @@
     <string name="session_overlap_note">To pomiary wykonane podczas tej sesji. Health Connect nie łączy pomiarów z sesją, więc są dopasowywane według czasu.</string>
     <string name="session_statistics">Co zapisano podczas tej sesji</string>
     <string name="session_details">Szczegóły</string>
+    <string name="session_zones_title">Strefy tętna</string>
+    <string name="session_zone">Strefa %1$d</string>
+    <string name="session_load">Obciążenie</string>
+    <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech dniach ostatniego roku; własne możesz ustawić w ustawieniach. Obciążenie: minuty w każdej strefie razy jej numer, zsumowane.</string>
+    <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach. Obciążenie: minuty w każdej strefie razy jej numer, zsumowane.</string>
+    <string name="settings_max_hr">Tętno maksymalne</string>
+    <string name="settings_max_hr_auto">Z Twoich danych</string>
+    <string name="settings_max_hr_body">Określa strefy tętna Twoich treningów. Z Twoich danych to najwyższe tętno osiągnięte w co najmniej trzech dniach ostatniego roku.</string>
     <string name="whats_new_title">Co nowego</string>
     <string name="whats_new_18">• Treningi: przerwy są wykrywane i pomijane, liczy się tylko czas w ruchu, a statystyki pokazują najniższe i najwyższe tętno.\n• Strefy tętna dla każdego treningu: czas w każdej strefie i obciążenie z czasu i wysiłku.\n• Kilka linii na jednym wykresie, włączanych i wyłączanych chipami: tętno z prędkością i wysokością podczas jazdy rowerem; częstość oddechów, SpO₂ i HRV przez noc.\n• Duże kafelki (Pro): fazy snu z ostatniej nocy z wybraną krzywą oraz ostatnie treningi jako krzywe.\n• Dotknij daty, aby wybrać dzień w kalendarzu, i przeciągnij stronę w dół, aby ją odświeżyć.</string>
     <string name="whats_new_dismiss">Rozumiem</string>
