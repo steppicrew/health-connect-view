@@ -1,3 +1,1 @@
-1.1.1 — VO2max, weight and other occasional readings: a day now shows its value as a headline and sets it among your recent readings, each with its date, instead of a chart that looked like the year's. An unchanged value now says so.
-
-Missing a feature? Write to hcview@steppicrew.de.
+1.2.0 — Workouts: breaks are left out, time in five heart-rate zones with a load figure, laps on the chart, and heart rate after the end with its fall. Several lines per chart: speed and height on a ride; breath rate, SpO₂ and HRV at night. Large tiles (Pro) show last night's stages and your latest workouts as curves. Pick a day from the calendar, pull down to reload. Loading is faster.

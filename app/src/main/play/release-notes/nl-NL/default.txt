@@ -1,3 +1,1 @@
-1.1.1 — VO2max, gewicht en andere incidentele metingen: een dag toont zijn waarde nu als kop en zet die tussen je laatste metingen, elk met datum, in plaats van een grafiek die op die van het jaar leek. Een ongewijzigde waarde wordt nu zo benoemd.
-
-Mis je een functie? Schrijf naar hcview@steppicrew.de.
+1.2.0 — Trainingen: pauzes worden weggelaten; tijd in vijf hartslagzones met een belasting, ronden in de grafiek en de hartslag na het einde met de daling. Meerdere lijnen per grafiek: snelheid en hoogte op de fiets; ademhalingsfrequentie, SpO₂ en HRV 's nachts. Grote tegels (Pro): slaapfasen van afgelopen nacht en je laatste trainingen als curves. Kies een dag in de kalender, trek omlaag om te herladen. Sneller laden.

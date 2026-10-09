@@ -1,3 +1,1 @@
-1.1.1 — VO2max, peso e altre misurazioni occasionali: un giorno ora mostra il suo valore come titolo e lo colloca tra le tue ultime misurazioni, ciascuna con la sua data, invece di un grafico che sembrava quello dell'anno. Un valore invariato ora viene indicato come tale.
-
-Ti manca una funzione? Scrivi a hcview@steppicrew.de.
+1.2.0 — Allenamenti: le pause sono escluse; tempo in cinque zone di frequenza cardiaca con un carico, giri sul grafico e frequenza cardiaca dopo la fine con il suo calo. Più linee per grafico: velocità e altitudine in bici; frequenza respiratoria, SpO₂ e HRV di notte. Riquadri grandi (Pro): fasi del sonno di stanotte e ultimi allenamenti come curve. Scegli un giorno dal calendario, trascina in basso per ricaricare. Caricamento più veloce.
