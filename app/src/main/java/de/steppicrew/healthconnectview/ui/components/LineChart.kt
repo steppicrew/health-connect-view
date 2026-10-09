@@ -92,6 +92,12 @@ fun LineChart(
      */
     breaks: List<ClosedRange<Instant>> = emptyList(),
     /**
+     * Moments marked by a thin dashed line across the plot: where a workout's laps meet, so a
+     * rise can be laid against the lap it began in. Faint, as the grid is: a mark of time,
+     * not a value.
+     */
+    markers: List<Instant> = emptyList(),
+    /**
      * Draw one bar per point instead of a line through them.
      *
      * For a window bucketed by day, where each point is a whole day's figure rather than a
@@ -369,6 +375,7 @@ fun LineChart(
     val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
     val breakColor = MaterialTheme.colorScheme.onSurface.copy(alpha = BAND_ALPHA)
+    val markerColor = MaterialTheme.colorScheme.outline.copy(alpha = MARKER_ALPHA)
     val connectorColor = MaterialTheme.colorScheme.outline.copy(alpha = CONNECTOR_ALPHA)
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = MaterialTheme.typography.labelSmall
@@ -618,6 +625,16 @@ fun LineChart(
                         color = breakColor,
                         topLeft = Offset(from, 0f),
                         size = androidx.compose.ui.geometry.Size(to - from, size.height),
+                    )
+                }
+                markers.forEach { moment ->
+                    val x = xForTime(moment.toEpochMilli())?.takeIf { it in 0f..size.width } ?: return@forEach
+                    drawLine(
+                        color = markerColor,
+                        start = Offset(x, 0f),
+                        end = Offset(x, size.height),
+                        strokeWidth = 1.dp.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 3.dp.toPx())),
                     )
                 }
             }
@@ -1852,6 +1869,9 @@ private const val AXIS_GAP = 14f
 
 /** Bands sit behind the data and must not compete with it. */
 private const val BAND_ALPHA = 0.16f
+
+/** A lap marker: as faint as a gridline, so it places a moment without competing with the line. */
+private const val MARKER_ALPHA = 0.7f
 
 /** A calm night blue, fixed so it keeps meaning "asleep" whatever the wallpaper. */
 private val SLEEP_BAND = Color(0xFF5C7CFA)

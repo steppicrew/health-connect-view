@@ -517,7 +517,11 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     **pace** (no runs; the route view already switches speed to pace). The watch's
     temperature during a workout is the air's, which Health Connect has no type for -- no
     body or skin temperature falls inside any workout either.
-57. [ ] **Laps as markers** on the workout chart, where a writer recorded laps.
+57. [x] **Laps as markers** on the workout chart, where a writer recorded laps. Built
+    09.10.2026: a faint dashed line where two laps meet, and the readout names the lap at
+    the touched moment. No workout on the phone has laps (`SessionCurveShapeActivity`), so it
+    was checked on the emulator, where the seeder now splits runs into kilometres and rides
+    into five.
 58. [x] **Time in heart-rate zones** per workout, a bar under the chart, from the tile's
     zones, saying it is matched by time. Built 09.10.2026 with a load figure, the owner's
     choice: five zones of 50-60 % to 90-100 % of a maximum heart rate rather than the tile's

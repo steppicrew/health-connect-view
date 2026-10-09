@@ -95,6 +95,8 @@ fun MultiLineChart(
     modifier: Modifier = Modifier,
     extent: ClosedRange<Instant>? = null,
     breaks: List<ClosedRange<Instant>> = emptyList(),
+    /** See [LineChart]: where a workout's laps meet. */
+    markers: List<Instant> = emptyList(),
     fillHeight: Boolean = false,
     onExpand: (() -> Unit)? = null,
     holdSelection: Boolean = false,
@@ -146,6 +148,7 @@ fun MultiLineChart(
                 referenceColor = primaryColor,
                 extent = extent,
                 breaks = breaks,
+                markers = markers,
                 fillHeight = fillHeight,
                 onExpand = onExpand,
                 holdSelection = holdSelection,

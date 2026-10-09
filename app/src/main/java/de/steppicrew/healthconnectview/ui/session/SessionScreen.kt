@@ -330,6 +330,8 @@ private fun HeartRate(detail: SessionDetail) {
                 },
             )
             val stageNames = StageKind.entries.associateWith { stringResource(labelOf(it)) }
+            val laps = detail.session.laps.sortedBy { it.start }
+            val lapNames = laps.indices.map { stringResource(R.string.session_lap, it + 1) }
             ExpandableChart(
                 title = periodLabel(detail.session.start, detail.session.end) + " · " + sessionName(detail.session),
             ) { expanded, onExpand ->
@@ -342,10 +344,17 @@ private fun HeartRate(detail: SessionDetail) {
                     // A night's stages along the bottom, so a rise in heart rate can be laid
                     // against the REM it fell in.
                     strip = detail.session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
-                    stripLabel = if (detail.session.stages.isEmpty()) {
-                        null
-                    } else {
-                        { time -> detail.session.stages.firstOrNull { time >= it.start && time < it.end }?.let { stageNames[it.kind] } }
+                    // Where the laps meet, the last one's end being the workout's own.
+                    markers = laps.dropLast(1).map { it.end },
+                    // What the readout names at a moment: the night's stage, or the lap.
+                    stripLabel = when {
+                        detail.session.stages.isNotEmpty() -> { time ->
+                            detail.session.stages.firstOrNull { time >= it.start && time < it.end }?.let { stageNames[it.kind] }
+                        }
+                        laps.size > 1 -> { time ->
+                            laps.indexOfFirst { time >= it.start && time < it.end }.takeIf { it >= 0 }?.let(lapNames::get)
+                        }
+                        else -> null
                     },
                     fillHeight = expanded,
                     onExpand = onExpand,

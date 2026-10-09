@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseLap
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
@@ -331,6 +332,7 @@ private val SEEDED_WORKOUTS = listOf(
                             endZoneOffset = offset,
                             exerciseType = workout.type,
                             title = workout.title,
+                            laps = lapsOf(workout.type, exerciseStart, exerciseStart.plus(minutes, ChronoUnit.MINUTES)),
                             metadata = metadata(),
                         ),
                     )
@@ -487,6 +489,27 @@ private val SEEDED_WORKOUTS = listOf(
      * awake -- with deep sleep front-loaded and REM growing towards morning, as real nights
      * run. The fixture wrote no stages, so the stage chart never showed in a screenshot.
      */
+    /**
+     * A run in kilometre laps and a ride in five-kilometre ones, as a watch splits them, so the
+     * workout chart's lap marks show in development; no real workout on the test phone had any.
+     * The last lap is cut at the workout's end, as a watch ends it.
+     */
+    private fun lapsOf(type: Int, start: Instant, end: Instant): List<ExerciseLap> {
+        val (lapMinutes, meters) = when (type) {
+            ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> 6L to 1000.0
+            ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> 10L to 5000.0
+            else -> return emptyList()
+        }
+        return generateSequence(start) { it.plus(lapMinutes, ChronoUnit.MINUTES) }
+            .takeWhile { it < end }
+            .map { lapStart ->
+                val lapEnd = minOf(lapStart.plus(lapMinutes, ChronoUnit.MINUTES), end)
+                val share = java.time.Duration.between(lapStart, lapEnd).toMinutes().toDouble() / lapMinutes
+                ExerciseLap(lapStart, lapEnd, Length.meters(meters * share))
+            }
+            .toList()
+    }
+
     private fun sleepStages(start: Instant, end: Instant, random: Random): List<SleepSessionRecord.Stage> =
         buildList {
             var at = start
