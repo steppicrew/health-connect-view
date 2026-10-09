@@ -77,6 +77,9 @@
     <string name="dashboard_empty_body">Tambahkan angka yang ingin Anda lihat dari daftar semua jenis data.</string>
     <string name="tile_locked">Tidak diizinkan</string>
     <string name="tile_loading">Memuat</string>
+    <string name="loading_slow_1">Ini perlu waktu. Data masih dikumpulkan…</string>
+    <string name="loading_slow_2">Masih membaca dari Health Connect…</string>
+    <string name="loading_slow_3">Rentang waktu panjang perlu waktu lebih lama. Masih berjalan…</string>
     <string name="tile_failed">Gagal memuat</string>
     <string name="tile_grant">Izinkan</string>
     <string name="tile_value_as_of">per %1$s</string>

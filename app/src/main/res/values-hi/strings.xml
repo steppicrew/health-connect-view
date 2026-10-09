@@ -78,6 +78,9 @@
     <string name="dashboard_empty_body">सभी डेटा टाइप की सूची से वे आंकड़े जोड़ें जो आप देखना चाहते हैं।</string>
     <string name="tile_locked">अनुमति नहीं है</string>
     <string name="tile_loading">लोड हो रहा है</string>
+    <string name="loading_slow_1">इसमें कुछ समय लग रहा है। डेटा अभी भी जुटाया जा रहा है…</string>
+    <string name="loading_slow_2">Health Connect से पढ़ना अभी जारी है…</string>
+    <string name="loading_slow_3">लंबी अवधि में ज़्यादा समय लगता है। काम अभी जारी है…</string>
     <string name="tile_failed">लोड नहीं हो सका</string>
     <string name="tile_grant">अनुमति दें</string>
     <string name="tile_value_as_of">%1$s तक</string>

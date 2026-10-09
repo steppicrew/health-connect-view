@@ -79,6 +79,9 @@
     <string name="dashboard_empty_body">Aggiungi i valori che vuoi vedere dall’elenco di tutti i tipi di dati.</string>
     <string name="tile_locked">Non consentito</string>
     <string name="tile_loading">Caricamento</string>
+    <string name="loading_slow_1">Ci vuole un po’. Stiamo ancora raccogliendo i dati…</string>
+    <string name="loading_slow_2">Lettura da Connessione Salute in corso…</string>
+    <string name="loading_slow_3">I periodi lunghi richiedono più tempo. Ancora al lavoro…</string>
     <string name="tile_failed">Caricamento non riuscito</string>
     <string name="tile_grant">Consenti</string>
     <string name="tile_value_as_of">al %1$s</string>

@@ -79,6 +79,9 @@
     <string name="dashboard_empty_body">Añade las cifras que quieras ver desde la lista de todos los tipos de datos.</string>
     <string name="tile_locked">No permitido</string>
     <string name="tile_loading">Cargando</string>
+    <string name="loading_slow_1">Esto tarda un poco. Seguimos reuniendo datos…</string>
+    <string name="loading_slow_2">Seguimos leyendo de Health Connect…</string>
+    <string name="loading_slow_3">Los periodos largos tardan más. Seguimos trabajando…</string>
     <string name="tile_failed">No se pudo cargar</string>
     <string name="tile_grant">Permitir</string>
     <string name="tile_value_as_of">a fecha de %1$s</string>

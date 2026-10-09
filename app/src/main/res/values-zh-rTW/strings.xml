@@ -77,6 +77,9 @@
     <string name="dashboard_empty_body">從所有資料類型清單中新增您想查看的數據。</string>
     <string name="tile_locked">未獲允許</string>
     <string name="tile_loading">載入中</string>
+    <string name="loading_slow_1">需要一些時間，仍在收集資料…</string>
+    <string name="loading_slow_2">仍在從 Health Connect 讀取…</string>
+    <string name="loading_slow_3">較長的時間範圍需要更久，仍在處理…</string>
     <string name="tile_failed">載入失敗</string>
     <string name="tile_grant">允許</string>
     <string name="tile_value_as_of">截至 %1$s</string>

@@ -78,6 +78,9 @@
     <string name="dashboard_empty_body">Fügen Sie die Werte hinzu, die Sie sehen möchten – aus der Liste aller Datentypen.</string>
     <string name="tile_locked">Nicht freigegeben</string>
     <string name="tile_loading">Wird geladen</string>
+    <string name="loading_slow_1">Es dauert etwas. Daten werden noch gesammelt…</string>
+    <string name="loading_slow_2">Liest weiter aus Health Connect…</string>
+    <string name="loading_slow_3">Lange Zeiträume dauern länger. Läuft noch…</string>
     <string name="tile_failed">Laden fehlgeschlagen</string>
     <string name="tile_grant">Freigeben</string>
     <string name="tile_value_as_of">Stand %1$s</string>

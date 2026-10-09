@@ -80,6 +80,9 @@
     <string name="dashboard_empty_body">Dodaj wartości, które chcesz widzieć, z listy wszystkich typów danych.</string>
     <string name="tile_locked">Brak zgody</string>
     <string name="tile_loading">Wczytywanie</string>
+    <string name="loading_slow_1">To chwilę potrwa. Wciąż zbieramy dane…</string>
+    <string name="loading_slow_2">Wciąż odczytujemy dane z Health Connect…</string>
+    <string name="loading_slow_3">Długie okresy trwają dłużej. Nadal pracujemy…</string>
     <string name="tile_failed">Nie udało się wczytać</string>
     <string name="tile_grant">Zezwól</string>
     <string name="tile_value_as_of">stan na %1$s</string>

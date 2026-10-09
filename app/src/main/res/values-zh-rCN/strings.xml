@@ -77,6 +77,9 @@
     <string name="dashboard_empty_body">从所有数据类型列表中添加您想查看的数据。</string>
     <string name="tile_locked">未获允许</string>
     <string name="tile_loading">正在加载</string>
+    <string name="loading_slow_1">需要一些时间，仍在收集数据…</string>
+    <string name="loading_slow_2">仍在从 Health Connect 读取…</string>
+    <string name="loading_slow_3">较长的时间范围需要更久，仍在处理…</string>
     <string name="tile_failed">加载失败</string>
     <string name="tile_grant">允许</string>
     <string name="tile_value_as_of">截至 %1$s</string>

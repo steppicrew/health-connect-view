@@ -136,6 +136,7 @@ import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LoadingView
+import de.steppicrew.healthconnectview.ui.components.SlowLoadingPill
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.ProgressRing
@@ -508,6 +509,11 @@ fun DashboardScreen(
                     }
                 }
             }
+            // Tiles each spin on their own; past a few seconds, words say the app is still at it.
+            SlowLoadingPill(
+                active = !state.loading && state.tiles.any { it.loading },
+                modifier = Modifier.padding(padding),
+            )
         }
     }
 }
