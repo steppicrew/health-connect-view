@@ -505,6 +505,13 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     resting heart rate or HRV over weeks with workouts marked. With the "moving together is not
     cause" note.
 
+Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
+writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
+matches Garmin Connect. Garmin's sum is lower on three of five days (19/21, 13/15, 12/13) and
+never higher, with both written in the same sync, so it is not a stale summary: most likely
+each quarter-hour is rounded down and the remainders are lost. Combined, Health Connect's
+priority picks Garmin's lower figure.
+
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
 trend explained with its averages in the day view, and "Weiter" for the permission screen's
