@@ -505,6 +505,7 @@
     <string name="chart_line_axis">يُعرض مقياسه</string>
     <string name="chart_line_axis_note">↕ المحور يخص هذا الخط. المس الرسم لقراءة جميع الخطوط.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">الارتفاع</string>
     <string name="session_gone">لم يعد بالإمكان العثور على هذه الجلسة.</string>
     <string name="session_laps">اللفّات</string>
     <string name="session_lap">اللفّة %1$d</string>

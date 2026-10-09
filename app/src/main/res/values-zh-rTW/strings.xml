@@ -450,6 +450,7 @@
     <string name="chart_line_axis">顯示其刻度</string>
     <string name="chart_line_axis_note">↕ 座標軸屬於這條線。觸碰圖表可讀取所有線的數值。</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">海拔</string>
     <string name="session_gone">找不到這次活動。</string>
     <string name="session_laps">圈</string>
     <string name="session_lap">第 %1$d 圈</string>

@@ -483,6 +483,7 @@
     <string name="chart_line_axis">Pokazana jest jej skala</string>
     <string name="chart_line_axis_note">↕ Oś należy do tej linii. Dotknij wykresu, aby odczytać wszystkie linie.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">Wysokość</string>
     <string name="session_gone">Nie można już znaleźć tej sesji.</string>
     <string name="session_laps">Okrążenia</string>
     <string name="session_lap">Okrążenie %1$d</string>

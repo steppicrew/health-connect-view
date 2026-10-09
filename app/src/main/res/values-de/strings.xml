@@ -455,6 +455,7 @@
     <string name="chart_line_axis">Ihre Skala wird angezeigt</string>
     <string name="chart_line_axis_note">↕ Die Achse gehört zu dieser Linie. Tippen Sie auf das Diagramm, um alle Werte abzulesen.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">Höhe</string>
     <string name="session_gone">Diese Sitzung ist nicht mehr auffindbar.</string>
     <string name="session_laps">Runden</string>
     <string name="session_lap">Runde %1$d</string>

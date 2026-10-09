@@ -472,6 +472,7 @@
     <string name="chart_line_axis">A escala desta linha é mostrada</string>
     <string name="chart_line_axis_note">↕ O eixo é desta linha. Toque no gráfico para ler todas as linhas.</string>
     <string name="chart_short_hrv">VFC</string>
+    <string name="chart_short_height">Altitude</string>
     <string name="session_gone">Esta sessão não foi encontrada.</string>
     <string name="session_laps">Voltas</string>
     <string name="session_lap">Volta %1$d</string>

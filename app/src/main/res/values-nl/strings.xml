@@ -461,6 +461,7 @@
     <string name="chart_line_axis">De schaal hiervan wordt getoond</string>
     <string name="chart_line_axis_note">↕ De as hoort bij deze lijn. Tik op de grafiek om alle lijnen af te lezen.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">Hoogte</string>
     <string name="session_gone">Deze sessie is niet meer te vinden.</string>
     <string name="session_laps">Ronden</string>
     <string name="session_lap">Ronde %1$d</string>

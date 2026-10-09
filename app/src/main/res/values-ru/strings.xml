@@ -483,6 +483,7 @@
     <string name="chart_line_axis">Показана её шкала</string>
     <string name="chart_line_axis_note">↕ Ось относится к этой линии. Коснитесь графика, чтобы увидеть значения всех линий.</string>
     <string name="chart_short_hrv">ВСР</string>
+    <string name="chart_short_height">Высота</string>
     <string name="session_gone">Этот сеанс больше не найден.</string>
     <string name="session_laps">Круги</string>
     <string name="session_lap">Круг %1$d</string>

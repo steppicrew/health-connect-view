@@ -472,6 +472,7 @@
     <string name="chart_line_axis">Son échelle est affichée</string>
     <string name="chart_line_axis_note">↕ L’axe est celui de cette ligne. Touchez le graphique pour lire toutes les lignes.</string>
     <string name="chart_short_hrv">VFC</string>
+    <string name="chart_short_height">Altitude</string>
     <string name="session_gone">Cette séance est introuvable.</string>
     <string name="session_laps">Tours</string>
     <string name="session_lap">Tour %1$d</string>
