@@ -545,8 +545,15 @@ Before the next release, from the owner, 09.10.2026:
 67. [ ] **Pro described as it is now** -- the in-app text (`pro_body`, `pro_owned_body`) and
     the store listing in every language: second curves on tiles, stage times, several lines
     per chart are new since they were written.
-68. [ ] **"What's new" after an update with new features** -- shown once per version that has
-    an entry, from the same texts as the release notes, dismissed for good.
+68. [x] **"What's new" after an update with new features** -- a card above the tiles, the
+    owner's choice over a dialog, put away for good with one tap. Its own short text per
+    language and version (`whats_new_<versionCode>`, one point a line) rather than the Play
+    notes, which carry a footer and often only fixes; `WHATS_NEW` in `WhatsNewCard.kt` lists
+    them. Every version since the last card put away is shown, newest first, so an update
+    that skipped a release still names its features. A release of fixes adds nothing and
+    shows nothing; a fresh
+    install marks the card seen, since to a new user everything is new. Its store is kept
+    out of the settings backup for the same reason.
 
 Also from the owner, 09.10.2026, done the same day:
 

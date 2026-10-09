@@ -476,6 +476,9 @@
     <string name="session_overlap_note">Ini adalah hasil ukur yang diambil selama sesi ini. Health Connect tidak mengaitkan hasil ukur dengan sesi, jadi hasil ukur dicocokkan berdasarkan waktu.</string>
     <string name="session_statistics">Yang dicatat selama sesi ini</string>
     <string name="session_details">Detail</string>
+    <string name="whats_new_title">Yang baru</string>
+    <string name="whats_new_18">• Latihan: jeda dikenali dan tidak dihitung, hanya waktu bergerak yang dihitung, dan statistik menampilkan detak jantung terendah dan tertinggi.\n• Zona detak jantung untuk setiap latihan: waktu di setiap zona, dan nilai beban dari durasi dan upaya.\n• Beberapa garis dalam satu grafik, dinyalakan dan dimatikan dengan chip: detak jantung dengan kecepatan dan ketinggian saat bersepeda; laju pernapasan, SpO₂, dan HRV sepanjang malam.\n• Kartu besar (Pro): tahap tidur semalam dengan kurva pilihan Anda, dan latihan terakhir Anda sebagai kurva.\n• Sentuh tanggal untuk memilih hari dari kalender, dan tarik halaman ke bawah untuk memuat ulang.</string>
+    <string name="whats_new_dismiss">Mengerti</string>
     <string name="zones_title">Zona warna</string>
     <string name="zones_explained">Kurva diwarnai menurut pita tempat setiap hasil ukur berada. Tetapkan batas antara setiap pasang pita.</string>
     <string name="zones_upper_bound">Sampai (mulai %1$s)</string>

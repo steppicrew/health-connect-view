@@ -487,6 +487,9 @@
     <string name="session_overlap_note">Bunlar bu oturum sırasında alınan ölçümlerdir. Health Connect ölçümleri bir oturumla ilişkilendirmez; bu yüzden zamana göre eşleştirilirler.</string>
     <string name="session_statistics">Bu oturum sırasında kaydedilenler</string>
     <string name="session_details">Ayrıntılar</string>
+    <string name="whats_new_title">Yenilikler</string>
+    <string name="whats_new_18">• Antrenmanlar: molalar algılanıp düşülür, yalnızca hareket süresi sayılır ve istatistikler en düşük ve en yüksek nabzı gösterir.\n• Her antrenman için nabız bölgeleri: her bölgedeki süre ve süre ile eforden bir yük değeri.\n• Bir grafikte birden çok çizgi, çiplerle açılıp kapatılır: bisiklet sürüşünde hız ve yükseklikle nabız; gece boyunca solunum hızı, SpO₂ ve HRV.\n• Büyük kutucuklar (Pro): dün geceki uyku evreleri seçtiğiniz bir eğriyle ve son antrenmanlarınız eğri olarak.\n• Takvimden bir gün seçmek için tarihe dokunun, yeniden yüklemek için sayfayı aşağı çekin.</string>
+    <string name="whats_new_dismiss">Anladım</string>
     <string name="zones_title">Renk bölgeleri</string>
     <string name="zones_explained">Eğri, her ölçümün düştüğü banda göre renklendirilir. Her iki bant arasındaki sınırı belirleyin.</string>
     <string name="zones_upper_bound">En fazla (%1$s’den itibaren)</string>

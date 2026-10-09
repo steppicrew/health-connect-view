@@ -487,6 +487,9 @@
     <string name="session_overlap_note">Dit zijn de metingen die tijdens deze sessie zijn gedaan. Health Connect koppelt metingen niet aan een sessie, dus ze worden op tijd gekoppeld.</string>
     <string name="session_statistics">Wat er tijdens deze sessie is geregistreerd</string>
     <string name="session_details">Details</string>
+    <string name="whats_new_title">Wat is er nieuw</string>
+    <string name="whats_new_18">• Trainingen: pauzes worden herkend en weggelaten, alleen tijd in beweging telt, en de statistieken tonen de laagste en hoogste hartslag.\n• Hartslagzones bij elke training: de tijd in elke zone en een belasting uit duur en inspanning.\n• Meerdere lijnen in één grafiek, aan- en uitgezet met chips: hartslag met snelheid en hoogte bij een fietsrit; ademhalingsfrequentie, SpO₂ en HRV door de nacht.\n• Grote tegels (Pro): de slaapfasen van afgelopen nacht met een curve naar keuze, en je laatste trainingen als curves.\n• Tik op de datum om een dag in de kalender te kiezen, en trek een pagina omlaag om hem opnieuw te laden.</string>
+    <string name="whats_new_dismiss">Begrepen</string>
     <string name="zones_title">Kleurzones</string>
     <string name="zones_explained">De curve wordt gekleurd naar de band waarin een meting valt. Stel de grens tussen elk paar banden in.</string>
     <string name="zones_upper_bound">Tot (vanaf %1$s)</string>

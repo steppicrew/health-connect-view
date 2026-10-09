@@ -520,6 +520,9 @@
     <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="session_statistics">What was recorded during this session</string>
     <string name="session_details">Details</string>
+    <string name="whats_new_title">What’s new</string>
+    <string name="whats_new_18">• Workouts: breaks are found and left out, only time moving is counted, and the statistics show the lowest and highest heart rate.\n• Heart-rate zones for every workout: the time in each zone, and a load figure from time and effort.\n• Several lines in one chart, switched on and off by chips: heart rate with speed and height on a ride; breath rate, SpO₂ and HRV through a night.\n• Large tiles (Pro): last night’s stages with a curve of your choice, and your latest workouts as curves.\n• Tap the date to pick a day from the calendar, and pull a page down to reload it.</string>
+    <string name="whats_new_dismiss">Got it</string>
     <string name="zones_title">Colour zones</string>
     <string name="zones_explained">The curve is coloured by which band a reading falls into. Set the boundary between each pair of bands.</string>
     <string name="zones_upper_bound">Up to (from %1$s)</string>

@@ -481,6 +481,9 @@
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
     <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
     <string name="session_details">Details</string>
+    <string name="whats_new_title">Neuigkeiten</string>
+    <string name="whats_new_18">• Trainings: Pausen werden erkannt und herausgerechnet, gezählt wird nur die Zeit in Bewegung, und die Statistik zeigt die niedrigste und höchste Herzfrequenz.\n• Herzfrequenzzonen für jedes Training: die Zeit in jeder Zone und eine Belastung aus Dauer und Anstrengung.\n• Mehrere Linien in einem Diagramm, per Chip ein- und ausgeschaltet: Herzfrequenz mit Geschwindigkeit und Höhe bei einer Radfahrt, Atemfrequenz, SpO₂ und HRV durch die Nacht.\n• Große Kacheln (Pro): die Schlafphasen der letzten Nacht mit einer Kurve Ihrer Wahl und Ihre letzten Trainings als Kurven.\n• Tippen Sie auf das Datum, um einen Tag im Kalender zu wählen, und ziehen Sie eine Seite nach unten, um sie neu zu laden.</string>
+    <string name="whats_new_dismiss">Verstanden</string>
     <string name="zones_title">Farbzonen</string>
     <string name="zones_explained">Die Kurve wird danach eingefärbt, in welchen Bereich ein Messwert fällt. Legen Sie die Grenze zwischen je zwei Bereichen fest.</string>
     <string name="zones_upper_bound">Bis (ab %1$s)</string>

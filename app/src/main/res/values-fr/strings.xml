@@ -498,6 +498,9 @@
     <string name="session_overlap_note">Voici les mesures prises pendant cette séance. Santé Connect n’associe pas les mesures à une séance, elles sont donc rapprochées par l’heure.</string>
     <string name="session_statistics">Ce qui a été enregistré pendant cette séance</string>
     <string name="session_details">Détails</string>
+    <string name="whats_new_title">Nouveautés</string>
+    <string name="whats_new_18">• Entraînements : les pauses sont détectées et retirées, seul le temps en mouvement compte, et les statistiques indiquent la fréquence cardiaque la plus basse et la plus haute.\n• Zones de fréquence cardiaque pour chaque entraînement : le temps dans chaque zone et une charge tirée de la durée et de l’effort.\n• Plusieurs lignes dans un graphique, activées et désactivées par des puces : fréquence cardiaque avec vitesse et altitude à vélo ; fréquence respiratoire, SpO₂ et VFC pendant la nuit.\n• Grandes vignettes (Pro) : les phases de sommeil de la nuit dernière avec la courbe de votre choix, et vos derniers entraînements en courbes.\n• Touchez la date pour choisir un jour dans le calendrier, et tirez une page vers le bas pour la recharger.</string>
+    <string name="whats_new_dismiss">Compris</string>
     <string name="zones_title">Zones de couleur</string>
     <string name="zones_explained">La courbe est colorée selon la zone dans laquelle tombe chaque mesure. Définissez la limite entre chaque paire de zones.</string>
     <string name="zones_upper_bound">Jusqu’à (à partir de %1$s)</string>
