@@ -2,9 +2,14 @@ package de.steppicrew.healthconnectview.ui.session
 
 import androidx.health.connect.client.records.ExerciseRouteResult
 import androidx.health.connect.client.time.TimeRangeFilter
+import de.steppicrew.healthconnectview.health.Break
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.activePieces
+import de.steppicrew.healthconnectview.health.combinePieces
+import de.steppicrew.healthconnectview.health.movementIn
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.toPoints
 import de.steppicrew.healthconnectview.registry.Point
@@ -17,6 +22,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import java.time.Duration
+import java.time.Instant
 
 /**
  * One metric measured over a session's window, for the session screen: its total or mean,
@@ -49,9 +56,17 @@ const val GPX_MIME = "application/gpx+xml"
  * over the same window, so a session's statistics exist but have to be gathered rather
  * than read. On a real indoor bike session this found 647 kcal active, 25.5 km and a mean
  * of 138 bpm across 54 heart-rate records.
+ *
+ * With [breaks], only the time spent moving counts: each piece between them is aggregated on
+ * its own and the pieces combined, totals added and means weighted by time. A ride with five
+ * hours' rest in the middle otherwise reported the resting heart rate as its lowest and pulled
+ * its mean far below anything ridden.
  */
-suspend fun HealthRepository.statisticsFor(session: Session): List<SessionStat> = coroutineScope {
-    val window = TimeRangeFilter.between(session.start, session.end)
+suspend fun HealthRepository.statisticsFor(
+    session: Session,
+    breaks: List<Break> = emptyList(),
+): List<SessionStat> = coroutineScope {
+    val pieces = activePieces(session.start, session.end, breaks)
     val granted = grantedPermissions()
     val gate = Semaphore(MAX_CONCURRENT_READS)
 
@@ -64,27 +79,72 @@ suspend fun HealthRepository.statisticsFor(session: Session): List<SessionStat> 
                     // In the same request as the mean, so all three come from one
                     // deduplication of the same records.
                     val range = spec.rangeAggregates
-                    val values = try {
-                        totals(setOfNotNull(metric, range?.first, range?.second), window)
+                    val metrics = setOfNotNull(metric, range?.first, range?.second)
+                    val perPiece = try {
+                        pieces.map { (from, to) ->
+                            totals(metrics, TimeRangeFilter.between(from, to)) to Duration.between(from, to)
+                        }
                     } catch (e: CancellationException) {
                         throw e
                     } catch (_: Exception) {
-                        emptyMap()
+                        return@withPermit null
                     }
-                    values[metric]?.let {
-                        SessionStat(
-                            spec = spec,
-                            value = it,
-                            low = range?.let { (low, _) -> values[low] },
-                            high = range?.let { (_, high) -> values[high] },
-                        )
-                    }
+                    val value = combinePieces(
+                        perPiece.mapNotNull { (values, length) -> values[metric]?.let { it to length } },
+                        averaged = spec.isAveraged,
+                    ) ?: return@withPermit null
+                    SessionStat(
+                        spec = spec,
+                        value = value,
+                        low = range?.let { (low, _) -> perPiece.mapNotNull { it.first[low] }.minOrNull() },
+                        high = range?.let { (_, high) -> perPiece.mapNotNull { it.first[high] }.maxOrNull() },
+                    )
                 }
             }
         }
         .awaitAll()
         .filterNotNull()
 }
+
+/**
+ * How an exercise session divides into moving, stopped and breaks, read from the movement data
+ * recorded during it.
+ *
+ * Speed and distance are only written while moving, so a hole in them is a stop; heart rate is
+ * not, since a watch goes on measuring it all day. The session's own writer is asked first --
+ * its readings belong to the same recording -- and otherwise the writer with the most. Garmin's
+ * own copy of the 18.09 ride, measured on the phone, was 121 minutes long from the right start:
+ * its active time laid end to end, with its readings packed into that span. Mixing it with
+ * Health Sync's real timeline would fill the hole.
+ *
+ * Null for anything but exercise, where a type is not granted, or where nothing was recorded.
+ */
+suspend fun HealthRepository.movementDuring(session: Session): Movement? {
+    if (session.kind != Session.Kind.EXERCISE) return null
+    val granted = grantedPermissions()
+    val window = TimeRangeFilter.between(session.start, session.end)
+    val byWriter = mutableMapOf<String, MutableList<Instant>>()
+    MOVEMENT_TYPES.mapNotNull(RecordRegistry::specOrNull)
+        .filter { it.permission in granted }
+        .forEach { spec ->
+            val records = try {
+                readForChart(spec.type, window)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                emptyList()
+            }
+            records.forEach { record ->
+                val times = spec.pointsOf(record).map { it.time }.ifEmpty { listOf(spec.timeOf(record)) }
+                byWriter.getOrPut(spec.originOf(record)) { mutableListOf() } += times
+            }
+        }
+    val times = byWriter[session.origin] ?: byWriter.values.maxByOrNull { it.size } ?: return null
+    return movementIn(session.start, session.end, times.filter { it >= session.start && it <= session.end })
+}
+
+/** Written only while moving: their absence inside a workout is a stop. */
+private val MOVEMENT_TYPES = listOf("SpeedRecord", "DistanceRecord")
 
 /**
  * The route of [session], read now that the session is open: its points, a note that the

@@ -460,6 +460,10 @@
     <string name="session_untitled">Activité</string>
     <string name="session_no_stats">Rien d’autre n’a été enregistré pendant cette séance.</string>
     <string name="session_stat_range">min. %1$s · max. %2$s</string>
+    <string name="session_time_total">Durée totale</string>
+    <string name="session_time_moving">Temps en mouvement</string>
+    <string name="session_break">Pause</string>
+    <string name="session_breaks_note">Le temps en mouvement exclut chaque arrêt sans mesure de vitesse ni de distance. Les arrêts de plus de cinq minutes figurent comme pauses, sont exclus des valeurs ci-dessus et grisés sur le graphique de fréquence cardiaque.</string>
     <string name="session_gone">Cette séance est introuvable.</string>
     <string name="session_laps">Tours</string>
     <string name="session_lap">Tour %1$d</string>

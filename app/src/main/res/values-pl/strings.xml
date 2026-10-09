@@ -471,6 +471,10 @@
     <string name="session_untitled">Aktywność</string>
     <string name="session_no_stats">Podczas tej sesji nie zapisano nic więcej.</string>
     <string name="session_stat_range">min. %1$s · maks. %2$s</string>
+    <string name="session_time_total">Czas całkowity</string>
+    <string name="session_time_moving">Czas w ruchu</string>
+    <string name="session_break">Przerwa</string>
+    <string name="session_breaks_note">Czas w ruchu pomija każdy postój bez pomiarów prędkości i dystansu. Postoje dłuższe niż pięć minut są wymienione jako przerwy, pominięte w wartościach powyżej i zacieniowane na wykresie tętna.</string>
     <string name="session_gone">Nie można już znaleźć tej sesji.</string>
     <string name="session_laps">Okrążenia</string>
     <string name="session_lap">Okrążenie %1$d</string>

@@ -87,6 +87,11 @@ fun LineChart(
      */
     sessions: List<Session> = emptyList(),
     /**
+     * Stops inside a workout, shaded behind the line in a neutral tone: the readings there are
+     * real, but not of the activity, and a session band in its own colour would claim they are.
+     */
+    breaks: List<ClosedRange<Instant>> = emptyList(),
+    /**
      * Draw one bar per point instead of a line through them.
      *
      * For a window bucketed by day, where each point is a whole day's figure rather than a
@@ -307,6 +312,7 @@ fun LineChart(
     // convention to honour.
     val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
+    val breakColor = MaterialTheme.colorScheme.onSurface.copy(alpha = BAND_ALPHA)
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = MaterialTheme.typography.labelSmall
     val textMeasurer = rememberTextMeasurer()
@@ -531,6 +537,16 @@ fun LineChart(
                             Session.Kind.SLEEP -> sleepColor
                             Session.Kind.EXERCISE, Session.Kind.MINDFULNESS -> exerciseColor
                         },
+                        topLeft = Offset(from, 0f),
+                        size = androidx.compose.ui.geometry.Size(to - from, size.height),
+                    )
+                }
+                breaks.forEach { pause ->
+                    val from = (xForTime(pause.start.toEpochMilli()) ?: return@forEach).coerceIn(0f, size.width)
+                    val to = (xForTime(pause.endInclusive.toEpochMilli()) ?: return@forEach).coerceIn(0f, size.width)
+                    if (to <= from) return@forEach
+                    drawRect(
+                        color = breakColor,
                         topLeft = Offset(from, 0f),
                         size = androidx.compose.ui.geometry.Size(to - from, size.height),
                     )

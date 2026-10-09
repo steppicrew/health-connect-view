@@ -193,10 +193,11 @@ private fun SessionContent(
         }
 
         Section(stringResource(R.string.session_statistics))
-        Stats(detail.stats)
+        Stats(detail)
 
         Text(
-            text = stringResource(R.string.session_overlap_note),
+            text = stringResource(R.string.session_overlap_note) +
+                if (detail.movement != null) " " + stringResource(R.string.session_breaks_note) else "",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
@@ -258,6 +259,7 @@ private fun HeartRate(detail: SessionDetail) {
                 integral = true,
                 minSpan = CURVE_MIN_SPAN,
                 extent = detail.session.start..detail.session.end,
+                breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
                 fillHeight = expanded,
                 onExpand = onExpand,
                 holdSelection = expanded,
@@ -372,9 +374,29 @@ private fun Laps(laps: List<Lap>) {
     }
 }
 
+/**
+ * What was recorded during the session. Where it was not all spent moving, its total and
+ * moving time come first, then each break, so the figures below read as the time spent moving.
+ */
 @Composable
-private fun Stats(stats: List<SessionStat>) {
-    if (stats.isEmpty()) {
+private fun Stats(detail: SessionDetail) {
+    val session = detail.session
+    val movement = detail.movement
+    // Shown only where the two would read differently: "7h 49m" and "7h 49m" says nothing.
+    val total = Formatting.duration(session.duration)
+    val moving = movement?.let { Formatting.duration(it.moving) }
+    if (moving != null && moving != total) {
+        StatRow(stringResource(R.string.session_time_total), total)
+        StatRow(stringResource(R.string.session_time_moving), moving)
+    }
+    movement?.breaks.orEmpty().forEach { pause ->
+        StatRow(
+            label = stringResource(R.string.session_break),
+            value = Formatting.duration(pause.duration),
+            detail = stringResource(R.string.session_span, Formatting.time(pause.start), Formatting.time(pause.end)),
+        )
+    }
+    if (detail.stats.isEmpty()) {
         Text(
             text = stringResource(R.string.session_no_stats),
             style = MaterialTheme.typography.bodySmall,
@@ -382,37 +404,48 @@ private fun Stats(stats: List<SessionStat>) {
         )
         return
     }
-    stats.forEach { stat ->
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = stringResource(stat.spec.displayNameRes),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f),
-            )
-            Column(horizontalAlignment = Alignment.End) {
-                val unit = stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""
-                Text(
-                    text = Formatting.number(stat.value) + unit,
-                    style = MaterialTheme.typography.bodyMedium,
+    detail.stats.forEach { stat ->
+        val unit = stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""
+        StatRow(
+            label = stringResource(stat.spec.displayNameRes),
+            value = Formatting.number(stat.value) + unit,
+            // The spread under the mean: an average heart rate says little about a
+            // session without its peak.
+            detail = if (stat.low != null && stat.high != null) {
+                stringResource(
+                    R.string.session_stat_range,
+                    Formatting.number(stat.low),
+                    Formatting.number(stat.high) + unit,
                 )
-                // The spread under the mean: an average heart rate says little about a
-                // session without its peak.
-                if (stat.low != null && stat.high != null) {
-                    Text(
-                        text = stringResource(
-                            R.string.session_stat_range,
-                            Formatting.number(stat.low),
-                            Formatting.number(stat.high) + unit,
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            } else {
+                null
+            },
+        )
+    }
+}
+
+/** One figure: its name, its value, and a smaller line under the value where there is one. */
+@Composable
+private fun StatRow(label: String, value: String, detail: String? = null) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        Column(horizontalAlignment = Alignment.End) {
+            Text(text = value, style = MaterialTheme.typography.bodyMedium)
+            if (detail != null) {
+                Text(
+                    text = detail,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
     }

@@ -12,6 +12,7 @@ import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.sessionById
@@ -42,6 +43,11 @@ import kotlinx.coroutines.withContext
 data class SessionDetail(
     val session: Session,
     val stats: List<SessionStat>,
+    /**
+     * A workout's moving time and breaks, inferred from missing movement readings; null where
+     * there were none to read.
+     */
+    val movement: Movement?,
     val route: RouteLoad,
     /** Speed through the session as the device recorded it, m/s, or null where none was. */
     val speed: List<Point>?,
@@ -96,8 +102,10 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val granted = repository.grantedPermissions()
         val heartRateLocked = spec == null || spec.permission !in granted
 
-        // Side by side: three independent questions about one window.
-        val stats = async { repository.statisticsFor(session) }
+        // Side by side: independent questions about one window. The statistics wait for the
+        // breaks, since they leave them out.
+        val movement = async { repository.movementDuring(session) }
+        val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty()) }
         val route = async { repository.routeFor(session) }
         val speed = async { if (session.route == null) null else repository.speedDuring(session) }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
@@ -108,6 +116,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val detail = SessionDetail(
             session = session,
             stats = stats.await(),
+            movement = movement.await(),
             route = route.await(),
             speed = speed.await(),
             heartRate = heartRate.await(),
