@@ -73,20 +73,37 @@ normalise() {
     magick "$file" -alpha remove -alpha off "$file"
 }
 
+# A screenshot of a Pro feature says so: a band above it, in the feature graphic's colour, so
+# nobody installs for a feature and then finds it behind a purchase. Above the screen rather
+# than over it, so it hides nothing. "Pro" is the feature's name in every language.
+label_pro() {
+    local file="$1"
+    # The same height comes off the bottom -- the gesture bar, mostly -- so the frame keeps
+    # its size: grown, it passed Play's 2:1 and was padded with bars down both sides.
+    magick "$file" -gravity south -chop 0x120 +repage \
+        -gravity north -background "#00696D" -splice 0x120 \
+        -font DejaVu-Sans-Bold -pointsize 56 -fill "#E6FFFD" -annotate +0+28 "Pro" "$file"
+}
+
 # Screens worth showing, as nav routes. The debug build reads `route` from its launch
 # intent, so the whole set is captured without a single tap -- which matters because the
 # test phone refuses adb input injection, and because a screenshot set that needs manual
 # navigation drifts out of date the moment the UI changes.
 #
-# {name}:{route}; an empty route means the dashboard.
+# {name}:{route}:{layout}; an empty route means the dashboard. A layout, where given, is set
+# first by the debug seeder (`default` or `showcase`, see SeedActivity) and stays for the shots
+# after it: the second shows what Pro adds -- large, coloured tiles with their curves -- which
+# nobody can arrange by hand on a scripted emulator. Eight at most, Play's limit, and numbered
+# in order: release.sh uploads them sorted by name.
 SHOT_ROUTES=(
-    "1-dashboard:"
-    "2-steps:tile/StepsRecord?date=DATE"
-    "3-activities:tile/ExerciseSessionRecord?date=DATE"
-    "4-sleep:tile/SleepSessionRecord?date=DATE"
-    "5-heart-rate:tile/HeartRateRecord?date=DATE"
-    "6-blood-pressure:tile/BloodPressureRecord?date=DATE"
-    "7-catalog:catalog"
+    "1-dashboard::default"
+    "2-dashboard-pro::showcase"
+    "3-steps:tile/StepsRecord?date=DATE:"
+    "4-activities:tile/ExerciseSessionRecord?date=DATE:"
+    "5-sleep:tile/SleepSessionRecord?date=DATE:"
+    "6-heart-rate:tile/HeartRateRecord?date=DATE:"
+    "7-blood-pressure:tile/BloodPressureRecord?date=DATE:"
+    "8-catalog:catalog:"
 )
 
 # The debug build labels itself "✻ Health Connect View" so it can be told apart from the Play
@@ -142,12 +159,22 @@ take_shots() {
 
     local out="$OUT_DIR/screenshots/$lang"
     mkdir -p "$out"
+    # A renamed or dropped shot must not linger and be uploaded with the new set.
+    rm -f "$out"/*.png
 
-    local entry name route
+    local entry name route layout rest
     for entry in "${SHOT_ROUTES[@]}"; do
         name="${entry%%:*}"
-        route="${entry#*:}"
+        rest="${entry#*:}"
+        route="${rest%%:*}"
+        layout="${rest#*:}"
         route="${route//DATE/$day}"
+
+        if [ -n "$layout" ]; then
+            adb -s "$device" shell am start -W -n "$PACKAGE/de.steppicrew.healthconnectview.debug.SeedActivity" \
+                -e dashboard "$layout" >/dev/null
+            sleep 2
+        fi
 
         adb -s "$device" shell am force-stop "$PACKAGE"
         sleep 1
@@ -179,6 +206,7 @@ take_shots() {
         [ "$settled" -eq 1 ] || echo "warning: $name did not settle; check it" >&2
 
         normalise "$shot" "$status_bar"
+        case "$name" in *-pro) label_pro "$shot" ;; esac
         echo "$shot"
     done
 }
