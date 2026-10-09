@@ -121,6 +121,8 @@ import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.DayPickerDialog
+import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.iconFor
@@ -1038,7 +1040,19 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
 @Composable
 private fun TileChart(chart: TileDetailData, modifier: Modifier, compactAxis: Boolean = false) {
     val extent = chart.extent
-    if (chart.spec.tile.form == TileSpec.Form.SESSIONS && extent != null) {
+    // A day of sleep is last night, and a night with stages is drawn as them: the owner's
+    // idea, 09.10.2026. A band from 23:02 to 05:15 says when; the stages say how.
+    val night = chart.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
+    if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
+        Hypnogram(
+            stages = night.stages,
+            start = night.start,
+            end = night.end,
+            fillHeight = true,
+            totalsShown = !compactAxis,
+            modifier = modifier,
+        )
+    } else if (chart.spec.tile.form == TileSpec.Form.SESSIONS && extent != null) {
         // A session type's day has no series; its sessions on the timeline are the chart.
         SessionTimeline(sessions = chart.sessions, extent = extent, fillHeight = true, modifier = modifier)
     } else {
@@ -1052,15 +1066,19 @@ private fun TileChart(chart: TileDetailData, modifier: Modifier, compactAxis: Bo
  */
 @Composable
 private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
+    // A session tile's figure as its single cell writes it: "6,22" was a night's hours as a
+    // bare decimal, where the cell beside says "6h 13m".
+    @Composable
+    fun Figure() = if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data) else TileValue(data)
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            TileValue(data)
+            Figure()
             TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp))
         }
     } else {
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(VALUE_SHARE), contentAlignment = Alignment.Center) {
-                TileValue(data)
+                Figure()
             }
             TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true)
         }
@@ -1099,16 +1117,26 @@ private fun SessionCount(data: TileData) {
             return@Column
         }
 
-        Text(
-            text = stringResource(R.string.sessions_count, data.sessions.size),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = Formatting.duration(data.sessionDuration),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        // A night is asked "how long", never "how many": a large "1" above 6h 13m answered the
+        // question nobody had. Workouts keep their count, which is the figure they are asked by.
+        if (data.spec.tile.sessionKind == Session.Kind.SLEEP) {
+            Text(
+                text = Formatting.duration(data.sessionDuration),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.sessions_count, data.sessions.size),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = Formatting.duration(data.sessionDuration),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         // The activities themselves, as far as they fit: two or three icons say "a ride and a
         // walk" where the bare count says only "two".
         Row(

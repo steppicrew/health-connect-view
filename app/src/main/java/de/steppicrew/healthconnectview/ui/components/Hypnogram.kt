@@ -42,7 +42,16 @@ import java.time.Instant
  * how well someone slept.
  */
 @Composable
-fun Hypnogram(stages: List<SleepStage>, start: Instant, end: Instant, modifier: Modifier = Modifier) {
+fun Hypnogram(
+    stages: List<SleepStage>,
+    start: Instant,
+    end: Instant,
+    modifier: Modifier = Modifier,
+    /** Lanes share the height the parent gives, for a dashboard tile; else a fixed height each. */
+    fillHeight: Boolean = false,
+    /** The time in each stage beneath, which is also the legend; left out where there is no room. */
+    totalsShown: Boolean = true,
+) {
     val totals = stageTotals(stages)
     val lanes = StageKind.entries.filter { kind -> totals.any { it.first == kind } }
     val names = totals.associate { (kind, _) -> kind to stringResource(labelOf(kind)) }
@@ -55,7 +64,7 @@ fun Hypnogram(stages: List<SleepStage>, start: Instant, end: Instant, modifier: 
         Canvas(
             Modifier
                 .fillMaxWidth()
-                .height((LANE_HEIGHT * lanes.size).dp)
+                .then(if (fillHeight) Modifier.weight(1f) else Modifier.height((LANE_HEIGHT * lanes.size).dp))
                 .semantics { contentDescription = description },
         ) {
             val span = Duration.between(start, end).toMillis().toFloat().coerceAtLeast(1f)
@@ -78,7 +87,7 @@ fun Hypnogram(stages: List<SleepStage>, start: Instant, end: Instant, modifier: 
                 )
             }
         }
-        FlowRow(
+        if (totalsShown) FlowRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.padding(top = 4.dp),
         ) {
