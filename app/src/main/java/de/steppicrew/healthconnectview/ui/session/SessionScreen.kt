@@ -58,6 +58,7 @@ import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.components.BreakLegend
 import de.steppicrew.healthconnectview.ui.components.ExpandableChart
+import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.LoadingView
@@ -93,6 +94,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     ShowExportResults(viewModel.exportResults, snackbar)
     val session = (state as? UiState.Data)?.value?.session
@@ -130,26 +132,32 @@ fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
         },
     ) { padding ->
         val inner = Modifier.padding(padding)
-        when (val current = state) {
-            UiState.Loading -> LoadingView(inner)
-            UiState.Empty, UiState.NoPermission -> MessageView(
-                icon = Icons.Default.SearchOff,
-                title = stringResource(R.string.session_gone),
-                body = "",
-                modifier = inner,
-            )
-            is UiState.Error -> MessageView(
-                icon = Icons.Default.Warning,
-                title = stringResource(R.string.detail_error_title),
-                body = current.message,
-                modifier = inner,
-            )
-            is UiState.Data -> SessionContent(
-                detail = current.value,
-                onRouteGranted = viewModel::routeGranted,
-                onExportRoute = viewModel::exportRoute,
-                modifier = inner,
-            )
+        RefreshBox(
+            refreshing = refreshing,
+            onRefresh = viewModel::pullRefresh,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when (val current = state) {
+                UiState.Loading -> LoadingView(inner)
+                UiState.Empty, UiState.NoPermission -> MessageView(
+                    icon = Icons.Default.SearchOff,
+                    title = stringResource(R.string.session_gone),
+                    body = "",
+                    modifier = inner,
+                )
+                is UiState.Error -> MessageView(
+                    icon = Icons.Default.Warning,
+                    title = stringResource(R.string.detail_error_title),
+                    body = current.message,
+                    modifier = inner,
+                )
+                is UiState.Data -> SessionContent(
+                    detail = current.value,
+                    onRouteGranted = viewModel::routeGranted,
+                    onExportRoute = viewModel::exportRoute,
+                    modifier = inner,
+                )
+            }
         }
     }
 }

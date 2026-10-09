@@ -37,7 +37,7 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.ui.session.MAX_CONCURRENT_READS
 import de.steppicrew.healthconnectview.ui.session.SessionCurve
 import de.steppicrew.healthconnectview.ui.session.heartRateDuring
-import de.steppicrew.healthconnectview.ui.session.movementDuring
+import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.DayPartSplit
@@ -664,6 +664,27 @@ class TileDetailViewModel(
     }
 
     val canStepForward: Boolean get() = _offset.value > 0
+
+    private val _refreshing = MutableStateFlow(false)
+
+    /** True while a reload the user asked for by pulling the page down is running. */
+    val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
+
+    /**
+     * The same window read again from scratch, curves and records included: the user pulled
+     * the page down, most likely after a sync brought something in.
+     */
+    fun pullRefresh() {
+        curveCache.clear()
+        personalRecords.clear()
+        _refreshing.value = true
+        reload()
+        val job = loadJob
+        viewModelScope.launch {
+            job?.join()
+            _refreshing.value = false
+        }
+    }
 
     /** The load in flight, cancelled when a newer one starts. */
     private var loadJob: Job? = null

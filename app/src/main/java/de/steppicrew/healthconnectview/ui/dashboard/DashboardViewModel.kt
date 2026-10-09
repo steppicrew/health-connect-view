@@ -35,7 +35,7 @@ import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.health.sessionsIn
-import de.steppicrew.healthconnectview.ui.session.withMovement
+import de.steppicrew.healthconnectview.health.withMovement
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -279,6 +279,26 @@ class DashboardViewModel(
             sources = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
             preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
             loadTiles()
+        }
+    }
+
+    private val _refreshing = MutableStateFlow(false)
+
+    /** True while a reload the user asked for by pulling the page down is running. */
+    val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
+
+    /**
+     * Reads everything again, cached or not: the user pulled the page down, most likely
+     * because a sync has just brought something new that the cache cannot know about.
+     */
+    fun pullRefresh() {
+        cache = null
+        _refreshing.value = true
+        refresh()
+        val job = loadJob
+        viewModelScope.launch {
+            job?.join()
+            _refreshing.value = false
         }
     }
 

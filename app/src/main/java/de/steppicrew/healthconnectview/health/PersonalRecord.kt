@@ -95,15 +95,37 @@ suspend fun HealthRepository.personalRecord(
         RecordKind.LONGEST -> {
             val start = from.atStartOfDay(zone).toInstant()
             val end = today.atStartOfDay(zone).toInstant()
-            sessionsIn(start, end, setOf(Session.Kind.EXERCISE))
-                // Credited like the lists credit a session: by the day it ended on.
+            // Credited like the lists credit a session: by the day it ended on.
+            val sessions = sessionsIn(start, end, setOf(Session.Kind.EXERCISE))
                 .filter { !it.end.isBefore(start) && it.end.isBefore(end) }
-                .groupBy { it.end.atZone(zone).toLocalDate() }
-                .mapValues { (_, ofDay) -> ofDay.maxOf { it.duration.seconds }.toDouble() }
-                .let { bestDay(it, lowest = false) }
+            longestMoving(sessions)?.let { longest ->
+                bestDay(
+                    mapOf(longest.end.atZone(zone).toLocalDate() to longest.counted.seconds.toDouble()),
+                    lowest = false,
+                )
+            }
         }
     }?.let { (date, value) -> PersonalRecord(kind, value, date) }
 }
 
 /** How far back a record is searched: a year, like the longest streak. */
 const val RECORD_DAYS = 365L
+
+/**
+ * The workout with the longest moving time, reading as few of them as it can.
+ *
+ * Moving time is never longer than a workout's length, so the workouts are tried longest
+ * first and the search stops at the first one too short to beat the best found. On the phone
+ * the 18.09 ride -- 7h 49m long, 2h 3m moving -- was the longest by length and not by moving
+ * time, which a year of reads would have found the slow way: one or two hundred workouts.
+ */
+suspend fun HealthRepository.longestMoving(sessions: List<Session>): Session? {
+    var best: Session? = null
+    for (session in sessions.sortedByDescending { it.duration }) {
+        val leader = best
+        if (leader != null && session.duration <= leader.counted) break
+        val read = withMovement(listOf(session)).first()
+        if (leader == null || read.counted > leader.counted) best = read
+    }
+    return best
+}
