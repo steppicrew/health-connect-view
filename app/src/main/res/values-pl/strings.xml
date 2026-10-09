@@ -515,8 +515,9 @@
     <string name="session_zones_title">Strefy tętna</string>
     <string name="session_zone">Strefa %1$d</string>
     <string name="session_load">Obciążenie</string>
-    <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech dniach ostatniego roku; własne możesz ustawić w ustawieniach. Obciążenie: minuty w każdej strefie razy jej numer, zsumowane.</string>
-    <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach. Obciążenie: minuty w każdej strefie razy jej numer, zsumowane.</string>
+    <string name="session_load_note">Minuty w każdej strefie razy jej numer, zsumowane: %1$s. Do porównywania własnych treningów.</string>
+    <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech miesiącach ostatniego roku; własne możesz ustawić w ustawieniach.</string>
+    <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach.</string>
     <string name="settings_max_hr">Tętno maksymalne</string>
     <string name="settings_max_hr_auto">Z Twoich danych</string>
     <string name="settings_max_hr_body">Określa strefy tętna Twoich treningów. Z Twoich danych to najwyższe tętno osiągnięte w co najmniej trzech dniach ostatniego roku.</string>

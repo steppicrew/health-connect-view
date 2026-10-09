@@ -487,8 +487,9 @@
     <string name="session_zones_title">Herzfrequenzzonen</string>
     <string name="session_zone">Zone %1$d</string>
     <string name="session_load">Belastung</string>
-    <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten an mindestens drei Tagen des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen. Belastung: die Minuten in jeder Zone mal ihre Nummer, zusammengezählt.</string>
-    <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt. Belastung: die Minuten in jeder Zone mal ihre Nummer, zusammengezählt.</string>
+    <string name="session_load_note">Minuten in jeder Zone mal ihre Nummer, zusammengezählt: %1$s. Zum Vergleich Ihrer eigenen Trainings.</string>
+    <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten in mindestens drei Monaten des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen.</string>
+    <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt.</string>
     <string name="settings_max_hr">Maximale Herzfrequenz</string>
     <string name="settings_max_hr_auto">Aus Ihren Daten</string>
     <string name="settings_max_hr_body">Legt die Herzfrequenzzonen Ihrer Trainings fest. Aus Ihren Daten ist es die höchste Herzfrequenz, die an mindestens drei Tagen des vergangenen Jahres erreicht wurde.</string>

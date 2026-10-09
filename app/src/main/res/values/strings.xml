@@ -526,8 +526,9 @@
     <string name="session_zones_title">Heart-rate zones</string>
     <string name="session_zone">Zone %1$d</string>
     <string name="session_load">Load</string>
-    <string name="session_zones_note_data">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, the highest reached on at least three days of the past year; you can set your own in settings. Load: the minutes in each zone times its number, added up.</string>
-    <string name="session_zones_note_set">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, as set in settings. Load: the minutes in each zone times its number, added up.</string>
+    <string name="session_load_note">Minutes in each zone times its number, added up: %1$s. For comparing your own workouts.</string>
+    <string name="session_zones_note_data">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, the highest reached in at least three months of the past year; you can set your own in settings.</string>
+    <string name="session_zones_note_set">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, as set in settings.</string>
     <string name="settings_max_hr">Maximum heart rate</string>
     <string name="settings_max_hr_auto">From your data</string>
     <string name="settings_max_hr_body">Sets the heart-rate zones of your workouts. From your data, it is the highest heart rate reached on at least three days of the past year.</string>
