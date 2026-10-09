@@ -8,6 +8,8 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.health.Break
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
+import de.steppicrew.healthconnectview.health.AFTER_END
+import de.steppicrew.healthconnectview.health.RECOVERY_TOLERANCE
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.activePieces
@@ -211,6 +213,42 @@ suspend fun HealthRepository.heartRateDuring(session: Session): List<Point>? {
         session.end,
     ).takeIf { it.size > 1 }
 }
+
+/**
+ * Heart rate in the minutes after a workout, and a little before its end, from the writer
+ * with the densest readings there: mostly the watch's all-day readings, since the workout's
+ * own recording has stopped. Null where nothing was read after the end.
+ */
+suspend fun HealthRepository.heartRateAfter(session: Session): List<Point>? {
+    val spec = heartRateSpec() ?: return null
+    val from = session.end.minus(RECOVERY_TOLERANCE)
+    val to = session.end.plus(AFTER_END)
+    val records = try {
+        // From well before: Health Connect returns a series record only where it starts within
+        // the range, and on the phone the one holding the minutes after a workout began 61 s
+        // before its end. Read from the end itself, it was missed and the sparse all-day
+        // readings drawn instead. The points are cut to the window below.
+        readForChart(spec.type, TimeRangeFilter.between(from.minus(SERIES_LEAD), to))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        emptyList()
+    }
+    return fullestWriter(
+        records.groupBy { spec.originOf(it) }
+            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) }.filter { it.time >= from && it.time <= to } },
+        from,
+        to,
+        // Slots far finer than a whole session's: over five minutes, the writer reading every
+        // 15 s must win against one reading every two minutes.
+        slot = AFTER_SLOT,
+    ).takeIf { points -> points.any { it.time > session.end } }
+}
+
+private val AFTER_SLOT: Duration = Duration.ofSeconds(30)
+
+/** Longer than any heart-rate series record seen spanning a workout's end (10 min). */
+private val SERIES_LEAD: Duration = Duration.ofMinutes(30)
 
 /**
  * Speed through a session's window as one writer recorded it, in metres per second, or null

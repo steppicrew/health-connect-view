@@ -494,6 +494,10 @@
     <string name="session_zone">Zone %1$d</string>
     <string name="session_load">Belasting</string>
     <string name="session_load_note">Minuten in elke zone maal het nummer, opgeteld: %1$s. Om je eigen trainingen te vergelijken.</string>
+    <string name="session_recovery_1">Hartslag 1 min na het einde</string>
+    <string name="session_recovery_2">Hartslag 2 min na het einde</string>
+    <string name="session_after_end">Na het einde</string>
+    <string name="session_after_legend">Na de stippellijn: de eerste minuten na het einde.</string>
     <string name="session_zones_note_data">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, de hoogste die in minstens drie maanden van het afgelopen jaar werd bereikt; je kunt je eigen instellen in de instellingen.</string>
     <string name="session_zones_note_set">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, zoals ingesteld.</string>
     <string name="settings_max_hr">Maximale hartslag</string>

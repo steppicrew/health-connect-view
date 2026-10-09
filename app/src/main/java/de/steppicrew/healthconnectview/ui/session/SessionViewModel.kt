@@ -14,6 +14,8 @@ import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.HeartZones
+import de.steppicrew.healthconnectview.health.Recovery
+import de.steppicrew.healthconnectview.health.recoveryOf
 import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.heartZones
 import de.steppicrew.healthconnectview.health.observedMaxHeartRate
@@ -73,6 +75,9 @@ data class SessionDetail(
     @param:StringRes val heartRateUnitRes: Int?,
     /** A workout's time in heart-rate zones and its load; null without heart rate or a maximum. */
     val heartZones: HeartZones? = null,
+    /** A workout's heart rate in the minutes after it, drawn on past its end; null for a night. */
+    val heartRateAfter: List<Point>? = null,
+    val recovery: Recovery? = null,
 )
 
 /**
@@ -150,6 +155,9 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         // carries no route but does carry its speed.
         val speed = async { if (coversDistance(session.exerciseType)) repository.speedDuring(session) else null }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
+        val after = async {
+            if (heartRateLocked || session.kind != Session.Kind.EXERCISE) null else repository.heartRateAfter(session)
+        }
         val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty(), heartRate.await()) }
         val nightLines = async {
             when (session.kind) {
@@ -187,6 +195,8 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             heartRateZones = zones,
             heartRateUnitRes = spec?.displayUnitRes,
             heartZones = heartZones,
+            heartRateAfter = after.await(),
+            recovery = after.await()?.let { recoveryOf(it, session.end) },
         )
         currentCoroutineContext().ensureActive()
         UiState.Data(detail)

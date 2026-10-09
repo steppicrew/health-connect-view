@@ -494,6 +494,10 @@
     <string name="session_zone">Bölge %1$d</string>
     <string name="session_load">Yük</string>
     <string name="session_load_note">Her bölgedeki dakikalar bölge numarasıyla çarpılıp toplanır: %1$s. Kendi antrenmanlarınızı karşılaştırmak için.</string>
+    <string name="session_recovery_1">Bitişten 1 dk sonra nabız</string>
+    <string name="session_recovery_2">Bitişten 2 dk sonra nabız</string>
+    <string name="session_after_end">Bitişten sonra</string>
+    <string name="session_after_legend">Kesikli çizginin ötesi: bitişten sonraki ilk dakikalar.</string>
     <string name="session_zones_note_data">Bölgeler, son bir yılda en az üç ayda ulaşılan en yüksek nabız olan %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlardan kendi değerinizi belirleyebilirsiniz.</string>
     <string name="session_zones_note_set">Bölgeler, ayarlarda belirlenen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır.</string>
     <string name="settings_max_hr">Maksimum nabız</string>

@@ -505,6 +505,10 @@
     <string name="session_zone">Zona %1$d</string>
     <string name="session_load">Carga</string>
     <string name="session_load_note">Minutos em cada zona vezes o número dela, somados: %1$s. Para comparar seus próprios treinos.</string>
+    <string name="session_recovery_1">Frequência cardíaca 1 min após o fim</string>
+    <string name="session_recovery_2">Frequência cardíaca 2 min após o fim</string>
+    <string name="session_after_end">Após o fim</string>
+    <string name="session_after_legend">Depois da linha tracejada: os primeiros minutos após o fim.</string>
     <string name="session_zones_note_data">As zonas vão de 50–60 %% a 90–100 %% de uma frequência cardíaca máxima de %1$s, a mais alta atingida em pelo menos três meses do último ano; você pode definir a sua nas configurações.</string>
     <string name="session_zones_note_set">As zonas vão de 50–60 %% a 90–100 %% de uma frequência cardíaca máxima de %1$s, definida nas configurações.</string>
     <string name="settings_max_hr">Frequência cardíaca máxima</string>

@@ -483,6 +483,10 @@
     <string name="session_zone">구간 %1$d</string>
     <string name="session_load">부하</string>
     <string name="session_load_note">각 구간의 분에 구간 번호를 곱해 더한 값입니다: %1$s. 본인의 운동끼리 비교하는 데 사용하세요.</string>
+    <string name="session_recovery_1">종료 1분 후 심박수</string>
+    <string name="session_recovery_2">종료 2분 후 심박수</string>
+    <string name="session_after_end">종료 후</string>
+    <string name="session_after_legend">점선 이후: 종료 후 처음 몇 분입니다.</string>
     <string name="session_zones_note_data">구간은 최대 심박수 %1$s의 50–60 %%에서 90–100 %%까지입니다. 최대 심박수는 지난 1년 동안 최소 3개월 동안 도달한 가장 높은 값이며, 설정에서 직접 지정할 수 있습니다.</string>
     <string name="session_zones_note_set">구간은 설정에서 지정한 최대 심박수 %1$s의 50–60 %%에서 90–100 %%까지입니다.</string>
     <string name="settings_max_hr">최대 심박수</string>

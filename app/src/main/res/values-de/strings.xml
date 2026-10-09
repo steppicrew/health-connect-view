@@ -488,6 +488,10 @@
     <string name="session_zone">Zone %1$d</string>
     <string name="session_load">Belastung</string>
     <string name="session_load_note">Minuten in jeder Zone mal ihre Nummer, zusammengezählt: %1$s. Zum Vergleich Ihrer eigenen Trainings.</string>
+    <string name="session_recovery_1">Herzfrequenz 1 Min. nach dem Ende</string>
+    <string name="session_recovery_2">Herzfrequenz 2 Min. nach dem Ende</string>
+    <string name="session_after_end">Nach dem Ende</string>
+    <string name="session_after_legend">Hinter der gestrichelten Linie: die ersten Minuten nach dem Ende.</string>
     <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten in mindestens drei Monaten des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen.</string>
     <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt.</string>
     <string name="settings_max_hr">Maximale Herzfrequenz</string>

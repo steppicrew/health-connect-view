@@ -483,6 +483,10 @@
     <string name="session_zone">区间 %1$d</string>
     <string name="session_load">负荷</string>
     <string name="session_load_note">每个区间的分钟数乘以区间编号后相加：%1$s。用于比较您自己的各次训练。</string>
+    <string name="session_recovery_1">结束后 1 分钟的心率</string>
+    <string name="session_recovery_2">结束后 2 分钟的心率</string>
+    <string name="session_after_end">结束后</string>
+    <string name="session_after_legend">虚线之后：结束后的最初几分钟。</string>
     <string name="session_zones_note_data">区间为最大心率 %1$s 的 50–60 %% 至 90–100 %%，最大心率是过去一年中至少三个月中达到的最高心率；您可以在设置中自行设定。</string>
     <string name="session_zones_note_set">区间为设置中设定的最大心率 %1$s 的 50–60 %% 至 90–100 %%。</string>
     <string name="settings_max_hr">最大心率</string>

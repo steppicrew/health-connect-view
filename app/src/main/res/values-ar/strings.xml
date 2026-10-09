@@ -538,6 +538,10 @@
     <string name="session_zone">المنطقة %1$d</string>
     <string name="session_load">الحِمل</string>
     <string name="session_load_note">دقائق كل منطقة مضروبة في رقمها ثم مجموعة: %1$s. لمقارنة تمارينك بعضها ببعض.</string>
+    <string name="session_recovery_1">نبض القلب بعد دقيقة من الانتهاء</string>
+    <string name="session_recovery_2">نبض القلب بعد دقيقتين من الانتهاء</string>
+    <string name="session_after_end">بعد الانتهاء</string>
+    <string name="session_after_legend">بعد الخط المتقطع: الدقائق الأولى بعد الانتهاء.</string>
     <string name="session_zones_note_data">المناطق من 50–60 %% إلى 90–100 %% من أقصى معدل لنبض القلب قدره %1$s، وهو الأعلى الذي بلغته في ثلاثة أشهر على الأقل خلال العام الماضي؛ ويمكنك تحديد قيمتك في الإعدادات.</string>
     <string name="session_zones_note_set">المناطق من 50–60 %% إلى 90–100 %% من أقصى معدل لنبض القلب قدره %1$s، كما حُدد في الإعدادات.</string>
     <string name="settings_max_hr">أقصى معدل لنبض القلب</string>
