@@ -547,6 +547,7 @@ private fun nightSeries(detail: SessionDetail, line: NightLine): ChartSeries? {
         integral = spec.tile.integralValues,
         maxGap = if (line.dots) null else LINE_GAP,
         dots = line.dots,
+        reference = spec.tile.referenceRange,
     )
 }
 

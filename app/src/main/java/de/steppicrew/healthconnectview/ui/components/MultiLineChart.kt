@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Height
 import androidx.compose.material3.FilterChip
@@ -33,6 +34,7 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.dashboard.ChartLinesStore
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.registry.ReferenceRange
 import de.steppicrew.healthconnectview.registry.ValueZones
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -64,6 +66,12 @@ data class ChartSeries(
      * apart from a blue line even where the two colours are hard to tell apart in dark mode.
      */
     val dots: Boolean = false,
+    /**
+     * A general reference range, banded while this line owns the axis -- the only scale the
+     * band can be read against -- and named under the chips. SpO2's 95-100 %: a band, never
+     * coloured zones, which on a wrist sensor's noisy night would read as a diagnosis.
+     */
+    val reference: ReferenceRange? = null,
 )
 
 /**
@@ -132,6 +140,7 @@ fun MultiLineChart(
                 dottedLine = primary.dots,
                 integral = primary.integral,
                 minSpan = primary.minSpan,
+                referenceRange = primary.reference?.let { it.low..it.high },
                 extent = extent,
                 breaks = breaks,
                 fillHeight = fillHeight,
@@ -198,6 +207,18 @@ fun MultiLineChart(
                 )
             }
         }
+        // Named with where it comes from, as on the detail page, so it is never read as the
+        // wearer's own range.
+        primary.reference?.let { reference ->
+            DotText(
+                color = REFERENCE_COLOR.copy(alpha = REFERENCE_SWATCH_ALPHA),
+                text = stringResource(reference.labelRes),
+                style = MaterialTheme.typography.labelSmall,
+                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                gap = 4.dp,
+                shape = RoundedCornerShape(2.dp),
+            )
+        }
         // Says what the mark on a chip is, only while it is there to explain.
         if (!alone) {
             Text(
@@ -242,3 +263,5 @@ object SeriesColors {
 private const val MAX_LINES = 3
 private const val SWATCH = 10
 private const val OFF_ALPHA = 0.35f
+/** As the detail page's legend: at the band's own alpha a small swatch vanishes. */
+private const val REFERENCE_SWATCH_ALPHA = 0.45f
