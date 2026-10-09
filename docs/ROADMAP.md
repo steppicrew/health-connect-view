@@ -544,9 +544,12 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 
 Before the next release, from the owner, 09.10.2026:
 
-66. [ ] **Store screenshots of Pro** -- large and coloured tiles (a night's stages with a curve,
+66. [x] **Store screenshots of Pro** -- large and coloured tiles (a night's stages with a curve,
     workouts with their curves, a week as a chart), from seeded data like every other
-    screenshot, added to `store-assets.sh`'s routes.
+    screenshot, added to `store-assets.sh`'s routes. Done 09.10.2026: the second of eight
+    shots, in all 18 languages, set up by `SeedActivity -e dashboard showcase` and marked
+    by a band reading "Pro", the owner's idea. Taking it found a real fault: distance
+    written in long records read as breaks between their starts.
 67. [x] **Pro described as it is now** -- the in-app text (`pro_body`, `pro_owned_body`) and
     the store listing in every language: second curves on tiles, stage times, several lines
     per chart are new since they were written. Done 09.10.2026; the texts had also left out
