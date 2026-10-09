@@ -47,6 +47,9 @@
             android:name="de.steppicrew.healthconnectview.debug.SessionCurveShapeActivity"
             android:exported="true" />
         <activity
+            android:name="de.steppicrew.healthconnectview.debug.NightShapeActivity"
+            android:exported="true" />
+        <activity
             android:name="de.steppicrew.healthconnectview.debug.DayCurveShapeActivity"
             android:exported="true" />
     </application>
