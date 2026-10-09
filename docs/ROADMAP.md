@@ -492,7 +492,16 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     workouts and comparison. A chip per line in the line's colour, tapping it shows or hides the
     line; at least one stays on; the choice is remembered. Lines in one unit share a scale;
     otherwise the axis belongs to the last chip tapped and the others are scaled unlabelled.
-55. [ ] **Sleep: stages behind heart rate, breath rate, oxygen** -- stages as background bands
+55. [x] **Sleep: stages behind heart rate, breath rate, oxygen** -- built 09.10.2026, seen
+    on the phone for the night to 09.10. `NightShapeActivity` found every recent night with
+    heart rate every 15 s, breath rate and oxygen every minute and HRV every five minutes (all
+    Health Sync), skin temperature once: so four chips, and skin temperature none. HRV is a
+    fourth colour (violet) that dark mode cannot tell from oxygen's blue, so it is drawn as
+    dots. The stages run as a strip along the bottom of the plot rather than as bands behind
+    it -- their colours are the lines' hues -- and the readout names the stage. Breath rate and
+    oxygen are slice medians with floors on their scales (8 /min, 10 %). A large sleep tile's
+    chart is last night's stages, and a sleep tile's figure is the night's length (it read
+    "1" above "6h 13m", and "6,22" beside a chart). Not done: skin temperature as a number. -- -- stages as background bands
     with the night's readings over them, chips per line, on the session screen and a large
     sleep tile (a new face: last night). Which lines are worth a chip is decided by what the
     phone holds for recent nights, not by what Health Connect could hold.
