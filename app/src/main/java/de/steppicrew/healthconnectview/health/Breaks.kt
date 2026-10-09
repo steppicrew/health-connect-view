@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.health
 
+import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import kotlinx.coroutines.CancellationException
@@ -25,17 +26,39 @@ data class Break(val start: Instant, val end: Instant) {
 }
 
 /**
- * Each gap longer than [minGap] between consecutive [times], as a break.
+ * A stretch a movement reading covers: a speed sample's instant, a distance record's whole
+ * interval. Only time no reading covers can be a stop -- an app writing distance in 30-minute
+ * records has no hole between the start of one and the start of the next, which read as a
+ * break of nearly every half hour of a seeded run until intervals counted whole.
+ */
+data class Covered(val start: Instant, val end: Instant = start)
+
+/** Each gap longer than [minGap] between consecutive [times], as a break; see [gapsIn]. */
+fun breaksIn(times: List<Instant>, minGap: Duration = MIN_BREAK): List<Break> =
+    gapsIn(times.map(::Covered), minGap)
+
+/**
+ * Each stretch longer than [minGap] that none of [covered] reaches, as a break.
  *
  * Only gaps *between* readings count. Nothing before the first or after the last reading is
  * a break: a session whose writer started recording a minute late is not paused, and a missing
  * edge says too little to tell the two apart.
  */
-fun breaksIn(times: List<Instant>, minGap: Duration = MIN_BREAK): List<Break> =
-    times.sorted()
-        .zipWithNext()
-        .filter { (a, b) -> Duration.between(a, b) > minGap }
-        .map { (a, b) -> Break(a, b) }
+fun gapsIn(covered: List<Covered>, minGap: Duration = MIN_BREAK): List<Break> =
+    uncovered(covered).filter { it.duration > minGap }
+
+/** Every stretch between [covered] that none of them reaches, in order, of any length. */
+private fun uncovered(covered: List<Covered>): List<Break> {
+    val sorted = covered.sortedBy { it.start }
+    if (sorted.isEmpty()) return emptyList()
+    val gaps = mutableListOf<Break>()
+    var reach = sorted.first().end
+    sorted.drop(1).forEach { next ->
+        if (next.start > reach) gaps += Break(reach, next.start)
+        if (next.end > reach) reach = next.end
+    }
+    return gaps
+}
 
 /**
  * How a workout's time divides into moving and stopped, from its movement readings.
@@ -52,19 +75,26 @@ fun breaksIn(times: List<Instant>, minGap: Duration = MIN_BREAK): List<Break> =
  */
 data class Movement(val breaks: List<Break>, val moving: Duration)
 
+/** [movementIn] for instant readings alone. */
+@JvmName("movementInTimes")
+fun movementIn(start: Instant, end: Instant, times: List<Instant>): Movement? =
+    movementIn(start, end, times.map(::Covered))
+
 /**
- * [Movement] over [start]..[end] from the times of the movement readings in it. Null where
+ * [Movement] over [start]..[end] from what the movement readings in it cover. Null where
  * there are fewer than two readings, which say nothing about stops.
  */
-fun movementIn(start: Instant, end: Instant, times: List<Instant>): Movement? {
-    if (times.size < 2) return null
+fun movementIn(start: Instant, end: Instant, covered: List<Covered>): Movement? {
+    if (covered.size < 2) return null
     // Relative to how often this writer records: one saving a reading every 30 s would
-    // otherwise read as stopped between every two of them.
-    val gaps = times.sorted().zipWithNext { a, b -> Duration.between(a, b) }.sorted()
+    // otherwise read as stopped between every two of them. Records that meet count as a gap
+    // of nothing.
+    val sorted = covered.sortedBy { it.start }
+    val gaps = sorted.zipWithNext { a, b -> Duration.between(a.end, b.start).coerceAtLeast(Duration.ZERO) }.sorted()
     val usual = gaps[gaps.size / 2]
-    val stopped = breaksIn(times, maxOf(MIN_STOP, usual.multipliedBy(STOP_FACTOR))).fold(Duration.ZERO) { total, gap -> total + gap.duration }
+    val stopped = gapsIn(covered, maxOf(MIN_STOP, usual.multipliedBy(STOP_FACTOR))).fold(Duration.ZERO) { total, gap -> total + gap.duration }
     return Movement(
-        breaks = breaksIn(times),
+        breaks = gapsIn(covered),
         moving = Duration.between(start, end).minus(stopped).coerceAtLeast(Duration.ZERO),
     )
 }
@@ -145,7 +175,7 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
     // thousands of samples, where distance came as 4,224 records -- five pages to read
     // instead of one, for every workout on a page. The session's own writer comes before any
     // other in either type, for the reason above; another writer's speed is the last resort.
-    var fallback: List<Instant>? = null
+    var fallback: List<Covered>? = null
     MOVEMENT_TYPES.mapNotNull(RecordRegistry::specOrNull)
         .filter { it.permission in granted }
         .forEach { spec ->
@@ -157,8 +187,13 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
                 emptyList()
             }
             val byWriter = records.groupBy { spec.originOf(it) }.mapValues { (_, group) ->
-                group.flatMap { record -> spec.pointsOf(record).map { it.time }.ifEmpty { listOf(spec.timeOf(record)) } }
-                    .filter { it >= session.start && it <= session.end }
+                group.flatMap { record ->
+                    if (record is DistanceRecord) {
+                        listOf(Covered(record.startTime, record.endTime))
+                    } else {
+                        spec.pointsOf(record).map { Covered(it.time) }.ifEmpty { listOf(Covered(spec.timeOf(record))) }
+                    }
+                }.filter { it.end >= session.start && it.start <= session.end }
             }
             byWriter[session.origin]?.let { own -> movementIn(session.start, session.end, own)?.let { return it } }
             if (fallback == null && spec.type.simpleName == SPEED) fallback = byWriter.values.maxByOrNull { it.size }
