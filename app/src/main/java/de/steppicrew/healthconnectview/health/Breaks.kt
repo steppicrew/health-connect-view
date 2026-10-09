@@ -130,16 +130,21 @@ private const val STOP_FACTOR = 3L
  * its active time laid end to end, with its readings packed into that span. Mixing it with
  * Health Sync's real timeline would fill the hole.
  *
- * Null for anything but exercise, where a type is not granted, or where nothing was recorded.
+ * Another writer's distance is never used: a watch writes distance all day, from steps, so its
+ * holes are wherever its wearer sat down -- an indoor ride with no speed of its own would be
+ * "paused" by the walk to the bike. Speed is written only while a workout is recorded.
+ *
+ * Null for anything but a workout that [coversDistance], where a type is not granted, or where
+ * nothing was recorded -- then no breaks are claimed and the session counts whole.
  */
 suspend fun HealthRepository.movementDuring(session: Session): Movement? {
-    if (session.kind != Session.Kind.EXERCISE) return null
+    if (session.kind != Session.Kind.EXERCISE || !coversDistance(session.exerciseType)) return null
     val granted = grantedPermissions()
     val window = TimeRangeFilter.between(session.start, session.end)
     // Speed first and distance only where it has none: one speed record holds a ride's
     // thousands of samples, where distance came as 4,224 records -- five pages to read
     // instead of one, for every workout on a page. The session's own writer comes before any
-    // other in either type, for the reason above; another writer is the last resort.
+    // other in either type, for the reason above; another writer's speed is the last resort.
     var fallback: List<Instant>? = null
     MOVEMENT_TYPES.mapNotNull(RecordRegistry::specOrNull)
         .filter { it.permission in granted }
@@ -156,7 +161,7 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
                     .filter { it >= session.start && it <= session.end }
             }
             byWriter[session.origin]?.let { own -> movementIn(session.start, session.end, own)?.let { return it } }
-            if (fallback == null) fallback = byWriter.values.maxByOrNull { it.size }
+            if (fallback == null && spec.type.simpleName == SPEED) fallback = byWriter.values.maxByOrNull { it.size }
         }
     fallback?.let { return movementIn(session.start, session.end, it) }
     return null
@@ -179,6 +184,9 @@ suspend fun HealthRepository.withMovement(sessions: List<Session>): List<Session
 
 /** Written only while moving: their absence inside a workout is a stop. In the order asked. */
 private val MOVEMENT_TYPES = listOf("SpeedRecord", "DistanceRecord")
+
+/** The one movement type another writer's readings may stand in for the session's own. */
+private const val SPEED = "SpeedRecord"
 
 /** As for a session's other reads: Health Connect serves an app largely in turn. */
 private const val CONCURRENT_MOVEMENT_READS = 4

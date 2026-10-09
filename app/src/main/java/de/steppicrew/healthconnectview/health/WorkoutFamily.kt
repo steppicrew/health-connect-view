@@ -54,3 +54,32 @@ fun familiesIn(sessions: List<Session>): List<WorkoutFamily> =
         .map { familyOf(it.exerciseType) }
         .distinct()
         .sorted()
+
+/**
+ * Whether a workout of [exerciseType] is about getting somewhere, so that stopping is a break:
+ * a ride or a run stands still at a café, a strength session does not "stop" between sets. On
+ * the phone a 23-minute strength session read a ten-minute "break" out of the all-day walking
+ * distance around it (09.10.2026). Unknown types are left out for the same reason.
+ */
+fun coversDistance(exerciseType: Int?): Boolean = when (familyOf(exerciseType)) {
+    WorkoutFamily.CYCLING,
+    WorkoutFamily.RUNNING,
+    WorkoutFamily.WALKING,
+    WorkoutFamily.HIKING,
+    WorkoutFamily.SWIMMING,
+    WorkoutFamily.ROWING,
+    -> true
+    else -> exerciseType in DISTANCE_TYPES
+}
+
+/** Distance sports not in a family of their own. */
+private val DISTANCE_TYPES = setOf(
+    ExerciseSessionRecord.EXERCISE_TYPE_ICE_SKATING,
+    ExerciseSessionRecord.EXERCISE_TYPE_SKATING,
+    ExerciseSessionRecord.EXERCISE_TYPE_SKIING,
+    ExerciseSessionRecord.EXERCISE_TYPE_SNOWBOARDING,
+    ExerciseSessionRecord.EXERCISE_TYPE_SNOWSHOEING,
+    ExerciseSessionRecord.EXERCISE_TYPE_PADDLING,
+    ExerciseSessionRecord.EXERCISE_TYPE_SAILING,
+    ExerciseSessionRecord.EXERCISE_TYPE_WHEELCHAIR,
+)

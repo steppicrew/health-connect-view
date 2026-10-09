@@ -3,10 +3,13 @@ package de.steppicrew.healthconnectview
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.WorkoutFamily
+import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.familiesIn
 import de.steppicrew.healthconnectview.health.familyOf
 import java.time.Instant
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class WorkoutFamilyTest {
@@ -42,5 +45,16 @@ class WorkoutFamilyTest {
             listOf(WorkoutFamily.CYCLING, WorkoutFamily.WALKING, WorkoutFamily.OTHER),
             familiesIn(sessions),
         )
+    }
+
+    @Test
+    fun `breaks are looked for only where a workout goes somewhere`() {
+        assertTrue(coversDistance(ExerciseSessionRecord.EXERCISE_TYPE_BIKING))
+        assertTrue(coversDistance(ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY))
+        assertTrue(coversDistance(ExerciseSessionRecord.EXERCISE_TYPE_SKIING))
+        // Sets with rests between them are the workout, not a pause in it.
+        assertFalse(coversDistance(ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING))
+        assertFalse(coversDistance(ExerciseSessionRecord.EXERCISE_TYPE_YOGA))
+        assertFalse(coversDistance(null))
     }
 }
