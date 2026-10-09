@@ -256,6 +256,15 @@ fun LineChart(
     overlays: List<OverlayLine> = emptyList(),
     /** This line's colour where it is one of several, so it matches its chip; else the theme's. */
     lineColorOverride: Color? = null,
+    /**
+     * Coloured stretches along the bottom of the plot, placed by time -- a night's stages under
+     * its heart rate -- so they zoom with the curve. A strip rather than bands behind it: the
+     * stage colours are the line colours' hues, and a curve over a band of its own colour
+     * vanishes.
+     */
+    strip: List<StripSegment> = emptyList(),
+    /** What the strip says at a moment, for the readout: the stage's name. */
+    stripLabel: ((Instant) -> String?)? = null,
 ) {
     if (points.isEmpty()) return
 
@@ -319,9 +328,14 @@ fun LineChart(
             if (line.sharesScale || line.points.isEmpty()) {
                 null
             } else {
+                // Widened to its floor like the main line: oxygen between 93 and 95 % filled
+                // the whole height and read as a night of plunges.
+                val low = line.points.minOf { it.value }
+                val high = line.points.maxOf { it.value }
+                val widen = line.minSpan?.let { ((it - (high - low)) / 2).coerceAtLeast(0.0) } ?: 0.0
                 AxisScale.of(
-                    low = line.points.minOf { it.value },
-                    high = line.points.maxOf { it.value },
+                    low = (low - widen).let { if (low >= 0.0) it.coerceAtLeast(0.0) else it },
+                    high = high + widen,
                     targetSteps = GUIDE_INTERVALS,
                     integral = false,
                     includeZero = false,
@@ -422,9 +436,10 @@ fun LineChart(
         // chart that ignores touch, so there it would only be an empty row.
         if (interactive) {
             val selectedPoint = selected?.let(points::getOrNull)
-            if (overlays.isNotEmpty()) {
+            if (overlays.isNotEmpty() || stripLabel != null) {
                 OverlayReadout(
                     time = selectedPoint?.time,
+                    label = selectedPoint?.time?.let { stripLabel?.invoke(it) },
                     lines = overlays,
                     ownColor = lineColor,
                     ownValue = selectedPoint?.let { point ->
@@ -734,6 +749,18 @@ fun LineChart(
                 }
             }
 
+            strip.forEach { segment ->
+                val from = (xForTime(segment.start.toEpochMilli()) ?: return@forEach).coerceIn(0f, size.width)
+                val to = (xForTime(segment.end.toEpochMilli()) ?: return@forEach).coerceIn(0f, size.width)
+                if (to <= from) return@forEach
+                val height = STRIP_HEIGHT.dp.toPx()
+                drawRect(
+                    color = segment.color,
+                    topLeft = Offset(from, size.height - height),
+                    size = androidx.compose.ui.geometry.Size(to - from, height),
+                )
+            }
+
             // The other lines first, so the one owning the axis is drawn over them. Each broken
             // where its readings stop for longer than its own gap, like the main line.
             overlays.forEachIndexed { index, line ->
@@ -757,7 +784,15 @@ fun LineChart(
                     }
                     previous = point
                 }
-                drawPath(path, color = line.color, style = Stroke(width = LINE_WIDTH.dp.toPx(), cap = StrokeCap.Round))
+                if (line.dots) {
+                    // A reading every few minutes is a set of readings, not a trace.
+                    line.points.forEach { point ->
+                        val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
+                        drawCircle(color = line.color, radius = 2.5.dp.toPx(), center = Offset(x, yOf(point.value)))
+                    }
+                } else {
+                    drawPath(path, color = line.color, style = Stroke(width = LINE_WIDTH.dp.toPx(), cap = StrokeCap.Round))
+                }
 
                 // The touched moment on this line too, so the readout's value has a place.
                 selected?.let { at -> line.nearest(points[at].time) }?.let { point ->
@@ -1603,6 +1638,10 @@ data class OverlayLine(
     val sharesScale: Boolean = false,
     /** Readings further apart than this are not joined; null joins them all. */
     val maxGap: java.time.Duration? = null,
+    /** Drawn as a dot per reading instead of a line, for a sparse series; see [ChartSeries.dots]. */
+    val dots: Boolean = false,
+    /** The narrowest range its own scale may show, as [LineChart]'s minSpan. */
+    val minSpan: Double? = null,
 ) {
     /**
      * The reading nearest [time], or null where none is within [maxGap] of it -- a moment the
@@ -1621,7 +1660,14 @@ data class OverlayLine(
  * line, the number is read like any other.
  */
 @Composable
-private fun OverlayReadout(time: Instant?, lines: List<OverlayLine>, ownColor: Color, ownValue: String?) {
+private fun OverlayReadout(
+    time: Instant?,
+    lines: List<OverlayLine>,
+    ownColor: Color,
+    ownValue: String?,
+    /** The strip's word for the moment -- "Tiefschlaf" -- written first, in plain text. */
+    label: String? = null,
+) {
     val values = buildList {
         add(ownColor to ownValue)
         lines.forEach { line -> add(line.color to time?.let(line::nearest)?.let { line.format(it.value) }) }
@@ -1632,6 +1678,9 @@ private fun OverlayReadout(time: Instant?, lines: List<OverlayLine>, ownColor: C
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (time != null) {
+            label?.let {
+                Text(text = it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             values.forEach { (color, text) ->
                 DotText(
                     color = color,
@@ -1646,6 +1695,11 @@ private fun OverlayReadout(time: Instant?, lines: List<OverlayLine>, ownColor: C
 }
 
 private const val OVERLAY_READOUT_HEIGHT = 20
+
+/** One coloured stretch of a [LineChart]'s strip. */
+data class StripSegment(val start: Instant, val end: Instant, val color: Color)
+
+private const val STRIP_HEIGHT = 8
 
 /**
  * The touched point's value and time, in a row that is always present.

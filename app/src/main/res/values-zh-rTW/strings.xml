@@ -446,6 +446,7 @@
     <string name="session_breaks_note">運動時間不含任何沒有速度或距離資料的停頓。超過五分鐘的停頓列為休息，不計入上方數值，並在心率圖中以陰影標示。</string>
     <string name="session_break_legend">休息：未記錄速度或距離</string>
     <string name="chart_line_axis">顯示其刻度</string>
+    <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">找不到這次活動。</string>
     <string name="session_laps">圈</string>
     <string name="session_lap">第 %1$d 圈</string>

@@ -488,6 +488,8 @@
     <string name="session_breaks_note">Time moving leaves out every stop without speed or distance readings. Stops of more than five minutes are listed as breaks, left out of the figures above and shaded on the heart-rate chart.</string>
     <string name="session_break_legend">Break: no speed or distance recorded</string>
     <string name="chart_line_axis">Its scale is shown</string>
+    <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_oxygen" translatable="false">SpO₂</string>
     <string name="session_gone">This session can no longer be found.</string>
     <string name="session_laps">Laps</string>
     <string name="session_lap">Lap %1$d</string>

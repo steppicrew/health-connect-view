@@ -457,6 +457,7 @@
     <string name="session_breaks_note">गतिशील समय में गति या दूरी के डेटा के बिना हर ठहराव शामिल नहीं है। पाँच मिनट से लंबे ठहराव विराम के रूप में दिखाए जाते हैं, ऊपर के मानों में शामिल नहीं होते और हृदय गति चार्ट में छायांकित होते हैं।</string>
     <string name="session_break_legend">विराम: कोई गति या दूरी दर्ज नहीं</string>
     <string name="chart_line_axis">इसका पैमाना दिखाया गया है</string>
+    <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">यह सेशन अब नहीं मिल रहा।</string>
     <string name="session_laps">लैप</string>
     <string name="session_lap">लैप %1$d</string>

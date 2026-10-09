@@ -59,6 +59,11 @@ data class ChartSeries(
     val zones: ValueZones? = null,
     /** Readings further apart than this are not joined. */
     val maxGap: Duration? = null,
+    /**
+     * A dot per reading instead of a line: HRV comes every five minutes, and as dots it stays
+     * apart from a blue line even where the two colours are hard to tell apart in dark mode.
+     */
+    val dots: Boolean = false,
 )
 
 /**
@@ -85,6 +90,9 @@ fun MultiLineChart(
     fillHeight: Boolean = false,
     onExpand: (() -> Unit)? = null,
     holdSelection: Boolean = false,
+    /** See [LineChart]: a night's stages along the bottom, named in the readout. */
+    strip: List<StripSegment> = emptyList(),
+    stripLabel: ((Instant) -> String?)? = null,
 ) {
     val available = series.filter { it.points.size > 1 }
     if (available.isEmpty()) return
@@ -121,7 +129,7 @@ fun MultiLineChart(
                 valueDecimals = primary.valueDecimals,
                 zones = if (alone) primary.zones else null,
                 lineColorOverride = if (alone) null else primary.color,
-                markReadings = false,
+                markReadings = primary.dots,
                 integral = primary.integral,
                 minSpan = primary.minSpan,
                 extent = extent,
@@ -129,6 +137,8 @@ fun MultiLineChart(
                 fillHeight = fillHeight,
                 onExpand = onExpand,
                 holdSelection = holdSelection,
+                strip = strip,
+                stripLabel = stripLabel,
                 overlays = others.mapIndexed { index, line ->
                     OverlayLine(
                         points = line.points,
@@ -138,6 +148,8 @@ fun MultiLineChart(
                         },
                         sharesScale = line.unitKey == primary.unitKey,
                         maxGap = line.maxGap,
+                        dots = line.dots,
+                        minSpan = line.minSpan,
                     )
                 },
             )
@@ -204,6 +216,13 @@ object SeriesColors {
 
     @Composable
     fun aqua(): Color = pick(Color(0xFF1BAF7A), Color(0xFF199E70))
+
+    /**
+     * A fourth, for HRV: apart from orange and aqua in both modes, and from blue in light mode
+     * only -- so HRV is drawn as dots, which a blue line cannot be mistaken for.
+     */
+    @Composable
+    fun violet(): Color = pick(Color(0xFF4A3AA7), Color(0xFF9085E9))
 
     @Composable
     private fun pick(light: Color, dark: Color): Color =

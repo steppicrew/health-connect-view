@@ -54,6 +54,11 @@ data class SessionDetail(
     val speed: List<Point>?,
     /** Heart rate through the session, or null where none was recorded or it is not allowed. */
     val heartRate: List<Point>?,
+    /**
+     * A night's other readings, by type name -- breath rate, oxygen, HRV -- each where granted
+     * and recorded. Empty for anything but sleep.
+     */
+    val nightLines: Map<String, List<Point>> = emptyMap(),
     /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
     val heartRateLocked: Boolean,
     /** The user's heart-rate bands, so a reading is the same colour here as on the tile. */
@@ -128,6 +133,13 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val route = async { repository.routeFor(session) }
         val speed = async { if (session.route == null) null else repository.speedDuring(session) }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
+        val nightLines = async {
+            if (session.kind != Session.Kind.SLEEP) {
+                emptyMap()
+            } else {
+                NIGHT_TYPES.mapNotNull { type -> repository.readingsDuring(session, type)?.let { type to it } }.toMap()
+            }
+        }
         val zones = runCatching { dashboardStore.config.first() }.getOrNull()
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
             ?: spec?.tile?.defaultZones
@@ -139,6 +151,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             route = route.await(),
             speed = speed.await(),
             heartRate = heartRate.await(),
+            nightLines = nightLines.await(),
             heartRateLocked = heartRateLocked,
             heartRateZones = zones,
             heartRateUnitRes = spec?.displayUnitRes,
@@ -180,5 +193,8 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
 
     private companion object {
         const val TAG = "Session"
+
+        /** What a night's chart offers beside heart rate; see readingsDuring for why these. */
+        val NIGHT_TYPES = listOf("RespiratoryRateRecord", "OxygenSaturationRecord", "HeartRateVariabilityRmssdRecord")
     }
 }
