@@ -80,6 +80,9 @@
     <string name="tile_no_data" translatable="false">–</string>
     <string name="tile_locked">Not allowed</string>
     <string name="tile_loading">Loading</string>
+    <string name="loading_slow_1">This is taking a while. Still gathering data…</string>
+    <string name="loading_slow_2">Still reading from Health Connect…</string>
+    <string name="loading_slow_3">Long time spans take longer. Still working…</string>
     <string name="tile_failed">Couldn\'t load</string>
     <string name="tile_grant">Allow</string>
     <string name="tile_value_as_of">as of %1$s</string>

@@ -82,6 +82,9 @@
     <string name="dashboard_empty_body">أضِف القيم التي تريد رؤيتها من قائمة كل أنواع البيانات.</string>
     <string name="tile_locked">غير مسموح</string>
     <string name="tile_loading">جارٍ التحميل</string>
+    <string name="loading_slow_1">يستغرق هذا بعض الوقت. لا يزال جمع البيانات جاريًا…</string>
+    <string name="loading_slow_2">لا تزال القراءة من Health Connect جارية…</string>
+    <string name="loading_slow_3">الفترات الطويلة تستغرق وقتًا أطول. لا يزال العمل جاريًا…</string>
     <string name="tile_failed">تعذّر التحميل</string>
     <string name="tile_grant">سماح</string>
     <string name="tile_value_as_of">حتى %1$s</string>

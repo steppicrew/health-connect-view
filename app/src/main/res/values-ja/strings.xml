@@ -77,6 +77,9 @@
     <string name="dashboard_empty_body">見たい数値を、すべてのデータタイプの一覧から追加してください。</string>
     <string name="tile_locked">許可されていません</string>
     <string name="tile_loading">読み込み中</string>
+    <string name="loading_slow_1">時間がかかっています。データを収集中です…</string>
+    <string name="loading_slow_2">ヘルスコネクトから読み込んでいます…</string>
+    <string name="loading_slow_3">長い期間は時間がかかります。処理を続けています…</string>
     <string name="tile_failed">読み込めませんでした</string>
     <string name="tile_grant">許可</string>
     <string name="tile_value_as_of">%1$s 時点</string>
