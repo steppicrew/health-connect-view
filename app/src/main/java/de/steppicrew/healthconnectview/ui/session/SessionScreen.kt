@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.session
 
 import androidx.compose.foundation.layout.height
+import de.steppicrew.healthconnectview.health.AFTER_END
 import de.steppicrew.healthconnectview.health.HeartZones
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.ui.geometry.Size
@@ -223,6 +224,11 @@ private fun SessionContent(
 
         Section(stringResource(R.string.session_statistics))
         Stats(detail)
+        detail.recovery?.let { recovery ->
+            val unit = detail.heartRateUnitRes?.let { " " + stringResource(it) } ?: ""
+            recovery.afterOne?.let { StatRow(stringResource(R.string.session_recovery_1), Formatting.signed(it, 0) + unit) }
+            recovery.afterTwo?.let { StatRow(stringResource(R.string.session_recovery_2), Formatting.signed(it, 0) + unit) }
+        }
         detail.heartZones?.let { zones ->
             // Among the figures, last, rather than under the five zones where it was missed:
             // the zones arrive after the rest, so a row added here moves nothing above it.
@@ -287,7 +293,11 @@ private fun HeartRate(detail: SessionDetail) {
     val spec = heartRateSpec() ?: return
     val title = stringResource(spec.displayNameRes)
     Section(title)
-    val curve = detail.heartRate
+    val end = detail.session.end
+    // The minutes after a workout drawn on past its end, from whoever read them; only those
+    // after it, the curve's own writer having the end itself.
+    val after = detail.heartRateAfter?.filter { it.time > end }.orEmpty()
+    val curve = detail.heartRate?.let { it + after }
     when {
         curve != null -> {
             val speedUnit = Quantity.SPEED
@@ -344,6 +354,7 @@ private fun HeartRate(detail: SessionDetail) {
             val stageNames = StageKind.entries.associateWith { stringResource(labelOf(it)) }
             val laps = detail.session.laps.sortedBy { it.start }
             val lapNames = laps.indices.map { stringResource(R.string.session_lap, it + 1) }
+            val afterName = stringResource(R.string.session_after_end)
             ExpandableChart(
                 title = periodLabel(detail.session.start, detail.session.end) + " · " + sessionName(detail.session),
             ) { expanded, onExpand ->
@@ -351,21 +362,24 @@ private fun HeartRate(detail: SessionDetail) {
                     chartId = "session_" + detail.session.kind.name.lowercase(),
                     series = series,
                     defaultShown = listOf(LINE_HEART_RATE),
-                    extent = detail.session.start..detail.session.end,
+                    extent = detail.session.start..(if (after.isEmpty()) end else end.plus(AFTER_END)),
                     breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
                     // A night's stages along the bottom, so a rise in heart rate can be laid
                     // against the REM it fell in.
                     strip = detail.session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
                     // Where the laps meet, the last one's end being the workout's own.
-                    markers = laps.dropLast(1).map { it.end },
+                    // And where the workout ended, where the minutes after it follow.
+                    markers = laps.dropLast(1).map { it.end } + listOfNotNull(end.takeIf { after.isNotEmpty() }),
                     // What the readout names at a moment: the night's stage, or the lap.
                     stripLabel = when {
                         detail.session.stages.isNotEmpty() -> { time ->
                             detail.session.stages.firstOrNull { time >= it.start && time < it.end }?.let { stageNames[it.kind] }
                         }
                         laps.size > 1 -> { time ->
-                            laps.indexOfFirst { time >= it.start && time < it.end }.takeIf { it >= 0 }?.let(lapNames::get)
+                            if (time > end) afterName
+                            else laps.indexOfFirst { time >= it.start && time < it.end }.takeIf { it >= 0 }?.let(lapNames::get)
                         }
+                        after.isNotEmpty() -> { time -> afterName.takeIf { time > end } }
                         else -> null
                     },
                     fillHeight = expanded,
@@ -387,6 +401,14 @@ private fun HeartRate(detail: SessionDetail) {
     // Said under the chart, where the band is: the footnote is a screen away.
     if (curve != null && detail.movement?.breaks.orEmpty().isNotEmpty()) {
         BreakLegend(Modifier.padding(top = 4.dp))
+    }
+    if (curve != null && after.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.session_after_legend),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 

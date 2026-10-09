@@ -516,6 +516,10 @@
     <string name="session_zone">Зона %1$d</string>
     <string name="session_load">Нагрузка</string>
     <string name="session_load_note">Минуты в каждой зоне, умноженные на её номер, и сложенные: %1$s. Для сравнения ваших собственных тренировок.</string>
+    <string name="session_recovery_1">Пульс через 1 мин после окончания</string>
+    <string name="session_recovery_2">Пульс через 2 мин после окончания</string>
+    <string name="session_after_end">После окончания</string>
+    <string name="session_after_legend">За пунктирной линией: первые минуты после окончания.</string>
     <string name="session_zones_note_data">Зоны — от 50–60 %% до 90–100 %% максимального пульса %1$s, самого высокого, достигнутого как минимум в трёх месяцах за последний год; вы можете задать свой в настройках.</string>
     <string name="session_zones_note_set">Зоны — от 50–60 %% до 90–100 %% максимального пульса %1$s, заданного в настройках.</string>
     <string name="settings_max_hr">Максимальный пульс</string>

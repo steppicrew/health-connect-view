@@ -526,11 +526,21 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     zones, saying it is matched by time. Built 09.10.2026 with a load figure, the owner's
     choice: five zones of 50-60 % to 90-100 % of a maximum heart rate rather than the tile's
     bands, which describe a day at rest, and as load each zone's minutes times its number,
-    added up. The maximum is the third-highest daily maximum of the past year, one grouped
+    added up. The maximum is the third-highest monthly maximum of the past year, one grouped
     aggregate, so a spike or two cannot raise every zone; settings take a value of one's
     own. Breaks count in no zone, and a reading counts for a minute at most. No verdict.
-59. [ ] **Heart-rate recovery** -- the fall in the first one to two minutes after a workout
-    ends, from the all-day readings after it. Shown as a number, no verdict.
+    Daily buckets at first: 365 of them took Health Connect 55 s on the phone, 12 monthly
+    ones 5 s, so it is monthly, kept in memory for the day, and read after the page shows.
+    The load counts the whole minutes the zone rows show, and is written out under itself.
+59. [x] **Heart-rate recovery** -- the fall in the first one to two minutes after a workout
+    ends, from the all-day readings after it. Shown as a number, no verdict. Built
+    09.10.2026 after measuring (`SessionCurveShapeActivity`, 14 days): after most workouts
+    the watch's all-day heart rate has one reading about every two minutes, too sparse for a
+    figure; only the indoor bike's copy reads every 15 s. So, the owner's choice: the
+    workout's curve goes on five minutes past its end, behind a dashed line, for every
+    workout, and the change after one and two minutes is given only where a reading lies
+    within 10 s of the end and of each minute. Readings after a workout that is followed by
+    another within minutes are the next one's warm-up; not filtered.
 60. [ ] **Heart-rate drift** -- heart rate against speed or power, first half against second,
     the two figures side by side and no grade.
 61. [ ] **Compare: offer what is on screen** -- the picker lists only types with data in the

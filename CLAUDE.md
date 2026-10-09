@@ -166,6 +166,12 @@ window and *select* by the visible range -- keep or drop each session whole, nev
 the range. Trimming makes the clipped start read as the real one and every night then begins
 at midnight. Sleep is kept by its end, exercise by overlap.
 
+**A series record is returned only where it starts in the range.** Read from 10 s before a
+workout's end, Health Connect left out a Health Sync heart-rate record that began 61 s before
+the end and ran nine minutes past it, so the minutes after the workout showed only the
+watch's sparse all-day readings. Where a short window matters, read from well before
+(`heartRateAfter` reads 30 min early) and cut the points to the window.
+
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*
 aggregates.

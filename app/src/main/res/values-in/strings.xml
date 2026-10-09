@@ -483,6 +483,10 @@
     <string name="session_zone">Zona %1$d</string>
     <string name="session_load">Beban</string>
     <string name="session_load_note">Menit di setiap zona dikali nomornya, lalu dijumlahkan: %1$s. Untuk membandingkan latihan Anda sendiri.</string>
+    <string name="session_recovery_1">Detak jantung 1 menit setelah selesai</string>
+    <string name="session_recovery_2">Detak jantung 2 menit setelah selesai</string>
+    <string name="session_after_end">Setelah selesai</string>
+    <string name="session_after_legend">Setelah garis putus-putus: menit-menit pertama setelah selesai.</string>
     <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga bulan dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan.</string>
     <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan.</string>
     <string name="settings_max_hr">Detak jantung maksimum</string>
