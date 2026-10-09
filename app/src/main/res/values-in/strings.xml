@@ -482,8 +482,9 @@
     <string name="session_zones_title">Zona detak jantung</string>
     <string name="session_zone">Zona %1$d</string>
     <string name="session_load">Beban</string>
-    <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga hari dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan. Beban: menit di setiap zona dikali nomornya, lalu dijumlahkan.</string>
-    <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan. Beban: menit di setiap zona dikali nomornya, lalu dijumlahkan.</string>
+    <string name="session_load_note">Menit di setiap zona dikali nomornya, lalu dijumlahkan: %1$s. Untuk membandingkan latihan Anda sendiri.</string>
+    <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga bulan dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan.</string>
+    <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan.</string>
     <string name="settings_max_hr">Detak jantung maksimum</string>
     <string name="settings_max_hr_auto">Dari data Anda</string>
     <string name="settings_max_hr_body">Menentukan zona detak jantung latihan Anda. Dari data Anda, ini adalah detak jantung tertinggi yang dicapai pada setidaknya tiga hari dalam setahun terakhir.</string>

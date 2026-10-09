@@ -493,8 +493,9 @@
     <string name="session_zones_title">हृदय गति ज़ोन</string>
     <string name="session_zone">ज़ोन %1$d</string>
     <string name="session_load">भार</string>
-    <string name="session_zones_note_data">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जो पिछले साल कम से कम तीन दिन पहुँची सबसे ऊँची हृदय गति है; आप सेटिंग में अपनी तय कर सकते हैं। भार: हर ज़ोन के मिनट उसकी संख्या से गुणा करके जोड़े गए।</string>
-    <string name="session_zones_note_set">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जैसा सेटिंग में तय किया गया है। भार: हर ज़ोन के मिनट उसकी संख्या से गुणा करके जोड़े गए।</string>
+    <string name="session_load_note">हर ज़ोन के मिनट उसकी संख्या से गुणा करके जोड़े गए: %1$s। आपके अपने वर्कआउट की तुलना के लिए।</string>
+    <string name="session_zones_note_data">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जो पिछले साल कम से कम तीन महीनों में पहुँची सबसे ऊँची हृदय गति है; आप सेटिंग में अपनी तय कर सकते हैं।</string>
+    <string name="session_zones_note_set">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जैसा सेटिंग में तय किया गया है।</string>
     <string name="settings_max_hr">अधिकतम हृदय गति</string>
     <string name="settings_max_hr_auto">आपके डेटा से</string>
     <string name="settings_max_hr_body">आपके वर्कआउट के हृदय गति ज़ोन तय करती है। आपके डेटा से, यह पिछले साल कम से कम तीन दिन पहुँची सबसे ऊँची हृदय गति है।</string>

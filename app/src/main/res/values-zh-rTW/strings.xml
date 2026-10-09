@@ -482,8 +482,9 @@
     <string name="session_zones_title">心率區間</string>
     <string name="session_zone">區間 %1$d</string>
     <string name="session_load">負荷</string>
-    <string name="session_zones_note_data">區間為最大心率 %1$s 的 50–60 %% 至 90–100 %%，最大心率是過去一年中至少三天達到的最高心率；您可以在設定中自行設定。負荷：每個區間的分鐘數乘以區間編號後相加。</string>
-    <string name="session_zones_note_set">區間為設定中指定的最大心率 %1$s 的 50–60 %% 至 90–100 %%。負荷：每個區間的分鐘數乘以區間編號後相加。</string>
+    <string name="session_load_note">每個區間的分鐘數乘以區間編號後相加：%1$s。用於比較您自己的各次訓練。</string>
+    <string name="session_zones_note_data">區間為最大心率 %1$s 的 50–60 %% 至 90–100 %%，最大心率是過去一年中至少三個月中達到的最高心率；您可以在設定中自行設定。</string>
+    <string name="session_zones_note_set">區間為設定中指定的最大心率 %1$s 的 50–60 %% 至 90–100 %%。</string>
     <string name="settings_max_hr">最大心率</string>
     <string name="settings_max_hr_auto">根據您的資料</string>
     <string name="settings_max_hr_body">決定您運動的心率區間。根據您的資料時，它是過去一年中至少三天達到的最高心率。</string>

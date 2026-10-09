@@ -227,6 +227,12 @@ private fun SessionContent(
             // Among the figures, last, rather than under the five zones where it was missed:
             // the zones arrive after the rest, so a row added here moves nothing above it.
             StatRow(stringResource(R.string.session_load), Formatting.number(zones.load.toDouble()), strong = true)
+            // How it is made, beside it: a number of no unit says nothing until it is explained.
+            Text(
+                text = stringResource(R.string.session_load_note, loadSum(zones)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         detail.heartZones?.let { zones ->
             Section(stringResource(R.string.session_zones_title))
@@ -577,6 +583,20 @@ private fun Zones(zones: HeartZones, @StringRes unitRes: Int?) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = 4.dp),
     )
+}
+
+/**
+ * The load written out from the zone rows' own minutes, "8 × 1 + 33 × 2 + 10 × 3": the
+ * workout's figure explained by itself rather than by an example. Kept left to right in a
+ * right-to-left language, where the terms would otherwise be laid out reversed.
+ */
+private fun loadSum(zones: HeartZones): String {
+    val terms = zones.times.withIndex()
+        .filter { (_, time) -> time.toMinutes() > 0 }
+        .joinToString(" + ") { (index, time) ->
+            Formatting.number(time.toMinutes().toDouble()) + " × " + Formatting.number((index + 1).toDouble())
+        }
+    return "\u2066" + terms.ifEmpty { Formatting.number(0.0) } + "\u2069"
 }
 
 /**

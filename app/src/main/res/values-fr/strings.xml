@@ -504,8 +504,9 @@
     <string name="session_zones_title">Zones de fréquence cardiaque</string>
     <string name="session_zone">Zone %1$d</string>
     <string name="session_load">Charge</string>
-    <string name="session_zones_note_data">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, la plus haute atteinte au moins trois jours de l’année écoulée ; vous pouvez fixer la vôtre dans les paramètres. Charge : les minutes dans chaque zone multipliées par son numéro, additionnées.</string>
-    <string name="session_zones_note_set">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, fixée dans les paramètres. Charge : les minutes dans chaque zone multipliées par son numéro, additionnées.</string>
+    <string name="session_load_note">Minutes dans chaque zone multipliées par son numéro, additionnées : %1$s. Pour comparer vos propres entraînements.</string>
+    <string name="session_zones_note_data">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, la plus haute atteinte au cours d’au moins trois mois de l’année écoulée ; vous pouvez fixer la vôtre dans les paramètres.</string>
+    <string name="session_zones_note_set">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, fixée dans les paramètres.</string>
     <string name="settings_max_hr">Fréquence cardiaque maximale</string>
     <string name="settings_max_hr_auto">D’après vos données</string>
     <string name="settings_max_hr_body">Définit les zones de fréquence cardiaque de vos entraînements. D’après vos données, c’est la plus haute atteinte au moins trois jours de l’année écoulée.</string>
