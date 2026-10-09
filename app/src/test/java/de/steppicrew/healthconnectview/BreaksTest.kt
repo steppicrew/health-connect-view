@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.health.Break
+import de.steppicrew.healthconnectview.health.Covered
+import de.steppicrew.healthconnectview.health.gapsIn
 import de.steppicrew.healthconnectview.health.activePieces
 import de.steppicrew.healthconnectview.health.breaksIn
 import de.steppicrew.healthconnectview.health.combinePieces
@@ -62,6 +64,21 @@ class BreaksTest {
         val seconds = (0L..60 * 60 step 30)
         val movement = movementIn(at(0), at(60), seconds.map { base.plusSeconds(it) })!!
         assertEquals(Duration.ofMinutes(60), movement.moving)
+    }
+
+    @Test
+    fun `distance records that meet leave no gap however long each is`() {
+        // An app writing distance in half-hour records, and the workout's own writer.
+        val covered = (0L until 4).map { Covered(at(it * 30), at(it * 30 + 30)) }
+        val movement = movementIn(at(0), at(120), covered)!!
+        assertTrue(movement.breaks.isEmpty())
+        assertEquals(Duration.ofMinutes(120), movement.moving)
+    }
+
+    @Test
+    fun `a hole between distance records is a break`() {
+        val covered = listOf(Covered(at(0), at(30)), Covered(at(45), at(75)))
+        assertEquals(listOf(Break(at(30), at(45))), gapsIn(covered))
     }
 
     @Test
