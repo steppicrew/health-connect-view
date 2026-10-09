@@ -497,6 +497,7 @@
     <string name="workouts_span_year">Treinos dos últimos 12 meses.</string>
     <string name="session_overlap_note">Estas são as medições feitas durante esta sessão. O Conexão Saúde não vincula medições a uma sessão, então elas são associadas pelo horário.</string>
     <string name="session_statistics">O que foi registrado durante esta sessão</string>
+    <string name="session_details">Detalhes</string>
     <string name="zones_title">Zonas de cor</string>
     <string name="zones_explained">A curva é colorida conforme a faixa em que cada medição cai. Defina o limite entre cada par de faixas.</string>
     <string name="zones_upper_bound">Até (a partir de %1$s)</string>

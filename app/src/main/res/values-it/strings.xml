@@ -497,6 +497,7 @@
     <string name="workouts_span_year">Allenamenti degli ultimi 12 mesi.</string>
     <string name="session_overlap_note">Queste sono le misurazioni prese durante questa sessione. Connessione Salute non collega le misurazioni a una sessione, quindi vengono abbinate in base all’orario.</string>
     <string name="session_statistics">Cosa è stato registrato durante questa sessione</string>
+    <string name="session_details">Dettagli</string>
     <string name="zones_title">Zone di colore</string>
     <string name="zones_explained">La curva è colorata in base alla fascia in cui cade ogni misurazione. Imposta il limite tra ogni coppia di fasce.</string>
     <string name="zones_upper_bound">Fino a (da %1$s)</string>

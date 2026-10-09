@@ -486,6 +486,7 @@
     <string name="workouts_span_year">पिछले 12 महीनों के वर्कआउट।</string>
     <string name="session_overlap_note">ये इस सेशन के दौरान ली गई रीडिंग हैं। Health Connect रीडिंग को किसी सेशन से नहीं जोड़ता, इसलिए इन्हें समय के हिसाब से मिलाया गया है।</string>
     <string name="session_statistics">इस सेशन के दौरान क्या रिकॉर्ड हुआ</string>
+    <string name="session_details">विवरण</string>
     <string name="zones_title">रंग वाले ज़ोन</string>
     <string name="zones_explained">कर्व को इस हिसाब से रंगा जाता है कि हर रीडिंग किस बैंड में आती है। हर दो बैंड के बीच की सीमा सेट करें।</string>
     <string name="zones_upper_bound">इतने तक (%1$s से)</string>

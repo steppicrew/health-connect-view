@@ -508,6 +508,7 @@
     <string name="workouts_span_year">Тренировки за последние 12 месяцев.</string>
     <string name="session_overlap_note">Это измерения, сделанные во время этого сеанса. Health Connect не связывает измерения с сеансом, поэтому они сопоставлены по времени.</string>
     <string name="session_statistics">Что было записано во время этого сеанса</string>
+    <string name="session_details">Подробнее</string>
     <string name="zones_title">Цветовые зоны</string>
     <string name="zones_explained">Кривая окрашивается в зависимости от полосы, в которую попадает измерение. Задайте границу между каждой парой полос.</string>
     <string name="zones_upper_bound">До (от %1$s)</string>

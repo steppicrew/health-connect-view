@@ -497,6 +497,7 @@
     <string name="workouts_span_year">Entrenamientos de los últimos 12 meses.</string>
     <string name="session_overlap_note">Estas son las mediciones tomadas durante esta sesión. Health Connect no vincula las mediciones a una sesión, así que se asignan por la hora.</string>
     <string name="session_statistics">Lo que se registró durante esta sesión</string>
+    <string name="session_details">Detalles</string>
     <string name="zones_title">Zonas de color</string>
     <string name="zones_explained">La curva se colorea según la franja en la que cae cada medición. Fija el límite entre cada par de franjas.</string>
     <string name="zones_upper_bound">Hasta (desde %1$s)</string>
