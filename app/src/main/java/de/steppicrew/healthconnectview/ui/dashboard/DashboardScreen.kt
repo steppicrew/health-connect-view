@@ -6,6 +6,7 @@ import androidx.compose.material3.LocalContentColor
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.dashboard.Tile
+import de.steppicrew.healthconnectview.dashboard.companionsOf
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import androidx.compose.material.icons.filled.Insights
 import de.steppicrew.healthconnectview.ui.insights.notable
@@ -121,6 +122,12 @@ import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.DayPickerDialog
+import de.steppicrew.healthconnectview.registry.RecordRegistry
+import de.steppicrew.healthconnectview.registry.Point
+import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.colorOf
+import de.steppicrew.healthconnectview.ui.components.StripSegment
+import de.steppicrew.healthconnectview.ui.components.NightLine
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
@@ -237,8 +244,10 @@ fun DashboardScreen(
             displayName = stringResource(editing.spec.displayNameRes),
             currentSpan = editing.tile.span,
             currentFace = editing.tile.face,
+            companions = companionsOf(editing.tile.typeName),
+            currentCompanion = editing.tile.companion,
             onDismiss = { editingOptionsFor = null },
-            onSave = { span, face -> viewModel.setOptions(editing.tile.id, span, face) },
+            onSave = { span, face, companion -> viewModel.setOptions(editing.tile.id, span, face, companion) },
         )
     }
 
@@ -995,7 +1004,7 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         !data.granted -> LockedTile(onGrantAccess)
 
         chart != null && data.tile.face == TileFace.CHART ->
-            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1)
+            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion())
 
         chart != null && data.tile.face == TileFace.BOTH -> TileValueAndChart(data, chart)
 
@@ -1038,12 +1047,37 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
  * goal line, minus the touch readout -- a tap here opens that screen.
  */
 @Composable
-private fun TileChart(chart: TileDetailData, modifier: Modifier, compactAxis: Boolean = false) {
+private fun TileChart(
+    chart: TileDetailData,
+    modifier: Modifier,
+    compactAxis: Boolean = false,
+    /** The tile's second curve and its readings; see [Tile.companion]. */
+    companion: Pair<NightLine, List<Point>>? = null,
+) {
     val extent = chart.extent
     // A day of sleep is last night, and a night with stages is drawn as them: the owner's
     // idea, 09.10.2026. A band from 23:02 to 05:15 says when; the stages say how.
     val night = chart.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
-    if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
+    if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null && companion != null) {
+        // The chosen reading through the night, the stages along its bottom: how the two go
+        // together, the owner's request. Drawn as on the night's own screen.
+        val (line, points) = companion
+        val spec = RecordRegistry.specOrNull(line.typeName)
+        LineChart(
+            points = line.shown(points),
+            unitRes = spec?.displayUnitRes,
+            integral = spec?.tile?.integralValues ?: false,
+            minSpan = line.minSpan,
+            lineColorOverride = line.color(),
+            dottedLine = line.dots,
+            strip = night.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
+            extent = night.start..night.end,
+            interactive = false,
+            fillHeight = true,
+            compactAxis = compactAxis,
+            modifier = modifier,
+        )
+    } else if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
         Hypnogram(
             stages = night.stages,
             start = night.start,
@@ -1073,14 +1107,14 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             Figure()
-            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp))
+            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion())
         }
     } else {
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(VALUE_SHARE), contentAlignment = Alignment.Center) {
                 Figure()
             }
-            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true)
+            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true, companion = data.companion())
         }
     }
 }
@@ -1432,4 +1466,11 @@ private sealed interface GridEntry {
     data class Insights(val data: InsightsTileData) : GridEntry {
         override val tile: Tile get() = data.tile
     }
+}
+
+/** The tile's second curve with its readings, where one is chosen and was read. */
+private fun TileData.companion(): Pair<NightLine, List<Point>>? {
+    val line = NightLine.of(tile.companion) ?: return null
+    val points = companionPoints?.takeIf { it.size > 1 } ?: return null
+    return line to points
 }

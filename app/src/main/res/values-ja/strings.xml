@@ -67,6 +67,8 @@
     <string name="tile_face_value">値</string>
     <string name="tile_face_chart">グラフ</string>
     <string name="tile_face_both">両方</string>
+    <string name="tile_options_companion">追加の曲線</string>
+    <string name="tile_companion_none">なし</string>
     <string name="tile_title_span_capped">%1$s · %2$s、過去 30 日間のみ</string>
     <string name="tile_size">サイズ %1$d × %2$d</string>
     <string name="tile_remove">削除</string>

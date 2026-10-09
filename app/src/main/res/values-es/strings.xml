@@ -69,6 +69,8 @@
     <string name="tile_face_value">Valor</string>
     <string name="tile_face_chart">Gráfico</string>
     <string name="tile_face_both">Ambos</string>
+    <string name="tile_options_companion">Curva adicional</string>
+    <string name="tile_companion_none">Ninguna</string>
     <string name="tile_title_span_capped">%1$s · %2$s, solo los últimos 30 días</string>
     <string name="tile_size">Tamaño %1$d × %2$d</string>
     <string name="tile_remove">Quitar</string>

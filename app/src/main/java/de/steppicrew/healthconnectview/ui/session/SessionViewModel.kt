@@ -14,6 +14,7 @@ import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.movementDuring
+import de.steppicrew.healthconnectview.ui.components.NightLine
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.sessionById
@@ -137,7 +138,9 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             if (session.kind != Session.Kind.SLEEP) {
                 emptyMap()
             } else {
-                NIGHT_TYPES.mapNotNull { type -> repository.readingsDuring(session, type)?.let { type to it } }.toMap()
+                NightLine.entries.filter { it != NightLine.HEART_RATE }
+                    .mapNotNull { line -> repository.readingsDuring(session, line.typeName)?.let { line.typeName to it } }
+                    .toMap()
             }
         }
         val zones = runCatching { dashboardStore.config.first() }.getOrNull()
@@ -193,8 +196,5 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
 
     private companion object {
         const val TAG = "Session"
-
-        /** What a night's chart offers beside heart rate; see readingsDuring for why these. */
-        val NIGHT_TYPES = listOf("RespiratoryRateRecord", "OxygenSaturationRecord", "HeartRateVariabilityRmssdRecord")
     }
 }

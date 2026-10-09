@@ -68,6 +68,8 @@
     <string name="tile_face_value">वैल्यू</string>
     <string name="tile_face_chart">चार्ट</string>
     <string name="tile_face_both">दोनों</string>
+    <string name="tile_options_companion">अतिरिक्त वक्र</string>
+    <string name="tile_companion_none">कोई नहीं</string>
     <string name="tile_title_span_capped">%1$s · %2$s, सिर्फ़ पिछले 30 दिन</string>
     <string name="tile_size">साइज़ %1$d × %2$d</string>
     <string name="tile_remove">हटाएं</string>

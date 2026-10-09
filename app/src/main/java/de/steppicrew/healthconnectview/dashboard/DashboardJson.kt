@@ -32,6 +32,7 @@ internal object DashboardJson {
                     if (tile.span != Span.DAY) put(FIELD_SPAN, tile.span.name)
                     if (tile.face != TileFace.VALUE) put(FIELD_FACE, tile.face.name)
                     if (tile.color != TileColor.DEFAULT) put(FIELD_COLOR, tile.color.name)
+                    tile.companion?.let { put(FIELD_COMPANION, it) }
                 },
             )
         }
@@ -65,6 +66,8 @@ internal object DashboardJson {
                 color = item.optString(FIELD_COLOR)
                     .let { stored -> TileColor.entries.firstOrNull { it.name == stored } }
                     ?: TileColor.DEFAULT,
+                // A curve this version does not offer for the type is dropped, not drawn.
+                companion = item.optString(FIELD_COMPANION).takeIf { it in companionsOf(typeName) },
             )
         }
         return DashboardConfig(tiles)
@@ -79,4 +82,5 @@ internal object DashboardJson {
     private const val FIELD_SPAN = "span"
     private const val FIELD_FACE = "face"
     private const val FIELD_COLOR = "color"
+    private const val FIELD_COMPANION = "with"
 }
