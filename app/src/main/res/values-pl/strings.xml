@@ -479,6 +479,7 @@
     <string name="session_breaks_note">Czas w ruchu pomija każdy postój bez pomiarów prędkości i dystansu. Postoje dłuższe niż pięć minut są wymienione jako przerwy, pominięte w wartościach powyżej i zacieniowane na wykresie tętna.</string>
     <string name="session_break_legend">Przerwa: brak zapisu prędkości i dystansu</string>
     <string name="chart_line_axis">Pokazana jest jej skala</string>
+    <string name="chart_line_axis_note">↕ Oś należy do tej linii. Dotknij wykresu, aby odczytać wszystkie linie.</string>
     <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">Nie można już znaleźć tej sesji.</string>
     <string name="session_laps">Okrążenia</string>

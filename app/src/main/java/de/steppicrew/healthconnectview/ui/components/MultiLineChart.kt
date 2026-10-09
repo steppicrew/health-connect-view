@@ -129,7 +129,7 @@ fun MultiLineChart(
                 valueDecimals = primary.valueDecimals,
                 zones = if (alone) primary.zones else null,
                 lineColorOverride = if (alone) null else primary.color,
-                markReadings = primary.dots,
+                dottedLine = primary.dots,
                 integral = primary.integral,
                 minSpan = primary.minSpan,
                 extent = extent,
@@ -197,6 +197,14 @@ fun MultiLineChart(
                     },
                 )
             }
+        }
+        // Says what the mark on a chip is, only while it is there to explain.
+        if (!alone) {
+            Text(
+                text = stringResource(R.string.chart_line_axis_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

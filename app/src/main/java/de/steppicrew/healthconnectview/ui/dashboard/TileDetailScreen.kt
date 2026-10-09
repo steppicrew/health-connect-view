@@ -29,6 +29,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -40,7 +41,6 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -1578,9 +1578,11 @@ private fun SessionRow(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            // A chevron, not the "i" the notes use: this opens the workout's own page, and an
+            // "i" read as "explain this" -- the owner's report, 09.10.2026.
             IconButton(onClick = onClick) {
                 Icon(
-                    imageVector = Icons.Outlined.Info,
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(R.string.session_statistics),
                     tint = MaterialTheme.colorScheme.primary,
                 )

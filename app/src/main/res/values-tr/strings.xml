@@ -457,6 +457,7 @@
     <string name="session_breaks_note">Hareket süresi, hız veya mesafe verisi olmayan her duruşu dışarıda bırakır. Beş dakikadan uzun duruşlar mola olarak listelenir, yukarıdaki değerlere katılmaz ve nabız grafiğinde gölgeli gösterilir.</string>
     <string name="session_break_legend">Mola: hız veya mesafe kaydedilmedi</string>
     <string name="chart_line_axis">Ölçeği gösteriliyor</string>
+    <string name="chart_line_axis_note">↕ Eksen bu çizgiye ait. Tüm çizgileri okumak için grafiğe dokunun.</string>
     <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">Bu oturum artık bulunamıyor.</string>
     <string name="session_laps">Turlar</string>
