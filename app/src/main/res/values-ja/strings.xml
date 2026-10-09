@@ -476,6 +476,9 @@
     <string name="session_overlap_note">このセッション中に測定された値です。ヘルスコネクトは測定値をセッションに関連付けないため、時刻で照合しています。</string>
     <string name="session_statistics">このセッション中に記録されたもの</string>
     <string name="session_details">詳細</string>
+    <string name="whats_new_title">新機能</string>
+    <string name="whats_new_18">• ワークアウト：休憩を検出して除外し、移動時間だけを数えます。統計には心拍数の最低値と最高値も表示されます。\n• すべてのワークアウトに心拍ゾーン：各ゾーンの時間と、時間と強度から求めた負荷。\n• 1つのグラフに複数の線を表示し、チップでオン・オフを切り替えられます：サイクリングでは心拍数と速度・標高、夜間は呼吸数・SpO₂・HRV。\n• 大きいタイル（Pro）：昨夜の睡眠段階と選んだ曲線、最近のワークアウトの曲線を表示します。\n• 日付をタップするとカレンダーから日を選べます。ページを下に引くと再読み込みします。</string>
+    <string name="whats_new_dismiss">OK</string>
     <string name="zones_title">カラーゾーン</string>
     <string name="zones_explained">曲線は、各測定値がどの帯に入るかで色分けされます。帯と帯の境界を設定してください。</string>
     <string name="zones_upper_bound">上限（%1$s から）</string>

@@ -85,19 +85,31 @@ internal fun TileGrid(
     scrollState: ScrollState = rememberScrollState(),
     /** Told the geometry on every measure; a plain callback, not state, since it runs in layout. */
     onMetrics: (GridMetrics) -> Unit = {},
+    /**
+     * Full width above the tiles, scrolling with them: the "What's new" card, which pinned
+     * above the grid took the screen's top until put away (the owner, 09.10.2026).
+     */
+    header: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val cells = remember { BoundedTileCells(TILE_MIN_WIDTH, TILE_COLUMNS_MIN, TILE_COLUMNS_MAX) }
     Layout(
-        content = content,
+        contents = listOf(header, content),
         modifier = modifier.verticalScroll(scrollState),
-    ) { measurables, constraints ->
+    ) { (headerMeasurables, measurables), constraints ->
         val gap = spacing.roundToPx()
         val left = contentPadding.calculateLeftPadding(LayoutDirection.Ltr).roundToPx()
         val right = contentPadding.calculateRightPadding(LayoutDirection.Ltr).roundToPx()
-        val top = contentPadding.calculateTopPadding().roundToPx()
+        val padTop = contentPadding.calculateTopPadding().roundToPx()
         val bottom = contentPadding.calculateBottomPadding().roundToPx()
 
+        val headers = headerMeasurables.map {
+            it.measure(Constraints(maxWidth = (constraints.maxWidth - left - right).coerceAtLeast(0)))
+        }
+        // The tiles start below the header and a gap, and the metrics say so: a drag reads
+        // the grid's geometry from them.
+        val headerHeight = headers.sumOf { it.height }.let { if (it > 0) it + gap else 0 }
+        val top = padTop + headerHeight
         val widths = with(cells) { calculateCrossAxisCellSizes(constraints.maxWidth - left - right, gap) }
         val starts = widths.runningFold(left) { x, w -> x + w + gap }
         // Square cells; widths differ by at most a pixel, and the narrowest keeps rows even.
@@ -116,6 +128,11 @@ internal fun TileGrid(
         // At least the minimum: a grid shorter than the screen is otherwise centred in it
         // rather than starting at the top.
         layout(constraints.maxWidth, height.coerceAtLeast(constraints.minHeight)) {
+            var y = top - headerHeight
+            headers.forEach { placeable ->
+                placeable.placeRelative(left, y)
+                y += placeable.height
+            }
             placeables.zip(rects) { placeable, rect ->
                 placeable.placeRelative(rect.left.toInt(), rect.top.toInt())
             }

@@ -399,6 +399,9 @@ fun DashboardScreen(
                         contentPadding = PaddingValues(12.dp),
                         scrollState = scroll,
                         onMetrics = { drag.metrics = it },
+                        // Scrolling with the tiles, so it never stands between someone and
+                        // them. Not while arranging.
+                        header = { if (!editing) WhatsNewCard() },
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(padding)

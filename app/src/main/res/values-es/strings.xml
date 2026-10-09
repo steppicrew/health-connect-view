@@ -498,6 +498,9 @@
     <string name="session_overlap_note">Estas son las mediciones tomadas durante esta sesión. Health Connect no vincula las mediciones a una sesión, así que se asignan por la hora.</string>
     <string name="session_statistics">Lo que se registró durante esta sesión</string>
     <string name="session_details">Detalles</string>
+    <string name="whats_new_title">Novedades</string>
+    <string name="whats_new_18">• Entrenamientos: las pausas se detectan y se descuentan, solo cuenta el tiempo en movimiento, y las estadísticas muestran la frecuencia cardíaca mínima y máxima.\n• Zonas de frecuencia cardíaca en cada entrenamiento: el tiempo en cada zona y una carga a partir de duración y esfuerzo.\n• Varias líneas en un gráfico, que activas y desactivas con chips: frecuencia cardíaca con velocidad y altura en una salida en bici; frecuencia respiratoria, SpO₂ y VFC durante la noche.\n• Mosaicos grandes (Pro): las fases de sueño de anoche con la curva que elijas, y tus últimos entrenamientos como curvas.\n• Toca la fecha para elegir un día en el calendario y desliza una página hacia abajo para recargarla.</string>
+    <string name="whats_new_dismiss">Entendido</string>
     <string name="zones_title">Zonas de color</string>
     <string name="zones_explained">La curva se colorea según la franja en la que cae cada medición. Fija el límite entre cada par de franjas.</string>
     <string name="zones_upper_bound">Hasta (desde %1$s)</string>

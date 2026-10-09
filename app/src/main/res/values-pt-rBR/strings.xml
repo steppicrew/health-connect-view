@@ -498,6 +498,9 @@
     <string name="session_overlap_note">Estas são as medições feitas durante esta sessão. O Conexão Saúde não vincula medições a uma sessão, então elas são associadas pelo horário.</string>
     <string name="session_statistics">O que foi registrado durante esta sessão</string>
     <string name="session_details">Detalhes</string>
+    <string name="whats_new_title">Novidades</string>
+    <string name="whats_new_18">• Treinos: as pausas são detectadas e descontadas, só conta o tempo em movimento, e as estatísticas mostram a frequência cardíaca mínima e máxima.\n• Zonas de frequência cardíaca em cada treino: o tempo em cada zona e uma carga a partir de duração e esforço.\n• Várias linhas em um gráfico, ligadas e desligadas por chips: frequência cardíaca com velocidade e altitude no pedal; frequência respiratória, SpO₂ e VFC durante a noite.\n• Blocos grandes (Pro): as fases do sono da última noite com a curva que você escolher, e seus últimos treinos como curvas.\n• Toque na data para escolher um dia no calendário e puxe uma página para baixo para recarregá-la.</string>
+    <string name="whats_new_dismiss">Entendi</string>
     <string name="zones_title">Zonas de cor</string>
     <string name="zones_explained">A curva é colorida conforme a faixa em que cada medição cai. Defina o limite entre cada par de faixas.</string>
     <string name="zones_upper_bound">Até (a partir de %1$s)</string>
