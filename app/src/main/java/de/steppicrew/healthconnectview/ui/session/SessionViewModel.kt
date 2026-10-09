@@ -142,14 +142,15 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val heartRateLocked = spec == null || spec.permission !in granted
 
         // Side by side: independent questions about one window. The statistics wait for the
-        // breaks, since they leave them out.
+        // breaks, since they leave them out, and for the heart rate, whose readings give its
+        // figures.
         val movement = async { repository.movementDuring(session) }
-        val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty()) }
         val route = async { repository.routeFor(session) }
         // Wherever a workout goes somewhere, route or none: the watch's own copy of a ride
         // carries no route but does carry its speed.
         val speed = async { if (coversDistance(session.exerciseType)) repository.speedDuring(session) else null }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
+        val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty(), heartRate.await()) }
         val nightLines = async {
             when (session.kind) {
                 Session.Kind.SLEEP -> SessionLine.entries.filter { it != SessionLine.HEART_RATE }
