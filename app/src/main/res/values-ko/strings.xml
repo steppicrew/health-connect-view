@@ -439,10 +439,12 @@
     <string name="session_untitled">활동</string>
     <string name="session_no_stats">이 세션 동안 그 밖에 기록된 것이 없습니다.</string>
     <string name="session_stat_range">최저 %1$s · 최고 %2$s</string>
+    <string name="session_stat_max">최고 %1$s</string>
     <string name="session_time_total">총 시간</string>
     <string name="session_time_moving">이동 시간</string>
     <string name="session_break">휴식</string>
     <string name="session_breaks_note">이동 시간에는 속도나 거리 데이터가 없는 정지 시간이 빠져 있습니다. 5분이 넘는 정지는 휴식으로 표시되며, 위의 값에서 제외되고 심박수 차트에 음영으로 표시됩니다.</string>
+    <string name="session_break_legend">휴식: 속도나 거리 기록 없음</string>
     <string name="session_gone">이 세션을 더 이상 찾을 수 없습니다.</string>
     <string name="session_laps">랩</string>
     <string name="session_lap">랩 %1$d</string>

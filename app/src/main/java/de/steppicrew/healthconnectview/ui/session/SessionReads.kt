@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import androidx.health.connect.client.records.BasalMetabolicRateRecord
 import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.health.Break
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -37,6 +39,9 @@ data class SessionStat(
     val high: Double? = null,
 )
 
+/** A session's heart-rate curve and the breaks to shade behind it, for a row in a list. */
+data class SessionCurve(val points: List<Point>?, val breaks: List<Break>)
+
 /** An open session's route: its points, consent needed first, none recorded, or a failed read. */
 sealed interface RouteLoad {
     data class Shown(val points: List<RoutePoint>) : RouteLoad
@@ -72,6 +77,9 @@ suspend fun HealthRepository.statisticsFor(
 
     RecordRegistry.all
         .filter { it.permission in granted && it.aggregate != null && it.isChartable }
+        // Derived from height and weight, not measured during anything: a workout's "157
+        // kcal/day" basal rate on the phone was a figure about the person, not the ride.
+        .filter { it.type != BasalMetabolicRateRecord::class }
         .map { spec ->
             async {
                 gate.withPermit {
@@ -95,8 +103,14 @@ suspend fun HealthRepository.statisticsFor(
                     ) ?: return@withPermit null
                     SessionStat(
                         spec = spec,
-                        value = value,
-                        low = range?.let { (low, _) -> perPiece.mapNotNull { it.first[low] }.minOrNull() },
+                        // A counted total in whole units. A writer's whole-day record is shared
+                        // out by time, so the window held "3,24 floors" on the phone -- a
+                        // fraction nobody climbed.
+                        value = if (spec.tile.integralValues && !spec.isAveraged) Math.round(value).toDouble() else value,
+                        // A ride's slowest moment is a near-stop on every ride (0,21 km/h on the
+                        // phone), so speed shows its top alone.
+                        low = range?.takeIf { spec.type != SpeedRecord::class }
+                            ?.let { (low, _) -> perPiece.mapNotNull { it.first[low] }.minOrNull() },
                         high = range?.let { (_, high) -> perPiece.mapNotNull { it.first[high] }.maxOrNull() },
                     )
                 }

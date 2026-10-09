@@ -140,6 +140,8 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.REFERENCE_COLOR
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
+import de.steppicrew.healthconnectview.ui.components.BreakLegend
+import de.steppicrew.healthconnectview.ui.session.SessionCurve
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
@@ -367,7 +369,7 @@ private fun SpanContent(
     period: String,
     onSelectSource: (String?) -> Unit,
     onOpenSession: (Session) -> Unit,
-    loadCurve: suspend (Session) -> List<Point>?,
+    loadCurve: suspend (Session) -> SessionCurve,
     onVisibleRange: (ClosedRange<Instant>?) -> Unit,
     onOpenRecord: (String) -> Unit,
 ) {
@@ -1488,13 +1490,13 @@ private const val ROUTE_MARK = 20
  */
 private sealed interface CurveLoad {
     data object Loading : CurveLoad
-    data class Done(val points: List<Point>?) : CurveLoad
+    data class Done(val curve: SessionCurve?) : CurveLoad
 }
 
 @Composable
 private fun SessionRow(
     session: Session,
-    loadCurve: suspend (Session) -> List<Point>?,
+    loadCurve: suspend (Session) -> SessionCurve,
     zones: ValueZones?,
     @StringRes heartRateUnitRes: Int?,
     heartRateLocked: Boolean,
@@ -1566,7 +1568,8 @@ private fun SessionRow(
         val curveLoad by produceState<CurveLoad>(CurveLoad.Loading, session, heartRateLocked) {
             value = CurveLoad.Done(if (heartRateLocked) null else loadCurve(session))
         }
-        val curve = (curveLoad as? CurveLoad.Done)?.points
+        val curve = (curveLoad as? CurveLoad.Done)?.curve?.points
+        val breaks = (curveLoad as? CurveLoad.Done)?.curve?.breaks.orEmpty()
 
         if (curveLoad is CurveLoad.Done) when {
             // The full chart rather than a spark line: at this size the samples are dense
@@ -1588,6 +1591,7 @@ private fun SessionRow(
                     integral = true,
                     minSpan = SESSION_CURVE_MIN_SPAN,
                     extent = session.start..session.end,
+                    breaks = breaks.map { it.start..it.end },
                     fillHeight = expanded,
                     onExpand = onExpand,
                     holdSelection = expanded,
@@ -1605,6 +1609,7 @@ private fun SessionRow(
                 modifier = Modifier.padding(top = 4.dp),
             )
         }
+        if (curve != null && breaks.isNotEmpty()) BreakLegend(Modifier.padding(top = 4.dp))
     }
 }
 

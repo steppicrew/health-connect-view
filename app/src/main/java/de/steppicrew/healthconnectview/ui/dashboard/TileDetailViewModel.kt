@@ -35,7 +35,9 @@ import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.ui.session.MAX_CONCURRENT_READS
+import de.steppicrew.healthconnectview.ui.session.SessionCurve
 import de.steppicrew.healthconnectview.ui.session.heartRateDuring
+import de.steppicrew.healthconnectview.ui.session.movementDuring
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.DayPartSplit
@@ -739,17 +741,21 @@ class TileDetailViewModel(
      * like every other reading here, never disk. Null means no heart rate was recorded then,
      * which the row says in its own words.
      */
-    suspend fun curveFor(session: Session): List<Point>? {
-        curveCache[session]?.let { return it.points }
-        val points = curveGate.withPermit { repository.heartRateDuring(session) }
-        curveCache[session] = CachedCurve(points)
-        return points
+    suspend fun curveFor(session: Session): SessionCurve {
+        curveCache[session]?.let { return it }
+        // The breaks with the curve, so a workout's row shades them as its own screen does.
+        val curve = curveGate.withPermit {
+            SessionCurve(
+                points = repository.heartRateDuring(session),
+                breaks = repository.movementDuring(session)?.breaks.orEmpty(),
+            )
+        }
+        curveCache[session] = curve
+        return curve
     }
 
-    /** Wrapper so a session with no curve is remembered as such, not read again. */
-    private class CachedCurve(val points: List<Point>?)
-
-    private val curveCache = java.util.concurrent.ConcurrentHashMap<Session, CachedCurve>()
+    /** Held whole, so a session with no curve is remembered as such, not read again. */
+    private val curveCache = java.util.concurrent.ConcurrentHashMap<Session, SessionCurve>()
     private val curveGate = Semaphore(MAX_CONCURRENT_READS)
 
     /** The whole window's list, kept to restore when the chart is zoomed back out. */

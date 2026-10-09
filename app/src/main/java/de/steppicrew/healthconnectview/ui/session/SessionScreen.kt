@@ -56,6 +56,7 @@ import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.ui.components.BreakLegend
 import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.LineChart
@@ -275,6 +276,10 @@ private fun HeartRate(detail: SessionDetail) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+    // Said under the chart, where the band is: the footnote is a screen away.
+    if (curve != null && detail.movement?.breaks.orEmpty().isNotEmpty()) {
+        BreakLegend(Modifier.padding(top = 4.dp))
+    }
 }
 
 @Composable
@@ -411,14 +416,14 @@ private fun Stats(detail: SessionDetail) {
             value = Formatting.number(stat.value) + unit,
             // The spread under the mean: an average heart rate says little about a
             // session without its peak.
-            detail = if (stat.low != null && stat.high != null) {
-                stringResource(
+            detail = when {
+                stat.low != null && stat.high != null -> stringResource(
                     R.string.session_stat_range,
                     Formatting.number(stat.low),
                     Formatting.number(stat.high) + unit,
                 )
-            } else {
-                null
+                stat.high != null -> stringResource(R.string.session_stat_max, Formatting.number(stat.high) + unit)
+                else -> null
             },
         )
     }
