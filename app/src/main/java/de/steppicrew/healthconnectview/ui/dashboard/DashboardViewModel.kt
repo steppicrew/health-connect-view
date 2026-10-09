@@ -35,6 +35,7 @@ import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.ui.session.withMovement
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -844,11 +845,13 @@ class DashboardViewModel(
      */
     private suspend fun daySessions(date: LocalDate, kind: Session.Kind): List<Session> {
         val zone = HealthRepository.DEFAULT_ZONE
-        return repository.sessionsIn(
+        val sessions = repository.sessionsIn(
             start = date.atStartOfDay(zone).toInstant(),
             end = date.plusDays(1).atStartOfDay(zone).toInstant(),
             kinds = setOf(kind),
         )
+        // Workouts count their moving time, as on the screen the tile opens.
+        return if (kind == Session.Kind.EXERCISE) repository.withMovement(sessions) else sessions
     }
 
     /** One app's own records for the day, combined. Only valid for a single-source filter. */

@@ -112,6 +112,7 @@ import de.steppicrew.healthconnectview.health.StreakSummary
 import de.steppicrew.healthconnectview.health.Suggestion
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.TrendResult
+import de.steppicrew.healthconnectview.health.counted
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.labelRes
 import de.steppicrew.healthconnectview.health.pressureCategory
@@ -1204,6 +1205,14 @@ private fun ChartLegend(data: TileDetailData) {
                 label = R.string.legend_exercise,
             )
         }
+        // A workout's break is drawn grey inside its band, so the band does not claim the
+        // hours off the bike as training.
+        if (data.bandSessions.any { it.breaks.isNotEmpty() }) {
+            LegendEntry(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = LEGEND_BREAK_ALPHA),
+                label = R.string.session_break,
+            )
+        }
         if (data.nightPoints.isNotEmpty()) {
             LegendEntry(
                 color = MaterialTheme.colorScheme.primary.copy(alpha = LEGEND_BAND_ALPHA),
@@ -1435,6 +1444,9 @@ private fun LegendEntry(color: Color, @StringRes label: Int, round: Boolean = fa
  */
 private const val LEGEND_BAND_ALPHA = 0.45f
 
+/** The break swatch, as [BreakLegend] draws it under a curve. */
+private const val LEGEND_BREAK_ALPHA = 0.3f
+
 /**
  * The chart's fixed sleep blue. Not a theme colour, for the same reason the band is not: it
  * means night, and under dynamic colour a themed hue drifts with the wallpaper.
@@ -1552,8 +1564,9 @@ private fun SessionRow(
                 )
             }
             RouteMark(session)
+            // Moving time where it was read, matching the total above the list.
             Text(
-                text = Formatting.duration(session.duration),
+                text = Formatting.duration(session.counted),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

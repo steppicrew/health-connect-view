@@ -51,6 +51,13 @@ data class Session(
     val recordId: String = "",
     /** An exercise session's laps where its writer recorded them; empty otherwise. */
     val laps: List<Lap> = emptyList(),
+    /**
+     * A workout's breaks, inferred from its movement readings stopping; see [Movement]. Empty
+     * until read, which only some screens do, and for anything but exercise.
+     */
+    val breaks: List<Break> = emptyList(),
+    /** The time spent moving, where it was read; null leaves the session counted whole. */
+    val moving: Duration? = null,
 ) {
     enum class Kind { SLEEP, EXERCISE, MINDFULNESS }
 }
@@ -152,18 +159,25 @@ fun SleepSessionRecord.toSession(): Session = Session(
     stages = stages.mapNotNull { it.toSleepStage() },
 )
 
-/** How long a session lasted. */
+/** How long a session lasted, start to end. */
 val Session.duration: Duration get() = Duration.between(start, end)
 
 /**
- * Everything a set of sessions covered.
+ * How long a session counts for in a total: a workout's moving time where it was read, else
+ * its length. The owner's choice, 09.10.2026: a ride with five hours at a café in the middle
+ * made the day's training "9h 6m" against two hours on the bike.
+ */
+val Session.counted: Duration get() = moving ?: duration
+
+/**
+ * Everything a set of sessions covered, workouts by their moving time where it was read.
  *
  * Safe to add up in a way a metric would not be, because [dedupeSessions] has already
  * collapsed the same workout written by several apps into one -- so these are distinct spans
  * rather than overlapping accounts of the same one.
  */
 fun List<Session>.totalDuration(): Duration =
-    fold(Duration.ZERO) { total, session -> total + session.duration }
+    fold(Duration.ZERO) { total, session -> total + session.counted }
 
 /**
  * Sleep and exercise spans overlapping a window, deduplicated and selected by it.

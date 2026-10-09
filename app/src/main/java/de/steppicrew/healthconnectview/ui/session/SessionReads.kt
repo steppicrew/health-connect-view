@@ -137,7 +137,11 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
     if (session.kind != Session.Kind.EXERCISE) return null
     val granted = grantedPermissions()
     val window = TimeRangeFilter.between(session.start, session.end)
-    val byWriter = mutableMapOf<String, MutableList<Instant>>()
+    // Speed first and distance only where it has none: one speed record holds a ride's
+    // thousands of samples, where distance came as 4,224 records -- five pages to read
+    // instead of one, for every workout on a page. The session's own writer comes before any
+    // other in either type, for the reason above; another writer is the last resort.
+    var fallback: List<Instant>? = null
     MOVEMENT_TYPES.mapNotNull(RecordRegistry::specOrNull)
         .filter { it.permission in granted }
         .forEach { spec ->
@@ -148,16 +152,33 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
             } catch (_: Exception) {
                 emptyList()
             }
-            records.forEach { record ->
-                val times = spec.pointsOf(record).map { it.time }.ifEmpty { listOf(spec.timeOf(record)) }
-                byWriter.getOrPut(spec.originOf(record)) { mutableListOf() } += times
+            val byWriter = records.groupBy { spec.originOf(it) }.mapValues { (_, group) ->
+                group.flatMap { record -> spec.pointsOf(record).map { it.time }.ifEmpty { listOf(spec.timeOf(record)) } }
+                    .filter { it >= session.start && it <= session.end }
             }
+            byWriter[session.origin]?.let { own -> movementIn(session.start, session.end, own)?.let { return it } }
+            if (fallback == null) fallback = byWriter.values.maxByOrNull { it.size }
         }
-    val times = byWriter[session.origin] ?: byWriter.values.maxByOrNull { it.size } ?: return null
-    return movementIn(session.start, session.end, times.filter { it >= session.start && it <= session.end })
+    fallback?.let { return movementIn(session.start, session.end, it) }
+    return null
 }
 
-/** Written only while moving: their absence inside a workout is a stop. */
+/**
+ * [sessions] with each workout's breaks and moving time read, so totals count time on the
+ * move and bands leave the breaks out. Other kinds pass through as they are.
+ */
+suspend fun HealthRepository.withMovement(sessions: List<Session>): List<Session> = coroutineScope {
+    val gate = Semaphore(MAX_CONCURRENT_READS)
+    sessions.map { session ->
+        async {
+            if (session.kind != Session.Kind.EXERCISE) return@async session
+            val movement = gate.withPermit { movementDuring(session) } ?: return@async session
+            session.copy(breaks = movement.breaks, moving = movement.moving)
+        }
+    }.awaitAll()
+}
+
+/** Written only while moving: their absence inside a workout is a stop. In the order asked. */
 private val MOVEMENT_TYPES = listOf("SpeedRecord", "DistanceRecord")
 
 /**

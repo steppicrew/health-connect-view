@@ -751,7 +751,12 @@ class TileDetailViewModel(
         val curve = curveGate.withPermit {
             SessionCurve(
                 points = repository.heartRateDuring(session),
-                breaks = repository.movementDuring(session)?.breaks.orEmpty(),
+                // Already read with the list where it was; see TileChartLoader.
+                breaks = if (session.moving != null) {
+                    session.breaks
+                } else {
+                    repository.movementDuring(session)?.breaks.orEmpty()
+                },
             )
         }
         curveCache[session] = curve
