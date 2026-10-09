@@ -7,8 +7,8 @@ O QUE ELE FAZ
 • Registros individuais com horário exato, valor, unidade e o app que os gravou
 • Gráficos por dia, semana, quatro semanas ou ano
 • Sono e treinos sombreados atrás dos gráficos do dia, para que um pico tenha explicação
-• Cada treino com a frequência cardíaca registrada e, se você permitir, o trajeto com perfil de altitude
-• Fases do sono — profundo, leve, REM e acordado
+• Cada treino com frequência cardíaca, velocidade e altitude em um gráfico, pausas detectadas e descontadas, e o trajeto se você permitir
+• Fases do sono de cada noite registrada pelo relógio, ao lado da frequência cardíaca, frequência respiratória, SpO₂ e VFC da noite
 • Uma visão geral dos ciclos: todos os ciclos de um ano lado a lado, alinhados no dia um, sem previsões
 • Setas de tendência: a última semana comparada com sua média de 30 dias
 • Sequências: dias seguidos cumprindo a meta ou ativo, e a mais longa do ano
@@ -38,8 +38,9 @@ Tudo acima é gratuito e vai continuar assim. O Pro é uma única compra no app 
 
 • Exportação em CSV de qualquer tipo de dado: cada registro com o app de origem, ou os totais diários sem duplicatas. Você escolhe onde salvar; o app não guarda cópia.
 • Relatórios em PDF para seu médico: pressão com médias da manhã e da noite, peso por semana, frequência cardíaca em repouso comparada à média de quatro semanas, glicemia por refeição e faixa-alvo.
-• Blocos maiores com período próprio — hoje, a semana, quatro semanas ou o ano — como número, gráfico ou ambos.
-• Vários blocos para o mesmo número e uma cor para cada um.
+• Blocos maiores — a semana, quatro semanas ou o ano como número, gráfico ou ambos, ou as fases do sono da última noite e seus últimos treinos com a curva que você escolher.
+• Vários blocos para o mesmo número e uma cor própria para cada bloco.
+• Um bloco com as mudanças desta semana, o peso com a composição corporal e dois números comparados em um mesmo eixo de tempo.
 • Trajetos de treino como arquivos GPX.
 • Todos os recursos Pro futuros, sem custo adicional.
 

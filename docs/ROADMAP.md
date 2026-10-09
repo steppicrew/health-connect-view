@@ -542,9 +542,13 @@ Before the next release, from the owner, 09.10.2026:
 66. [ ] **Store screenshots of Pro** -- large and coloured tiles (a night's stages with a curve,
     workouts with their curves, a week as a chart), from seeded data like every other
     screenshot, added to `store-assets.sh`'s routes.
-67. [ ] **Pro described as it is now** -- the in-app text (`pro_body`, `pro_owned_body`) and
+67. [x] **Pro described as it is now** -- the in-app text (`pro_body`, `pro_owned_body`) and
     the store listing in every language: second curves on tiles, stage times, several lines
-    per chart are new since they were written.
+    per chart are new since they were written. Done 09.10.2026; the texts had also left out
+    the insights tile, body composition and comparing. The listing's free part names a
+    workout's lines and breaks and a night's readings. Play caps the full description at
+    4,000 characters and English stood at 3,989, so the CSV and PDF entries were shortened
+    to make room; the longest is now 3,984 (Indonesian).
 68. [x] **"What's new" after an update with new features** -- a card above the tiles, the
     owner's choice over a dialog, put away for good with one tap. Its own short text per
     language and version (`whats_new_<versionCode>`, one point a line) rather than the Play

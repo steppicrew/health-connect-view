@@ -7,8 +7,8 @@ WAS SIE KANN
 • Einzelne Datensätze mit genauen Zeitstempeln, Werten, Einheiten und der schreibenden App
 • Trends nach Tag, Woche, vier Wochen oder Jahr als Diagramm
 • Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
-• Jedes Training mit der dabei aufgezeichneten Herzfrequenz, und seine Route als Form mit Höhenprofil, wenn Sie sie freigeben
-• Schlafphasen — Tief-, Leicht-, REM-Schlaf und Wachphasen — für jede Nacht, in der Ihre Uhr sie erfasst
+• Jedes Training mit Herzfrequenz, Geschwindigkeit und Höhe in einem Diagramm, Pausen erkannt und herausgerechnet, und seine Route, wenn Sie sie freigeben
+• Schlafphasen für jede Nacht, in der Ihre Uhr sie erfasst, neben Herzfrequenz, Atemfrequenz, SpO₂ und HRV der Nacht
 • Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, mit Blutung, Ovulationstests und Temperatur — nur was erfasst wurde, keine Vorhersagen
 • Trendpfeile im Dashboard, die die letzte Woche mit Ihrem 30-Tage-Durchschnitt vergleichen
 • Serien: an wie vielen Tagen hintereinander Sie Ihr Ziel erreicht haben oder aktiv waren, und die längste des Jahres
@@ -36,10 +36,11 @@ PRO — EINMALKAUF, KEIN ABO
 
 Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
 
-• CSV-Export — jeden Datentyp als Tabellendatei: alle Datensätze mit der schreibenden App oder die entdoppelten Tagessummen. Sie wählen, wo die Datei landet; die App behält keine Kopie.
-• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck mit Durchschnitten morgens und abends, jedem Tag und jeder Messung, jeweils eingestuft; Gewicht mit dem Verlauf nach Wochen; Ruhepuls gegen sein Vier-Wochen-Mittel; Blutzucker nach Bezug zur Mahlzeit und nach Zielbereich. Zeitraum frei wählbar, zum Speichern oder direkt ansehen und drucken.
-• Größere Kacheln — doppelt so breit oder doppelt so groß, mit freier Wahl, was sie zeigen: heute, Woche, vier Wochen oder Jahr, als Zahl, Diagramm oder beides.
-• Mehrere Kacheln für denselben Wert, etwa Schritte heute und im Jahr, und eine eigene Farbe für jede Kachel.
+• CSV-Export — jeden Datentyp als Tabelle: alle Datensätze mit der schreibenden App oder die entdoppelten Tagessummen. Die App behält keine Kopie.
+• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck morgens und abends, jede Messung eingestuft; Gewicht, Ruhepuls und Blutzucker. Zeitraum frei wählbar, zum Speichern oder Drucken.
+• Größere Kacheln — Woche, vier Wochen oder Jahr als Zahl, Diagramm oder beides, oder die Schlafphasen der letzten Nacht und Ihre letzten Trainings mit einer Kurve Ihrer Wahl.
+• Mehrere Kacheln für denselben Wert und eine eigene Farbe für jede Kachel.
+• Eine Kachel mit den Veränderungen dieser Woche, Gewicht mit Körperzusammensetzung und zwei Werte im Vergleich auf einer Zeitachse.
 • Trainingsrouten als GPX-Datei für Karten- oder Trainings-Apps.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 

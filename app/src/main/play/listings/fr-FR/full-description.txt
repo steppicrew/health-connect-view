@@ -7,8 +7,8 @@ CE QU’ELLE FAIT
 • Chaque enregistrement avec son heure exacte, sa valeur, son unité et l’appli qui l’a écrit
 • Graphiques par jour, semaine, quatre semaines ou année
 • Sommeil et entraînements ombrés derrière les graphiques du jour, pour qu’un pic ait une explication
-• Chaque entraînement avec sa fréquence cardiaque et, si vous l’autorisez, son parcours et son profil d’altitude
-• Les phases de sommeil — profond, léger, paradoxal et éveil
+• Chaque entraînement avec fréquence cardiaque, vitesse et altitude dans un graphique, pauses retirées, et son parcours si vous l’autorisez
+• Les phases de sommeil, à côté de la fréquence cardiaque, de la fréquence respiratoire, de la SpO₂ et de la VFC de la nuit
 • Une vue des cycles : tous les cycles d’une année, alignés sur le premier jour, sans prédiction
 • Des flèches de tendance : la dernière semaine comparée à votre moyenne sur 30 jours
 • Des séries : jours d’affilée à atteindre votre objectif ou à être actif, et la plus longue de l’année
@@ -20,7 +20,7 @@ VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 
 Cette application n’a aucune autorisation Internet. Ce n’est pas « nous promettons de ne rien envoyer » : Android lui-même l’empêche d’établir la moindre connexion réseau. Pas de compte, pas de serveur, pas d’analyse, pas de publicité, pas de suivi.
 
-Elle est en lecture seule : elle affiche vos données de santé sans pouvoir les modifier ni les supprimer. Rien n’est écrit sur le stockage sauf si vous l’exportez vous-même, donc la désinstallation efface tout. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
+Elle est en lecture seule : elle affiche vos données de santé sans pouvoir les modifier ni les supprimer. Rien n’est écrit sur le stockage sauf si vous l’exportez vous-même. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
 
 VOUS CHOISISSEZ CE QUE VOUS PARTAGEZ
 
@@ -28,7 +28,7 @@ Les autorisations sont demandées type par type, et rien n’est présélectionn
 
 DES TOTAUX JUSTES
 
-Quand plusieurs applis enregistrent la même chose — un téléphone et une montre qui comptent les pas —, leurs enregistrements se chevauchent. Cette application utilise l’agrégation de Santé Connect pour supprimer les doublons : les totaux journaliers sont justes, sans double comptage, et elle vous signale quand plusieurs applis ont contribué.
+Quand plusieurs applis enregistrent la même chose — un téléphone et une montre qui comptent les pas —, cette application utilise l’agrégation de Santé Connect pour supprimer les doublons : les totaux journaliers sont justes, et elle signale quand plusieurs applis ont contribué.
 
 Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. Là où l’application affiche les chiffres d’une séance, elle indique clairement qu’ils sont rapprochés par l’heure.
 
@@ -36,10 +36,11 @@ PRO — ACHAT UNIQUE, SANS ABONNEMENT
 
 Tout ce qui précède est gratuit et le restera. Pro est un achat intégré unique qui débloque :
 
-• L’export CSV de n’importe quel type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. Vous choisissez où va le fichier ; l’appli n’en garde aucune copie.
-• Des rapports PDF pour votre médecin : tension avec moyennes du matin et du soir, poids par semaine, fréquence cardiaque au repos face à sa moyenne sur quatre semaines, glycémie par repas et par plage cible.
-• Des vignettes plus grandes avec leur propre période — aujourd’hui, la semaine, quatre semaines ou l’année — en chiffre, en graphique ou les deux.
+• L’export CSV de n’importe quel type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. L’appli n’en garde aucune copie.
+• Des rapports PDF pour votre médecin : tension du matin et du soir, poids, fréquence cardiaque au repos et glycémie, sur la période de votre choix.
+• Des vignettes plus grandes — la semaine, quatre semaines ou l’année en chiffre ou en graphique, ou la nuit dernière et vos derniers entraînements avec la courbe de votre choix.
 • Plusieurs vignettes pour un même chiffre, et une couleur pour chacune.
+• Une vignette des évolutions de la semaine, le poids avec la composition corporelle, et deux chiffres comparés sur un même axe du temps.
 • Les parcours d’entraînement en fichiers GPX.
 • Toutes les futures fonctions Pro, sans frais supplémentaires.
 

@@ -7,8 +7,8 @@ WAT DE APP DOET
 • Losse registraties met exacte tijd, waarde, eenheid en de app die ze schreef
 • Grafieken per dag, week, vier weken of jaar
 • Slaap en trainingen gearceerd achter de dagkrommen, zodat een piek of dal een verklaring heeft
-• Elke training met de hartslag tijdens die training en, als je dat toestaat, de route met hoogteprofiel
-• Slaapfasen — diep, licht, REM en wakker
+• Elke training met hartslag, snelheid en hoogte in één grafiek, pauzes herkend en weggelaten, en de route als je dat toestaat
+• Slaapfasen voor elke nacht die je horloge vastlegt, naast de hartslag, ademhalingsfrequentie, SpO₂ en HRV van die nacht
 • Een cyclusoverzicht: alle cycli van een jaar naast elkaar, uitgelijnd op dag één, zonder voorspellingen
 • Trendpijlen: de laatste week tegenover je 30-daags gemiddelde
 • Reeksen: hoeveel dagen op rij je je doel haalde of actief was, en de langste van het jaar
@@ -38,8 +38,9 @@ Alles hierboven is gratis en blijft gratis. Pro is één in-app-aankoop die ontg
 
 • CSV-export van elk gegevenstype: elke registratie met de bron-app, of de ontdubbelde dagtotalen van Health Connect. Jij kiest waar het bestand komt; de app houdt geen kopie.
 • PDF-rapporten voor je arts: bloeddruk met ochtend- en avondgemiddelden, gewicht per week, rusthartslag tegenover het 4-weeks gemiddelde, bloedglucose per maaltijd en doelbereik.
-• Grotere tegels met een eigen periode — vandaag, de week, vier weken of het jaar — als getal, grafiek of beide.
-• Meerdere tegels voor hetzelfde cijfer, en een eigen kleur per tegel.
+• Grotere tegels — de week, vier weken of het jaar als getal, grafiek of beide, of de slaapfasen van afgelopen nacht en je laatste trainingen met een curve naar keuze.
+• Meerdere tegels voor hetzelfde cijfer en een eigen kleur per tegel.
+• Een tegel met wat er deze week veranderde, gewicht met lichaamssamenstelling, en twee cijfers vergeleken op één tijdas.
 • Trainingsroutes als GPX-bestanden.
 • Elke toekomstige Pro-functie, zonder extra kosten.
 
