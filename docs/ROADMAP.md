@@ -457,6 +457,45 @@ open items below and `FEATURE-IDEAS.md`.
       English table made the German UI say "Biking".
     - Left out: segments (60-odd segment types would each need a name in 17 languages), and
       the dashboard tile still opens the workouts screen rather than the latest workout.
+52. [x] **Lowest and highest reading under a session's mean** -- built 09.10.2026, the
+    owner's request. Heart rate, power, speed and cadence show "min. · max." under the mean,
+    read in the same aggregate request. Until step 53 the lowest heart rate includes any break.
+
+The owner's list of 09.10.2026, accepted whole and in this order:
+
+53. [ ] **Breaks inside a workout** -- the owner's report: a ride on 18.09.2026, 09:37-17:27,
+    with a break from about 10:45 to 16:20. No writer stores a pause segment. Measured on the
+    phone (`SessionCurveShapeActivity`): Health Sync's speed and distance stop from minute 64
+    to 405 of the session (10:41-16:22); Garmin's own copy of the session is 121 minutes long
+    from the same start, i.e. its active time, not its end; heart rate falls to resting level
+    and Garmin samples it every 2 minutes instead of every minute. Plan: a gap of several
+    minutes in the session writer's speed/distance is a break; shade it on the heart-rate and
+    speed charts, show active time beside elapsed, keep it out of the statistics, and say it is
+    inferred from missing readings.
+54. [ ] **Several lines in one chart, switched by chips** -- one chart component for sleep,
+    workouts and comparison. A chip per line in the line's colour, tapping it shows or hides the
+    line; at least one stays on; the choice is remembered. Lines in one unit share a scale;
+    otherwise the axis belongs to the last chip tapped and the others are scaled unlabelled.
+55. [ ] **Sleep: stages behind heart rate, breath rate, oxygen** -- stages as background bands
+    with the night's readings over them, chips per line, on the session screen and a large
+    sleep tile (a new face: last night). Which lines are worth a chip is decided by what the
+    phone holds for recent nights, not by what Health Connect could hold.
+56. [ ] **Workout chart lines** -- heart rate, breath rate, speed/pace, elevation, power,
+    cadence as chips, with the breaks of step 53 shaded.
+57. [ ] **Laps as markers** on the workout chart, where a writer recorded laps.
+58. [ ] **Time in heart-rate zones** per workout, a bar under the chart, from the tile's
+    zones, saying it is matched by time.
+59. [ ] **Heart-rate recovery** -- the fall in the first one to two minutes after a workout
+    ends, from the all-day readings after it. Shown as a number, no verdict.
+60. [ ] **Heart-rate drift** -- heart rate against speed or power, first half against second,
+    the two figures side by side and no grade.
+61. [ ] **Compare: offer what is on screen** -- the picker lists only types with data in the
+    window shown, related ones first (body composition with weight).
+62. [ ] **Compare: one chart for one unit** -- weight, body water and bone mass on one scale
+    with the chips of step 54; different units stay stacked.
+63. [ ] **Across days** -- the night's lowest heart rate after training days against rest days;
+    resting heart rate or HRV over weeks with workouts marked. With the "moving together is not
+    cause" note.
 
 Also done on 26.09.2026, outside the numbered steps: swipe between windows in the detail
 views, a grant button on locked tiles, body measurements carrying their last reading, the
