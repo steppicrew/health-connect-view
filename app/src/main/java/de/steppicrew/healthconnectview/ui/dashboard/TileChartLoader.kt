@@ -82,6 +82,12 @@ internal class TileChartLoader(
          * everything here.
          */
         deferExtras: Boolean = false,
+        /**
+         * Read the streak with the other extras. The dashboard has its own, from its trends
+         * pass, and a workout tile's took 3 of its 4.5 s on the phone: a year of activities,
+         * read again for a figure the tile never showed.
+         */
+        withStreak: Boolean = true,
         onProgress: (Float) -> Unit = {},
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
@@ -656,7 +662,7 @@ internal class TileChartLoader(
             }
             val streak = runCatching {
                 when {
-                    span != Span.DAY -> null
+                    span != Span.DAY || !withStreak -> null
                     goal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
                         streakSummary(goal, span.startDate(offset), headlineTotal, repository.dailyTotalsOf(metric, origins))
                     sessionKind == Session.Kind.EXERCISE ->
