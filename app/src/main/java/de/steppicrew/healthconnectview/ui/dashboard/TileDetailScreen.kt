@@ -431,7 +431,7 @@ private fun SpanContent(
                     }
                     // About the rows' heart-rate curves, so only where a row draws one: a
                     // workout's row no longer does (see SessionRow).
-                    if (data.sessions.any { it.kind != Session.Kind.EXERCISE }) Text(
+                    if (data.sessions.any(::rowShowsCurve)) Text(
                         text = stringResource(
                             if (data.heartRateLocked) {
                                 R.string.sessions_locked_heart_rate
@@ -1530,6 +1530,15 @@ private const val TOUCH_TARGET = 48
  * value of its own -- the readings that describe it are separate types over the same window --
  * so showing them here is what turns "a 53-minute activity" into something you can read.
  */
+/**
+ * Whether a session's row draws its heart rate. Not a workout's or a night's: theirs is on
+ * their own page with the other lines, and a chart per row only pushed later ones a screen
+ * further down -- the owner's report, 09.10.2026, for workouts and then for nights. A night
+ * keeps its stages, which are what its list is read for.
+ */
+private fun rowShowsCurve(session: Session): Boolean =
+    session.kind != Session.Kind.EXERCISE && session.kind != Session.Kind.SLEEP
+
 private sealed interface CurveLoad {
     data object Loading : CurveLoad
     data class Done(val curve: SessionCurve?) : CurveLoad
@@ -1544,11 +1553,7 @@ private fun SessionRow(
     heartRateLocked: Boolean,
     onClick: () -> Unit,
 ) {
-    // A workout's row carries no chart: its heart rate is on its own page with the other lines,
-    // and a chart per row only pushed later workouts a screen further down -- the owner's
-    // report, 09.10.2026. A night keeps its stages and heart rate, which are what its list is
-    // read for.
-    val curveShown = session.kind != Session.Kind.EXERCISE
+    val curveShown = rowShowsCurve(session)
     val statistics = stringResource(R.string.session_statistics)
     // Clickable as a whole only without a chart: a chart needs the touches for its readout,
     // and a row that both scrubs a curve and opens a page would do the wrong one half the time.
