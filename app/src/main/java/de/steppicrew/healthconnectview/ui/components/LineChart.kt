@@ -1062,7 +1062,11 @@ fun LineChart(
             // gridlines they sat *under* the series, so a dense line or a bar ran straight
             // through the digits and the halo -- which exists to separate them from what
             // crosses them -- was painted over with them. Reported on respiratory rate.
-            guides.forEach { guide ->
+            // Bottom label first, then upwards; one that would overprint a label already drawn is
+            // left out, as on the time axis. A workout on a dashboard tile is short enough that
+            // every 25 bpm ran into the next ("175" over "150").
+            val drawnLabels = mutableListOf<ClosedFloatingPointRange<Float>>()
+            (if (invertAxis) guides.asReversed() else guides).forEach { guide ->
                 val y = yFor(guide)
                 // Measured on a single unwrapped line. Without this the measurer inherits the
                 // canvas width as its constraint and a label can come back wrapped or
@@ -1084,6 +1088,9 @@ fun LineChart(
                 } else {
                     (y - label.size.height / 2f).coerceAtLeast(0f)
                 }
+                val extent = labelY..(labelY + label.size.height)
+                if (drawnLabels.any { it.start < extent.endInclusive && extent.start < it.endInclusive }) return@forEach
+                drawnLabels += extent
                 // Haloed rather than sitting on a filled block.
                 //
                 // A rect the width of the label hid whatever the series did behind it, which
