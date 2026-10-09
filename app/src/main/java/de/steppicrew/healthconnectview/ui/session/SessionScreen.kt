@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
@@ -222,6 +223,11 @@ private fun SessionContent(
 
         Section(stringResource(R.string.session_statistics))
         Stats(detail)
+        detail.heartZones?.let { zones ->
+            // Among the figures, last, rather than under the five zones where it was missed:
+            // the zones arrive after the rest, so a row added here moves nothing above it.
+            StatRow(stringResource(R.string.session_load), Formatting.number(zones.load.toDouble()), strong = true)
+        }
         detail.heartZones?.let { zones ->
             Section(stringResource(R.string.session_zones_title))
             Zones(zones, detail.heartRateUnitRes)
@@ -562,7 +568,6 @@ private fun Zones(zones: HeartZones, @StringRes unitRes: Int?) {
             swatch = ZONE_COLORS[index],
         )
     }
-    StatRow(stringResource(R.string.session_load), Formatting.number(zones.load.toDouble()))
     Text(
         text = stringResource(
             if (zones.maxFromSettings) R.string.session_zones_note_set else R.string.session_zones_note_data,
@@ -588,9 +593,13 @@ private val ZONE_COLORS = listOf(
 
 private const val ZONE_BAR_HEIGHT = 20
 
-/** One figure: its name, its value, and a smaller line under the value where there is one. */
+/**
+ * One figure: its name, its value, and a smaller line under the value where there is one.
+ * [strong] sets it in bold, for the one figure that sums up the session.
+ */
 @Composable
-private fun StatRow(label: String, value: String, detail: String? = null, swatch: Color? = null) {
+private fun StatRow(label: String, value: String, detail: String? = null, swatch: Color? = null, strong: Boolean = false) {
+    val weight = if (strong) FontWeight.Bold else null
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -610,11 +619,12 @@ private fun StatRow(label: String, value: String, detail: String? = null, swatch
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
+                fontWeight = weight,
                 modifier = Modifier.weight(1f),
             )
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text(text = value, style = MaterialTheme.typography.bodyMedium)
+            Text(text = value, style = MaterialTheme.typography.bodyMedium, fontWeight = weight)
             if (detail != null) {
                 Text(
                     text = detail,
