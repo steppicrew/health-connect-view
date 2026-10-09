@@ -501,6 +501,7 @@
     <string name="session_breaks_note">لا يشمل وقت الحركة أي توقف بلا بيانات للسرعة أو المسافة. تُدرج التوقفات التي تزيد على خمس دقائق كاستراحات، ولا تدخل في القيم أعلاه، ويظللها مخطط نبض القلب.</string>
     <string name="session_break_legend">استراحة: لم تُسجَّل سرعة ولا مسافة</string>
     <string name="chart_line_axis">يُعرض مقياسه</string>
+    <string name="chart_line_axis_note">↕ المحور يخص هذا الخط. المس الرسم لقراءة جميع الخطوط.</string>
     <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">لم يعد بالإمكان العثور على هذه الجلسة.</string>
     <string name="session_laps">اللفّات</string>

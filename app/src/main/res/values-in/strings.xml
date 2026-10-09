@@ -446,6 +446,7 @@
     <string name="session_breaks_note">Waktu bergerak tidak mencakup setiap berhenti tanpa data kecepatan atau jarak. Berhenti lebih dari lima menit dicantumkan sebagai jeda, tidak dihitung dalam nilai di atas, dan ditandai pada grafik detak jantung.</string>
     <string name="session_break_legend">Jeda: tidak ada kecepatan atau jarak yang tercatat</string>
     <string name="chart_line_axis">Skalanya ditampilkan</string>
+    <string name="chart_line_axis_note">↕ Sumbu milik garis ini. Sentuh grafik untuk membaca semua garis.</string>
     <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">Sesi ini tidak ditemukan lagi.</string>
     <string name="session_laps">Putaran</string>

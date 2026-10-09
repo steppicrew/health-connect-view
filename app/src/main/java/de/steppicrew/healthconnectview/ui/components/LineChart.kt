@@ -265,6 +265,12 @@ fun LineChart(
     strip: List<StripSegment> = emptyList(),
     /** What the strip says at a moment, for the readout: the stage's name. */
     stripLabel: ((Instant) -> String?)? = null,
+    /**
+     * Readings as dots joined by a faint dashed line, however many: a reading every few minutes
+     * is a set of readings, and the dashes let them be followed as one. Drawn the same as an
+     * [OverlayLine] with dots, so a line looks alike whichever chip owns the axis.
+     */
+    dottedLine: Boolean = false,
 ) {
     if (points.isEmpty()) return
 
@@ -357,6 +363,7 @@ fun LineChart(
     val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
     val breakColor = MaterialTheme.colorScheme.onSurface.copy(alpha = BAND_ALPHA)
+    val connectorColor = MaterialTheme.colorScheme.outline.copy(alpha = CONNECTOR_ALPHA)
     val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val labelStyle = MaterialTheme.typography.labelSmall
     val textMeasurer = rememberTextMeasurer()
@@ -785,10 +792,19 @@ fun LineChart(
                     previous = point
                 }
                 if (line.dots) {
-                    // A reading every few minutes is a set of readings, not a trace.
+                    // A reading every few minutes is a set of readings, not a trace: dots,
+                    // joined by faint dashes so they can be followed as one.
+                    drawPath(
+                        path,
+                        color = connectorColor,
+                        style = Stroke(
+                            width = CONNECTOR_WIDTH.dp.toPx(),
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(CONNECTOR_DASH.dp.toPx(), CONNECTOR_DASH.dp.toPx())),
+                        ),
+                    )
                     line.points.forEach { point ->
                         val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
-                        drawCircle(color = line.color, radius = 2.5.dp.toPx(), center = Offset(x, yOf(point.value)))
+                        drawCircle(color = line.color, radius = DOT_RADIUS.dp.toPx(), center = Offset(x, yOf(point.value)))
                     }
                 } else {
                     drawPath(path, color = line.color, style = Stroke(width = LINE_WIDTH.dp.toPx(), cap = StrokeCap.Round))
@@ -848,6 +864,19 @@ fun LineChart(
                                 cap = StrokeCap.Round,
                             )
                         }
+
+                    dottedLine -> drawPath(
+                        Path().apply {
+                            segmentOffsets.forEachIndexed { index, offset ->
+                                if (index == 0) moveTo(offset.x, offset.y) else lineTo(offset.x, offset.y)
+                            }
+                        },
+                        color = connectorColor,
+                        style = Stroke(
+                            width = CONNECTOR_WIDTH.dp.toPx(),
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(CONNECTOR_DASH.dp.toPx(), CONNECTOR_DASH.dp.toPx())),
+                        ),
+                    )
 
                     else -> {
                         val path = if (smooth && segmentOffsets.size > 2) {
@@ -1019,11 +1048,11 @@ fun LineChart(
                 )
             }
 
-            if (markReadings && points.size <= MAX_DOTS) {
+            if (dottedLine || (markReadings && points.size <= MAX_DOTS)) {
                 points.forEachIndexed { index, point ->
                     drawCircle(
                         color = colorAt(index),
-                        radius = 3.dp.toPx(),
+                        radius = (if (dottedLine) DOT_RADIUS else 3.0).dp.toPx(),
                         center = Offset(xFor(index), yFor(point.value)),
                     )
                 }
@@ -1700,6 +1729,12 @@ private const val OVERLAY_READOUT_HEIGHT = 20
 data class StripSegment(val start: Instant, val end: Instant, val color: Color)
 
 private const val STRIP_HEIGHT = 8
+
+/** A dotted line's dots, and the faint dashes joining them. */
+private const val DOT_RADIUS = 2.5
+private const val CONNECTOR_WIDTH = 1
+private const val CONNECTOR_DASH = 3
+private const val CONNECTOR_ALPHA = 0.6f
 
 /**
  * The touched point's value and time, in a row that is always present.
