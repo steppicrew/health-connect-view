@@ -126,6 +126,8 @@ fun MultiLineChart(
     val alone = others.isEmpty()
     // Resolved here: the readout's formatter runs outside composition.
     val units = others.map { line -> line.unitText ?: line.unitRes?.let { stringResource(it) } }
+    // The colour the axis owner is drawn in, which its reference band and swatch take too.
+    val primaryColor = if (alone) MaterialTheme.colorScheme.primary else primary.color
 
     Column(modifier = modifier.fillMaxWidth()) {
         Box((if (fillHeight) Modifier.weight(1f) else Modifier).fillMaxWidth()) {
@@ -141,6 +143,7 @@ fun MultiLineChart(
                 integral = primary.integral,
                 minSpan = primary.minSpan,
                 referenceRange = primary.reference?.let { it.low..it.high },
+                referenceColor = primaryColor,
                 extent = extent,
                 breaks = breaks,
                 fillHeight = fillHeight,
@@ -211,7 +214,7 @@ fun MultiLineChart(
         // wearer's own range.
         primary.reference?.let { reference ->
             DotText(
-                color = REFERENCE_COLOR.copy(alpha = REFERENCE_SWATCH_ALPHA),
+                color = primaryColor.copy(alpha = REFERENCE_SWATCH_ALPHA),
                 text = stringResource(reference.labelRes),
                 style = MaterialTheme.typography.labelSmall,
                 textColor = MaterialTheme.colorScheme.onSurfaceVariant,
