@@ -112,6 +112,9 @@ class RecordShapeActivity : ComponentActivity() {
                     "FLOORS start=${record.startTime.atZone(zone).toLocalTime()} " +
                         "end=${record.endTime.atZone(zone).toLocalTime()} " +
                         "durationMin=${duration.toMinutes()} floors=${record.floors} " +
+                        // When the writer last touched it: a running daily summary that stopped
+                        // being rewritten keeps an old value while the source app moves on.
+                        "modified=${record.metadata.lastModifiedTime.atZone(zone).toLocalDateTime()} " +
                         "origin=${record.metadata.dataOrigin.packageName}",
                 )
             }
