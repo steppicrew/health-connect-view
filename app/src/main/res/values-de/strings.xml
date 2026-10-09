@@ -442,6 +442,7 @@
     <string name="session_sleep">Schlaf</string>
     <string name="session_untitled">Aktivität</string>
     <string name="session_no_stats">Während dieser Sitzung wurde sonst nichts aufgezeichnet.</string>
+    <string name="session_stat_range">min. %1$s · max. %2$s</string>
     <string name="session_gone">Diese Sitzung ist nicht mehr auffindbar.</string>
     <string name="session_laps">Runden</string>
     <string name="session_lap">Runde %1$d</string>

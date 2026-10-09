@@ -492,6 +492,7 @@
     <string name="session_sleep">النوم</string>
     <string name="session_untitled">نشاط</string>
     <string name="session_no_stats">لم يُسجَّل شيء آخر خلال هذه الجلسة.</string>
+    <string name="session_stat_range">الأدنى %1$s · الأعلى %2$s</string>
     <string name="session_gone">لم يعد بالإمكان العثور على هذه الجلسة.</string>
     <string name="session_laps">اللفّات</string>
     <string name="session_lap">اللفّة %1$d</string>

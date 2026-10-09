@@ -448,6 +448,7 @@
     <string name="session_sleep">Uyku</string>
     <string name="session_untitled">Etkinlik</string>
     <string name="session_no_stats">Bu oturum sırasında başka bir şey kaydedilmedi.</string>
+    <string name="session_stat_range">en düşük %1$s · en yüksek %2$s</string>
     <string name="session_gone">Bu oturum artık bulunamıyor.</string>
     <string name="session_laps">Turlar</string>
     <string name="session_lap">Tur %1$d</string>

@@ -448,6 +448,7 @@
     <string name="session_sleep">Slaap</string>
     <string name="session_untitled">Activiteit</string>
     <string name="session_no_stats">Tijdens deze sessie is verder niets geregistreerd.</string>
+    <string name="session_stat_range">min. %1$s · max. %2$s</string>
     <string name="session_gone">Deze sessie is niet meer te vinden.</string>
     <string name="session_laps">Ronden</string>
     <string name="session_lap">Ronde %1$d</string>

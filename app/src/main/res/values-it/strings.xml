@@ -459,6 +459,7 @@
     <string name="session_sleep">Sonno</string>
     <string name="session_untitled">Attività</string>
     <string name="session_no_stats">Durante questa sessione non è stato registrato nient’altro.</string>
+    <string name="session_stat_range">min %1$s · max %2$s</string>
     <string name="session_gone">Questa sessione non è più disponibile.</string>
     <string name="session_laps">Giri</string>
     <string name="session_lap">Giro %1$d</string>

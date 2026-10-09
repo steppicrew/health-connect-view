@@ -437,6 +437,7 @@
     <string name="session_sleep">睡眠</string>
     <string name="session_untitled">アクティビティ</string>
     <string name="session_no_stats">このセッション中にほかの記録はありません。</string>
+    <string name="session_stat_range">最低 %1$s・最高 %2$s</string>
     <string name="session_gone">このセッションは見つかりません。</string>
     <string name="session_laps">ラップ</string>
     <string name="session_lap">ラップ %1$d</string>

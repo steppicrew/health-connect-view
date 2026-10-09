@@ -215,9 +215,21 @@ class HealthRepository(private val context: Context) {
         metric: AggregateMetric<*>,
         range: TimeRangeFilter,
         origins: Set<DataOrigin> = emptySet(),
-    ): Double? = withContext(Dispatchers.IO) {
-        val result = client.aggregate(AggregateRequest(setOf(metric), range, origins))
-        result[metric]?.let { numericAggregate(it, metric) }
+    ): Double? = totals(setOf(metric), range, origins)[metric]
+
+    /**
+     * Several deduplicated totals for one range in a single request, as [total] gives one.
+     * A metric the range holds nothing for is absent from the map rather than zero.
+     */
+    suspend fun totals(
+        metrics: Set<AggregateMetric<*>>,
+        range: TimeRangeFilter,
+        origins: Set<DataOrigin> = emptySet(),
+    ): Map<AggregateMetric<*>, Double> = withContext(Dispatchers.IO) {
+        val result = client.aggregate(AggregateRequest(metrics, range, origins))
+        metrics.mapNotNull { metric ->
+            result[metric]?.let { numericAggregate(it, metric) }?.let { metric to it }
+        }.toMap()
     }
 
     /**

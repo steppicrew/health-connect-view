@@ -18,8 +18,17 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
-/** One metric measured over a session's window, for the session screen. */
-data class SessionStat(val spec: RecordTypeSpec<*>, val value: Double)
+/**
+ * One metric measured over a session's window, for the session screen: its total or mean,
+ * and for a type with a spread -- heart rate, power, speed, cadence -- the lowest and highest
+ * reading as well, where the platform could give both.
+ */
+data class SessionStat(
+    val spec: RecordTypeSpec<*>,
+    val value: Double,
+    val low: Double? = null,
+    val high: Double? = null,
+)
 
 /** An open session's route: its points, consent needed first, none recorded, or a failed read. */
 sealed interface RouteLoad {
@@ -52,14 +61,24 @@ suspend fun HealthRepository.statisticsFor(session: Session): List<SessionStat> 
             async {
                 gate.withPermit {
                     val metric = spec.aggregate ?: return@withPermit null
-                    val value = try {
-                        total(metric, window)
+                    // In the same request as the mean, so all three come from one
+                    // deduplication of the same records.
+                    val range = spec.rangeAggregates
+                    val values = try {
+                        totals(setOfNotNull(metric, range?.first, range?.second), window)
                     } catch (e: CancellationException) {
                         throw e
                     } catch (_: Exception) {
-                        null
+                        emptyMap()
                     }
-                    value?.let { SessionStat(spec = spec, value = it) }
+                    values[metric]?.let {
+                        SessionStat(
+                            spec = spec,
+                            value = it,
+                            low = range?.let { (low, _) -> values[low] },
+                            high = range?.let { (_, high) -> values[high] },
+                        )
+                    }
                 }
             }
         }

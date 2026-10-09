@@ -470,6 +470,7 @@
     <string name="session_sleep">Сон</string>
     <string name="session_untitled">Активность</string>
     <string name="session_no_stats">Во время этого сеанса больше ничего не записано.</string>
+    <string name="session_stat_range">мин. %1$s · макс. %2$s</string>
     <string name="session_gone">Этот сеанс больше не найден.</string>
     <string name="session_laps">Круги</string>
     <string name="session_lap">Круг %1$d</string>

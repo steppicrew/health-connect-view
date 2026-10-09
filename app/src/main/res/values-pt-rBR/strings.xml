@@ -459,6 +459,7 @@
     <string name="session_sleep">Sono</string>
     <string name="session_untitled">Atividade</string>
     <string name="session_no_stats">Nada mais foi registrado durante esta sessão.</string>
+    <string name="session_stat_range">mín. %1$s · máx. %2$s</string>
     <string name="session_gone">Esta sessão não foi encontrada.</string>
     <string name="session_laps">Voltas</string>
     <string name="session_lap">Volta %1$d</string>
