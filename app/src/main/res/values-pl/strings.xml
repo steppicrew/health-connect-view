@@ -508,6 +508,7 @@
     <string name="workouts_span_year">Treningi z ostatnich 12 miesięcy.</string>
     <string name="session_overlap_note">To pomiary wykonane podczas tej sesji. Health Connect nie łączy pomiarów z sesją, więc są dopasowywane według czasu.</string>
     <string name="session_statistics">Co zapisano podczas tej sesji</string>
+    <string name="session_details">Szczegóły</string>
     <string name="zones_title">Strefy kolorów</string>
     <string name="zones_explained">Krzywa jest kolorowana według pasma, do którego należy pomiar. Ustaw granicę między każdą parą pasm.</string>
     <string name="zones_upper_bound">Do (od %1$s)</string>

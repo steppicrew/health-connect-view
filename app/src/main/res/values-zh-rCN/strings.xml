@@ -475,6 +475,7 @@
     <string name="workouts_span_year">过去 12 个月的锻炼。</string>
     <string name="session_overlap_note">这些是此次活动期间的测量值。Health Connect 不会将测量值与活动关联，因此按时间进行匹配。</string>
     <string name="session_statistics">此次活动期间记录的内容</string>
+    <string name="session_details">详情</string>
     <string name="zones_title">颜色区间</string>
     <string name="zones_explained">曲线会根据每个测量值所在的区间着色。请设置每两个区间之间的界限。</string>
     <string name="zones_upper_bound">上限（从 %1$s 起）</string>

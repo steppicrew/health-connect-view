@@ -480,6 +480,7 @@
     <string name="workouts_span_year">Trainings der letzten 12 Monate.</string>
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
     <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
+    <string name="session_details">Details</string>
     <string name="zones_title">Farbzonen</string>
     <string name="zones_explained">Die Kurve wird danach eingefärbt, in welchen Bereich ein Messwert fällt. Legen Sie die Grenze zwischen je zwei Bereichen fest.</string>
     <string name="zones_upper_bound">Bis (ab %1$s)</string>

@@ -475,6 +475,7 @@
     <string name="workouts_span_year">지난 12개월 동안의 운동입니다.</string>
     <string name="session_overlap_note">이 세션 동안 측정된 값입니다. 헬스 커넥트는 측정값을 세션과 연결하지 않으므로 시간으로 맞춥니다.</string>
     <string name="session_statistics">이 세션 동안 기록된 내용</string>
+    <string name="session_details">세부정보</string>
     <string name="zones_title">색상 구간</string>
     <string name="zones_explained">곡선은 각 측정값이 속한 구간에 따라 색이 칠해집니다. 각 구간 사이의 경계를 설정하세요.</string>
     <string name="zones_upper_bound">최대(%1$s부터)</string>

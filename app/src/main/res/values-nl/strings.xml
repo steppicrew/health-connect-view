@@ -486,6 +486,7 @@
     <string name="workouts_span_year">Trainingen van de afgelopen 12 maanden.</string>
     <string name="session_overlap_note">Dit zijn de metingen die tijdens deze sessie zijn gedaan. Health Connect koppelt metingen niet aan een sessie, dus ze worden op tijd gekoppeld.</string>
     <string name="session_statistics">Wat er tijdens deze sessie is geregistreerd</string>
+    <string name="session_details">Details</string>
     <string name="zones_title">Kleurzones</string>
     <string name="zones_explained">De curve wordt gekleurd naar de band waarin een meting valt. Stel de grens tussen elk paar banden in.</string>
     <string name="zones_upper_bound">Tot (vanaf %1$s)</string>

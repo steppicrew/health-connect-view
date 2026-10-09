@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -427,7 +429,9 @@ private fun SpanContent(
                             modifier = Modifier.padding(horizontal = 16.dp),
                         )
                     }
-                    Text(
+                    // About the rows' heart-rate curves, so only where a row draws one: a
+                    // workout's row no longer does (see SessionRow).
+                    if (data.sessions.any { it.kind != Session.Kind.EXERCISE }) Text(
                         text = stringResource(
                             if (data.heartRateLocked) {
                                 R.string.sessions_locked_heart_rate
@@ -1515,6 +1519,9 @@ private fun RouteMark(session: Session, size: Int = ROUTE_MARK) {
 
 private const val ROUTE_MARK = 20
 
+/** Material's minimum touch target, which a text button is laid out at. */
+private const val TOUCH_TARGET = 48
+
 /**
  * One session as a row on a session type's own screen: what it was, when, how long, and the
  * heart rate recorded during it.
@@ -1537,11 +1544,17 @@ private fun SessionRow(
     heartRateLocked: Boolean,
     onClick: () -> Unit,
 ) {
-    // Deliberately not clickable as a whole any more: the chart below needs the touches for
-    // its own readout, and a row that both scrubs a curve and opens a dialog would do the
-    // wrong one about half the time. The statistics moved onto the info button instead.
+    // A workout's row carries no chart: its heart rate is on its own page with the other lines,
+    // and a chart per row only pushed later workouts a screen further down -- the owner's
+    // report, 09.10.2026. A night keeps its stages and heart rate, which are what its list is
+    // read for.
+    val curveShown = session.kind != Session.Kind.EXERCISE
+    val statistics = stringResource(R.string.session_statistics)
+    // Clickable as a whole only without a chart: a chart needs the touches for its readout,
+    // and a row that both scrubs a curve and opens a page would do the wrong one half the time.
     Column(
         modifier = Modifier
+            .then(if (curveShown) Modifier else Modifier.clickable(onClick = onClick))
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
@@ -1578,13 +1591,22 @@ private fun SessionRow(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            // A chevron, not the "i" the notes use: this opens the workout's own page, and an
-            // "i" read as "explain this" -- the owner's report, 09.10.2026.
-            IconButton(onClick = onClick) {
+            // Said in a word: an "i" read as "explain this" and a bare chevron as decoration,
+            // both reported by the owner, 09.10.2026.
+            TextButton(
+                onClick = onClick,
+                contentPadding = PaddingValues(start = 8.dp, end = 0.dp),
+                // Lifted so its label sits on the name's line, not between the two: the touch
+                // target is taller than a line (see FirstLine.kt).
+                modifier = Modifier
+                    .offset(y = -firstLineTextInset(MaterialTheme.typography.bodyLarge, TOUCH_TARGET.dp))
+                    .semantics { contentDescription = statistics },
+            ) {
+                Text(stringResource(R.string.session_details), maxLines = 1)
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.session_statistics),
-                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
                 )
             }
         }
@@ -1604,7 +1626,7 @@ private fun SessionRow(
         // Nothing is drawn until it arrives, so a row never claims "no heart rate recorded"
         // for a curve that is merely still loading.
         val curveLoad by produceState<CurveLoad>(CurveLoad.Loading, session, heartRateLocked) {
-            value = CurveLoad.Done(if (heartRateLocked) null else loadCurve(session))
+            value = CurveLoad.Done(if (heartRateLocked || !curveShown) null else loadCurve(session))
         }
         val curve = (curveLoad as? CurveLoad.Done)?.curve?.points
         val breaks = (curveLoad as? CurveLoad.Done)?.curve?.breaks.orEmpty()
@@ -1640,7 +1662,7 @@ private fun SessionRow(
             // Distinct explanations for the same blank space: nothing was recorded, versus
             // the app is not allowed to look. The locked case is said once for the whole
             // list rather than repeated on every row.
-            !heartRateLocked -> Text(
+            !heartRateLocked && curveShown -> Text(
                 text = stringResource(R.string.sessions_curve_missing),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

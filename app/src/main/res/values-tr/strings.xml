@@ -486,6 +486,7 @@
     <string name="workouts_span_year">Son 12 ayın antrenmanları.</string>
     <string name="session_overlap_note">Bunlar bu oturum sırasında alınan ölçümlerdir. Health Connect ölçümleri bir oturumla ilişkilendirmez; bu yüzden zamana göre eşleştirilirler.</string>
     <string name="session_statistics">Bu oturum sırasında kaydedilenler</string>
+    <string name="session_details">Ayrıntılar</string>
     <string name="zones_title">Renk bölgeleri</string>
     <string name="zones_explained">Eğri, her ölçümün düştüğü banda göre renklendirilir. Her iki bant arasındaki sınırı belirleyin.</string>
     <string name="zones_upper_bound">En fazla (%1$s’den itibaren)</string>

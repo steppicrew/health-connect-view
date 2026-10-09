@@ -497,6 +497,7 @@
     <string name="workouts_span_year">Entraînements des 12 derniers mois.</string>
     <string name="session_overlap_note">Voici les mesures prises pendant cette séance. Santé Connect n’associe pas les mesures à une séance, elles sont donc rapprochées par l’heure.</string>
     <string name="session_statistics">Ce qui a été enregistré pendant cette séance</string>
+    <string name="session_details">Détails</string>
     <string name="zones_title">Zones de couleur</string>
     <string name="zones_explained">La courbe est colorée selon la zone dans laquelle tombe chaque mesure. Définissez la limite entre chaque paire de zones.</string>
     <string name="zones_upper_bound">Jusqu’à (à partir de %1$s)</string>

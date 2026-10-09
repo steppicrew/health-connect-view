@@ -475,6 +475,7 @@
     <string name="workouts_span_year">過去12か月間のワークアウトです。</string>
     <string name="session_overlap_note">このセッション中に測定された値です。ヘルスコネクトは測定値をセッションに関連付けないため、時刻で照合しています。</string>
     <string name="session_statistics">このセッション中に記録されたもの</string>
+    <string name="session_details">詳細</string>
     <string name="zones_title">カラーゾーン</string>
     <string name="zones_explained">曲線は、各測定値がどの帯に入るかで色分けされます。帯と帯の境界を設定してください。</string>
     <string name="zones_upper_bound">上限（%1$s から）</string>
