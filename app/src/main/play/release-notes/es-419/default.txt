@@ -1,3 +1,1 @@
-1.1.1 — VO2máx, peso y otras mediciones ocasionales: un día muestra ahora su valor como titular y lo ubica entre tus últimas mediciones, cada una con su fecha, en lugar de un gráfico que parecía el del año. Un valor sin cambios ahora se indica así.
-
-¿Echas en falta alguna función? Escribe a hcview@steppicrew.de.
+1.2.0 — Entrenamientos: las pausas se descuentan; tiempo en cinco zonas de frecuencia cardíaca con una carga, vueltas en el gráfico y la frecuencia cardíaca tras el final con su bajada. Varias líneas por gráfico: velocidad y altura en bici; frecuencia respiratoria, SpO₂ y VFC de noche. Mosaicos grandes (Pro): las fases de anoche y tus últimos entrenamientos como curvas. Elige un día en el calendario, desliza hacia abajo para recargar. Carga más rápida.

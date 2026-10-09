@@ -493,7 +493,7 @@
     <string name="settings_max_hr_auto">根据您的数据</string>
     <string name="settings_max_hr_body">决定您锻炼的心率区间。根据您的数据时，它是过去一年中至少三天达到的最高心率。</string>
     <string name="whats_new_title">新功能</string>
-    <string name="whats_new_18">• 锻炼：识别并扣除休息，只计算运动时间，统计中显示最低和最高心率。\n• 每次锻炼的心率区间：每个区间的时间，以及由时长和强度得出的负荷。\n• 一张图表中可显示多条线，用标签开关：骑行时的心率、速度和海拔；夜间的呼吸频率、SpO₂ 和 HRV。\n• 大卡片（Pro）：昨晚的睡眠阶段配上您选择的曲线，以及以曲线显示的最近锻炼。\n• 点按日期可从日历中选择一天，向下拉动页面可重新加载。</string>
+    <string name="whats_new_18">• 锻炼：识别并扣除休息，只计算运动时间，统计中显示最低和最高心率。\n• 每次锻炼的心率区间：每个区间的时间，以及由时长和强度得出的负荷。\n• 锻炼之后：之后五分钟的心率，以及在测量足够时 1 分钟和 2 分钟后下降了多少。各圈在图表上标出。\n• 一张图表中可显示多条线，用标签开关：骑行时的心率、速度和海拔；夜间的呼吸频率、SpO₂ 和 HRV。\n• 大卡片（Pro）：昨晚的睡眠阶段配上您选择的曲线，以及以曲线显示的最近锻炼。\n• 点按日期可从日历中选择一天，向下拉动页面可重新加载。</string>
     <string name="whats_new_dismiss">知道了</string>
     <string name="zones_title">颜色区间</string>
     <string name="zones_explained">曲线会根据每个测量值所在的区间着色。请设置每两个区间之间的界限。</string>

@@ -1,3 +1,1 @@
-1.1.1 — VO2max, kilo ve diğer ara sıra yapılan ölçümler: bir gün artık değerini başlıkta gösterir ve onu tarihleriyle birlikte son ölçümleriniz arasına yerleştirir; yıllık görünüme benzeyen grafik kaldırıldı. Değişmeyen bir değer artık böyle belirtilir.
-
-Bir özellik mi eksik? hcview@steppicrew.de adresine yazın.
+1.2.0 — Antrenmanlar: molalar düşülür; beş nabız bölgesindeki süre ve bir yük değeri, grafikte turlar ve bitişten sonraki nabız ile düşüşü. Grafik başına birden çok çizgi: bisiklette hız ve yükseklik; gece solunum hızı, SpO₂ ve HRV. Büyük kutucuklar (Pro): dün geceki uyku evreleri ve son antrenmanlarınız eğri olarak. Takvimden bir gün seçin, yeniden yüklemek için aşağı çekin. Daha hızlı yükleme.

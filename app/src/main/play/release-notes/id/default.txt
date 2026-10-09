@@ -1,3 +1,1 @@
-1.1.1 — VO2max, berat badan, dan pengukuran sesekali lainnya: satu hari kini menampilkan nilainya sebagai judul dan menempatkannya di antara pengukuran terakhir Anda, masing-masing dengan tanggalnya, menggantikan grafik yang mirip grafik tahunan. Nilai yang tidak berubah kini disebut demikian.
-
-Ada fitur yang kurang? Tulis ke hcview@steppicrew.de.
+1.2.0 — Latihan: jeda tidak dihitung; waktu di lima zona detak jantung dengan nilai beban, putaran pada grafik, dan detak jantung setelah selesai beserta penurunannya. Beberapa garis per grafik: kecepatan dan ketinggian saat bersepeda; laju pernapasan, SpO₂, dan HRV di malam hari. Kartu besar (Pro): tahap tidur semalam dan latihan terakhir Anda sebagai kurva. Pilih hari dari kalender, tarik ke bawah untuk memuat ulang. Pemuatan lebih cepat.

@@ -1,3 +1,1 @@
-1.1.1 — VO2max, poids et autres mesures ponctuelles : un jour affiche désormais sa valeur en titre et la place parmi vos dernières mesures, chacune avec sa date, au lieu d'un graphique qui ressemblait à celui de l'année. Une valeur inchangée est indiquée comme telle.
-
-Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.
+1.2.0 — Entraînements : pauses retirées ; temps dans cinq zones de fréquence cardiaque avec une charge, tours sur le graphique, et fréquence cardiaque après la fin avec sa baisse. Plusieurs lignes par graphique : vitesse et altitude à vélo ; respiration, SpO₂ et VFC la nuit. Grandes vignettes (Pro) : phases de la dernière nuit et vos derniers entraînements en courbes. Choisissez un jour dans le calendrier, tirez vers le bas pour recharger. Chargement plus rapide.
