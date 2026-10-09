@@ -1079,6 +1079,7 @@ fun SessionTimeline(
 ) {
     val sleepColor = SLEEP_BAND.copy(alpha = BAND_ALPHA)
     val exerciseColor = MaterialTheme.colorScheme.tertiary.copy(alpha = BAND_ALPHA)
+    val breakColor = MaterialTheme.colorScheme.onSurface.copy(alpha = BAND_ALPHA)
     val trackColor = MaterialTheme.colorScheme.surfaceContainerHighest
 
     val start = extent.start.toEpochMilli()
@@ -1113,6 +1114,23 @@ fun SessionTimeline(
                     topLeft = Offset(from, 0f),
                     size = androidx.compose.ui.geometry.Size(to - from, size.height),
                 )
+                // A workout's breaks in grey inside its band, as on its heart-rate curve: the
+                // hours off the bike were not training.
+                session.breaks.forEach { pause ->
+                    val pauseFrom = ((pause.start.toEpochMilli() - start) / span).toFloat().coerceIn(0f, 1f) * size.width
+                    val pauseTo = ((pause.end.toEpochMilli() - start) / span).toFloat().coerceIn(0f, 1f) * size.width
+                    if (pauseTo <= pauseFrom) return@forEach
+                    drawRect(
+                        color = trackColor,
+                        topLeft = Offset(pauseFrom, 0f),
+                        size = androidx.compose.ui.geometry.Size(pauseTo - pauseFrom, size.height),
+                    )
+                    drawRect(
+                        color = breakColor,
+                        topLeft = Offset(pauseFrom, 0f),
+                        size = androidx.compose.ui.geometry.Size(pauseTo - pauseFrom, size.height),
+                    )
+                }
             }
         }
 

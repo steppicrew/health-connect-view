@@ -517,6 +517,13 @@ Also from the owner, 09.10.2026, done the same day:
   label; days after today cannot be picked.
 - [x] **Breaks on the workout detail page too**, with a legend under each curve ("Pause: keine
   Geschwindigkeit oder Distanz aufgezeichnet"), on the rows and the session screen.
+- [x] **A day's training counts moving time**, the owner's choice: 18.09 read "9h 6m" with a
+  5h 41m break inside, now 3h 20m. Day, week and four weeks read each workout's speed (one
+  record apiece) for it; four weeks with ~55 workouts took 6-9 s on the phone. The year keeps
+  elapsed time, as does "longest workout", which searches the whole year.
+- [x] **Breaks on the day timeline**, grey inside the workout's band, with a "Pause" entry.
+- [x] **Back from a workout keeps the list's position** -- the screen re-ran its load on return
+  and the list, rebuilt behind a spinner, started at the top.
 - [x] **Session statistics cleaned up**, seen on the phone for 18.09: speed shows its maximum
   only (its minimum was 0,21 km/h), the basal rate is gone (a figure about the person, shown as
   "157 kcal/day"), and counted totals are whole ("3,24 Etagen" was a day record shared out).

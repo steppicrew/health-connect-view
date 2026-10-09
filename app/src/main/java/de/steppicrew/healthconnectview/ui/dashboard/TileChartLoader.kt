@@ -20,6 +20,7 @@ import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import de.steppicrew.healthconnectview.health.totalDuration
+import de.steppicrew.healthconnectview.ui.session.withMovement
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.dailyActivities
@@ -479,6 +480,12 @@ internal class TileChartLoader(
         // are the point of the view, so they are listed for whatever window is shown.
         val sessionKind = spec.tile.sessionKind.takeIf { spec.tile.form == TileSpec.Form.SESSIONS }
         val sessions = when {
+            // A workout screen counts moving time and draws breaks, which needs each workout's
+            // movement read: one speed record apiece, in parallel. Not across a year, where
+            // that is hundreds of reads for a bar per week that counts workouts, not hours.
+            sessionKind == Session.Kind.EXERCISE && span != Span.YEAR ->
+                repository.withMovement(loadSessions(span, offset, setOf(sessionKind)))
+
             sessionKind != null -> loadSessions(span, offset, setOf(sessionKind))
 
             span.intradayBucket != null && spec.tile.overlaySessions.isNotEmpty() ->
