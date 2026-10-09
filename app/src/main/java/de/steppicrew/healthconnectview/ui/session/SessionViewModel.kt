@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
+import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.RoutePoint
@@ -56,8 +57,9 @@ data class SessionDetail(
     /** Heart rate through the session, or null where none was recorded or it is not allowed. */
     val heartRate: List<Point>?,
     /**
-     * A night's other readings, by type name -- breath rate, oxygen, HRV -- each where granted
-     * and recorded. Empty for anything but sleep.
+     * The session's other readings, by type name, each where granted and recorded: a night's
+     * breath rate, oxygen and HRV; a workout's breath rate, which the phone held for every
+     * workout, about once a minute (`SessionCurveShapeActivity`, 09.10.2026).
      */
     val nightLines: Map<String, List<Point>> = emptyMap(),
     /** True when heart rate is not granted, so a missing curve is a permission, not a gap. */
@@ -132,16 +134,18 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val movement = async { repository.movementDuring(session) }
         val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty()) }
         val route = async { repository.routeFor(session) }
-        val speed = async { if (session.route == null) null else repository.speedDuring(session) }
+        // Wherever a workout goes somewhere, route or none: the watch's own copy of a ride
+        // carries no route but does carry its speed.
+        val speed = async { if (coversDistance(session.exerciseType)) repository.speedDuring(session) else null }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
         val nightLines = async {
-            if (session.kind != Session.Kind.SLEEP) {
-                emptyMap()
-            } else {
-                SessionLine.entries.filter { it != SessionLine.HEART_RATE }
-                    .mapNotNull { line -> repository.readingsDuring(session, line.typeName)?.let { line.typeName to it } }
-                    .toMap()
+            when (session.kind) {
+                Session.Kind.SLEEP -> SessionLine.entries.filter { it != SessionLine.HEART_RATE }
+                Session.Kind.EXERCISE -> listOf(SessionLine.BREATH)
+                else -> emptyList()
             }
+                .mapNotNull { line -> repository.readingsDuring(session, line.typeName)?.let { line.typeName to it } }
+                .toMap()
         }
         val zones = runCatching { dashboardStore.config.first() }.getOrNull()
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones

@@ -52,6 +52,7 @@ import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.heightProfile
 import de.steppicrew.healthconnectview.health.profileOf
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.registry.Formatting
@@ -267,6 +268,7 @@ private fun HeartRate(detail: SessionDetail) {
     when {
         curve != null -> {
             val speedUnit = Quantity.SPEED
+            val heightUnit = Quantity.ELEVATION
             // Speed beside heart rate where the watch recorded one, as a chip: a climb reads
             // as speed falling while the heart rate rises.
             val series = listOfNotNull(
@@ -282,7 +284,7 @@ private fun HeartRate(detail: SessionDetail) {
                     zones = detail.heartRateZones,
                     maxGap = LINE_GAP,
                 ),
-                // A night's own lines beside heart rate, as chips; colours follow the measurement.
+                // The session's own lines beside heart rate, as chips; colours follow the measurement.
                 nightSeries(detail, SessionLine.BREATH),
                 nightSeries(detail, SessionLine.OXYGEN),
                 nightSeries(detail, SessionLine.HRV),
@@ -296,6 +298,22 @@ private fun HeartRate(detail: SessionDetail) {
                         unitKey = "speed",
                         unitText = speedUnit.symbol(),
                         valueDecimals = 1,
+                        maxGap = LINE_GAP,
+                    )
+                },
+                // Height from the route, where it is shown: a climb is what a rising heart rate
+                // and falling speed are both about. Sliced like the route's own profile. Grey,
+                // the colour of terrain, and apart from the three measurement colours.
+                (detail.route as? RouteLoad.Shown)?.points?.let(::heightProfile)?.takeIf { it.size > 1 }?.let { heights ->
+                    ChartSeries(
+                        key = LINE_HEIGHT,
+                        label = stringResource(R.string.chart_short_height),
+                        points = heights.map { (time, metres) -> Point(time, heightUnit.convert(metres)) },
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unitKey = "height",
+                        unitText = heightUnit.symbol(),
+                        integral = true,
+                        minSpan = HEIGHT_MIN_SPAN,
                         maxGap = LINE_GAP,
                     )
                 },
@@ -555,6 +573,11 @@ private fun nightSeries(detail: SessionDetail, line: SessionLine): ChartSeries? 
 private val LINE_GAP: Duration = Duration.ofMinutes(5)
 
 private const val MS_TO_KMH = 3.6
+
+private const val LINE_HEIGHT = "height"
+
+/** A flat ride's few metres must not fill the height as if it were a pass. */
+private const val HEIGHT_MIN_SPAN = 50.0
 
 /** As on the session rows: a floor so a steady session does not draw each beat as a cliff. */
 private const val CURVE_MIN_SPAN = 20.0

@@ -450,6 +450,7 @@
     <string name="chart_line_axis">显示其刻度</string>
     <string name="chart_line_axis_note">↕ 坐标轴属于这条线。触摸图表可读取所有线的数值。</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">海拔</string>
     <string name="session_gone">找不到此次活动。</string>
     <string name="session_laps">圈</string>
     <string name="session_lap">第 %1$d 圈</string>

@@ -472,6 +472,7 @@
     <string name="chart_line_axis">Se muestra su escala</string>
     <string name="chart_line_axis_note">↕ El eje corresponde a esta línea. Toca el gráfico para leer todas las líneas.</string>
     <string name="chart_short_hrv">VFC</string>
+    <string name="chart_short_height">Altura</string>
     <string name="session_gone">Ya no se encuentra esta sesión.</string>
     <string name="session_laps">Vueltas</string>
     <string name="session_lap">Vuelta %1$d</string>

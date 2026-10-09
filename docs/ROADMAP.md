@@ -505,8 +505,18 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     with the night's readings over them, chips per line, on the session screen and a large
     sleep tile (a new face: last night). Which lines are worth a chip is decided by what the
     phone holds for recent nights, not by what Health Connect could hold.
-56. [ ] **Workout chart lines** -- heart rate, breath rate, speed/pace, elevation, power,
-    cadence as chips, with the breaks of step 53 shaded.
+56. [x] **Workout chart lines** -- heart rate, breath rate, speed/pace, elevation, power,
+    cadence as chips, with the breaks of step 53 shaded. Built 09.10.2026 from what the phone
+    holds (`SessionCurveShapeActivity`, counts only): **height** from the route's altitude
+    (every point of an outdoor ride carries one), grey like terrain; **speed** for every
+    distance workout, no longer only one with a route -- the watch's own copy of a ride has
+    speed but no route; **breath rate** where a writer recorded it. On this phone it never
+    did: Health Sync writes a breath rate a minute through every workout, all of them 0, which
+    the spec drops. Not built, for want of data to check against: **power** and the indoor
+    bike's speed (one summary sample per workout), **cadence** (no record of either kind) and
+    **pace** (no runs; the route view already switches speed to pace). The watch's
+    temperature during a workout is the air's, which Health Connect has no type for -- no
+    body or skin temperature falls inside any workout either.
 57. [ ] **Laps as markers** on the workout chart, where a writer recorded laps.
 58. [ ] **Time in heart-rate zones** per workout, a bar under the chart, from the tile's
     zones, saying it is matched by time.

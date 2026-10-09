@@ -450,6 +450,7 @@
     <string name="chart_line_axis">Skalanya ditampilkan</string>
     <string name="chart_line_axis_note">↕ Sumbu milik garis ini. Sentuh grafik untuk membaca semua garis.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">Ketinggian</string>
     <string name="session_gone">Sesi ini tidak ditemukan lagi.</string>
     <string name="session_laps">Putaran</string>
     <string name="session_lap">Putaran %1$d</string>

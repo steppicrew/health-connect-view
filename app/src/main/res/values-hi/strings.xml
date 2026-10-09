@@ -461,6 +461,7 @@
     <string name="chart_line_axis">इसका पैमाना दिखाया गया है</string>
     <string name="chart_line_axis_note">↕ अक्ष इस रेखा का है। सभी रेखाओं के मान देखने के लिए चार्ट को छुएँ।</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">ऊंचाई</string>
     <string name="session_gone">यह सेशन अब नहीं मिल रहा।</string>
     <string name="session_laps">लैप</string>
     <string name="session_lap">लैप %1$d</string>

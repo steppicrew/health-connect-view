@@ -472,6 +472,7 @@
     <string name="chart_line_axis">La sua scala è mostrata</string>
     <string name="chart_line_axis_note">↕ L’asse appartiene a questa linea. Tocca il grafico per leggere tutte le linee.</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">Altitudine</string>
     <string name="session_gone">Questa sessione non è più disponibile.</string>
     <string name="session_laps">Giri</string>
     <string name="session_lap">Giro %1$d</string>

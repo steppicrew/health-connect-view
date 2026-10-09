@@ -450,6 +450,7 @@
     <string name="chart_line_axis">この線の目盛りを表示中</string>
     <string name="chart_line_axis_note">↕ 軸はこの線のものです。グラフに触れると、すべての線の値を読めます。</string>
     <string name="chart_short_hrv">HRV</string>
+    <string name="chart_short_height">標高</string>
     <string name="session_gone">このセッションは見つかりません。</string>
     <string name="session_laps">ラップ</string>
     <string name="session_lap">ラップ %1$d</string>
