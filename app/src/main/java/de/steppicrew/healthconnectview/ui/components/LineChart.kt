@@ -214,6 +214,12 @@ fun LineChart(
      */
     referenceRange: ClosedFloatingPointRange<Double>? = null,
     /**
+     * The band's colour; the shared reference colour where null. Among several lines it takes
+     * its own line's, or it reads as belonging to whichever line wears the shared one -- on a
+     * night's chart, the green band of SpO2 was taken for breath rate's (the owner, 09.10.2026).
+     */
+    referenceColor: Color? = null,
+    /**
      * Opens the chart full screen, by a double tap or the mark beside the readout; null where
      * it cannot be. A single tap still reads a value at once: the value shows on touch-down,
      * so waiting to rule out a second tap costs nothing.
@@ -557,13 +563,13 @@ fun LineChart(
                 val top = yFor(range.endInclusive)
                 val bottom = yFor(range.start)
                 drawRect(
-                    color = REFERENCE_COLOR.copy(alpha = REFERENCE_ALPHA),
+                    color = (referenceColor ?: REFERENCE_COLOR).copy(alpha = REFERENCE_ALPHA),
                     topLeft = Offset(0f, top),
                     size = androidx.compose.ui.geometry.Size(size.width, bottom - top),
                 )
                 listOf(top, bottom).forEach { y ->
                     drawLine(
-                        color = REFERENCE_COLOR.copy(alpha = REFERENCE_EDGE_ALPHA),
+                        color = (referenceColor ?: REFERENCE_COLOR).copy(alpha = REFERENCE_EDGE_ALPHA),
                         start = Offset(0f, y),
                         end = Offset(size.width, y),
                         strokeWidth = 1.5.dp.toPx(),
