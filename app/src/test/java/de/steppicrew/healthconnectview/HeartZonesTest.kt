@@ -56,6 +56,13 @@ class HeartZonesTest {
     }
 
     @Test
+    fun `load counts the whole minutes the zone rows show`() {
+        // 8m 59s reads "8m" in its row, so it counts 8 times 1, not 9.
+        val times = listOf(Duration.ofSeconds(8 * 60 + 59), Duration.ofSeconds(40), Duration.ZERO, Duration.ZERO, Duration.ZERO)
+        assertEquals(8, loadOf(times))
+    }
+
+    @Test
     fun `no maximum, no zones`() {
         assertNull(heartZones(listOf(Point(at(0), 150.0), Point(at(10), 150.0)), emptyList(), null, false))
     }
