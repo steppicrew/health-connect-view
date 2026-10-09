@@ -159,8 +159,9 @@ take_shots() {
 
     local out="$OUT_DIR/screenshots/$lang"
     mkdir -p "$out"
-    # A renamed or dropped shot must not linger and be uploaded with the new set.
-    rm -f "$out"/*.png
+    # A renamed or dropped shot must not linger and be uploaded with the new set -- unless
+    # only some are retaken (SHOT_ONLY), when the others are kept as they are.
+    [ -n "${SHOT_ONLY:-}" ] || rm -f "$out"/*.png
 
     local entry name route layout rest
     for entry in "${SHOT_ROUTES[@]}"; do
@@ -169,6 +170,12 @@ take_shots() {
         route="${rest%%:*}"
         layout="${rest#*:}"
         route="${route//DATE/$day}"
+        # SHOT_ONLY="5-sleep 3-steps" retakes those alone; the layouts still apply in order.
+        if [ -n "${SHOT_ONLY:-}" ] && [[ " $SHOT_ONLY " != *" $name "* ]]; then
+            [ -n "$layout" ] && adb -s "$device" shell am start -W \
+                -n "$PACKAGE/de.steppicrew.healthconnectview.debug.SeedActivity" -e dashboard "$layout" >/dev/null
+            continue
+        fi
 
         if [ -n "$layout" ]; then
             adb -s "$device" shell am start -W -n "$PACKAGE/de.steppicrew.healthconnectview.debug.SeedActivity" \
