@@ -7,8 +7,8 @@ FITUR
 • Catatan satu per satu dengan waktu tepat, nilai, satuan, dan aplikasi yang menulisnya
 • Diagram per hari, minggu, empat minggu, atau tahun
 • Tidur dan latihan diarsir di balik diagram harian, agar puncak atau penurunan punya penjelasan
-• Setiap latihan dengan detak jantung selama latihan dan, jika Anda izinkan, rutenya dengan profil ketinggian
-• Tahap tidur — nyenyak, ringan, REM, dan terjaga
+• Setiap latihan dengan detak jantung, kecepatan, dan ketinggian dalam satu grafik, jeda dikenali dan tidak dihitung, serta rutenya jika Anda mengizinkan
+• Tahap tidur untuk setiap malam yang dicatat jam Anda, di samping detak jantung, laju pernapasan, SpO₂, dan HRV malam itu
 • Ringkasan siklus: semua siklus setahun berdampingan, disejajarkan pada hari pertama, tanpa prediksi
 • Panah tren: minggu terakhir dibandingkan rata-rata 30 hari Anda
 • Rangkaian: berapa hari berturut-turut target tercapai atau Anda aktif, dan yang terpanjang tahun ini
@@ -38,8 +38,9 @@ Semua yang di atas gratis dan akan tetap gratis. Pro adalah satu pembelian dalam
 
 • Ekspor CSV untuk jenis data apa pun: setiap catatan dengan aplikasi sumbernya, atau total harian tanpa duplikat. Anda yang memilih tempat file disimpan; aplikasi tidak menyimpan salinan.
 • Laporan PDF untuk dokter Anda: tekanan darah dengan rata-rata pagi dan malam, berat badan per minggu, detak jantung istirahat terhadap rata-rata empat minggu, glukosa menurut waktu makan dan rentang target.
-• Kartu lebih besar dengan periode sendiri — hari ini, minggu ini, empat minggu, atau setahun — sebagai angka, diagram, atau keduanya.
-• Beberapa kartu untuk angka yang sama, dan warna sendiri untuk tiap kartu.
+• Kartu lebih besar — minggu, empat minggu, atau tahun sebagai angka, diagram, atau keduanya, atau tahap tidur semalam dan latihan terakhir Anda dengan kurva pilihan Anda.
+• Beberapa kartu untuk angka yang sama, dan warna sendiri untuk setiap kartu.
+• Kartu berisi perubahan minggu ini, berat badan dengan komposisi tubuh, dan dua angka yang dibandingkan pada satu sumbu waktu.
 • Rute latihan sebagai file GPX.
 • Semua fitur Pro mendatang, tanpa biaya tambahan.
 

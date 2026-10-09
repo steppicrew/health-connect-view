@@ -7,8 +7,8 @@ COSA FA
 • Singole registrazioni con orario esatto, valore, unità e app che le ha scritte
 • Grafici per giorno, settimana, quattro settimane o anno
 • Sonno e allenamenti ombreggiati dietro i grafici del giorno, così un picco ha una spiegazione
-• Ogni allenamento con la frequenza cardiaca registrata e, se lo consenti, il percorso con profilo altimetrico
-• Fasi del sonno — profondo, leggero, REM e veglia
+• Ogni allenamento con frequenza cardiaca, velocità e altitudine in un grafico, le pause riconosciute ed escluse, e il suo percorso se lo consenti
+• Le fasi del sonno di ogni notte registrata dal tuo orologio, accanto a frequenza cardiaca, frequenza respiratoria, SpO₂ e HRV della notte
 • Una panoramica dei cicli: tutti i cicli di un anno affiancati, allineati sul giorno uno, senza previsioni
 • Frecce di tendenza: l’ultima settimana rispetto alla media di 30 giorni
 • Serie: giorni di fila con l’obiettivo raggiunto o di attività, e la più lunga dell’anno
@@ -38,8 +38,9 @@ Tutto quanto sopra è gratuito e lo resterà. Pro è un singolo acquisto in-app 
 
 • Esportazione CSV di qualsiasi tipo di dati: ogni registrazione con l’app di origine, o i totali giornalieri senza duplicati. Scegli tu dove salvare il file; l’app non ne tiene copia.
 • Report PDF per il tuo medico: pressione con medie di mattina e sera, peso per settimana, frequenza cardiaca a riposo rispetto alla media di quattro settimane, glicemia per pasto e intervallo obiettivo.
-• Riquadri più grandi con un proprio periodo — oggi, la settimana, quattro settimane o l’anno — come numero, grafico o entrambi.
+• Riquadri più grandi — la settimana, quattro settimane o l’anno come numero, grafico o entrambi, oppure le fasi del sonno della notte scorsa e i tuoi ultimi allenamenti con una curva a tua scelta.
 • Più riquadri per lo stesso valore e un colore per ciascuno.
+• Un riquadro con i cambiamenti della settimana, il peso con la composizione corporea e due valori confrontati su un unico asse del tempo.
 • Percorsi degli allenamenti come file GPX.
 • Tutte le future funzioni Pro, senza costi aggiuntivi.
 

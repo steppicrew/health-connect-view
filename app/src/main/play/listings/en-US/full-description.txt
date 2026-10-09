@@ -7,8 +7,8 @@ WHAT IT DOES
 • Individual records with exact timestamps, values, units and the app that wrote them
 • Chart trends by day, week, four weeks or year
 • Sleep and workouts shaded behind the day's charts, so a peak or a trough has an explanation
-• Each workout with the heart rate recorded during it, and its route as a shape with an elevation profile, if you allow it
-• Sleep stages — deep, light, REM and awake — for every night your watch records them
+• Each workout with its heart rate, speed and height in one chart, breaks found and left out, and its route if you allow it
+• Sleep stages for every night your watch records them, beside the night's heart rate, breath rate, SpO₂ and HRV
 • A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature — only what was recorded, nothing predicted
 • Trend arrows on the dashboard, comparing the last week with your 30-day average
 • Streaks: how many days in a row you met your goal or were active, and the year's longest
@@ -36,10 +36,11 @@ PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
-• CSV export — save any data type on your dashboard as a spreadsheet file: every individual record with its source app, or Health Connect's deduplicated daily totals. You choose where the file goes; the app keeps no copy.
-• PDF reports for your doctor — blood pressure with morning and evening averages, every day and every reading, each graded; weight with its course by week; resting heart rate against its four-week mean; blood glucose by relation to meals and by target range. Any period, saved or viewed and printed directly.
-• Larger tiles — make any dashboard tile two cells wide, or two by two, and choose what it shows: today, the week, four weeks or the year, as a number, a chart or both.
-• Several tiles for the same figure, such as steps today and over the year, and a colour of your own for each tile.
+• CSV export — any data type as a spreadsheet: every record with its source app, or Health Connect's deduplicated daily totals. The app keeps no copy.
+• PDF reports for your doctor — blood pressure with morning and evening averages, every reading graded; weight by week; resting heart rate against its four-week mean; blood glucose by meal and target range. Any period, saved or printed.
+• Larger tiles — two cells wide or two by two, showing the week, four weeks or the year as a number, a chart or both, or last night's stages and your latest workouts with a curve of your choice.
+• Several tiles for the same figure, and a colour of your own for each tile.
+• A tile with what changed this week, weight with its body composition, and two figures compared on one time axis.
 • Workout routes as GPX files, to open in a map or training app.
 • Every future Pro feature, with no further charge.
 

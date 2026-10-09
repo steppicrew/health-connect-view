@@ -7,8 +7,8 @@ CO ROBI
 • Pojedyncze wpisy z dokładnym czasem, wartością, jednostką i aplikacją, która je zapisała
 • Wykresy dla dnia, tygodnia, czterech tygodni lub roku
 • Sen i treningi zacieniowane za wykresami dnia, żeby szczyt czy spadek miał wyjaśnienie
-• Każdy trening z tętnem zapisanym w jego trakcie i, jeśli na to zezwolisz, trasą z profilem wysokości
-• Fazy snu — głęboki, płytki, REM i czuwanie
+• Każdy trening z tętnem, prędkością i wysokością na jednym wykresie, z wykrytymi i pominiętymi przerwami, oraz jego trasą, jeśli na to pozwolisz
+• Fazy snu z każdej nocy zapisanej przez zegarek, obok tętna, częstości oddechów, SpO₂ i HRV z tej nocy
 • Przegląd cykli: wszystkie cykle z roku obok siebie, wyrównane do pierwszego dnia, bez prognoz
 • Strzałki trendu: ostatni tydzień na tle średniej z 30 dni
 • Serie: ile dni z rzędu cel był osiągnięty lub byłeś aktywny, i najdłuższa w roku
@@ -38,8 +38,9 @@ Wszystko powyżej jest bezpłatne i takie pozostanie. Pro to jeden zakup w aplik
 
 • Eksport CSV dowolnego typu danych: każdy wpis z aplikacją źródłową lub sumy dzienne bez duplikatów. Ty wybierasz, gdzie trafi plik; aplikacja nie zachowuje kopii.
 • Raporty PDF dla lekarza: ciśnienie ze średnimi porannymi i wieczornymi, waga według tygodni, tętno spoczynkowe na tle średniej z czterech tygodni, glukoza według posiłków i zakresu docelowego.
-• Większe kafelki z własnym okresem — dziś, tydzień, cztery tygodnie lub rok — jako liczba, wykres albo oba.
-• Kilka kafelków dla tej samej wartości i własny kolor każdego z nich.
+• Większe kafelki — tydzień, cztery tygodnie lub rok jako liczba, wykres lub oba, albo fazy snu z ostatniej nocy i ostatnie treningi z wybraną krzywą.
+• Kilka kafelków dla tej samej wartości i własny kolor każdego kafelka.
+• Kafelek ze zmianami w tym tygodniu, waga ze składem ciała oraz dwie wartości porównane na jednej osi czasu.
 • Trasy treningów jako pliki GPX.
 • Wszystkie przyszłe funkcje Pro bez dodatkowych opłat.
 
