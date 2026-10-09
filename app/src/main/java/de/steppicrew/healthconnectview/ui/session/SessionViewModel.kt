@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
+import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.sessionById
@@ -93,6 +94,24 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
                 loaded = null
                 UiState.Error(e.message ?: e.javaClass.simpleName)
             }
+        }
+    }
+
+    private val _refreshing = MutableStateFlow(false)
+
+    /** True while a reload the user asked for by pulling the page down is running. */
+    val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
+
+    /** Reads the open session again: the user pulled the page down. */
+    fun pullRefresh() {
+        val (kind, id) = loaded ?: return
+        loaded = null
+        _refreshing.value = true
+        load(kind, id)
+        val job = loadJob
+        viewModelScope.launch {
+            job?.join()
+            _refreshing.value = false
         }
     }
 

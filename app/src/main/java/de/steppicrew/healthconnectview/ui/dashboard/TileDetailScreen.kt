@@ -144,6 +144,7 @@ import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.REFERENCE_COLOR
 import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.ui.components.BreakLegend
+import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.session.SessionCurve
 import de.steppicrew.healthconnectview.ui.components.ShowExportResults
 import de.steppicrew.healthconnectview.ui.components.SourceMark
@@ -207,6 +208,7 @@ fun TileDetailScreen(
     // Held here rather than by the list, which leaves the composition while a window loads:
     // coming back from a workout must land where it was left, not at the top.
     val listState = rememberLazyListState()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val offset by viewModel.offset.collectAsStateWithLifecycle()
     // Another window is another page, so it opens at the top; a return to the same one does
     // not. Saved like the list's position, so a restored screen does not count as a change.
@@ -318,58 +320,64 @@ fun TileDetailScreen(
                     onShow = viewModel::showDay,
                 ),
             ) {
-                when (val current = state) {
-                    is UiState.Loading -> LoadingView(progress = progress)
-
-                    is UiState.NoPermission -> MessageView(
-                        icon = Icons.Default.Lock,
-                        title = stringResource(R.string.detail_no_permission_title),
-                        body = stringResource(R.string.detail_no_permission_body),
-                    )
-
-                    // Deliberately not the padlock: "nothing was recorded" and "not allowed to
-                    // look" are the distinction UiState draws, and sharing an icon collapses it
-                    // on the one screen where the difference is actionable.
-                    is UiState.Empty -> Column(Modifier.fillMaxSize()) {
-                        val latest = latestBefore
-                        MessageView(
-                            icon = Icons.Default.EventBusy,
-                            title = stringResource(R.string.detail_empty_title),
-                            body = stringResource(R.string.detail_empty_body),
-                            modifier = Modifier.weight(1f),
-                            // Not by skipping empty windows on the arrows, which must stay one
-                            // window per tap: an offer to go where the data is.
-                            actionLabel = latest?.let {
-                                val zone = HealthRepository.DEFAULT_ZONE
-                                stringResource(R.string.detail_latest_value, Formatting.date(it.atStartOfDay(zone).toInstant(), zone))
-                            },
-                            onAction = latest?.let { date -> { viewModel.showDate(date) } },
+                RefreshBox(
+                    refreshing = refreshing,
+                    onRefresh = viewModel::pullRefresh,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    when (val current = state) {
+                        is UiState.Loading -> LoadingView(progress = progress)
+    
+                        is UiState.NoPermission -> MessageView(
+                            icon = Icons.Default.Lock,
+                            title = stringResource(R.string.detail_no_permission_title),
+                            body = stringResource(R.string.detail_no_permission_body),
                         )
-                        val shownSpec = spec
-                        val record = emptyRecord
-                        if (record != null && shownSpec != null) {
-                            Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
-                                RecordExplanation(record, shownSpec)
+    
+                        // Deliberately not the padlock: "nothing was recorded" and "not allowed to
+                        // look" are the distinction UiState draws, and sharing an icon collapses it
+                        // on the one screen where the difference is actionable.
+                        is UiState.Empty -> Column(Modifier.fillMaxSize()) {
+                            val latest = latestBefore
+                            MessageView(
+                                icon = Icons.Default.EventBusy,
+                                title = stringResource(R.string.detail_empty_title),
+                                body = stringResource(R.string.detail_empty_body),
+                                modifier = Modifier.weight(1f),
+                                // Not by skipping empty windows on the arrows, which must stay one
+                                // window per tap: an offer to go where the data is.
+                                actionLabel = latest?.let {
+                                    val zone = HealthRepository.DEFAULT_ZONE
+                                    stringResource(R.string.detail_latest_value, Formatting.date(it.atStartOfDay(zone).toInstant(), zone))
+                                },
+                                onAction = latest?.let { date -> { viewModel.showDate(date) } },
+                            )
+                            val shownSpec = spec
+                            val record = emptyRecord
+                            if (record != null && shownSpec != null) {
+                                Box(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+                                    RecordExplanation(record, shownSpec)
+                                }
                             }
                         }
+    
+                        is UiState.Error -> MessageView(
+                            icon = Icons.Default.ErrorOutline,
+                            title = stringResource(R.string.detail_error_title),
+                            body = current.message,
+                        )
+    
+                        is UiState.Data -> SpanContent(
+                            listState = listState,
+                            data = current.value,
+                            period = windowLabel(span, offset),
+                            onSelectSource = viewModel::selectSource,
+                            onOpenSession = onOpenSession,
+                            loadCurve = viewModel::curveFor,
+                            onVisibleRange = viewModel::showListFor,
+                            onOpenRecord = { openRecord = it },
+                        )
                     }
-
-                    is UiState.Error -> MessageView(
-                        icon = Icons.Default.ErrorOutline,
-                        title = stringResource(R.string.detail_error_title),
-                        body = current.message,
-                    )
-
-                    is UiState.Data -> SpanContent(
-                        listState = listState,
-                        data = current.value,
-                        period = windowLabel(span, offset),
-                        onSelectSource = viewModel::selectSource,
-                        onOpenSession = onOpenSession,
-                        loadCurve = viewModel::curveFor,
-                        onVisibleRange = viewModel::showListFor,
-                        onOpenRecord = { openRecord = it },
-                    )
                 }
             }
         }

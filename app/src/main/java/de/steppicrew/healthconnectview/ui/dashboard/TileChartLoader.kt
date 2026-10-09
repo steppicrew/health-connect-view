@@ -20,7 +20,7 @@ import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import de.steppicrew.healthconnectview.health.totalDuration
-import de.steppicrew.healthconnectview.ui.session.withMovement
+import de.steppicrew.healthconnectview.health.withMovement
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.dailyActivities

@@ -120,66 +120,6 @@ suspend fun HealthRepository.statisticsFor(
         .filterNotNull()
 }
 
-/**
- * How an exercise session divides into moving, stopped and breaks, read from the movement data
- * recorded during it.
- *
- * Speed and distance are only written while moving, so a hole in them is a stop; heart rate is
- * not, since a watch goes on measuring it all day. The session's own writer is asked first --
- * its readings belong to the same recording -- and otherwise the writer with the most. Garmin's
- * own copy of the 18.09 ride, measured on the phone, was 121 minutes long from the right start:
- * its active time laid end to end, with its readings packed into that span. Mixing it with
- * Health Sync's real timeline would fill the hole.
- *
- * Null for anything but exercise, where a type is not granted, or where nothing was recorded.
- */
-suspend fun HealthRepository.movementDuring(session: Session): Movement? {
-    if (session.kind != Session.Kind.EXERCISE) return null
-    val granted = grantedPermissions()
-    val window = TimeRangeFilter.between(session.start, session.end)
-    // Speed first and distance only where it has none: one speed record holds a ride's
-    // thousands of samples, where distance came as 4,224 records -- five pages to read
-    // instead of one, for every workout on a page. The session's own writer comes before any
-    // other in either type, for the reason above; another writer is the last resort.
-    var fallback: List<Instant>? = null
-    MOVEMENT_TYPES.mapNotNull(RecordRegistry::specOrNull)
-        .filter { it.permission in granted }
-        .forEach { spec ->
-            val records = try {
-                readForChart(spec.type, window)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                emptyList()
-            }
-            val byWriter = records.groupBy { spec.originOf(it) }.mapValues { (_, group) ->
-                group.flatMap { record -> spec.pointsOf(record).map { it.time }.ifEmpty { listOf(spec.timeOf(record)) } }
-                    .filter { it >= session.start && it <= session.end }
-            }
-            byWriter[session.origin]?.let { own -> movementIn(session.start, session.end, own)?.let { return it } }
-            if (fallback == null) fallback = byWriter.values.maxByOrNull { it.size }
-        }
-    fallback?.let { return movementIn(session.start, session.end, it) }
-    return null
-}
-
-/**
- * [sessions] with each workout's breaks and moving time read, so totals count time on the
- * move and bands leave the breaks out. Other kinds pass through as they are.
- */
-suspend fun HealthRepository.withMovement(sessions: List<Session>): List<Session> = coroutineScope {
-    val gate = Semaphore(MAX_CONCURRENT_READS)
-    sessions.map { session ->
-        async {
-            if (session.kind != Session.Kind.EXERCISE) return@async session
-            val movement = gate.withPermit { movementDuring(session) } ?: return@async session
-            session.copy(breaks = movement.breaks, moving = movement.moving)
-        }
-    }.awaitAll()
-}
-
-/** Written only while moving: their absence inside a workout is a stop. In the order asked. */
-private val MOVEMENT_TYPES = listOf("SpeedRecord", "DistanceRecord")
 
 /**
  * The route of [session], read now that the session is open: its points, a note that the

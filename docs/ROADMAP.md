@@ -506,6 +506,9 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     cause" note.
 64. [ ] **Combined weight tile** (Pro) -- the owner's idea, 09.10.2026: weight, body fat,
     water and bone mass on one tile where known, opening the body composition screen.
+65. [ ] **Training time behind the session count** -- the owner's idea, 09.10.2026: across days
+    the workouts screen shows sessions per day; add each day's moving time as a faint bar on a
+    second scale. Built with step 54, which brings the second scale.
 
 Also from the owner, 09.10.2026, done the same day:
 
@@ -520,7 +523,11 @@ Also from the owner, 09.10.2026, done the same day:
 - [x] **A day's training counts moving time**, the owner's choice: 18.09 read "9h 6m" with a
   5h 41m break inside, now 3h 20m. Day, week and four weeks read each workout's speed (one
   record apiece) for it; four weeks with ~55 workouts took 6-9 s on the phone. The year keeps
-  elapsed time, as does "longest workout", which searches the whole year.
+  elapsed time. "Longest workout" counts moving time too (the owner: "wait longer"): tried
+  longest first and stopped once no shorter one can win, so a year costs a few reads -- the
+  record moved from 7h 49m on 18.09.2026 to 3h 55m on 12.11.2025.
+- [x] **Pull a page down to reload it** -- dashboard, detail pages and the session screen;
+  caches are dropped. Off on the dashboard while arranging tiles. Not tried from the host.
 - [x] **Breaks on the day timeline**, grey inside the workout's band, with a "Pause" entry.
 - [x] **Back from a workout keeps the list's position** -- the screen re-ran its load on return
   and the list, rebuilt behind a spinner, started at the top.
