@@ -1088,12 +1088,12 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
     // A session tile's figure as its single cell writes it: "6,22" was a night's hours as a
     // bare decimal, where the cell beside says "6h 13m".
     @Composable
-    fun Figure(stages: StageTotalsAt) =
-        if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data, stages) else TileValue(data)
+    fun Figure(stages: StageTotalsAt, inline: Boolean = false) =
+        if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data, stages, inline) else TileValue(data)
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // The stage chart names its own stages; a curve over the strip does not.
-            Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE)
+            Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE, inline = true)
             TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion())
         }
     } else {
@@ -1114,7 +1114,15 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
  * for a measured type, where a null total genuinely means nothing was written.
  */
 @Composable
-private fun SessionCount(data: TileData, stagesAt: StageTotalsAt = StageTotalsAt.NONE) {
+private fun SessionCount(
+    data: TileData,
+    stagesAt: StageTotalsAt = StageTotalsAt.NONE,
+    /**
+     * Count, time and icons on one line, above a tall tile's charts: stacked they took three
+     * lines of the height the workouts' curves are there for -- the owner's request.
+     */
+    inline: Boolean = false,
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1138,9 +1146,46 @@ private fun SessionCount(data: TileData, stagesAt: StageTotalsAt = StageTotalsAt
             return@Column
         }
 
+        // The activities themselves, as far as they fit: two or three icons say "a ride and a
+        // walk" where the bare count says only "two".
+        @Composable
+        fun Icons(modifier: Modifier) = Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
+            data.sessions.take(TILE_ICONS).forEach { session ->
+                Icon(
+                    imageVector = iconFor(session),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(TILE_ICON_SIZE.dp),
+                )
+            }
+        }
+
+        val sleep = data.spec.tile.sessionKind == Session.Kind.SLEEP
+        if (inline && !sleep) {
+            // One line that cannot wrap in any language: a number, a duration and icons.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = stringResource(R.string.sessions_count, data.sessions.size),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = Formatting.duration(data.sessionDuration),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
+                Icons(Modifier)
+            }
+            return@Column
+        }
+
         // A night is asked "how long", never "how many": a large "1" above 6h 13m answered the
         // question nobody had. Workouts keep their count, which is the figure they are asked by.
-        if (data.spec.tile.sessionKind == Session.Kind.SLEEP) {
+        if (sleep) {
             Text(
                 text = Formatting.duration(data.sessionDuration),
                 style = MaterialTheme.typography.headlineMedium,
@@ -1164,21 +1209,7 @@ private fun SessionCount(data: TileData, stagesAt: StageTotalsAt = StageTotalsAt
             StageTotals(night.stages, Modifier.padding(top = 4.dp), stacked = stagesAt == StageTotalsAt.COLUMN)
             return@Column
         }
-        // The activities themselves, as far as they fit: two or three icons say "a ride and a
-        // walk" where the bare count says only "two".
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(top = 4.dp),
-        ) {
-            data.sessions.take(TILE_ICONS).forEach { session ->
-                Icon(
-                    imageVector = iconFor(session),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(TILE_ICON_SIZE.dp),
-                )
-            }
-        }
+        Icons(Modifier.padding(top = 4.dp))
     }
 }
 
