@@ -481,6 +481,14 @@
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
     <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
     <string name="session_details">Details</string>
+    <string name="session_zones_title">Herzfrequenzzonen</string>
+    <string name="session_zone">Zone %1$d</string>
+    <string name="session_load">Belastung</string>
+    <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten an mindestens drei Tagen des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen. Belastung: die Minuten in jeder Zone mal ihre Nummer, zusammengezählt.</string>
+    <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt. Belastung: die Minuten in jeder Zone mal ihre Nummer, zusammengezählt.</string>
+    <string name="settings_max_hr">Maximale Herzfrequenz</string>
+    <string name="settings_max_hr_auto">Aus Ihren Daten</string>
+    <string name="settings_max_hr_body">Legt die Herzfrequenzzonen Ihrer Trainings fest. Aus Ihren Daten ist es die höchste Herzfrequenz, die an mindestens drei Tagen des vergangenen Jahres erreicht wurde.</string>
     <string name="whats_new_title">Neuigkeiten</string>
     <string name="whats_new_18">• Trainings: Pausen werden erkannt und herausgerechnet, gezählt wird nur die Zeit in Bewegung, und die Statistik zeigt die niedrigste und höchste Herzfrequenz.\n• Herzfrequenzzonen für jedes Training: die Zeit in jeder Zone und eine Belastung aus Dauer und Anstrengung.\n• Mehrere Linien in einem Diagramm, per Chip ein- und ausgeschaltet: Herzfrequenz mit Geschwindigkeit und Höhe bei einer Radfahrt, Atemfrequenz, SpO₂ und HRV durch die Nacht.\n• Große Kacheln (Pro): die Schlafphasen der letzten Nacht mit einer Kurve Ihrer Wahl und Ihre letzten Trainings als Kurven.\n• Tippen Sie auf das Datum, um einen Tag im Kalender zu wählen, und ziehen Sie eine Seite nach unten, um sie neu zu laden.</string>
     <string name="whats_new_dismiss">Verstanden</string>

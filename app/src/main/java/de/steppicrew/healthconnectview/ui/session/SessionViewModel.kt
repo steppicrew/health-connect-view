@@ -13,7 +13,11 @@ import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
+import de.steppicrew.healthconnectview.health.HeartZones
 import de.steppicrew.healthconnectview.health.coversDistance
+import de.steppicrew.healthconnectview.health.heartZones
+import de.steppicrew.healthconnectview.health.observedMaxHeartRate
+import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.RoutePoint
@@ -67,6 +71,8 @@ data class SessionDetail(
     /** The user's heart-rate bands, so a reading is the same colour here as on the tile. */
     val heartRateZones: ValueZones?,
     @param:StringRes val heartRateUnitRes: Int?,
+    /** A workout's time in heart-rate zones and its load; null without heart rate or a maximum. */
+    val heartZones: HeartZones? = null,
 )
 
 /**
@@ -77,6 +83,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
 
     private val repository = HealthRepository(application)
     private val dashboardStore = DashboardStore(application)
+    private val settingsStore = SettingsStore(application)
 
     private val _state = MutableStateFlow<UiState<SessionDetail>>(UiState.Loading)
     val state: StateFlow<UiState<SessionDetail>> = _state.asStateFlow()
@@ -151,6 +158,21 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
             ?: spec?.tile?.defaultZones
 
+        // A workout's zones: the maximum set in settings, else the one the data shows -- read
+        // only where there is a workout's heart rate to place in them.
+        val heartPoints = heartRate.await()
+        val heartZones = if (session.kind == Session.Kind.EXERCISE && heartPoints != null) {
+            val chosen = runCatching { settingsStore.settings.first().maxHeartRate }.getOrNull()
+            heartZones(
+                points = heartPoints,
+                breaks = movement.await()?.breaks.orEmpty(),
+                max = chosen ?: repository.observedMaxHeartRate(),
+                maxFromSettings = chosen != null,
+            )
+        } else {
+            null
+        }
+
         val detail = SessionDetail(
             session = session,
             stats = stats.await(),
@@ -162,6 +184,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             heartRateLocked = heartRateLocked,
             heartRateZones = zones,
             heartRateUnitRes = spec?.displayUnitRes,
+            heartZones = heartZones,
         )
         currentCoroutineContext().ensureActive()
         UiState.Data(detail)

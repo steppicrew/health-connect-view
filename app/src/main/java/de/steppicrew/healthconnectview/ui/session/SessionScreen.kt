@@ -1,5 +1,12 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import androidx.compose.foundation.layout.height
+import de.steppicrew.healthconnectview.health.HeartZones
+import de.steppicrew.healthconnectview.ui.components.DotText
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.activity.compose.LocalActivity
@@ -215,6 +222,10 @@ private fun SessionContent(
 
         Section(stringResource(R.string.session_statistics))
         Stats(detail)
+        detail.heartZones?.let { zones ->
+            Section(stringResource(R.string.session_zones_title))
+            Zones(zones, detail.heartRateUnitRes)
+        }
 
         Text(
             text = stringResource(R.string.session_overlap_note) +
@@ -505,20 +516,94 @@ private fun Stats(detail: SessionDetail) {
     }
 }
 
+/**
+ * Time in each heart-rate zone as one bar of five shades, deepening with effort, then a row per
+ * zone with its beats and its time, and the load. The note under them says how both are made
+ * and where the maximum comes from; no verdict.
+ */
+@Composable
+private fun Zones(zones: HeartZones, @StringRes unitRes: Int?) {
+    val unit = unitRes?.let { " " + stringResource(it) } ?: ""
+    val total = zones.times.sumOf { it.toMillis() }
+    if (total > 0) {
+        val gap = MaterialTheme.colorScheme.surface
+        Canvas(
+            Modifier
+                .fillMaxWidth()
+                .height(ZONE_BAR_HEIGHT.dp)
+                .padding(vertical = 4.dp),
+        ) {
+            var x = 0f
+            zones.times.forEachIndexed { index, time ->
+                val width = size.width * time.toMillis() / total
+                if (width <= 0f) return@forEachIndexed
+                drawRect(ZONE_COLORS[index], topLeft = Offset(x, 0f), size = Size(width, size.height))
+                // A 2 dp surface gap between neighbours, as between any two fills.
+                if (x > 0f) drawRect(gap, topLeft = Offset(x - 1.dp.toPx(), 0f), size = Size(2.dp.toPx(), size.height))
+                x += width
+            }
+        }
+    }
+    zones.times.forEachIndexed { index, time ->
+        val (low, high) = zones.boundsOf(index)
+        StatRow(
+            label = stringResource(R.string.session_zone, index + 1),
+            value = Formatting.duration(time),
+            detail = Formatting.number(low.toDouble()) + "–" + Formatting.number(high.toDouble()) + unit,
+            swatch = ZONE_COLORS[index],
+        )
+    }
+    StatRow(stringResource(R.string.session_load), Formatting.number(zones.load.toDouble()))
+    Text(
+        text = stringResource(
+            if (zones.maxFromSettings) R.string.session_zones_note_set else R.string.session_zones_note_data,
+            Formatting.number(zones.max.toDouble()) + unit,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 4.dp),
+    )
+}
+
+/**
+ * Heart rate's orange, light to dark: one hue for a quantity that only grows, so the order
+ * reads without a legend.
+ */
+private val ZONE_COLORS = listOf(
+    Color(0xFFFAD3C0),
+    Color(0xFFF5A882),
+    Color(0xFFEB6834),
+    Color(0xFFC04A1C),
+    Color(0xFF8A3211),
+)
+
+private const val ZONE_BAR_HEIGHT = 20
+
 /** One figure: its name, its value, and a smaller line under the value where there is one. */
 @Composable
-private fun StatRow(label: String, value: String, detail: String? = null) {
+private fun StatRow(label: String, value: String, detail: String? = null, swatch: Color? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f),
-        )
+        if (swatch != null) {
+            // The colour the row stands for in the bar above, on the label's first line.
+            DotText(
+                color = swatch,
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                shape = RoundedCornerShape(2.dp),
+                modifier = Modifier.weight(1f),
+            )
+        } else {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+        }
         Column(horizontalAlignment = Alignment.End) {
             Text(text = value, style = MaterialTheme.typography.bodyMedium)
             if (detail != null) {
