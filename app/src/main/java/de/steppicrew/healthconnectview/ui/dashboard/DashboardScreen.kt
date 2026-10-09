@@ -126,6 +126,7 @@ import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.colorOf
+import de.steppicrew.healthconnectview.ui.components.StageTotals
 import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.NightLine
 import de.steppicrew.healthconnectview.health.Session
@@ -1103,16 +1104,18 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
     // A session tile's figure as its single cell writes it: "6,22" was a night's hours as a
     // bare decimal, where the cell beside says "6h 13m".
     @Composable
-    fun Figure() = if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data) else TileValue(data)
+    fun Figure(stages: StageTotalsAt) =
+        if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data, stages) else TileValue(data)
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Figure()
+            // The stage chart names its own stages; a curve over the strip does not.
+            Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE)
             TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion())
         }
     } else {
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.weight(VALUE_SHARE), contentAlignment = Alignment.Center) {
-                Figure()
+                Figure(StageTotalsAt.COLUMN)
             }
             TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true, companion = data.companion())
         }
@@ -1127,7 +1130,7 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
  * for a measured type, where a null total genuinely means nothing was written.
  */
 @Composable
-private fun SessionCount(data: TileData) {
+private fun SessionCount(data: TileData, stagesAt: StageTotalsAt = StageTotalsAt.NONE) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1170,6 +1173,12 @@ private fun SessionCount(data: TileData) {
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        // A night's stages where there is room: the moon beneath "6h 13m" said only "slept".
+        val night = data.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
+        if (night != null && stagesAt != StageTotalsAt.NONE) {
+            StageTotals(night.stages, Modifier.padding(top = 4.dp), stacked = stagesAt == StageTotalsAt.COLUMN)
+            return@Column
         }
         // The activities themselves, as far as they fit: two or three icons say "a ride and a
         // walk" where the bare count says only "two".
@@ -1474,3 +1483,6 @@ private fun TileData.companion(): Pair<NightLine, List<Point>>? {
     val points = companionPoints?.takeIf { it.size > 1 } ?: return null
     return line to points
 }
+
+/** Where a sleep tile lists the time in each stage beside its hours, if anywhere. */
+private enum class StageTotalsAt { NONE, ROW, COLUMN }
