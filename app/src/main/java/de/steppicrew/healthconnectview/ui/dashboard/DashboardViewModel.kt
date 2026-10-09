@@ -107,6 +107,13 @@ data class TileData(
      */
     val source: String? = null,
     /**
+     * The app this tile was asked to filter to, before [source] was settled: the preferred app
+     * is dropped for a type it never wrote. Kept so a re-read asking the same can keep the
+     * value on screen -- compared against [source], the weight tile, filtered to an app that
+     * writes no weight, matched nothing and showed a spinner on every return to the dashboard.
+     */
+    val requestedSource: String? = null,
+    /**
      * The week before the shown day against the 30 days before it, or null where the type has
      * no aggregate or too few recorded days to say.
      */
@@ -510,17 +517,19 @@ class DashboardViewModel(
         val previous = _state.value.tiles.associateBy { it.tile.id }
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
+            val requested = when (val chosen = sources[tile.typeName]) {
+                SourceStore.ALL_SOURCES -> null
+                null -> preferred
+                else -> chosen
+            }
             TileData(
                 tile = tile,
                 spec = spec,
                 granted = spec.permission in granted,
                 // The preference is provisional here: load() drops it for a type the
                 // preferred app never wrote, and reports back what it actually used.
-                source = when (val chosen = sources[tile.typeName]) {
-                    SourceStore.ALL_SOURCES -> null
-                    null -> preferred
-                    else -> chosen
-                },
+                source = requested,
+                requestedSource = requested,
             )
         }
 
@@ -537,11 +546,13 @@ class DashboardViewModel(
             if (carried.loading ||
                 carried.failed ||
                 carried.granted != placeholder.granted ||
-                carried.source != placeholder.source
+                carried.requestedSource != placeholder.requestedSource
             ) {
                 placeholder
             } else {
                 placeholder.copy(
+                    source = carried.source,
+                    companionPoints = carried.companionPoints,
                     value = carried.value,
                     secondaryValue = carried.secondaryValue,
                     valueDate = carried.valueDate,
