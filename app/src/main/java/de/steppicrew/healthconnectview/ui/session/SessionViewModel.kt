@@ -109,6 +109,11 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
                 loaded = null
                 UiState.Error(e.message ?: e.javaClass.simpleName)
             }
+            val zones = observedZones((_state.value as? UiState.Data)?.value) ?: return@launch
+            // Onto whatever is on screen by now, which a granted route may have changed.
+            _state.update { state ->
+                (state as? UiState.Data)?.let { UiState.Data(it.value.copy(heartZones = zones)) } ?: state
+            }
         }
     }
 
@@ -158,17 +163,13 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
             ?: spec?.tile?.defaultZones
 
-        // A workout's zones: the maximum set in settings, else the one the data shows -- read
-        // only where there is a workout's heart rate to place in them.
+        // A workout's zones, where the maximum is set in settings; the one the data shows
+        // takes seconds to read and follows in [observedZones].
         val heartPoints = heartRate.await()
         val heartZones = if (session.kind == Session.Kind.EXERCISE && heartPoints != null) {
-            val chosen = runCatching { settingsStore.settings.first().maxHeartRate }.getOrNull()
-            heartZones(
-                points = heartPoints,
-                breaks = movement.await()?.breaks.orEmpty(),
-                max = chosen ?: repository.observedMaxHeartRate(),
-                maxFromSettings = chosen != null,
-            )
+            runCatching { settingsStore.settings.first().maxHeartRate }.getOrNull()?.let { chosen ->
+                heartZones(heartPoints, movement.await()?.breaks.orEmpty(), chosen, maxFromSettings = true)
+            }
         } else {
             null
         }
@@ -188,6 +189,22 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         )
         currentCoroutineContext().ensureActive()
         UiState.Data(detail)
+    }
+
+    /**
+     * A workout's zones by the maximum its data shows, added to a page already on screen: a
+     * year of heart rate takes Health Connect seconds to search, and everything else on the
+     * page is ready long before.
+     */
+    private suspend fun observedZones(detail: SessionDetail?): HeartZones? {
+        val points = detail?.heartRate ?: return null
+        if (detail.session.kind != Session.Kind.EXERCISE || detail.heartZones != null) return null
+        return heartZones(
+            points = points,
+            breaks = detail.movement?.breaks.orEmpty(),
+            max = repository.observedMaxHeartRate(),
+            maxFromSettings = false,
+        )
     }
 
     /** The system's consent dialog handed this one route back: show it without a second read. */

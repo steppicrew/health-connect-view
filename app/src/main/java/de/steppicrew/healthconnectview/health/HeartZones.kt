@@ -4,8 +4,11 @@ import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.Point
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.time.Duration
 import java.time.LocalDate
+import java.time.Period
 import kotlin.math.roundToInt
 
 /**
@@ -68,33 +71,44 @@ fun loadOf(times: List<Duration>): Int =
     times.withIndex().sumOf { (index, time) -> time.toMillis() / MILLIS_PER_MINUTE * (index + 1) }.roundToInt()
 
 /**
- * The maximum heart rate the data shows: the third-highest daily maximum of the past year, so
- * one or two days with a sensor's spike -- a strap slipping, a watch pressed against a door --
- * do not set every zone too high. Null with fewer than three days, which say too little.
+ * The maximum heart rate the data shows: the third-highest monthly maximum of the past year,
+ * so a month or two with a sensor's spike -- a strap slipping, a watch pressed against a door
+ * -- do not set every zone too high. Null with fewer than three months, which say too little.
  *
  * One grouped aggregate for the whole year rather than a read of its readings: a year of heart
- * rate every 15 seconds is two million samples.
+ * rate every 15 seconds is two million samples. Monthly, not daily: Health Connect's cost
+ * grows with the buckets, and on the phone 365 days took 55 s, 12 months 5 s. Kept for the
+ * day, so the next workout opened does not ask again.
  */
-suspend fun HealthRepository.observedMaxHeartRate(today: LocalDate = LocalDate.now()): Int? {
-    val start = today.minusYears(1).atStartOfDay()
-    val end = today.plusDays(1).atStartOfDay()
-    val days = try {
-        dailyTotals(HeartRateRecord.BPM_MAX, TimeRangeFilter.between(start, end))
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Exception) {
-        return null
+suspend fun HealthRepository.observedMaxHeartRate(today: LocalDate = LocalDate.now()): Int? =
+    ObservedMax.lock.withLock {
+        ObservedMax.known?.takeIf { it.first == today }?.let { return@withLock it.second }
+        val start = today.minusYears(1).withDayOfMonth(1).atStartOfDay()
+        val end = today.plusDays(1).atStartOfDay()
+        val months = try {
+            bucketedTotals(HeartRateRecord.BPM_MAX, TimeRangeFilter.between(start, end), Period.ofMonths(1))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // Not kept: the next workout opened tries again.
+            return@withLock null
+        }
+        val maxima = months.mapNotNull { it.result[HeartRateRecord.BPM_MAX] }.sortedDescending()
+        maxima.getOrNull(SPIKE_MONTHS)?.toInt().also { ObservedMax.known = today to it }
     }
-    val maxima = days.mapNotNull { it.result[HeartRateRecord.BPM_MAX] }.sortedDescending()
-    return maxima.getOrNull(SPIKE_DAYS)?.toInt()
+
+/** The last [observedMaxHeartRate], in memory only, and the day it was read for. */
+private object ObservedMax {
+    val lock = Mutex()
+    var known: Pair<LocalDate, Int?>? = null
 }
 
 private val ZONE_SHARES = listOf(0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
 private const val ZONES = 5
 private const val MILLIS_PER_MINUTE = 60_000.0
 
-/** Daily maxima passed over as possible spikes; see [observedMaxHeartRate]. */
-private const val SPIKE_DAYS = 2
+/** Monthly maxima passed over as possible spikes; see [observedMaxHeartRate]. */
+private const val SPIKE_MONTHS = 2
 
 /** Longer than any watch's interval during a workout (1 to 15 s on the phone). */
 private val LONGEST_SAMPLE: Duration = Duration.ofMinutes(1)
