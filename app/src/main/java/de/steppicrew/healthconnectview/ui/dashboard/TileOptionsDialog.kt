@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.registry.RecordRegistry
-import de.steppicrew.healthconnectview.ui.components.NightLine
+import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 
@@ -79,8 +79,9 @@ fun TileOptionsDialog(
                         )
                     }
                 }
-                // Drawn over a single day's chart -- a night -- so offered with that in view.
-                if (companions.isNotEmpty()) {
+                // Drawn over a day's sessions in place of its chart, so offered only where a day's
+                // chart is shown; a choice made elsewhere is kept for when it is.
+                if (companions.isNotEmpty() && span == Span.DAY && face != TileFace.VALUE) {
                     Text(
                         text = stringResource(R.string.tile_options_companion),
                         style = MaterialTheme.typography.labelLarge,
@@ -93,7 +94,7 @@ fun TileOptionsDialog(
                             label = { Text(stringResource(R.string.tile_companion_none)) },
                         )
                         companions.forEach { type ->
-                            val line = NightLine.of(type)
+                            val line = SessionLine.of(type)
                             val name = line?.shortLabel ?: RecordRegistry.specOrNull(type)?.displayNameRes ?: return@forEach
                             FilterChip(
                                 selected = companion == type,

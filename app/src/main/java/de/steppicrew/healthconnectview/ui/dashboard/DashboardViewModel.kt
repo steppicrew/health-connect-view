@@ -78,7 +78,7 @@ data class TileData(
     val tile: Tile,
     val spec: RecordTypeSpec<*>,
     /** The large tile's second curve, as [Tile.companion] names it, where it was read. */
-    val companionPoints: List<Point>? = null,
+    val companionCurves: List<Pair<Session, List<Point>>> = emptyList(),
     val value: Double? = null,
     /** The type's second value where it has one -- blood pressure's diastolic. */
     val secondaryValue: Double? = null,
@@ -552,7 +552,7 @@ class DashboardViewModel(
             } else {
                 placeholder.copy(
                     source = carried.source,
-                    companionPoints = carried.companionPoints,
+                    companionCurves = carried.companionCurves,
                     value = carried.value,
                     secondaryValue = carried.secondaryValue,
                     valueDate = carried.valueDate,
@@ -663,18 +663,22 @@ class DashboardViewModel(
             TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source)
         }
 
-        // Last night's readings of the chosen kind, for a sleep tile's day: read over the night
-        // itself, which begins the evening before the day it is credited to.
-        val companionPoints = tile.companion
-            ?.takeIf { it in companionsOf(tile.typeName) && tile.span == Span.DAY }
+        // The chosen readings over the day's last sessions: last night, read over the night
+        // itself, which begins the evening before the day it is credited to; the last workout,
+        // or the last two where a taller tile has room for both.
+        val kind = placeholder.spec.tile.sessionKind
+        val companionCurves = tile.companion
+            ?.takeIf { it in companionsOf(tile.typeName) && tile.span == Span.DAY && kind != null }
             ?.let { type ->
-                chart?.sessions?.lastOrNull { it.kind == Session.Kind.SLEEP }?.let { night ->
-                    reads.attempt { repository.readingsDuring(night, type) }
+                val shown = if (kind == Session.Kind.SLEEP || tile.height == 1) 1 else MAX_COMPANION_SESSIONS
+                chart?.sessions.orEmpty().filter { it.kind == kind }.takeLast(shown).mapNotNull { session ->
+                    reads.attempt { repository.readingsDuring(session, type) }?.let { session to it }
                 }
             }
+            .orEmpty()
 
         return (day ?: placeholder.copy(source = source)).copy(
-            companionPoints = companionPoints,
+            companionCurves = companionCurves,
             value = day?.value ?: chart?.total,
             secondaryValue = day?.secondaryValue ?: chart?.secondaryTotal,
             sessions = day?.sessions ?: chart?.sessions.orEmpty(),
@@ -958,6 +962,9 @@ class DashboardViewModel(
 
         /** read() returns newest-first, so one record is the latest reading. */
         const val LATEST_ONLY = 1
+
+        /** Workouts a tall tile draws the chosen curve for; one row has room for one. */
+        const val MAX_COMPANION_SESSIONS = 2
     }
 }
 

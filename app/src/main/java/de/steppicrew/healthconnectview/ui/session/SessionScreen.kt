@@ -63,7 +63,7 @@ import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.ChartSeries
-import de.steppicrew.healthconnectview.ui.components.NightLine
+import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.colorOf
 import de.steppicrew.healthconnectview.ui.components.labelOf
@@ -283,9 +283,9 @@ private fun HeartRate(detail: SessionDetail) {
                     maxGap = LINE_GAP,
                 ),
                 // A night's own lines beside heart rate, as chips; colours follow the measurement.
-                nightSeries(detail, NightLine.BREATH),
-                nightSeries(detail, NightLine.OXYGEN),
-                nightSeries(detail, NightLine.HRV),
+                nightSeries(detail, SessionLine.BREATH),
+                nightSeries(detail, SessionLine.OXYGEN),
+                nightSeries(detail, SessionLine.HRV),
                 detail.speed?.let { speed ->
                     ChartSeries(
                         key = LINE_SPEED,
@@ -527,13 +527,13 @@ private fun Section(title: String) {
 private const val HEADER_ICON = 28
 
 /** Keys the remembered choice of lines by; see ChartLinesStore. */
-private val LINE_HEART_RATE = NightLine.HEART_RATE.key
+private val LINE_HEART_RATE = SessionLine.HEART_RATE.key
 private const val LINE_SPEED = "speed"
 
 
 /** One of a night's readings as a chart line, named and measured as its type is; null where none. */
 @Composable
-private fun nightSeries(detail: SessionDetail, line: NightLine): ChartSeries? {
+private fun nightSeries(detail: SessionDetail, line: SessionLine): ChartSeries? {
     val points = detail.nightLines[line.typeName] ?: return null
     val spec = RecordRegistry.specOrNull(line.typeName) ?: return null
     return ChartSeries(

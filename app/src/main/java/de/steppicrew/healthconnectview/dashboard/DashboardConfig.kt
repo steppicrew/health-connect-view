@@ -217,10 +217,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 }
 
 /**
- * The curves a large tile of [typeName] may draw beside its own -- the owner's idea, 09.10.2026.
- * Sleep only so far: a night's readings over its stages, which the phone holds every night.
- * Weight's body composition is the combined weight tile, step 64 of the roadmap. Elsewhere the
- * tile already has its context (workouts behind heart rate) or draws bars a line would clash with.
+ * The curves a large tile of [typeName] may draw over its sessions -- the owner's idea,
+ * 09.10.2026: a night's readings over its stages, which the phone holds every night, and a
+ * workout's heart or breath rate in place of the day's timeline. Weight's body composition is
+ * the combined weight tile, step 64 of the roadmap. Elsewhere the tile already has its context
+ * (workouts behind heart rate) or draws bars a line would clash with.
  */
 fun companionsOf(typeName: String): List<String> = when (typeName) {
     "SleepSessionRecord" -> listOf(
@@ -228,6 +229,10 @@ fun companionsOf(typeName: String): List<String> = when (typeName) {
         "RespiratoryRateRecord",
         "OxygenSaturationRecord",
         "HeartRateVariabilityRmssdRecord",
+    )
+    "ExerciseSessionRecord" -> listOf(
+        "HeartRateRecord",
+        "RespiratoryRateRecord",
     )
     else -> emptyList()
 }

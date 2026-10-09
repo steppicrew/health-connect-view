@@ -559,6 +559,16 @@ Also from the owner, 09.10.2026, done the same day:
 - [x] **HRV drawn alike everywhere**: dots joined by faint dashes, whether or not it owns the
   axis. The ↕ on a chip is explained under the chips while it shows.
 - [x] **A chevron opens a workout's details**, not the "i", which read as a description.
+- [x] **Time in each stage on the sleep tile**, under the hours on a wide tile (where the moon
+  said only "slept"), and on a tall one when a curve replaces the stage chart.
+- [x] **A tile's value kept on return when its app filter fell back**: the weight tile, filtered
+  to a preferred app that writes no weight, blanked to a spinner every time.
+- [x] **SpO2's 95-100 % reference band** on a night's chart while SpO2 owns the axis, named
+  under the chips. No coloured zones: a wrist sensor's night swings 88-100 %, and red dips
+  would read as a diagnosis. Not on the tile, which has no room to name it.
+- [x] **A workout tile can draw a curve instead of the timeline**: heart or breath rate over the
+  day's last workout (two on a taller tile), breaks shaded, each captioned with its icon and
+  times. Offered in the options only with a day's span and a chart face, where it is drawn.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that

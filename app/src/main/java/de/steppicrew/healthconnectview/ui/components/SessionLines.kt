@@ -8,11 +8,11 @@ import de.steppicrew.healthconnectview.health.profileOf
 import de.steppicrew.healthconnectview.registry.Point
 
 /**
- * A reading that can be drawn over a night, the same wherever it is: on the night's own screen
- * as a chip, and on a large sleep tile as the curve beside the stages. Chosen from what the phone
- * holds -- every recent night had all four (`NightShapeActivity`).
+ * A reading that can be drawn over a session, the same wherever it is: on a night's own screen
+ * as a chip, and on a large sleep or workout tile as the curve chosen in its options. Chosen
+ * from what the phone holds -- every recent night had all four (`NightShapeActivity`).
  */
-enum class NightLine(
+enum class SessionLine(
     val typeName: String,
     /** Keys the remembered choice of chips by; see ChartLinesStore. */
     val key: String,
@@ -44,6 +44,6 @@ enum class NightLine(
     fun shown(points: List<Point>): List<Point> = if (smoothed) profileOf(points) else points
 
     companion object {
-        fun of(typeName: String?): NightLine? = entries.firstOrNull { it.typeName == typeName }
+        fun of(typeName: String?): SessionLine? = entries.firstOrNull { it.typeName == typeName }
     }
 }
