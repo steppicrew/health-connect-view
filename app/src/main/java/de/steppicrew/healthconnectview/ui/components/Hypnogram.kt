@@ -87,20 +87,32 @@ fun Hypnogram(
                 )
             }
         }
-        if (totalsShown) FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(top = 4.dp),
-        ) {
-            totals.forEach { (kind, total) ->
-                DotText(
-                    color = colorOf(kind),
-                    text = names.getValue(kind) + " " + Formatting.duration(total),
-                    style = MaterialTheme.typography.labelSmall,
-                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    dotSize = 8.dp,
-                    gap = 4.dp,
-                )
-            }
+        if (totalsShown) StageTotals(stages, Modifier.padding(top = 4.dp))
+    }
+}
+
+/**
+ * The time in each stage, each beside its colour, so it is also the legend of any chart drawing
+ * the stages. Side by side where they wrap across a width, [stacked] in a narrow column -- the
+ * space under the hours on a wide sleep tile, the owner's idea.
+ */
+@Composable
+fun StageTotals(stages: List<SleepStage>, modifier: Modifier = Modifier, stacked: Boolean = false) {
+    val totals = stageTotals(stages)
+    @Composable
+    fun Entry(kind: StageKind, total: Duration) = DotText(
+        color = colorOf(kind),
+        text = stringResource(labelOf(kind)) + " " + Formatting.duration(total),
+        style = MaterialTheme.typography.labelSmall,
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        dotSize = 8.dp,
+        gap = 4.dp,
+    )
+    if (stacked) {
+        Column(modifier) { totals.forEach { (kind, total) -> Entry(kind, total) } }
+    } else {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = modifier) {
+            totals.forEach { (kind, total) -> Entry(kind, total) }
         }
     }
 }
