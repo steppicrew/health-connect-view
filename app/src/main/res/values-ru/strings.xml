@@ -417,6 +417,7 @@
     <string name="span_previous">Раньше</string>
     <string name="span_next">Позже</string>
     <string name="span_now">К текущему периоду</string>
+    <string name="date_pick">Выбрать день</string>
     <string name="span_total">Итого</string>
     <string name="span_daily_value">Значение за день</string>
     <string name="legend_rolling_mean">Среднее за 4 недели</string>

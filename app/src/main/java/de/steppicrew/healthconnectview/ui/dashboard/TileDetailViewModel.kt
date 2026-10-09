@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.withContext
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.metadata.DataOrigin
@@ -282,7 +283,15 @@ data class TileDetailData(
  * list. This is the chart-first view reached from a dashboard tile, and it is the only place
  * that can reach data older than a year.
  */
-class TileDetailViewModel(application: Application) : AndroidViewModel(application) {
+class TileDetailViewModel(
+    application: Application,
+    /**
+     * The window on screen, kept across the screen being rebuilt. Without it, every new
+     * composition -- a restore after the process was killed in the background, a rotation --
+     * called [load] with the route's date again and dropped the days swiped to since.
+     */
+    private val saved: SavedStateHandle,
+) : AndroidViewModel(application) {
 
     private val repository = HealthRepository(application)
     private val sourceStore = SourceStore(application)
@@ -547,11 +556,16 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
         this.typeName = typeName
         _spec.update { RecordRegistry.specOrNull(typeName) }
+        // The window last shown for this type wins over the route's: the route says where the
+        // screen was opened, the saved state where the user has been since.
+        val restored = saved.get<String>(KEY_TYPE) == typeName
+        val wantedSpan = if (restored) saved.get<String>(KEY_SPAN).orEmpty() else span
+        val wantedDate = if (restored) saved.get<String>(KEY_DATE).orEmpty() else date
         // Span first: the offset is counted in the span's own periods, so it cannot be
         // derived before the span is known.
-        val chosenSpan = Span.entries.firstOrNull { it.name.equals(span, ignoreCase = true) }
+        val chosenSpan = Span.entries.firstOrNull { it.name.equals(wantedSpan, ignoreCase = true) }
         chosenSpan?.let { _span.value = it }
-        _offset.update { offsetForDate(date, chosenSpan ?: _span.value) }
+        _offset.update { offsetForDate(wantedDate, chosenSpan ?: _span.value) }
         viewModelScope.launch {
             selectedSource = resolveSource(typeName)
             refreshSourceDefault(typeName)
@@ -658,6 +672,10 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
             _state.update { UiState.Error("Unknown type") }
             return
         }
+
+        typeName?.let { saved[KEY_TYPE] = it }
+        saved[KEY_SPAN] = _span.value.name
+        saved[KEY_DATE] = _span.value.startDate(_offset.value).toString()
 
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
@@ -920,6 +938,9 @@ class TileDetailViewModel(application: Application) : AndroidViewModel(applicati
 
     private companion object {
         const val TAG = "TileDetail"
+        const val KEY_TYPE = "shownType"
+        const val KEY_SPAN = "shownSpan"
+        const val KEY_DATE = "shownDate"
 
         /** How far back [latestBefore] looks: far enough for a reading taken once a year. */
         val LATEST_LOOKBACK: Duration = Duration.ofDays(3650)

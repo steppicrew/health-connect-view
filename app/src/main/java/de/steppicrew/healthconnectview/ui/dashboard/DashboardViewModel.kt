@@ -11,6 +11,7 @@ import android.app.Application
 import android.util.Log
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import androidx.health.connect.client.records.metadata.DataOrigin
@@ -171,13 +172,29 @@ data class InsightsTileData(
 /** A type the add picker offers, and whether a tile of it is already pinned. */
 data class AddCandidate(val spec: RecordTypeSpec<*>, val pinned: Boolean)
 
-class DashboardViewModel(application: Application) : AndroidViewModel(application) {
+class DashboardViewModel(
+    application: Application,
+    /**
+     * Holds the day on screen across the process being killed in the background. The owner
+     * opened a past day's tile, switched to another app, and Back from the restored detail
+     * page landed on today: the state flow below started over while the back stack was
+     * restored. Measured on the phone, 09.10.2026: `am_proc_died` for the app while cached.
+     */
+    private val saved: SavedStateHandle,
+) : AndroidViewModel(application) {
 
     private val repository = HealthRepository(application)
     private val store = DashboardStore(application)
     private val sourceStore = SourceStore(application)
 
-    private val _state = MutableStateFlow(DashboardUiState())
+    private val _state = MutableStateFlow(
+        DashboardUiState(
+            date = saved.get<String>(KEY_DATE)
+                ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+                ?.takeUnless { it.isAfter(LocalDate.now()) }
+                ?: LocalDate.now(),
+        ),
+    )
     val state: StateFlow<DashboardUiState> = _state.asStateFlow()
 
     private var config: DashboardConfig = DashboardConfig.DEFAULT
@@ -401,14 +418,19 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         .sortedBy { it.type.simpleName }
         .map { AddCandidate(it, pinned = config.has(it.type.simpleName.orEmpty())) }
 
-    fun showPreviousDay() {
-        _state.update { it.copy(date = it.date.minusDays(1)) }
-        reload()
-    }
+    fun showPreviousDay() = showDate(_state.value.date.minusDays(1))
 
     fun showNextDay() {
         if (!_state.value.canStepForward) return
-        _state.update { it.copy(date = it.date.plusDays(1)) }
+        showDate(_state.value.date.plusDays(1))
+    }
+
+    /** Opens any day up to today; a later one is today. */
+    fun showDate(date: LocalDate) {
+        val shown = minOf(date, LocalDate.now())
+        if (shown == _state.value.date) return
+        saved[KEY_DATE] = shown.toString()
+        _state.update { it.copy(date = shown) }
         reload()
     }
 
@@ -869,6 +891,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private companion object {
         const val TAG = "Dashboard"
+        const val KEY_DATE = "date"
         const val MAX_CONCURRENT_TILES = 4
 
         /**

@@ -390,6 +390,7 @@
     <string name="span_previous">이전</string>
     <string name="span_next">이후</string>
     <string name="span_now">현재 기간으로 이동</string>
+    <string name="date_pick">날짜 선택</string>
     <string name="span_total">합계</string>
     <string name="span_daily_value">그날의 값</string>
     <string name="legend_rolling_mean">4주 평균</string>

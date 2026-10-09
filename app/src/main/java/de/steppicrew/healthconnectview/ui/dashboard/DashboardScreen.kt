@@ -12,6 +12,7 @@ import de.steppicrew.healthconnectview.ui.insights.notable
 import de.steppicrew.healthconnectview.ui.insights.insightAmount
 import de.steppicrew.healthconnectview.dashboard.TileColor
 import de.steppicrew.healthconnectview.dashboard.TileFace
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.filled.Tune
 import androidx.activity.compose.BackHandler
@@ -119,6 +120,7 @@ import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.AppIcon
+import de.steppicrew.healthconnectview.ui.components.DayPickerDialog
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
 import de.steppicrew.healthconnectview.ui.components.iconFor
 import de.steppicrew.healthconnectview.ui.components.LoadingView
@@ -241,11 +243,32 @@ fun DashboardScreen(
     // reloaded on every return rather than trusted from when the screen was built.
     OnResume { viewModel.refresh() }
 
+    var pickingDay by remember { mutableStateOf(false) }
+    if (pickingDay) {
+        DayPickerDialog(
+            initial = state.date,
+            onDismiss = { pickingDay = false },
+            onPicked = {
+                pickingDay = false
+                viewModel.showDate(it)
+            },
+        )
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(dayLabel(state.date)) },
+                // Tapping the day opens a calendar, for a day too far back to step to.
+                title = {
+                    Text(
+                        text = dayLabel(state.date),
+                        modifier = Modifier.clickable(
+                            enabled = !editing,
+                            onClickLabel = stringResource(R.string.date_pick),
+                        ) { pickingDay = true },
+                    )
+                },
                 navigationIcon = {
                     // Stepping the day while arranging tiles reloads the grid under the
                     // drag in progress, so the arrows are inert in edit mode rather than

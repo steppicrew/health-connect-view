@@ -435,6 +435,7 @@
     <string name="span_previous">أقدم</string>
     <string name="span_next">أحدث</string>
     <string name="span_now">الانتقال إلى الفترة الحالية</string>
+    <string name="date_pick">اختيار يوم</string>
     <string name="span_total">الإجمالي</string>
     <string name="span_daily_value">قيمة اليوم</string>
     <string name="legend_rolling_mean">متوسط 4 أسابيع</string>

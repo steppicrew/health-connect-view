@@ -399,6 +399,7 @@
     <string name="span_previous">Eerder</string>
     <string name="span_next">Later</string>
     <string name="span_now">Naar de huidige periode</string>
+    <string name="date_pick">Kies een dag</string>
     <string name="span_total">Totaal</string>
     <string name="span_daily_value">Waarde van de dag</string>
     <string name="legend_rolling_mean">4-weeks gemiddelde</string>

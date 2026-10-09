@@ -393,6 +393,7 @@
     <string name="span_previous">Früher</string>
     <string name="span_next">Später</string>
     <string name="span_now">Zum aktuellen Zeitraum</string>
+    <string name="date_pick">Tag auswählen</string>
     <string name="span_total">Gesamt</string>
     <string name="span_daily_value">Tageswert</string>
     <string name="legend_rolling_mean">4-Wochen-Mittel</string>

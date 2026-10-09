@@ -408,6 +408,7 @@
     <string name="span_previous">Prima</string>
     <string name="span_next">Dopo</string>
     <string name="span_now">Vai al periodo attuale</string>
+    <string name="date_pick">Scegli un giorno</string>
     <string name="span_total">Totale</string>
     <string name="span_daily_value">Valore del giorno</string>
     <string name="legend_rolling_mean">Media 4 settimane</string>

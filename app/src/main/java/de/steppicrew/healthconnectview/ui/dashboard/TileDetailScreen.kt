@@ -288,6 +288,8 @@ fun TileDetailScreen(
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
                 onNow = viewModel::stepToNow,
+                shownDate = span.startDate(offset),
+                onPickDate = viewModel::showDate,
             )
 
             // Read by every note that depends on how far back the app may look.

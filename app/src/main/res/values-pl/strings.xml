@@ -417,6 +417,7 @@
     <string name="span_previous">Wcześniej</string>
     <string name="span_next">Później</string>
     <string name="span_now">Przejdź do bieżącego okresu</string>
+    <string name="date_pick">Wybierz dzień</string>
     <string name="span_total">Łącznie</string>
     <string name="span_daily_value">Wartość dnia</string>
     <string name="legend_rolling_mean">Średnia 4-tygodniowa</string>
