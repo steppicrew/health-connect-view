@@ -169,8 +169,9 @@ at midnight. Sleep is kept by its end, exercise by overlap.
 **A series record is returned only where it starts in the range.** Read from 10 s before a
 workout's end, Health Connect left out a Health Sync heart-rate record that began 61 s before
 the end and ran nine minutes past it, so the minutes after the workout showed only the
-watch's sparse all-day readings. Where a short window matters, read from well before
-(`heartRateAfter` reads 30 min early) and cut the points to the window.
+watch's sparse all-day readings; read from an indoor ride's own start, 5 of the 990 samples
+in it came back. Session reads therefore start 30 min early and cut the points to the window
+(`pointsByWriter`).
 
 **Some types aggregate without storing records.** `BasalMetabolicRate` is derived from height
 and weight: zero records, a value in every bucket. Emptiness is judged on records *and*

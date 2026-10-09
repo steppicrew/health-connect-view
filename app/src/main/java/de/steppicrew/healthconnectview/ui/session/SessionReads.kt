@@ -199,19 +199,7 @@ suspend fun HealthRepository.routeFor(session: Session): RouteLoad {
  */
 suspend fun HealthRepository.heartRateDuring(session: Session): List<Point>? {
     val spec = heartRateSpec() ?: return null
-    val records = try {
-        readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Exception) {
-        emptyList()
-    }
-    return fullestWriter(
-        records.groupBy { spec.originOf(it) }
-            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
-        session.start,
-        session.end,
-    ).takeIf { it.size > 1 }
+    return fullestWriter(pointsByWriter(spec, session.start, session.end), session.start, session.end).takeIf { it.size > 1 }
 }
 
 /**
@@ -223,20 +211,8 @@ suspend fun HealthRepository.heartRateAfter(session: Session): List<Point>? {
     val spec = heartRateSpec() ?: return null
     val from = session.end.minus(RECOVERY_TOLERANCE)
     val to = session.end.plus(AFTER_END)
-    val records = try {
-        // From well before: Health Connect returns a series record only where it starts within
-        // the range, and on the phone the one holding the minutes after a workout began 61 s
-        // before its end. Read from the end itself, it was missed and the sparse all-day
-        // readings drawn instead. The points are cut to the window below.
-        readForChart(spec.type, TimeRangeFilter.between(from.minus(SERIES_LEAD), to))
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Exception) {
-        emptyList()
-    }
     return fullestWriter(
-        records.groupBy { spec.originOf(it) }
-            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) }.filter { it.time >= from && it.time <= to } },
+        pointsByWriter(spec, from, to),
         from,
         to,
         // Slots far finer than a whole session's: over five minutes, the writer reading every
@@ -247,7 +223,32 @@ suspend fun HealthRepository.heartRateAfter(session: Session): List<Point>? {
 
 private val AFTER_SLOT: Duration = Duration.ofSeconds(30)
 
-/** Longer than any heart-rate series record seen spanning a workout's end (10 min). */
+/**
+ * One type's points from [from] to [to], by writer.
+ *
+ * Read from [SERIES_LEAD] before [from]: Health Connect returns a series record only where it
+ * starts within the range. On the phone a read from an indoor ride's own start got 5 of Health
+ * Sync's 990 heart-rate samples in it, since its record began before the ride, so the curve
+ * fell to the watch's copy at a quarter of the density; strength sessions lost an eighth of
+ * theirs at the start. The points are cut to the window, so nothing from before is drawn.
+ */
+private suspend fun HealthRepository.pointsByWriter(
+    spec: RecordTypeSpec<*>,
+    from: Instant,
+    to: Instant,
+): Map<String, List<Point>> {
+    val records = try {
+        readForChart(spec.type, TimeRangeFilter.between(from.minus(SERIES_LEAD), to))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        emptyList()
+    }
+    return records.groupBy { spec.originOf(it) }
+        .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) }.filter { it.time >= from && it.time <= to } }
+}
+
+/** Longer than any heart-rate series record seen spanning a session's edge (10 min). */
 private val SERIES_LEAD: Duration = Duration.ofMinutes(30)
 
 /**
@@ -259,19 +260,9 @@ private val SERIES_LEAD: Duration = Duration.ofMinutes(30)
 suspend fun HealthRepository.speedDuring(session: Session): List<Point>? {
     val spec = RecordRegistry.specOrNull(SPEED) ?: return null
     if (spec.permission !in grantedPermissions()) return null
-    val records = try {
-        readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Exception) {
-        emptyList()
-    }
-    return fullestWriter(
-        records.groupBy { spec.originOf(it) }
-            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
-        session.start,
-        session.end,
-    ).map { Point(it.time, it.value / MS_TO_KMH) }.takeIf { it.size > 1 }
+    return fullestWriter(pointsByWriter(spec, session.start, session.end), session.start, session.end)
+        .map { Point(it.time, it.value / MS_TO_KMH) }
+        .takeIf { it.size > 1 }
 }
 
 /**
@@ -283,19 +274,7 @@ suspend fun HealthRepository.speedDuring(session: Session): List<Point>? {
 suspend fun HealthRepository.readingsDuring(session: Session, typeName: String): List<Point>? {
     val spec = RecordRegistry.specOrNull(typeName) ?: return null
     if (spec.permission !in grantedPermissions()) return null
-    val records = try {
-        readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Exception) {
-        emptyList()
-    }
-    return fullestWriter(
-        records.groupBy { spec.originOf(it) }
-            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
-        session.start,
-        session.end,
-    ).takeIf { it.size > 1 }
+    return fullestWriter(pointsByWriter(spec, session.start, session.end), session.start, session.end).takeIf { it.size > 1 }
 }
 
 private const val SPEED = "SpeedRecord"

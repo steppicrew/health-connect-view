@@ -111,6 +111,35 @@ class SessionCurveShapeActivity : ComponentActivity() {
                     logLongGaps(session.startTime, times)
                 }
 
+                // Series records that start before the session and run into it: Health Connect
+                // returns a series record only where it starts in the range, so a read from the
+                // session's start misses them. Samples inside the session, read from its start
+                // and from well before, per writer -- counts and the first sample's offset only.
+                listOf<Pair<KClass<out Record>, (Record) -> List<Instant>>>(
+                    HeartRateRecord::class to { r: Record -> (r as HeartRateRecord).samples.map { it.time } },
+                    SpeedRecord::class to { r: Record -> (r as SpeedRecord).samples.map { it.time } },
+                ).forEach { (type, timesOf) ->
+                    suspend fun inside(from: Instant) = runCatching {
+                        repository.read(type, TimeRangeFilter.between(from, session.endTime))
+                    }.getOrDefault(emptyList())
+                        .groupBy { it.metadata.dataOrigin.packageName }
+                        .mapValues { (_, group) ->
+                            group.flatMap(timesOf).filter { it >= session.startTime && it <= session.endTime }.sorted()
+                        }
+                    val plain = inside(session.startTime)
+                    val early = inside(session.startTime.minus(SERIES_LEAD))
+                    early.forEach { (app, times) ->
+                        val got = plain[app].orEmpty()
+                        if (got.size == times.size) return@forEach
+                        Log.i(
+                            TAG,
+                            "  missed ${type.simpleName} writer=$app samples=${got.size}/${times.size} " +
+                                "firstFrom=${got.firstOrNull()?.let { offset(session.startTime, it) }}m " +
+                                "firstEarly=${times.firstOrNull()?.let { offset(session.startTime, it) }}m",
+                        )
+                    }
+                }
+
                 // After the end, for heart-rate recovery: samples per minute in the first
                 // minutes, per writer, and the gap from the last sample inside to the first
                 // after. Counts and seconds only.
@@ -194,5 +223,6 @@ class SessionCurveShapeActivity : ComponentActivity() {
         val LONG_GAP: Duration = Duration.ofMinutes(5)
         val AFTER_LEAD: Duration = Duration.ofMinutes(1)
         val AFTER_SPAN: Duration = Duration.ofMinutes(5)
+        val SERIES_LEAD: Duration = Duration.ofMinutes(30)
     }
 }
