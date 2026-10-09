@@ -68,6 +68,8 @@
     <string name="tile_face_value">Wert</string>
     <string name="tile_face_chart">Diagramm</string>
     <string name="tile_face_both">Beides</string>
+    <string name="tile_options_companion">Kurve dazu</string>
+    <string name="tile_companion_none">Keine</string>
     <string name="tile_title_span_capped">%1$s · %2$s, nur 30 Tage</string>
     <string name="tile_size">Größe %1$d × %2$d</string>
     <string name="tile_remove">Entfernen</string>

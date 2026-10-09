@@ -35,6 +35,8 @@ import de.steppicrew.healthconnectview.health.dayInstants
 import de.steppicrew.healthconnectview.health.openTally
 import de.steppicrew.healthconnectview.health.resolveAvailability
 import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.ui.session.readingsDuring
+import de.steppicrew.healthconnectview.dashboard.companionsOf
 import de.steppicrew.healthconnectview.health.withMovement
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Point
@@ -75,6 +77,8 @@ import java.time.temporal.ChronoUnit
 data class TileData(
     val tile: Tile,
     val spec: RecordTypeSpec<*>,
+    /** The large tile's second curve, as [Tile.companion] names it, where it was read. */
+    val companionPoints: List<Point>? = null,
     val value: Double? = null,
     /** The type's second value where it has one -- blood pressure's diastolic. */
     val secondaryValue: Double? = null,
@@ -332,8 +336,8 @@ class DashboardViewModel(
     }
 
     /** Sets a large tile's window and face, and persists them. */
-    fun setOptions(id: String, span: Span, face: TileFace) {
-        config = config.withOptions(id, span, face)
+    fun setOptions(id: String, span: Span, face: TileFace, companion: String? = null) {
+        config = config.withOptions(id, span, face, companion)
         viewModelScope.launch { store.save(config) }
         reload()
     }
@@ -648,7 +652,18 @@ class DashboardViewModel(
             TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source)
         }
 
+        // Last night's readings of the chosen kind, for a sleep tile's day: read over the night
+        // itself, which begins the evening before the day it is credited to.
+        val companionPoints = tile.companion
+            ?.takeIf { it in companionsOf(tile.typeName) && tile.span == Span.DAY }
+            ?.let { type ->
+                chart?.sessions?.lastOrNull { it.kind == Session.Kind.SLEEP }?.let { night ->
+                    reads.attempt { repository.readingsDuring(night, type) }
+                }
+            }
+
         return (day ?: placeholder.copy(source = source)).copy(
+            companionPoints = companionPoints,
             value = day?.value ?: chart?.total,
             secondaryValue = day?.secondaryValue ?: chart?.secondaryTotal,
             sessions = day?.sessions ?: chart?.sessions.orEmpty(),

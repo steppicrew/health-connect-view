@@ -72,6 +72,8 @@
     <string name="tile_face_value">القيمة</string>
     <string name="tile_face_chart">الرسم البياني</string>
     <string name="tile_face_both">كلاهما</string>
+    <string name="tile_options_companion">منحنى إضافي</string>
+    <string name="tile_companion_none">لا شيء</string>
     <string name="tile_title_span_capped">%1$s · %2$s، آخر 30 يومًا فقط</string>
     <string name="tile_size">الحجم %1$d × %2$d</string>
     <string name="tile_remove">إزالة</string>

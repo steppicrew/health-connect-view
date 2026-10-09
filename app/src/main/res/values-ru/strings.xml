@@ -70,6 +70,8 @@
     <string name="tile_face_value">Значение</string>
     <string name="tile_face_chart">График</string>
     <string name="tile_face_both">Оба</string>
+    <string name="tile_options_companion">Дополнительная кривая</string>
+    <string name="tile_companion_none">Нет</string>
     <string name="tile_title_span_capped">%1$s · %2$s, только последние 30 дней</string>
     <string name="tile_size">Размер %1$d × %2$d</string>
     <string name="tile_remove">Удалить</string>

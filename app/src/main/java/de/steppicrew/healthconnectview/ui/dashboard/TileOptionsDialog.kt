@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.registry.RecordRegistry
+import de.steppicrew.healthconnectview.ui.components.NightLine
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 
@@ -34,10 +36,14 @@ fun TileOptionsDialog(
     currentSpan: Span,
     currentFace: TileFace,
     onDismiss: () -> Unit,
-    onSave: (Span, TileFace) -> Unit,
+    onSave: (Span, TileFace, String?) -> Unit,
+    /** The curves the type may draw beside its own, by type name; none offers no choice. */
+    companions: List<String> = emptyList(),
+    currentCompanion: String? = null,
 ) {
     var span by remember { mutableStateOf(currentSpan) }
     var face by remember { mutableStateOf(currentFace) }
+    var companion by remember { mutableStateOf(currentCompanion) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -73,12 +79,36 @@ fun TileOptionsDialog(
                         )
                     }
                 }
+                // Drawn over a single day's chart -- a night -- so offered with that in view.
+                if (companions.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.tile_options_companion),
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(
+                            selected = companion == null,
+                            onClick = { companion = null },
+                            label = { Text(stringResource(R.string.tile_companion_none)) },
+                        )
+                        companions.forEach { type ->
+                            val line = NightLine.of(type)
+                            val name = line?.shortLabel ?: RecordRegistry.specOrNull(type)?.displayNameRes ?: return@forEach
+                            FilterChip(
+                                selected = companion == type,
+                                onClick = { companion = type },
+                                label = { Text(stringResource(name)) },
+                            )
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(span, face)
+                    onSave(span, face, companion)
                     onDismiss()
                 },
             ) {

@@ -63,6 +63,7 @@ import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.ChartSeries
+import de.steppicrew.healthconnectview.ui.components.NightLine
 import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.colorOf
 import de.steppicrew.healthconnectview.ui.components.labelOf
@@ -282,15 +283,9 @@ private fun HeartRate(detail: SessionDetail) {
                     maxGap = LINE_GAP,
                 ),
                 // A night's own lines beside heart rate, as chips; colours follow the measurement.
-                nightSeries(detail, "RespiratoryRateRecord", LINE_BREATH, SeriesColors.aqua(), minSpan = BREATH_MIN_SPAN),
-                nightSeries(
-                    detail, "OxygenSaturationRecord", LINE_OXYGEN, SeriesColors.blue(),
-                    minSpan = OXYGEN_MIN_SPAN, shortLabel = R.string.chart_short_oxygen,
-                ),
-                nightSeries(
-                    detail, "HeartRateVariabilityRmssdRecord", LINE_HRV, SeriesColors.violet(),
-                    dots = true, shortLabel = R.string.chart_short_hrv,
-                ),
+                nightSeries(detail, NightLine.BREATH),
+                nightSeries(detail, NightLine.OXYGEN),
+                nightSeries(detail, NightLine.HRV),
                 detail.speed?.let { speed ->
                     ChartSeries(
                         key = LINE_SPEED,
@@ -532,43 +527,26 @@ private fun Section(title: String) {
 private const val HEADER_ICON = 28
 
 /** Keys the remembered choice of lines by; see ChartLinesStore. */
-private const val LINE_HEART_RATE = "heart_rate"
+private val LINE_HEART_RATE = NightLine.HEART_RATE.key
 private const val LINE_SPEED = "speed"
-private const val LINE_BREATH = "breath"
-private const val LINE_OXYGEN = "oxygen"
-private const val LINE_HRV = "hrv"
 
-/** Floors on a night line's own scale, so a normal night does not fill the height. */
-private const val BREATH_MIN_SPAN = 8.0
-private const val OXYGEN_MIN_SPAN = 10.0
 
 /** One of a night's readings as a chart line, named and measured as its type is; null where none. */
 @Composable
-private fun nightSeries(
-    detail: SessionDetail,
-    typeName: String,
-    key: String,
-    color: Color,
-    dots: Boolean = false,
-    minSpan: Double? = null,
-    /** A chip's name where the type's own runs to "Herzfrequenzvariabilität" and wraps the row. */
-    @StringRes shortLabel: Int? = null,
-): ChartSeries? {
-    val points = detail.nightLines[typeName] ?: return null
-    val spec = RecordRegistry.specOrNull(typeName) ?: return null
+private fun nightSeries(detail: SessionDetail, line: NightLine): ChartSeries? {
+    val points = detail.nightLines[line.typeName] ?: return null
+    val spec = RecordRegistry.specOrNull(line.typeName) ?: return null
     return ChartSeries(
-        key = key,
-        label = stringResource(shortLabel ?: spec.displayNameRes),
-        // A reading a minute zigzags across a whole night; slice medians keep its shape, as for
-        // a ride's speed. Dots are left as recorded.
-        points = if (dots) points else profileOf(points),
-        color = color,
-        unitKey = typeName,
-        minSpan = minSpan,
+        key = line.key,
+        label = stringResource(line.shortLabel ?: spec.displayNameRes),
+        points = line.shown(points),
+        color = line.color(),
+        unitKey = line.typeName,
+        minSpan = line.minSpan,
         unitRes = spec.displayUnitRes,
         integral = spec.tile.integralValues,
-        maxGap = if (dots) null else LINE_GAP,
-        dots = dots,
+        maxGap = if (line.dots) null else LINE_GAP,
+        dots = line.dots,
     )
 }
 

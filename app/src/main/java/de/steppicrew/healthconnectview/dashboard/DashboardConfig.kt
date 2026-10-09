@@ -60,6 +60,11 @@ data class Tile(
      * apart at a glance. Stored without Pro like the size, and drawn only with it.
      */
     val color: TileColor = TileColor.DEFAULT,
+    /**
+     * A second curve a large tile draws with its own, by type name: a night's heart rate over
+     * its stages. Only what [companionsOf] offers for the type; stored whatever the size.
+     */
+    val companion: String? = null,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -163,8 +168,8 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     )
 
     /** Sets one tile's window and face. */
-    fun withOptions(id: String, span: Span, face: TileFace): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.id == id) it.copy(span = span, face = face) else it },
+    fun withOptions(id: String, span: Span, face: TileFace, companion: String? = null): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.copy(span = span, face = face, companion = companion) else it },
     )
 
     /** Sets one tile's colour. */
@@ -209,4 +214,20 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
             ),
         )
     }
+}
+
+/**
+ * The curves a large tile of [typeName] may draw beside its own -- the owner's idea, 09.10.2026.
+ * Sleep only so far: a night's readings over its stages, which the phone holds every night.
+ * Weight's body composition is the combined weight tile, step 64 of the roadmap. Elsewhere the
+ * tile already has its context (workouts behind heart rate) or draws bars a line would clash with.
+ */
+fun companionsOf(typeName: String): List<String> = when (typeName) {
+    "SleepSessionRecord" -> listOf(
+        "HeartRateRecord",
+        "RespiratoryRateRecord",
+        "OxygenSaturationRecord",
+        "HeartRateVariabilityRmssdRecord",
+    )
+    else -> emptyList()
 }
