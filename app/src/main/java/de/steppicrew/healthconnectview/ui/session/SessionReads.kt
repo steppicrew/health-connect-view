@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.records.BasalMetabolicRateRecord
 import androidx.health.connect.client.records.ExerciseRouteResult
 import androidx.health.connect.client.records.SpeedRecord
@@ -70,54 +71,91 @@ const val GPX_MIME = "application/gpx+xml"
 suspend fun HealthRepository.statisticsFor(
     session: Session,
     breaks: List<Break> = emptyList(),
+    /** The session's heart rate as [heartRateDuring] read it, if the caller has it. */
+    heartRate: List<Point>? = null,
 ): List<SessionStat> = coroutineScope {
     val pieces = activePieces(session.start, session.end, breaks)
     val granted = grantedPermissions()
-    val gate = Semaphore(MAX_CONCURRENT_READS)
-
-    RecordRegistry.all
+    val heartSpec = heartRateSpec()
+    val heartStat = heartSpec?.let { spec -> heartRate?.let { heartRateStat(spec, it, pieces) } }
+    val specs = RecordRegistry.all
         .filter { it.permission in granted && it.aggregate != null && it.isChartable }
+        // Taken from the readings already read for the curve, where there are any: Health
+        // Connect took 1.4 s to aggregate a 53-minute workout's heart rate, every other type
+        // well under a third of that.
+        .filter { heartStat == null || it.type != heartSpec.type }
         // Derived from height and weight, not measured during anything: a workout's "157
         // kcal/day" basal rate on the phone was a figure about the person, not the ride.
         .filter { it.type != BasalMetabolicRateRecord::class }
-        .map { spec ->
-            async {
-                gate.withPermit {
-                    val metric = spec.aggregate ?: return@withPermit null
-                    // In the same request as the mean, so all three come from one
-                    // deduplication of the same records.
-                    val range = spec.rangeAggregates
-                    val metrics = setOfNotNull(metric, range?.first, range?.second)
-                    val perPiece = try {
-                        pieces.map { (from, to) ->
-                            totals(metrics, TimeRangeFilter.between(from, to)) to Duration.between(from, to)
-                        }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
-                        return@withPermit null
-                    }
-                    val value = combinePieces(
-                        perPiece.mapNotNull { (values, length) -> values[metric]?.let { it to length } },
-                        averaged = spec.isAveraged,
-                    ) ?: return@withPermit null
-                    SessionStat(
-                        spec = spec,
-                        // A counted total in whole units. A writer's whole-day record is shared
-                        // out by time, so the window held "3,24 floors" on the phone -- a
-                        // fraction nobody climbed.
-                        value = if (spec.tile.integralValues && !spec.isAveraged) Math.round(value).toDouble() else value,
-                        // A ride's slowest moment is a near-stop on every ride (0,21 km/h on the
-                        // phone), so speed shows its top alone.
-                        low = range?.takeIf { spec.type != SpeedRecord::class }
-                            ?.let { (low, _) -> perPiece.mapNotNull { it.first[low] }.minOrNull() },
-                        high = range?.let { (_, high) -> perPiece.mapNotNull { it.first[high] }.maxOrNull() },
-                    )
+    // In the same request as the mean, so all three come from one deduplication of the same
+    // records.
+    val metricsOf = specs.associateWith { spec ->
+        setOfNotNull(spec.aggregate, spec.rangeAggregates?.first, spec.rangeAggregates?.second)
+    }
+
+    // Every type's metrics in one request per piece: asked type by type, about thirty types
+    // over a few pieces made a hundred requests and 2.4 s on the phone. One type the platform
+    // refuses fails such a request whole, so then each type is asked alone again.
+    val together = try {
+        pieces.map { (from, to) -> totals(metricsOf.values.flatten().toSet(), TimeRangeFilter.between(from, to)) }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
+    }
+    val gate = Semaphore(MAX_CONCURRENT_READS)
+    specs.map { spec ->
+        async {
+            val metrics = metricsOf.getValue(spec)
+            val values = together?.map { all -> all.filterKeys { it in metrics } } ?: gate.withPermit {
+                try {
+                    pieces.map { (from, to) -> totals(metrics, TimeRangeFilter.between(from, to)) }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    null
                 }
-            }
+            } ?: return@async null
+            statOf(spec, values.zip(pieces.map { (from, to) -> Duration.between(from, to) }))
         }
+    }
         .awaitAll()
         .filterNotNull()
+        // In the registry's order, as the others come, rather than heart rate last.
+        .let { stats -> if (heartStat == null) stats else (stats + heartStat).sortedBy { RecordRegistry.all.indexOf(it.spec) } }
+}
+
+/**
+ * Heart rate's mean, lowest and highest from one writer's readings within [pieces]: the
+ * figures the aggregate gives, from the readings the curve draws. Safe where a total would
+ * not be -- one writer cannot overlap itself, and a mean or a peak is no sum. The mean is of
+ * the readings, as the platform's is. Null where no reading falls within a piece.
+ */
+internal fun heartRateStat(spec: RecordTypeSpec<*>, points: List<Point>, pieces: List<Pair<Instant, Instant>>): SessionStat? {
+    val values = points.filter { p -> pieces.any { (from, to) -> p.time >= from && p.time < to } }.map { it.value }
+    if (values.isEmpty()) return null
+    return SessionStat(spec, values.average(), low = values.min(), high = values.max())
+}
+
+/** One type's figure from its totals over each piece of a session, with each piece's length. */
+private fun statOf(spec: RecordTypeSpec<*>, perPiece: List<Pair<Map<AggregateMetric<*>, Double>, Duration>>): SessionStat? {
+    val metric = spec.aggregate ?: return null
+    val range = spec.rangeAggregates
+    val value = combinePieces(
+        perPiece.mapNotNull { (values, length) -> values[metric]?.let { it to length } },
+        averaged = spec.isAveraged,
+    ) ?: return null
+    return SessionStat(
+        spec = spec,
+        // A counted total in whole units. A writer's whole-day record is shared out by time,
+        // so the window held "3,24 floors" on the phone -- a fraction nobody climbed.
+        value = if (spec.tile.integralValues && !spec.isAveraged) Math.round(value).toDouble() else value,
+        // A ride's slowest moment is a near-stop on every ride (0,21 km/h on the phone), so
+        // speed shows its top alone.
+        low = range?.takeIf { spec.type != SpeedRecord::class }
+            ?.let { (low, _) -> perPiece.mapNotNull { it.first[low] }.minOrNull() },
+        high = range?.let { (_, high) -> perPiece.mapNotNull { it.first[high] }.maxOrNull() },
+    )
 }
 
 
