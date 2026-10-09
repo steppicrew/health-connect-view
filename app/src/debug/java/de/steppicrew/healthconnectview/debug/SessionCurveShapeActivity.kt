@@ -111,6 +111,32 @@ class SessionCurveShapeActivity : ComponentActivity() {
                     logLongGaps(session.startTime, times)
                 }
 
+                // After the end, for heart-rate recovery: samples per minute in the first
+                // minutes, per writer, and the gap from the last sample inside to the first
+                // after. Counts and seconds only.
+                val after = runCatching {
+                    repository.read(
+                        HeartRateRecord::class,
+                        TimeRangeFilter.between(session.endTime.minus(AFTER_LEAD), session.endTime.plus(AFTER_SPAN)),
+                    )
+                }.getOrDefault(emptyList())
+                after.groupBy { it.metadata.dataOrigin.packageName }.forEach { (app, group) ->
+                    val times = group.flatMap { record -> record.samples.map { it.time } }.distinct().sorted()
+                    val perMinute = (0 until AFTER_SPAN.toMinutes().toInt()).map { minute ->
+                        val from = session.endTime.plus(Duration.ofMinutes(minute.toLong()))
+                        times.count { it >= from && it < from.plus(Duration.ofMinutes(1)) }
+                    }
+                    val lastIn = times.lastOrNull { it <= session.endTime }
+                    val firstOut = times.firstOrNull { it > session.endTime }
+                    Log.i(
+                        TAG,
+                        "  after writer=$app perMinute=$perMinute " +
+                            "lastInsideBeforeEnd=${lastIn?.let { Duration.between(it, session.endTime).seconds }}s " +
+                            "firstAfterEnd=${firstOut?.let { Duration.between(session.endTime, it).seconds }}s " +
+                            "recordsSpanningEnd=${group.count { it.startTime < session.endTime && it.endTime > session.endTime }}",
+                    )
+                }
+
                 // The other per-session series, by when they were written: a break shows as a
                 // stretch with no records, whatever the readings were.
                 listOf<Pair<KClass<out Record>, (Record) -> List<Instant>>>(
@@ -166,5 +192,7 @@ class SessionCurveShapeActivity : ComponentActivity() {
     private companion object {
         const val TAG = "SessionCurve"
         val LONG_GAP: Duration = Duration.ofMinutes(5)
+        val AFTER_LEAD: Duration = Duration.ofMinutes(1)
+        val AFTER_SPAN: Duration = Duration.ofMinutes(5)
     }
 }
