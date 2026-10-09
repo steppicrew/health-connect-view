@@ -450,6 +450,7 @@
     <string name="session_break">Pause</string>
     <string name="session_breaks_note">Die Zeit in Bewegung lässt jeden Halt ohne Geschwindigkeits- oder Distanzwerte aus. Halte von mehr als fünf Minuten sind als Pause aufgeführt, in den Werten oben nicht enthalten und in der Herzfrequenzkurve hinterlegt.</string>
     <string name="session_break_legend">Pause: keine Geschwindigkeit oder Distanz aufgezeichnet</string>
+    <string name="chart_line_axis">Ihre Skala wird angezeigt</string>
     <string name="session_gone">Diese Sitzung ist nicht mehr auffindbar.</string>
     <string name="session_laps">Runden</string>
     <string name="session_lap">Runde %1$d</string>

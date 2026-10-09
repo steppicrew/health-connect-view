@@ -478,6 +478,7 @@
     <string name="session_break">Перерыв</string>
     <string name="session_breaks_note">Время в движении не включает остановки без данных о скорости и расстоянии. Остановки дольше пяти минут указаны как перерывы, не учитываются в значениях выше и затенены на графике пульса.</string>
     <string name="session_break_legend">Перерыв: скорость и расстояние не записаны</string>
+    <string name="chart_line_axis">Показана её шкала</string>
     <string name="session_gone">Этот сеанс больше не найден.</string>
     <string name="session_laps">Круги</string>
     <string name="session_lap">Круг %1$d</string>

@@ -456,6 +456,7 @@
     <string name="session_break">Pauze</string>
     <string name="session_breaks_note">De tijd in beweging laat elke stop zonder snelheids- of afstandsgegevens weg. Stops van meer dan vijf minuten staan als pauze vermeld, tellen niet mee in de waarden hierboven en zijn gemarkeerd in de hartslaggrafiek.</string>
     <string name="session_break_legend">Pauze: geen snelheid of afstand vastgelegd</string>
+    <string name="chart_line_axis">De schaal hiervan wordt getoond</string>
     <string name="session_gone">Deze sessie is niet meer te vinden.</string>
     <string name="session_laps">Ronden</string>
     <string name="session_lap">Ronde %1$d</string>
