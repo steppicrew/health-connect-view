@@ -14,7 +14,7 @@ import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.movementDuring
-import de.steppicrew.healthconnectview.ui.components.NightLine
+import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.sessionById
@@ -138,7 +138,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             if (session.kind != Session.Kind.SLEEP) {
                 emptyMap()
             } else {
-                NightLine.entries.filter { it != NightLine.HEART_RATE }
+                SessionLine.entries.filter { it != SessionLine.HEART_RATE }
                     .mapNotNull { line -> repository.readingsDuring(session, line.typeName)?.let { line.typeName to it } }
                     .toMap()
             }

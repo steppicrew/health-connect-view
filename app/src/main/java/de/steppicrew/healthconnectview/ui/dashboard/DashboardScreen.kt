@@ -128,8 +128,9 @@ import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.colorOf
 import de.steppicrew.healthconnectview.ui.components.StageTotals
 import de.steppicrew.healthconnectview.ui.components.StripSegment
-import de.steppicrew.healthconnectview.ui.components.NightLine
+import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.counted
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.rememberAppIcon
@@ -1053,31 +1054,14 @@ private fun TileChart(
     modifier: Modifier,
     compactAxis: Boolean = false,
     /** The tile's second curve and its readings; see [Tile.companion]. */
-    companion: Pair<NightLine, List<Point>>? = null,
+    companion: Pair<SessionLine, List<Pair<Session, List<Point>>>>? = null,
 ) {
     val extent = chart.extent
     // A day of sleep is last night, and a night with stages is drawn as them: the owner's
     // idea, 09.10.2026. A band from 23:02 to 05:15 says when; the stages say how.
     val night = chart.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
-    if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null && companion != null) {
-        // The chosen reading through the night, the stages along its bottom: how the two go
-        // together, the owner's request. Drawn as on the night's own screen.
-        val (line, points) = companion
-        val spec = RecordRegistry.specOrNull(line.typeName)
-        LineChart(
-            points = line.shown(points),
-            unitRes = spec?.displayUnitRes,
-            integral = spec?.tile?.integralValues ?: false,
-            minSpan = line.minSpan,
-            lineColorOverride = line.color(),
-            dottedLine = line.dots,
-            strip = night.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
-            extent = night.start..night.end,
-            interactive = false,
-            fillHeight = true,
-            compactAxis = compactAxis,
-            modifier = modifier,
-        )
+    if (companion != null && extent != null) {
+        CompanionCurves(companion.first, companion.second, compactAxis, modifier)
     } else if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
         Hypnogram(
             stages = night.stages,
@@ -1477,12 +1461,67 @@ private sealed interface GridEntry {
     }
 }
 
-/** The tile's second curve with its readings, where one is chosen and was read. */
-private fun TileData.companion(): Pair<NightLine, List<Point>>? {
-    val line = NightLine.of(tile.companion) ?: return null
-    val points = companionPoints?.takeIf { it.size > 1 } ?: return null
-    return line to points
+/** The tile's chosen curve with the sessions it was read over, where one is chosen and was read. */
+private fun TileData.companion(): Pair<SessionLine, List<Pair<Session, List<Point>>>>? {
+    val line = SessionLine.of(tile.companion) ?: return null
+    val curves = companionCurves.filter { (_, points) -> points.size > 1 }.ifEmpty { return null }
+    return line to curves
+}
+
+/**
+ * The chosen reading over each of the day's last sessions, each across its own span: how the
+ * two go together, the owner's request. A night's stages run along the bottom, as on its own
+ * screen; a workout's breaks are shaded, and above it its icon and times say which one it is
+ * -- the timeline it replaces said that by where the band sat.
+ */
+@Composable
+private fun CompanionCurves(
+    line: SessionLine,
+    curves: List<Pair<Session, List<Point>>>,
+    compactAxis: Boolean,
+    modifier: Modifier,
+) {
+    val spec = RecordRegistry.specOrNull(line.typeName)
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        curves.forEach { (session, points) ->
+            if (session.kind != Session.Kind.SLEEP) {
+                // One line that cannot wrap: the icon rule for wrapping text does not apply.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = iconFor(session),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(COMPANION_ICON_SIZE.dp),
+                    )
+                    Text(
+                        text = Formatting.time(session.start) + "–" + Formatting.time(session.end) + " · " + Formatting.duration(session.counted),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        modifier = Modifier.padding(start = 4.dp),
+                    )
+                }
+            }
+            LineChart(
+                points = line.shown(points),
+                unitRes = spec?.displayUnitRes,
+                integral = spec?.tile?.integralValues ?: false,
+                minSpan = line.minSpan,
+                lineColorOverride = line.color(),
+                dottedLine = line.dots,
+                strip = session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
+                breaks = session.breaks.map { it.start..it.end },
+                extent = session.start..session.end,
+                interactive = false,
+                fillHeight = true,
+                compactAxis = compactAxis,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+        }
+    }
 }
 
 /** Where a sleep tile lists the time in each stage beside its hours, if anywhere. */
 private enum class StageTotalsAt { NONE, ROW, COLUMN }
+
+private const val COMPANION_ICON_SIZE = 14
