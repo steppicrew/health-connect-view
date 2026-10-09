@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -201,6 +203,18 @@ fun TileDetailScreen(
     // open the requested session again at once, trapping the screen in a loop.
     var opened by rememberSaveable { mutableStateOf(false) }
     var openRecord by rememberSaveable { mutableStateOf<String?>(null) }
+    // Held here rather than by the list, which leaves the composition while a window loads:
+    // coming back from a workout must land where it was left, not at the top.
+    val listState = rememberLazyListState()
+    val offset by viewModel.offset.collectAsStateWithLifecycle()
+    // Another window is another page, so it opens at the top; a return to the same one does
+    // not. Saved like the list's position, so a restored screen does not count as a change.
+    var listWindow by rememberSaveable { mutableStateOf("") }
+    val window = "${span.name}/$offset"
+    LaunchedEffect(window) {
+        if (listWindow.isNotEmpty() && listWindow != window) listState.scrollToItem(0)
+        listWindow = window
+    }
     LaunchedEffect(state, requested) {
         if (requested.isEmpty() || opened) return@LaunchedEffect
         val sessions = (state as? UiState.Data)?.value?.sessions ?: return@LaunchedEffect
@@ -211,7 +225,6 @@ fun TileDetailScreen(
         }
     }
 
-    val offset by viewModel.offset.collectAsStateWithLifecycle()
     val progress by viewModel.progress.collectAsStateWithLifecycle()
     val emptyRecord by viewModel.emptyRecord.collectAsStateWithLifecycle()
     val latestBefore by viewModel.latestBefore.collectAsStateWithLifecycle()
@@ -347,6 +360,7 @@ fun TileDetailScreen(
                     )
 
                     is UiState.Data -> SpanContent(
+                        listState = listState,
                         data = current.value,
                         period = windowLabel(span, offset),
                         onSelectSource = viewModel::selectSource,
@@ -365,6 +379,7 @@ fun TileDetailScreen(
 
 @Composable
 private fun SpanContent(
+    listState: LazyListState,
     data: TileDetailData,
     period: String,
     onSelectSource: (String?) -> Unit,
@@ -373,7 +388,7 @@ private fun SpanContent(
     onVisibleRange: (ClosedRange<Instant>?) -> Unit,
     onOpenRecord: (String) -> Unit,
 ) {
-    LazyColumn {
+    LazyColumn(state = listState) {
         item(key = "summary") { SpanSummary(data, period, onSelectSource, onOpenSession, onVisibleRange) }
 
         // A session type's own screen: the sessions are the content, not context behind a

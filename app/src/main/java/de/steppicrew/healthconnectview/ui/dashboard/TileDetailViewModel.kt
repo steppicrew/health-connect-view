@@ -552,6 +552,10 @@ class TileDetailViewModel(
      * unparseable value simply opens on today.
      */
     fun load(typeName: String, date: String = "", span: String = "") {
+        // Back from a workout or a record re-runs the screen's effect with the same route. The
+        // window and its data are still here; reading them again blanked the list to a
+        // spinner and threw the scroll position away with it.
+        if (typeName == this.typeName && _state.value is UiState.Data) return
         if (typeName != this.typeName) {
             coverageJob?.cancel()
             _coverage.value = null
