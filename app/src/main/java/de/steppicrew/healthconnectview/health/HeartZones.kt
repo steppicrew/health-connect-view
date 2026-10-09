@@ -66,9 +66,12 @@ fun zoneOf(bpm: Double, max: Int): Int? {
     return (ZONE_SHARES.indexOfLast { share >= it }).coerceAtMost(ZONES - 1)
 }
 
-/** Each zone's minutes times its number, added up. */
+/**
+ * Each zone's whole minutes times its number, added up. Whole minutes, as the zone rows show
+ * them, so the sum written out under the load adds up to it exactly.
+ */
 fun loadOf(times: List<Duration>): Int =
-    times.withIndex().sumOf { (index, time) -> time.toMillis() / MILLIS_PER_MINUTE * (index + 1) }.roundToInt()
+    times.withIndex().sumOf { (index, time) -> time.toMinutes() * (index + 1) }.toInt()
 
 /**
  * The maximum heart rate the data shows: the third-highest monthly maximum of the past year,
@@ -105,7 +108,6 @@ private object ObservedMax {
 
 private val ZONE_SHARES = listOf(0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
 private const val ZONES = 5
-private const val MILLIS_PER_MINUTE = 60_000.0
 
 /** Monthly maxima passed over as possible spikes; see [observedMaxHeartRate]. */
 private const val SPIKE_MONTHS = 2
