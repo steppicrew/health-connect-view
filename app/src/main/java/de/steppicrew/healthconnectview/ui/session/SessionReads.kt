@@ -198,6 +198,30 @@ suspend fun HealthRepository.speedDuring(session: Session): List<Point>? {
     ).map { Point(it.time, it.value / MS_TO_KMH) }.takeIf { it.size > 1 }
 }
 
+/**
+ * One type's readings through a session's window, from the writer covering most of it, or null
+ * where it is not granted or fewer than two were taken. For the lines beside heart rate through
+ * a night: measured on the phone, every recent night held breath rate and oxygen once a minute
+ * and HRV every five, all from one writer. One writer's, for the reason [heartRateDuring] gives.
+ */
+suspend fun HealthRepository.readingsDuring(session: Session, typeName: String): List<Point>? {
+    val spec = RecordRegistry.specOrNull(typeName) ?: return null
+    if (spec.permission !in grantedPermissions()) return null
+    val records = try {
+        readForChart(spec.type, TimeRangeFilter.between(session.start, session.end))
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        emptyList()
+    }
+    return fullestWriter(
+        records.groupBy { spec.originOf(it) }
+            .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) } },
+        session.start,
+        session.end,
+    ).takeIf { it.size > 1 }
+}
+
 private const val SPEED = "SpeedRecord"
 private const val MS_TO_KMH = 3.6
 

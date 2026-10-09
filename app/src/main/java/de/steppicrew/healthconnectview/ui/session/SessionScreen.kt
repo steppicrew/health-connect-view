@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.session
 
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -62,6 +63,12 @@ import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.ChartSeries
+import de.steppicrew.healthconnectview.ui.components.StripSegment
+import de.steppicrew.healthconnectview.ui.components.colorOf
+import de.steppicrew.healthconnectview.ui.components.labelOf
+import de.steppicrew.healthconnectview.health.StageKind
+import de.steppicrew.healthconnectview.registry.RecordRegistry
+import androidx.compose.ui.graphics.Color
 import de.steppicrew.healthconnectview.ui.components.MultiLineChart
 import de.steppicrew.healthconnectview.ui.components.SeriesColors
 import de.steppicrew.healthconnectview.ui.components.LoadingView
@@ -274,6 +281,16 @@ private fun HeartRate(detail: SessionDetail) {
                     zones = detail.heartRateZones,
                     maxGap = LINE_GAP,
                 ),
+                // A night's own lines beside heart rate, as chips; colours follow the measurement.
+                nightSeries(detail, "RespiratoryRateRecord", LINE_BREATH, SeriesColors.aqua(), minSpan = BREATH_MIN_SPAN),
+                nightSeries(
+                    detail, "OxygenSaturationRecord", LINE_OXYGEN, SeriesColors.blue(),
+                    minSpan = OXYGEN_MIN_SPAN, shortLabel = R.string.chart_short_oxygen,
+                ),
+                nightSeries(
+                    detail, "HeartRateVariabilityRmssdRecord", LINE_HRV, SeriesColors.violet(),
+                    dots = true, shortLabel = R.string.chart_short_hrv,
+                ),
                 detail.speed?.let { speed ->
                     ChartSeries(
                         key = LINE_SPEED,
@@ -288,15 +305,24 @@ private fun HeartRate(detail: SessionDetail) {
                     )
                 },
             )
+            val stageNames = StageKind.entries.associateWith { stringResource(labelOf(it)) }
             ExpandableChart(
                 title = periodLabel(detail.session.start, detail.session.end) + " · " + sessionName(detail.session),
             ) { expanded, onExpand ->
                 MultiLineChart(
-                    chartId = "session_exercise",
+                    chartId = "session_" + detail.session.kind.name.lowercase(),
                     series = series,
                     defaultShown = listOf(LINE_HEART_RATE),
                     extent = detail.session.start..detail.session.end,
                     breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
+                    // A night's stages along the bottom, so a rise in heart rate can be laid
+                    // against the REM it fell in.
+                    strip = detail.session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
+                    stripLabel = if (detail.session.stages.isEmpty()) {
+                        null
+                    } else {
+                        { time -> detail.session.stages.firstOrNull { time >= it.start && time < it.end }?.let { stageNames[it.kind] } }
+                    },
                     fillHeight = expanded,
                     onExpand = onExpand,
                     holdSelection = expanded,
@@ -508,6 +534,43 @@ private const val HEADER_ICON = 28
 /** Keys the remembered choice of lines by; see ChartLinesStore. */
 private const val LINE_HEART_RATE = "heart_rate"
 private const val LINE_SPEED = "speed"
+private const val LINE_BREATH = "breath"
+private const val LINE_OXYGEN = "oxygen"
+private const val LINE_HRV = "hrv"
+
+/** Floors on a night line's own scale, so a normal night does not fill the height. */
+private const val BREATH_MIN_SPAN = 8.0
+private const val OXYGEN_MIN_SPAN = 10.0
+
+/** One of a night's readings as a chart line, named and measured as its type is; null where none. */
+@Composable
+private fun nightSeries(
+    detail: SessionDetail,
+    typeName: String,
+    key: String,
+    color: Color,
+    dots: Boolean = false,
+    minSpan: Double? = null,
+    /** A chip's name where the type's own runs to "Herzfrequenzvariabilität" and wraps the row. */
+    @StringRes shortLabel: Int? = null,
+): ChartSeries? {
+    val points = detail.nightLines[typeName] ?: return null
+    val spec = RecordRegistry.specOrNull(typeName) ?: return null
+    return ChartSeries(
+        key = key,
+        label = stringResource(shortLabel ?: spec.displayNameRes),
+        // A reading a minute zigzags across a whole night; slice medians keep its shape, as for
+        // a ride's speed. Dots are left as recorded.
+        points = if (dots) points else profileOf(points),
+        color = color,
+        unitKey = typeName,
+        minSpan = minSpan,
+        unitRes = spec.displayUnitRes,
+        integral = spec.tile.integralValues,
+        maxGap = if (dots) null else LINE_GAP,
+        dots = dots,
+    )
+}
 
 /** A line is broken where its readings stop for longer: a watch out of range, not a value. */
 private val LINE_GAP: Duration = Duration.ofMinutes(5)

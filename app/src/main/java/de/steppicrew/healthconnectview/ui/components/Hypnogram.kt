@@ -96,7 +96,7 @@ fun Hypnogram(stages: List<SleepStage>, start: Instant, end: Instant, modifier: 
     }
 }
 
-private fun labelOf(kind: StageKind): Int = when (kind) {
+internal fun labelOf(kind: StageKind): Int = when (kind) {
     StageKind.AWAKE -> R.string.stage_awake
     StageKind.REM -> R.string.stage_rem
     StageKind.LIGHT -> R.string.stage_light
@@ -109,7 +109,7 @@ private fun labelOf(kind: StageKind): Int = when (kind) {
  * shade of the wallpaper, and deep sleep and REM in two near-identical teals would be one stage
  * to the eye. Blues deepen with depth; REM and waking stand apart from them.
  */
-private fun colorOf(kind: StageKind): Color = when (kind) {
+internal fun colorOf(kind: StageKind): Color = when (kind) {
     StageKind.AWAKE -> Color(0xFFF08A4B)
     StageKind.REM -> Color(0xFFB57EDC)
     StageKind.LIGHT -> Color(0xFF5B9BE6)

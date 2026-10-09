@@ -468,6 +468,7 @@
     <string name="session_breaks_note">El tiempo en movimiento excluye cada parada sin datos de velocidad ni de distancia. Las paradas de más de cinco minutos aparecen como pausas, no cuentan en las cifras de arriba y se sombrean en el gráfico de frecuencia cardíaca.</string>
     <string name="session_break_legend">Pausa: sin datos de velocidad ni de distancia</string>
     <string name="chart_line_axis">Se muestra su escala</string>
+    <string name="chart_short_hrv">VFC</string>
     <string name="session_gone">Ya no se encuentra esta sesión.</string>
     <string name="session_laps">Vueltas</string>
     <string name="session_lap">Vuelta %1$d</string>

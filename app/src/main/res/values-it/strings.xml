@@ -468,6 +468,7 @@
     <string name="session_breaks_note">Il tempo in movimento esclude ogni sosta senza dati di velocità o distanza. Le soste di oltre cinque minuti sono elencate come pause, escluse dai valori qui sopra ed evidenziate nel grafico della frequenza cardiaca.</string>
     <string name="session_break_legend">Pausa: nessun dato di velocità o distanza</string>
     <string name="chart_line_axis">La sua scala è mostrata</string>
+    <string name="chart_short_hrv">HRV</string>
     <string name="session_gone">Questa sessione non è più disponibile.</string>
     <string name="session_laps">Giri</string>
     <string name="session_lap">Giro %1$d</string>
