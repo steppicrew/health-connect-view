@@ -437,6 +437,7 @@
     <string name="session_sleep">Tidur</string>
     <string name="session_untitled">Aktivitas</string>
     <string name="session_no_stats">Tidak ada lagi yang dicatat selama sesi ini.</string>
+    <string name="session_stat_range">min. %1$s · maks. %2$s</string>
     <string name="session_gone">Sesi ini tidak ditemukan lagi.</string>
     <string name="session_laps">Putaran</string>
     <string name="session_lap">Putaran %1$d</string>

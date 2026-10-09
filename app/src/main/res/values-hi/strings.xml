@@ -448,6 +448,7 @@
     <string name="session_sleep">नींद</string>
     <string name="session_untitled">गतिविधि</string>
     <string name="session_no_stats">इस सेशन के दौरान और कुछ रिकॉर्ड नहीं हुआ।</string>
+    <string name="session_stat_range">न्यूनतम %1$s · अधिकतम %2$s</string>
     <string name="session_gone">यह सेशन अब नहीं मिल रहा।</string>
     <string name="session_laps">लैप</string>
     <string name="session_lap">लैप %1$d</string>

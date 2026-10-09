@@ -394,11 +394,26 @@ private fun Stats(stats: List<SessionStat>) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f),
             )
-            Text(
-                text = Formatting.number(stat.value) +
-                    (stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                val unit = stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""
+                Text(
+                    text = Formatting.number(stat.value) + unit,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                // The spread under the mean: an average heart rate says little about a
+                // session without its peak.
+                if (stat.low != null && stat.high != null) {
+                    Text(
+                        text = stringResource(
+                            R.string.session_stat_range,
+                            Formatting.number(stat.low),
+                            Formatting.number(stat.high) + unit,
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }

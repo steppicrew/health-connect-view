@@ -437,6 +437,7 @@
     <string name="session_sleep">睡眠</string>
     <string name="session_untitled">活动</string>
     <string name="session_no_stats">此次活动期间没有记录其他内容。</string>
+    <string name="session_stat_range">最低 %1$s · 最高 %2$s</string>
     <string name="session_gone">找不到此次活动。</string>
     <string name="session_laps">圈</string>
     <string name="session_lap">第 %1$d 圈</string>
