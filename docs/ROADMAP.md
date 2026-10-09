@@ -537,6 +537,17 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     the workouts screen shows sessions per day; add each day's moving time as a faint bar on a
     second scale. Built with step 54, which brings the second scale.
 
+Before the next release, from the owner, 09.10.2026:
+
+66. [ ] **Store screenshots of Pro** -- large and coloured tiles (a night's stages with a curve,
+    workouts with their curves, a week as a chart), from seeded data like every other
+    screenshot, added to `store-assets.sh`'s routes.
+67. [ ] **Pro described as it is now** -- the in-app text (`pro_body`, `pro_owned_body`) and
+    the store listing in every language: second curves on tiles, stage times, several lines
+    per chart are new since they were written.
+68. [ ] **"What's new" after an update with new features** -- shown once per version that has
+    an entry, from the same texts as the release notes, dismissed for good.
+
 Also from the owner, 09.10.2026, done the same day:
 
 - [x] **Back returns to the day it left** -- the event log showed the app killed while in the
