@@ -660,7 +660,7 @@ class DashboardViewModel(
         val capped = tile.span.needsHistoryPermission(offset) && !historyGranted
         val reads = Reads()
         val chart = reads.attempt {
-            TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source)
+            TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source, withStreak = false)
         }
 
         // The chosen readings over the day's last sessions: last night, read over the night
