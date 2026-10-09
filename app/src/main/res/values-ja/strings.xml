@@ -390,6 +390,7 @@
     <string name="span_previous">前へ</string>
     <string name="span_next">次へ</string>
     <string name="span_now">現在の期間に移動</string>
+    <string name="date_pick">日付を選択</string>
     <string name="span_total">合計</string>
     <string name="span_daily_value">その日の値</string>
     <string name="legend_rolling_mean">4 週間平均</string>

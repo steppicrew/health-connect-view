@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -70,7 +75,24 @@ fun WindowStepper(
     onForward: () -> Unit,
     /** Straight back to the window holding today, from however far back. */
     onNow: () -> Unit,
+    /**
+     * A day in the window shown, and where to go when another is picked from the calendar
+     * that tapping the label opens. Null leaves the label plain.
+     */
+    shownDate: LocalDate? = null,
+    onPickDate: ((LocalDate) -> Unit)? = null,
 ) {
+    var picking by remember { mutableStateOf(false) }
+    if (picking && shownDate != null && onPickDate != null) {
+        DayPickerDialog(
+            initial = shownDate,
+            onDismiss = { picking = false },
+            onPicked = {
+                picking = false
+                onPickDate(it)
+            },
+        )
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,7 +109,15 @@ fun WindowStepper(
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .then(
+                    if (onPickDate != null && shownDate != null) {
+                        Modifier.clickable(onClickLabel = stringResource(R.string.date_pick)) { picking = true }
+                    } else {
+                        Modifier
+                    },
+                ),
             textAlign = TextAlign.Center,
         )
         IconButton(onClick = onForward, enabled = canStepForward) {

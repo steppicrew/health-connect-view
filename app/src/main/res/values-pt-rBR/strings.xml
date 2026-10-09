@@ -408,6 +408,7 @@
     <string name="span_previous">Antes</string>
     <string name="span_next">Depois</string>
     <string name="span_now">Ir para o período atual</string>
+    <string name="date_pick">Escolher um dia</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valor do dia</string>
     <string name="legend_rolling_mean">Média de 4 semanas</string>

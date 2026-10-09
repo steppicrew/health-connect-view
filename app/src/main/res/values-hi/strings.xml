@@ -399,6 +399,7 @@
     <string name="span_previous">पहले</string>
     <string name="span_next">बाद में</string>
     <string name="span_now">मौजूदा अवधि पर जाएँ</string>
+    <string name="date_pick">दिन चुनें</string>
     <string name="span_total">कुल</string>
     <string name="span_daily_value">दिन की वैल्यू</string>
     <string name="legend_rolling_mean">4 हफ़्ते का औसत</string>

@@ -399,6 +399,7 @@
     <string name="span_previous">Önceki</string>
     <string name="span_next">Sonraki</string>
     <string name="span_now">Güncel döneme git</string>
+    <string name="date_pick">Gün seç</string>
     <string name="span_total">Toplam</string>
     <string name="span_daily_value">Günün değeri</string>
     <string name="legend_rolling_mean">4 haftalık ortalama</string>

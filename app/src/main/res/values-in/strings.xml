@@ -390,6 +390,7 @@
     <string name="span_previous">Sebelumnya</string>
     <string name="span_next">Berikutnya</string>
     <string name="span_now">Ke periode saat ini</string>
+    <string name="date_pick">Pilih hari</string>
     <string name="span_total">Total</string>
     <string name="span_daily_value">Nilai hari itu</string>
     <string name="legend_rolling_mean">Rata-rata 4 minggu</string>
