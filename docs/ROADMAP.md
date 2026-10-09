@@ -551,6 +551,14 @@ Also from the owner, 09.10.2026, done the same day:
 - [x] **Session statistics cleaned up**, seen on the phone for 18.09: speed shows its maximum
   only (its minimum was 0,21 km/h), the basal rate is gone (a figure about the person, shown as
   "157 kcal/day"), and counted totals are whole ("3,24 Etagen" was a day record shared out).
+- [x] **A second curve over the stages on a large sleep tile**, chosen in the tile's options
+  ("Kurve dazu"): heart rate, breath rate, SpO2 or HRV, drawn as on the night's screen. Checked
+  where else it fits: weight goes with body water and bone mass (step 64), heart rate already
+  draws its resting value; steps, calories and workouts are totals per day with nothing to set
+  beside them on a tile. Choosing it needs a tap, so not tried from the host.
+- [x] **HRV drawn alike everywhere**: dots joined by faint dashes, whether or not it owns the
+  axis. The ↕ on a chip is explained under the chips while it shows.
+- [x] **A chevron opens a workout's details**, not the "i", which read as a description.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
