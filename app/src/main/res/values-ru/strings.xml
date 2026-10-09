@@ -472,10 +472,12 @@
     <string name="session_untitled">Активность</string>
     <string name="session_no_stats">Во время этого сеанса больше ничего не записано.</string>
     <string name="session_stat_range">мин. %1$s · макс. %2$s</string>
+    <string name="session_stat_max">макс. %1$s</string>
     <string name="session_time_total">Общее время</string>
     <string name="session_time_moving">Время в движении</string>
     <string name="session_break">Перерыв</string>
     <string name="session_breaks_note">Время в движении не включает остановки без данных о скорости и расстоянии. Остановки дольше пяти минут указаны как перерывы, не учитываются в значениях выше и затенены на графике пульса.</string>
+    <string name="session_break_legend">Перерыв: скорость и расстояние не записаны</string>
     <string name="session_gone">Этот сеанс больше не найден.</string>
     <string name="session_laps">Круги</string>
     <string name="session_lap">Круг %1$d</string>

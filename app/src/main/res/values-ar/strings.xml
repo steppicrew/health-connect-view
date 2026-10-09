@@ -494,10 +494,12 @@
     <string name="session_untitled">نشاط</string>
     <string name="session_no_stats">لم يُسجَّل شيء آخر خلال هذه الجلسة.</string>
     <string name="session_stat_range">الأدنى %1$s · الأعلى %2$s</string>
+    <string name="session_stat_max">الأعلى %1$s</string>
     <string name="session_time_total">الوقت الإجمالي</string>
     <string name="session_time_moving">وقت الحركة</string>
     <string name="session_break">استراحة</string>
     <string name="session_breaks_note">لا يشمل وقت الحركة أي توقف بلا بيانات للسرعة أو المسافة. تُدرج التوقفات التي تزيد على خمس دقائق كاستراحات، ولا تدخل في القيم أعلاه، ويظللها مخطط نبض القلب.</string>
+    <string name="session_break_legend">استراحة: لم تُسجَّل سرعة ولا مسافة</string>
     <string name="session_gone">لم يعد بالإمكان العثور على هذه الجلسة.</string>
     <string name="session_laps">اللفّات</string>
     <string name="session_lap">اللفّة %1$d</string>

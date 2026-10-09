@@ -481,10 +481,12 @@
     <string name="session_untitled">Activity</string>
     <string name="session_no_stats">Nothing else was recorded during this session.</string>
     <string name="session_stat_range">min %1$s · max %2$s</string>
+    <string name="session_stat_max">max %1$s</string>
     <string name="session_time_total">Total time</string>
     <string name="session_time_moving">Time moving</string>
     <string name="session_break">Break</string>
     <string name="session_breaks_note">Time moving leaves out every stop without speed or distance readings. Stops of more than five minutes are listed as breaks, left out of the figures above and shaded on the heart-rate chart.</string>
+    <string name="session_break_legend">Break: no speed or distance recorded</string>
     <string name="session_gone">This session can no longer be found.</string>
     <string name="session_laps">Laps</string>
     <string name="session_lap">Lap %1$d</string>

@@ -439,10 +439,12 @@
     <string name="session_untitled">Aktivitas</string>
     <string name="session_no_stats">Tidak ada lagi yang dicatat selama sesi ini.</string>
     <string name="session_stat_range">min. %1$s · maks. %2$s</string>
+    <string name="session_stat_max">maks. %1$s</string>
     <string name="session_time_total">Waktu total</string>
     <string name="session_time_moving">Waktu bergerak</string>
     <string name="session_break">Jeda</string>
     <string name="session_breaks_note">Waktu bergerak tidak mencakup setiap berhenti tanpa data kecepatan atau jarak. Berhenti lebih dari lima menit dicantumkan sebagai jeda, tidak dihitung dalam nilai di atas, dan ditandai pada grafik detak jantung.</string>
+    <string name="session_break_legend">Jeda: tidak ada kecepatan atau jarak yang tercatat</string>
     <string name="session_gone">Sesi ini tidak ditemukan lagi.</string>
     <string name="session_laps">Putaran</string>
     <string name="session_lap">Putaran %1$d</string>

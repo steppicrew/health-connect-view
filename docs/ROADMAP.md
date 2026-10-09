@@ -504,6 +504,22 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 63. [ ] **Across days** -- the night's lowest heart rate after training days against rest days;
     resting heart rate or HRV over weeks with workouts marked. With the "moving together is not
     cause" note.
+64. [ ] **Combined weight tile** (Pro) -- the owner's idea, 09.10.2026: weight, body fat,
+    water and bone mass on one tile where known, opening the body composition screen.
+
+Also from the owner, 09.10.2026, done the same day:
+
+- [x] **Back returns to the day it left** -- the event log showed the app killed while in the
+  background; the back stack came back but both view models started over at today or at the
+  route's date. The dashboard's day and the detail page's span and window are saved state now.
+  Not reproduced from the host: setting a past day needs a tap.
+- [x] **Tapping the date opens a calendar**, on the dashboard title and the detail pages' window
+  label; days after today cannot be picked.
+- [x] **Breaks on the workout detail page too**, with a legend under each curve ("Pause: keine
+  Geschwindigkeit oder Distanz aufgezeichnet"), on the rows and the session screen.
+- [x] **Session statistics cleaned up**, seen on the phone for 18.09: speed shows its maximum
+  only (its minimum was 0,21 km/h), the basal rate is gone (a figure about the person, shown as
+  "157 kcal/day"), and counted totals are whole ("3,24 Etagen" was a day record shared out).
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
