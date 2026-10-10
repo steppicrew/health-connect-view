@@ -99,7 +99,24 @@ data class Tile(
  * gives the whole tile to the window's chart, with its axis values and goal line, for someone
  * who reads the shape rather than the figure. [BOTH] puts the number above a smaller chart.
  */
-enum class TileFace { VALUE, CHART, BOTH }
+enum class TileFace {
+    VALUE,
+    CHART,
+    BOTH,
+
+    /**
+     * Weight with body fat, water and bone mass beside it, each the latest known -- the owner's
+     * idea, 09.10.2026. Weight tiles only ([facesFor]); a tap opens the body composition screen.
+     */
+    BODY,
+}
+
+/** The faces a large tile of [typeName] offers: the body face only on weight. */
+fun facesFor(typeName: String): List<TileFace> =
+    TileFace.entries.filter { it != TileFace.BODY || typeName == WEIGHT_TYPE }
+
+/** The type whose tile may show the body face. */
+const val WEIGHT_TYPE = "WeightRecord"
 
 /**
  * The sizes a tile cycles through, as width to height. No 1x2: a tall narrow tile has room for

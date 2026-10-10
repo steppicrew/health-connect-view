@@ -4,6 +4,7 @@ import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import de.steppicrew.healthconnectview.dashboard.DashboardJson
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.dashboard.TileFace
+import de.steppicrew.healthconnectview.dashboard.facesFor
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.TileSpec
 import org.junit.Assert.assertEquals
@@ -243,6 +244,14 @@ class DashboardConfigTest {
     @Test
     fun `the insights tile round-trips through the stored form`() {
         val stored = DashboardConfig(listOf(Tile(Tile.INSIGHTS), Tile("StepsRecord")))
+        assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+    }
+
+    @Test
+    fun `only weight offers the body face, and it round-trips`() {
+        assertTrue(TileFace.BODY in facesFor("WeightRecord"))
+        assertEquals(listOf(TileFace.VALUE, TileFace.CHART, TileFace.BOTH), facesFor("StepsRecord"))
+        val stored = DashboardConfig(listOf(Tile("WeightRecord", width = 2, face = TileFace.BODY)))
         assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
     }
 }
