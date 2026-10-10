@@ -556,8 +556,13 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     probe keeps its type. Grouped under the catalog's headers, the current type's category
     first. Checked on the phone: weight over a day offers only basal metabolic rate under
     "Body"; over a year also height, bone mass, body fat and body water.
-62. [ ] **Compare: one chart for one unit** -- weight, body water and bone mass on one scale
-    with the chips of step 54; different units stay stacked.
+62. [x] **Compare: one chart for one unit** -- weight, body water and bone mass on one scale
+    with the chips of step 54; different units stay stacked. Built 10.10.2026
+    (`sharesOneScale`): two types in the same display unit, both drawn as lines, go on one
+    `MultiLineChart`, first type blue, second orange, the choice of lines remembered per pair;
+    bars, stacks and two-line types (blood pressure) stay stacked. The axis mark on a chip and
+    its note show only where a line has a scale of its own. Checked on the phone: weight and
+    body water over a year, 80 against 45 kg on one 40-100 kg scale.
 63. [ ] **Across days** -- the night's lowest heart rate after training days against rest days;
     resting heart rate or HRV over weeks with workouts marked. With the "moving together is not
     cause" note.

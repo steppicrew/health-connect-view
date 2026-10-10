@@ -126,6 +126,9 @@ fun MultiLineChart(
     val primary = available.first { it.key == visible.first() }
     val others = visible.drop(1).mapNotNull { key -> available.firstOrNull { it.key == key } }
     val alone = others.isEmpty()
+    // Every line shown on the owner's scale: then no line owns the axis more than another, and
+    // the mark and its note would say otherwise.
+    val oneScale = others.all { it.unitKey == primary.unitKey }
     // Resolved here: the readout's formatter runs outside composition.
     val units = others.map { line -> line.unitText ?: line.unitRes?.let { stringResource(it) } }
     // The colour the axis owner is drawn in, which its reference band and swatch take too.
@@ -199,7 +202,7 @@ fun MultiLineChart(
                                 .background(if (on) line.color else line.color.copy(alpha = OFF_ALPHA), CircleShape),
                         )
                     },
-                    trailingIcon = if (owner && !alone) {
+                    trailingIcon = if (owner && !oneScale) {
                         {
                             Icon(
                                 imageVector = Icons.Default.Height,
@@ -226,7 +229,7 @@ fun MultiLineChart(
             )
         }
         // Says what the mark on a chip is, only while it is there to explain.
-        if (!alone) {
+        if (!oneScale) {
             Text(
                 text = stringResource(R.string.chart_line_axis_note),
                 style = MaterialTheme.typography.labelSmall,

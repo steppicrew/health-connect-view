@@ -27,15 +27,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.ui.UiState
+import de.steppicrew.healthconnectview.ui.components.ChartSeries
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.ui.components.MultiLineChart
 import de.steppicrew.healthconnectview.ui.components.OnResume
+import de.steppicrew.healthconnectview.ui.components.SeriesColors
 import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
 import de.steppicrew.healthconnectview.ui.components.windowLabel
@@ -45,7 +49,8 @@ import de.steppicrew.healthconnectview.ui.dashboard.TileDetailData
 import java.time.Instant
 
 /**
- * Two types, one chart each, on one time axis.
+ * Two types, one chart each, on one time axis -- or one chart and one scale where both are
+ * lines in the same unit ([sharesOneScale]).
  *
  * Never two scales on one chart: two y-axes read badly on a phone, and lines that cross on a
  * shared plot invite a cause-and-effect reading the data cannot carry. Stacked, a day sits at
@@ -150,10 +155,15 @@ private fun Charts(data: Compared, period: String, historyNeeded: Boolean, onOpe
         fun report(chart: Int): (Instant?) -> Unit = { time ->
             reading = time?.let { chart to it } ?: reading?.takeIf { it.first != chart }
         }
-        Chart(data.first, data, period, linkedTime = reading?.takeIf { it.first == 1 }?.second, onSelectTime = report(0))
-        Chart(data.second, data, period, linkedTime = reading?.takeIf { it.first == 0 }?.second, onSelectTime = report(1))
+        val shared = sharesOneScale(data.first, data.second)
+        if (shared) {
+            OneChart(data)
+        } else {
+            Chart(data.first, data, period, linkedTime = reading?.takeIf { it.first == 1 }?.second, onSelectTime = report(0))
+            Chart(data.second, data, period, linkedTime = reading?.takeIf { it.first == 0 }?.second, onSelectTime = report(1))
+        }
         Text(
-            text = stringResource(R.string.compare_note),
+            text = stringResource(if (shared) R.string.compare_note_shared else R.string.compare_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
@@ -167,6 +177,56 @@ private fun Charts(data: Compared, period: String, historyNeeded: Boolean, onOpe
             )
             TextButton(onClick = onOpenPermissions) { Text(stringResource(R.string.history_grant)) }
         }
+    }
+}
+
+/**
+ * Whether the two go on one chart: the same unit, both drawn as lines. Weight, body water and
+ * bone mass are all kilograms, and on one scale their heights mean something side by side;
+ * two scales on one chart they would not. Bars stay apart -- two sets of bars on one axis
+ * hide each other -- and so does a type drawn as more than one line of its own.
+ */
+internal fun sharesOneScale(first: TileDetailData, second: TileDetailData): Boolean {
+    val unit = first.spec.displayUnitRes ?: return false
+    fun line(data: TileDetailData) =
+        !data.bars && data.stack.isEmpty() && data.secondaryPoints.isEmpty() && data.points.size > 1
+    return unit == second.spec.displayUnitRes && line(first) && line(second)
+}
+
+/**
+ * Both types as lines on one chart and one scale, a chip each to show or hide one, the first
+ * type in blue and the second in orange. Touch reads both at once.
+ */
+@Composable
+private fun OneChart(data: Compared) {
+    InfoGroup {
+        val firstName = stringResource(data.first.spec.displayNameRes)
+        val secondName = stringResource(data.second.spec.displayNameRes)
+        val unit = data.first.spec.displayUnitRes?.let { stringResource(it) }?.let { " ($it)" }.orEmpty()
+        Text("$firstName · $secondName$unit", style = MaterialTheme.typography.titleSmall)
+        val first = data.first.spec.type.simpleName.orEmpty()
+        val second = data.second.spec.type.simpleName.orEmpty()
+        fun series(chart: TileDetailData, key: String, label: String, color: Color) = ChartSeries(
+            key = key,
+            label = label,
+            points = chart.points,
+            color = color,
+            unitKey = "shared",
+            unitRes = chart.spec.displayUnitRes,
+            valueDecimals = chart.spec.valueDecimals,
+            integral = chart.spec.tile.integralValues,
+        )
+        MultiLineChart(
+            // Remembered per pair, whichever way up.
+            chartId = "compare/" + listOf(first, second).sorted().joinToString("/"),
+            series = listOf(
+                series(data.first, first, firstName, SeriesColors.blue()),
+                series(data.second, second, secondName, SeriesColors.orange()),
+            ),
+            defaultShown = listOf(first, second),
+            extent = data.extent,
+            modifier = Modifier.padding(top = 8.dp),
+        )
     }
 }
 

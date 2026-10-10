@@ -859,6 +859,7 @@
     <string name="compare_swap">تبديل الترتيب</string>
     <string name="compare_none">لا توجد قيم في هذه الفترة</string>
     <string name="compare_note">مخططان على محور زمني واحد، لكل منهما مقياسه الخاص. تغيّر قيمتين معًا لا يعني أن إحداهما سبب الأخرى.</string>
+    <string name="compare_note_shared">كلاهما بالوحدة نفسها وعلى مقياس واحد. تحرّك قيمتين معًا لا يعني أن إحداهما تسبب الأخرى.</string>
     <string name="insights_title">تغييرات هذا الأسبوع</string>
     <string name="insights_open_body">آخر 7 أيام لكل نوع مقارنةً بمتوسطه خلال 30 يومًا</string>
     <string name="insight_above">آخر 7 أيام: أعلى من متوسط 30 يومًا بنسبة %1$s</string>
