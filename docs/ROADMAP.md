@@ -595,6 +595,10 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     over a week or four; across a year whole durations ("Zeit mit Pausen"), since reading
     every workout's movement there is hundreds of reads.
 
+Before the next release after 1.4.1, from the owner, 11.10.2026:
+
+- [ ] **Step 86** -- one date for dashboard and detail views, and history ending on it.
+
 Before the next release after 1.3.0, from the owner, 10.10.2026:
 
 - [x] **Name the year calendar in the Pro descriptions** -- `pro_body`, `pro_owned_body` and the
@@ -766,6 +770,18 @@ doctor report and the year heatmap; the rest unranked.
     room a 2x2 calendar leaves: seven small bars Mo-So, the year's mean per weekday ("Sundays
     are long sleep"), from the days the calendar already read. Unlabelled, so the tile keeps
     one labelled scale; 2x2 only, since a 2x1 has room only in a narrow strip beside the grid.
+86. [ ] **The chosen date is shared, and history ends on it** -- the owner, 11.10.2026, for
+    the next release. A date picked in a detail view carries back to the dashboard, and the
+    dashboard's date into every detail view, as one date for the whole app rather than one
+    per screen. Every window that looks back treats that date as today: a year tile shows the
+    365 days ending on it, as do the four-week and week tiles, the calendar face, the trend
+    arrow's week against 30 days, streaks and "longest this year". Today stays the default
+    and a cold start. Moving the date by a day re-reads almost the same year, so keep the
+    daily totals already read in memory, per type and writer filter, and fetch only the days
+    missing: a cache of numbers, never on disk, dropped when the app leaves the foreground or
+    permissions change (rule 3 says records live for the current screen; settle whether a
+    shared in-memory cache of daily totals fits it before building). Today's figure is never
+    cached, since it is still growing.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
