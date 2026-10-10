@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
-import de.steppicrew.healthconnectview.ui.components.heatmapShades
+import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
+import de.steppicrew.healthconnectview.ui.components.heatmapColors
+import de.steppicrew.healthconnectview.ui.components.heatmapValue
 import de.steppicrew.healthconnectview.ui.components.YearHeatmapGrid
 import de.steppicrew.healthconnectview.health.YearHeatmap
 import android.content.ActivityNotFoundException
@@ -1174,24 +1176,11 @@ private fun standInHeatmap(today: LocalDate) =
 private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
     var selected by rememberSaveable(heatmap.first) { mutableStateOf<LocalDate?>(null) }
     val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
-    // Sleep and training are hours, read as a duration; everything else in its own unit.
-    val durations = spec.tile.form == TileSpec.Form.SESSIONS
-    fun value(v: Double) = if (durations) {
-        // "0", not "0s": the legend's start, where seconds were never meant.
-        if (v == 0.0) "0" else Formatting.duration(Duration.ofMinutes((v * MINUTES_PER_HOUR).roundToLong()))
-    } else {
-        Formatting.number(v, spec.valueDecimals) + unit
-    }
+    val value = heatmapValue(spec)
     // Blood pressure is coloured by the grade of the day's averages, as every reading of it is
     // elsewhere; one shade of the systolic alone would hide half the reading.
     val graded = heatmap.secondValues.isNotEmpty()
-    val shades = heatmapShades()
-    val colorOf: (LocalDate) -> Color? = { day ->
-        heatmap.values[day]?.let { first ->
-            val second = heatmap.secondValues[day]
-            if (graded && second != null) pressureCategory(first, second).color else shades[heatmap.step(first)]
-        }
-    }
+    val colorOf = heatmapColors(heatmap)
     fun reading(day: LocalDate): String? {
         val first = heatmap.values[day] ?: return null
         val second = heatmap.secondValues[day]
@@ -1238,37 +1227,13 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
                 grades.forEach { CategoryBadge(it) }
             }
         } else {
-            // A floor is named: "1.790 kcal" alone would read as the year's lowest day.
-            val low = value(heatmap.low) + heatmap.lowLabel?.let { " (" + stringResource(it) + ")" }.orEmpty()
-            HeatmapLegend(low, value(heatmap.high), shades)
+            HeatmapLegend(heatmap, spec, Modifier.padding(top = 8.dp))
         }
         Text(
             text = stringResource(if (graded) R.string.heatmap_note_graded else R.string.heatmap_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 8.dp),
-        )
-    }
-}
-
-/** The five shades from the lightest's start to the darkest's. */
-@Composable
-private fun HeatmapLegend(low: String, high: String, shades: List<Color>) {
-    Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(low, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        shades.forEach { shade ->
-            Box(
-                Modifier
-                    .padding(start = 3.dp)
-                    .size(10.dp)
-                    .background(shade, RoundedCornerShape(2.dp)),
-            )
-        }
-        Text(
-            "≥ $high",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 6.dp),
         )
     }
 }

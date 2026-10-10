@@ -68,6 +68,9 @@
     <string name="tile_face_value">Waarde</string>
     <string name="tile_face_chart">Grafiek</string>
     <string name="tile_face_both">Beide</string>
+    <string name="tile_face_calendar">Kalender</string>
+    <string name="tile_calendar_trailing">Afgelopen 365 dagen</string>
+    <string name="tile_calendar_this_year">Dit jaar</string>
     <string name="tile_options_companion">Extra curve</string>
     <string name="tile_companion_none">Geen</string>
     <string name="tile_title_span_capped">%1$s · %2$s, alleen de laatste 30 dagen</string>

@@ -1,7 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import java.time.LocalDateTime
-import de.steppicrew.healthconnectview.health.nightsByMorning
+import de.steppicrew.healthconnectview.health.sessionDays
 import de.steppicrew.healthconnectview.health.rollingUsualRange
 import de.steppicrew.healthconnectview.R
 import androidx.annotation.StringRes
@@ -742,12 +742,7 @@ internal class TileChartLoader(
             when {
                 hrv != null -> hrv.nights.associate { it.date to it.mean }
                 dailyReadings != null -> dailyReadings.dailyMeans()
-                sessionKind == Session.Kind.SLEEP -> nightsByMorning(sessions, zone)
-                    .mapValues { (_, night) -> Duration.between(night.start, night.end).toMinutes() / MINUTES_PER_HOUR }
-                sessionKind == Session.Kind.EXERCISE -> sessions
-                    .filter { it.kind == Session.Kind.EXERCISE }
-                    .groupBy { it.start.atZone(zone).toLocalDate() }
-                    .mapValues { (_, day) -> day.sumOf { (it.moving ?: Duration.between(it.start, it.end)).toMinutes() } / MINUTES_PER_HOUR }
+                sessionKind != null -> sessionDays(sessions, sessionKind, zone)
                 // Readings with no aggregate and no daily means: each day's mean of them.
                 metric == null && spec.tile.form != TileSpec.Form.SESSIONS -> chartPoints
                     .groupBy { it.time.atZone(zone).toLocalDate() }
@@ -1322,4 +1317,3 @@ internal data class ChartExtras(
     val usualBand: List<ValueBand> = emptyList(),
 )
 
-private const val MINUTES_PER_HOUR = 60.0

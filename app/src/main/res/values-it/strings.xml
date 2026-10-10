@@ -69,6 +69,9 @@
     <string name="tile_face_value">Valore</string>
     <string name="tile_face_chart">Grafico</string>
     <string name="tile_face_both">Entrambi</string>
+    <string name="tile_face_calendar">Calendario</string>
+    <string name="tile_calendar_trailing">Ultimi 365 giorni</string>
+    <string name="tile_calendar_this_year">Quest’anno</string>
     <string name="tile_options_companion">Curva aggiuntiva</string>
     <string name="tile_companion_none">Nessuna</string>
     <string name="tile_title_span_capped">%1$s · %2$s, solo ultimi 30 giorni</string>

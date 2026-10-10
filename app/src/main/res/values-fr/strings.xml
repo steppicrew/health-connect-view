@@ -69,6 +69,9 @@
     <string name="tile_face_value">Valeur</string>
     <string name="tile_face_chart">Graphique</string>
     <string name="tile_face_both">Les deux</string>
+    <string name="tile_face_calendar">Calendrier</string>
+    <string name="tile_calendar_trailing">365 derniers jours</string>
+    <string name="tile_calendar_this_year">Cette année</string>
     <string name="tile_options_companion">Courbe en plus</string>
     <string name="tile_companion_none">Aucune</string>
     <string name="tile_title_span_capped">%1$s · %2$s, 30 derniers jours seulement</string>

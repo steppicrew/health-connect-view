@@ -36,7 +36,8 @@ fun TileOptionsDialog(
     currentSpan: Span,
     currentFace: TileFace,
     onDismiss: () -> Unit,
-    onSave: (Span, TileFace, String?) -> Unit,
+    /** The window, the face, the second curve, and whether a calendar covers the calendar year. */
+    onSave: (Span, TileFace, String?, Boolean) -> Unit,
     /** The curves the type may draw beside its own, by type name; none offers no choice. */
     companions: List<String> = emptyList(),
     currentCompanion: String? = null,
@@ -44,8 +45,10 @@ fun TileOptionsDialog(
     faces: List<TileFace> = TileFace.entries.filter { it != TileFace.BODY },
     /** Whether the body face draws a window: on a 2x2 tile, not on a 2x1 one. */
     bodyHasWindow: Boolean = false,
+    currentCalendarYear: Boolean = false,
 ) {
     var span by remember { mutableStateOf(currentSpan) }
+    var calendarYear by remember { mutableStateOf(currentCalendarYear) }
     var face by remember { mutableStateOf(currentFace) }
     var companion by remember { mutableStateOf(currentCompanion) }
 
@@ -55,8 +58,25 @@ fun TileOptionsDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(displayName)
+                // A calendar is always a year: the choice is which one.
+                if (face == TileFace.CALENDAR) {
+                    Text(
+                        text = stringResource(R.string.tile_options_span),
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(false to R.string.tile_calendar_trailing, true to R.string.tile_calendar_this_year).forEach { (choice, label) ->
+                            FilterChip(
+                                selected = calendarYear == choice,
+                                onClick = { calendarYear = choice },
+                                label = { Text(stringResource(label)) },
+                            )
+                        }
+                    }
+                }
                 // A 2x1 body face shows the latest of each, whatever the window: nothing to choose.
-                if (face != TileFace.BODY || bodyHasWindow) {
+                else if (face != TileFace.BODY || bodyHasWindow) {
                     Text(
                         text = stringResource(R.string.tile_options_span),
                         style = MaterialTheme.typography.labelLarge,
@@ -88,7 +108,7 @@ fun TileOptionsDialog(
                 }
                 // Drawn over a day's sessions in place of its chart, so offered only where a day's
                 // chart is shown; a choice made elsewhere is kept for when it is.
-                if (companions.isNotEmpty() && span == Span.DAY && face != TileFace.VALUE) {
+                if (companions.isNotEmpty() && span == Span.DAY && face != TileFace.VALUE && face != TileFace.CALENDAR) {
                     Text(
                         text = stringResource(R.string.tile_options_companion),
                         style = MaterialTheme.typography.labelLarge,
@@ -116,7 +136,7 @@ fun TileOptionsDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(span, face, companion)
+                    onSave(if (face == TileFace.CALENDAR) Span.YEAR else span, face, companion, calendarYear)
                     onDismiss()
                 },
             ) {
@@ -137,4 +157,5 @@ private fun TileFace.labelRes(): Int = when (this) {
     TileFace.BOTH -> R.string.tile_face_both
     // The catalog's own word for the group, "Körper": no new string to translate.
     TileFace.BODY -> R.string.category_body
+    TileFace.CALENDAR -> R.string.tile_face_calendar
 }

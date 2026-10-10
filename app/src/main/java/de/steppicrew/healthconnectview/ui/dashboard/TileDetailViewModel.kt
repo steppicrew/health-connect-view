@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.countsFromZero
+import de.steppicrew.healthconnectview.health.readHeatmap
 import java.time.Period
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.yearHeatmap
@@ -1131,44 +1133,13 @@ class TileDetailViewModel(
      * total is, read in quarters so a slow answer for one does not hold the rest. Null where
      * no day has a value or the read failed.
      */
-    private suspend fun heatmapFor(spec: RecordTypeSpec<*>, span: Span, offset: Int, source: String?): YearHeatmap? {
-        val metric = spec.aggregate ?: return null
-        val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
-        val first = span.startDate(offset)
-        val end = span.endDate(offset)
-        val started = System.currentTimeMillis()
-        return runCatching {
-            // Blood pressure's diastolic from the same buckets: a day is graded on both.
-            val second = spec.secondaryAggregate
-            // A stack's first part is the floor the day is built on -- the basal rate under
-            // total calories -- and the shading starts at its mean day.
-            val floorPart = spec.stackComponents.firstOrNull()
-            val days = generateSequence(first) { it.plusDays(HEATMAP_PIECE_DAYS) }.takeWhile { it < end }.toList().flatMap { from ->
-                val to = minOf(from.plusDays(HEATMAP_PIECE_DAYS), end)
-                repository.bucketedTotals(
-                    metric,
-                    TimeRangeFilter.between(from.atStartOfDay(), to.atStartOfDay()),
-                    Period.ofDays(1),
-                    origins,
-                    also = setOfNotNull(second, floorPart?.second),
-                ).mapNotNull { bucket ->
-                    val value = bucket.result[metric]?.let { numericAggregate(it, metric) } ?: return@mapNotNull null
-                    val other = second?.let { bucket.result[it]?.let { v -> numericAggregate(v, it) } }
-                    val floor = floorPart?.second?.let { bucket.result[it]?.let { v -> numericAggregate(v, it) } }
-                    HeatDay(bucket.startTime.toLocalDate(), value, other, floor)
-                }
-            }
-            Log.d(TAG, "heatmap: ${days.size} days of ${spec.type.simpleName} in ${System.currentTimeMillis() - started} ms")
-            val floor = days.mapNotNull { it.floor }.takeIf { it.isNotEmpty() }?.average()
-            yearHeatmap(days.associate { it.date to it.value }, first, end.minusDays(1), fromZero = countsFromZero(spec), floor = floor)
-                ?.let { map ->
-                    map.copy(
-                        secondValues = days.mapNotNull { day -> day.second?.let { day.date to it } }.toMap(),
-                        lowLabel = floorPart?.first?.takeIf { floor != null && map.low == floor },
-                    )
-                }
-        }.getOrNull()
-    }
+    private suspend fun heatmapFor(spec: RecordTypeSpec<*>, span: Span, offset: Int, source: String?): YearHeatmap? =
+        repository.readHeatmap(
+            spec,
+            span.startDate(offset),
+            span.endDate(offset).minusDays(1),
+            source?.let { setOf(DataOrigin(it)) } ?: emptySet(),
+        )
 
     private suspend fun trainingNightsFor(span: Span, offset: Int, training: Set<LocalDate>): TrainingNights? {
         val zone = HealthRepository.DEFAULT_ZONE
@@ -1237,17 +1208,3 @@ internal fun marksTraining(spec: RecordTypeSpec<*>, span: Span): Boolean =
  */
 internal fun showsHeatmap(spec: RecordTypeSpec<*>, span: Span, dayValues: Map<LocalDate, Double>): Boolean =
     span == Span.YEAR && (dayValues.isNotEmpty() || spec.aggregate != null && spec.tile.form != TileSpec.Form.SESSIONS)
-
-/**
- * Shaded from zero: what adds up -- steps, a day's training. A level across its own range, and
- * a night too: from zero, 6 h and 8 h nights came out almost the same dark.
- */
-private fun countsFromZero(spec: RecordTypeSpec<*>): Boolean =
-    spec.tile.cumulativeIntraday ||
-        spec.tile.form == TileSpec.Form.SESSIONS && spec.tile.sessionKind == Session.Kind.EXERCISE
-
-/** Days per request for the heatmap: a quarter. */
-private const val HEATMAP_PIECE_DAYS = 92L
-
-/** One day of a heatmap read: the value, a second one, and the floor beneath it. */
-private class HeatDay(val date: LocalDate, val value: Double, val second: Double?, val floor: Double?)

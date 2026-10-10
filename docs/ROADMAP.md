@@ -595,6 +595,14 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     over a week or four; across a year whole durations ("Zeit mit Pausen"), since reading
     every workout's movement there is hundreds of reads.
 
+Before the next release after 1.3.0, from the owner, 10.10.2026:
+
+- [ ] **Name the year calendar in the Pro descriptions** -- `pro_body`, `pro_owned_body` and the
+  store listing's Pro part in every language (Play caps the full description at 4,000
+  characters; the longest stood at 3,984): the calendar under a year and as a tile face, and
+  the combined doctor report. Then `publishReleaseListing`, since `release.sh` skips committed
+  listing text.
+
 Before the next release, from the owner, 09.10.2026:
 
 66. [x] **Store screenshots of Pro** -- large and coloured tiles (a night's stages with a curve,
@@ -733,9 +741,17 @@ doctor report and the year heatmap; the rest unranked.
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.
 82. [ ] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
-83. [ ] **The calendar as a face of a large year tile** -- the owner's idea, 10.10.2026: a
-    2x2 (or 2x1) tile on a year showing step 74's calendar instead of the chart, over the
-    last 365 days or the calendar year so far.
+83. [x] **The calendar as a face of a large year tile** -- the owner's idea, 10.10.2026, built
+    the same day and seen on the emulator. "Kalender" beside value, chart and both on a 2x1
+    or 2x2 tile (Pro for the size and for the calendar), over "Letzte 365 Tage" or "Dieses
+    Jahr" -- the calendar year with every month named and the days to come left out, titled
+    by its number ("Schlaf · 2026"). Offered where a year reads without the chart's own read:
+    a daily aggregate, sleep or workouts; readings with only daily means took a minute. The
+    grid takes no taps on a tile, where a tap opens the year on the detail screen. Above the
+    grid the year's figure, read off the grid's own days (a sum, a mean, a night's mean for
+    sleep, the hours trained); below it the detail screen's legend with real values ("0 ...
+    >= 3h 46m") -- "Weniger ... Mehr" said nothing, the owner found. The read moved to `health/HeatmapRead.kt`, shared with
+    the detail screen.
 84. [ ] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
     not yet, its types have no figure to shade. Flow days by strength, spotting and a
     positive ovulation test marked, in the cycle overview's year; plan before building.

@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.readsHeatmap
+import de.steppicrew.healthconnectview.health.calendarHeadline
+import de.steppicrew.healthconnectview.health.readHeatmap
+import de.steppicrew.healthconnectview.health.YearHeatmap
 import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.recordsIn
@@ -176,6 +180,10 @@ data class TileData(
      */
     val bodyCurves: Map<String, List<Point>> = emptyMap(),
     val bodyWindow: ClosedRange<Instant>? = null,
+    /** The calendar face's year, where read; see [TileFace.CALENDAR]. */
+    val heatmap: YearHeatmap? = null,
+    /** Whether that year could reach back only 30 days, without the history permission. */
+    val heatmapCapped: Boolean = false,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -397,8 +405,8 @@ class DashboardViewModel(
     }
 
     /** Sets a large tile's window and face, and persists them. */
-    fun setOptions(id: String, span: Span, face: TileFace, companion: String? = null) {
-        config = config.withOptions(id, span, face, companion)
+    fun setOptions(id: String, span: Span, face: TileFace, companion: String? = null, calendarYear: Boolean = false) {
+        config = config.withOptions(id, span, face, companion, calendarYear)
         viewModelScope.launch { store.save(config) }
         reload()
     }
@@ -621,6 +629,8 @@ class DashboardViewModel(
                     bodyReadings = carried.bodyReadings,
                     bodyCurves = carried.bodyCurves,
                     bodyWindow = carried.bodyWindow,
+                    heatmap = carried.heatmap,
+                    heatmapCapped = carried.heatmapCapped,
                     loading = false,
                 )
             }
@@ -727,6 +737,7 @@ class DashboardViewModel(
             }.toMap()
             return day.copy(bodyReadings = readings, bodyCurves = curves, bodyWindow = start..end, shownSpan = tile.span)
         }
+        if (showsCalendar(tile)) return loadCalendar(placeholder, date, historyGranted)
         if (!showsWindow(tile)) return loadDay(placeholder, date)
 
         // The day's own path still supplies a day's number -- a carried weight, a ring, the
@@ -785,8 +796,50 @@ class DashboardViewModel(
     private fun showsWindow(tile: Tile): Boolean =
         AppEntitlements.current.pro.value.allows(Feature.TILE_SIZES) &&
             tile.isLarge &&
-            tile.face != TileFace.BODY &&
+            tile.face != TileFace.BODY && tile.face != TileFace.CALENDAR &&
             (tile.span != Span.DAY || tile.face != TileFace.VALUE)
+
+    /**
+     * The calendar face's year: the last 365 days, as the detail screen's year, or the
+     * calendar year with the days to come left blank -- never read, since nothing is there.
+     */
+    private suspend fun loadCalendar(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
+        val tile = placeholder.tile
+        val offset = Span.YEAR.offsetOf(date)
+        val (first, last) = if (tile.calendarYear) {
+            date.withDayOfYear(1) to date.withDayOfYear(1).plusYears(1).minusDays(1)
+        } else {
+            Span.YEAR.startDate(offset) to Span.YEAR.endDate(offset).minusDays(1)
+        }
+        val source = resolveSource(
+            placeholder,
+            TimeRangeFilter.between(first.atStartOfDay(), minOf(last, date).plusDays(1).atStartOfDay()),
+        )
+        val heatmap = repository.readHeatmap(
+            placeholder.spec,
+            first,
+            last,
+            source?.let { setOf(DataOrigin(it)) } ?: emptySet(),
+            through = minOf(date, LocalDate.now()),
+        )
+        val headline = heatmap?.let { calendarHeadline(placeholder.spec, it) }
+        return placeholder.copy(
+            source = source,
+            heatmap = heatmap,
+            value = headline?.first,
+            secondaryValue = headline?.second,
+            heatmapCapped = !historyGranted && first.isBefore(LocalDate.now().minusDays(HISTORY_FREE_DAYS)),
+            shownSpan = Span.YEAR,
+            loading = false,
+        )
+    }
+
+    /** Whether [tile] is a large tile showing the calendar face: Pro for the size and for the calendar. */
+    private fun showsCalendar(tile: Tile): Boolean {
+        val pro = AppEntitlements.current.pro.value
+        return pro.allows(Feature.TILE_SIZES) && pro.allows(Feature.YEAR_HEATMAP) &&
+            tile.isLarge && tile.face == TileFace.CALENDAR && tile.spec?.let(::readsHeatmap) == true
+    }
 
     /** Whether [tile] is a large weight tile showing the body face; Pro only, like any face. */
     private fun showsBody(tile: Tile): Boolean =
@@ -1099,3 +1152,5 @@ private class Reads {
     }
 }
 
+/** How far back Health Connect reads without the history permission. */
+private const val HISTORY_FREE_DAYS = 30L
