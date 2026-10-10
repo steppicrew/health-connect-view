@@ -180,6 +180,17 @@ data class TileData(
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
 
+    /**
+     * The workout a tap opens directly: the one drawn as a curve, or the day's only workout.
+     * Several on a timeline go to the day's list instead, since the tile names none of them.
+     */
+    val openedWorkout: Session?
+        get() {
+            if (shownSpan != Span.DAY) return null
+            val drawn = companionCurves.map { it.first }.filter { it.kind == Session.Kind.EXERCISE }
+            return drawn.singleOrNull() ?: sessions.filter { it.kind == Session.Kind.EXERCISE }.singleOrNull()
+        }
+
     /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
     val progress: Float?
         get() {

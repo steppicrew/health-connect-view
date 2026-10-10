@@ -107,6 +107,7 @@ fun HealthNavGraph(
                 onOpenInsights = { navController.navigate(Routes.insights()) },
                 onGrantAccess = { navController.navigate(Routes.PERMISSIONS) },
                 onOpenBody = { navController.navigate(Routes.BODY) },
+                onOpenSession = { navController.navigate(Routes.session(it)) },
             )
         }
 
