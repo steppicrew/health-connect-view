@@ -68,6 +68,9 @@
     <string name="tile_face_value">Değer</string>
     <string name="tile_face_chart">Grafik</string>
     <string name="tile_face_both">İkisi de</string>
+    <string name="tile_face_calendar">Takvim</string>
+    <string name="tile_calendar_trailing">Son 365 gün</string>
+    <string name="tile_calendar_this_year">Bu yıl</string>
     <string name="tile_options_companion">Ek eğri</string>
     <string name="tile_companion_none">Yok</string>
     <string name="tile_title_span_capped">%1$s · %2$s, yalnızca son 30 gün</string>

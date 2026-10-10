@@ -250,8 +250,20 @@ class DashboardConfigTest {
     @Test
     fun `only weight offers the body face, and it round-trips`() {
         assertTrue(TileFace.BODY in facesFor("WeightRecord"))
-        assertEquals(listOf(TileFace.VALUE, TileFace.CHART, TileFace.BOTH), facesFor("StepsRecord"))
+        assertEquals(listOf(TileFace.VALUE, TileFace.CHART, TileFace.BOTH, TileFace.CALENDAR), facesFor("StepsRecord"))
         val stored = DashboardConfig(listOf(Tile("WeightRecord", width = 2, face = TileFace.BODY)))
+        assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+    }
+
+    @Test
+    fun `the calendar face is offered where a year reads quickly, and round-trips`() {
+        assertTrue(TileFace.CALENDAR in facesFor("SleepSessionRecord"))
+        assertTrue(TileFace.CALENDAR in facesFor("ExerciseSessionRecord"))
+        // Daily means of readings only: a year of them took a minute.
+        assertTrue(TileFace.CALENDAR !in facesFor("RespiratoryRateRecord"))
+        val stored = DashboardConfig(
+            listOf(Tile("StepsRecord", width = 2, height = 2, span = Span.YEAR, face = TileFace.CALENDAR, calendarYear = true)),
+        )
         assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
     }
 }

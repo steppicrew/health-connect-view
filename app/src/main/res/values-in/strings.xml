@@ -67,6 +67,9 @@
     <string name="tile_face_value">Nilai</string>
     <string name="tile_face_chart">Diagram</string>
     <string name="tile_face_both">Keduanya</string>
+    <string name="tile_face_calendar">Kalender</string>
+    <string name="tile_calendar_trailing">365 hari terakhir</string>
+    <string name="tile_calendar_this_year">Tahun ini</string>
     <string name="tile_options_companion">Kurva tambahan</string>
     <string name="tile_companion_none">Tidak ada</string>
     <string name="tile_title_span_capped">%1$s · %2$s, hanya 30 hari terakhir</string>

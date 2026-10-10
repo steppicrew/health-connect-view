@@ -1,5 +1,11 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
+import de.steppicrew.healthconnectview.ui.components.heatmapValue
+import de.steppicrew.healthconnectview.ui.components.heatmapColors
+import de.steppicrew.healthconnectview.ui.components.YearHeatmapGrid
+import de.steppicrew.healthconnectview.health.YearHeatmap
 import de.steppicrew.healthconnectview.ui.components.smoothPath
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.annotation.StringRes
@@ -148,6 +154,7 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.ProgressRing
 import de.steppicrew.healthconnectview.ui.components.SparkCurve
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -265,7 +272,10 @@ fun DashboardScreen(
             // A 2x2 body face draws its window; a 2x1 one shows the latest numbers alone.
             bodyHasWindow = editing.tile.height > 1,
             onDismiss = { editingOptionsFor = null },
-            onSave = { span, face, companion -> viewModel.setOptions(editing.tile.id, span, face, companion) },
+            currentCalendarYear = editing.tile.calendarYear,
+            onSave = { span, face, companion, calendarYear ->
+                viewModel.setOptions(editing.tile.id, span, face, companion, calendarYear)
+            },
         )
     }
 
@@ -607,6 +617,15 @@ private fun TileCard(
                         // A 2x2 body face names weight in its first row; the tile is all four.
                         data.bodyWindow != null ->
                             stringResource(R.string.tile_title_span, stringResource(R.string.body_composition), stringResource(data.shownSpan.labelRes))
+                        // A calendar year is named by its number; the last 365 days as a year.
+                        data.heatmap != null && data.tile.calendarYear ->
+                            stringResource(
+                                if (data.heatmapCapped) R.string.tile_title_span_capped else R.string.tile_title_span,
+                                name,
+                                data.heatmap.first.year.toString(),
+                            )
+                        data.heatmap != null && data.heatmapCapped ->
+                            stringResource(R.string.tile_title_span_capped, name, stringResource(data.shownSpan.labelRes))
                         data.shownSpan == Span.DAY -> name
                         // Without the history permission a year holds 30 days; the detail screen
                         // warns in red, and a tile titled "Year" over a month would not.
@@ -1046,6 +1065,8 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         data.bodyWindow != null && !data.loading -> BodyCurves(data, data.bodyReadings.orEmpty(), data.bodyWindow)
 
         !data.bodyReadings.isNullOrEmpty() && !data.loading -> BodyFace(data, data.bodyReadings, large)
+
+        data.heatmap != null && data.tile.face == TileFace.CALENDAR -> TileCalendar(data, data.heatmap)
 
         chart != null && data.tile.face == TileFace.CHART ->
             TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion())
@@ -1721,3 +1742,39 @@ private fun CompanionCurves(
 private enum class StageTotalsAt { NONE, ROW, COLUMN }
 
 private const val COMPANION_ICON_SIZE = 14
+
+
+/**
+ * The calendar face: the year's figure above its grid, as on the detail screen but without its
+ * taps -- a tap on the tile opens the year there, where a day can be read -- and the legend
+ * beneath. Blood pressure's days are coloured by grade, which the shades' legend would misread.
+ */
+@Composable
+private fun TileCalendar(data: TileData, heatmap: YearHeatmap) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val value = data.value
+        // Sessions in hours, written as a duration: "7,5" read as a decimal.
+        if (data.spec.tile.form == TileSpec.Form.SESSIONS && value != null) {
+            Text(
+                text = heatmapValue(data.spec)(value),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        } else {
+            TileValue(data)
+        }
+        YearHeatmapGrid(
+            heatmap = heatmap,
+            colorOf = heatmapColors(heatmap),
+            selected = null,
+            onSelect = null,
+            description = stringResource(R.string.heatmap_title),
+        )
+        if (heatmap.secondValues.isEmpty()) HeatmapLegend(heatmap, data.spec, Modifier.align(Alignment.Start))
+    }
+}
+

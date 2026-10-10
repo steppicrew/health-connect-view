@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.dashboard
 
+import de.steppicrew.healthconnectview.health.readsHeatmap
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
@@ -65,6 +66,11 @@ data class Tile(
      * its stages. Only what [companionsOf] offers for the type; stored whatever the size.
      */
     val companion: String? = null,
+    /**
+     * The calendar face over the calendar year so far (January to December, the days to come
+     * left blank) rather than the last 365 days. Stored whatever the face, like [span].
+     */
+    val calendarYear: Boolean = false,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -109,11 +115,25 @@ enum class TileFace {
      * idea, 09.10.2026. Weight tiles only ([facesFor]); a tap opens the body composition screen.
      */
     BODY,
+
+    /**
+     * The year as a calendar, one shade per day, as under a type's year chart -- the owner's
+     * idea, 10.10.2026. Over the last 365 days or the calendar year ([Tile.calendarYear]).
+     * Offered where the year can be read without the chart's own read ([readsHeatmap]):
+     * readings with only daily means took a minute, which a dashboard cannot wait for.
+     */
+    CALENDAR,
 }
 
-/** The faces a large tile of [typeName] offers: the body face only on weight. */
+/** The faces a large tile of [typeName] offers: the body face only on weight, the calendar where it reads quickly. */
 fun facesFor(typeName: String): List<TileFace> =
-    TileFace.entries.filter { it != TileFace.BODY || typeName == WEIGHT_TYPE }
+    TileFace.entries.filter { face ->
+        when (face) {
+            TileFace.BODY -> typeName == WEIGHT_TYPE
+            TileFace.CALENDAR -> RecordRegistry.specOrNull(typeName)?.let(::readsHeatmap) == true
+            else -> true
+        }
+    }
 
 /** The type whose tile may show the body face. */
 const val WEIGHT_TYPE = "WeightRecord"
@@ -185,8 +205,14 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     )
 
     /** Sets one tile's window and face. */
-    fun withOptions(id: String, span: Span, face: TileFace, companion: String? = null): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.id == id) it.copy(span = span, face = face, companion = companion) else it },
+    fun withOptions(
+        id: String,
+        span: Span,
+        face: TileFace,
+        companion: String? = null,
+        calendarYear: Boolean = false,
+    ): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.copy(span = span, face = face, companion = companion, calendarYear = calendarYear) else it },
     )
 
     /** Sets one tile's colour. */

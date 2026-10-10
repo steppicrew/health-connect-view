@@ -68,6 +68,9 @@
     <string name="tile_face_value">Value</string>
     <string name="tile_face_chart">Chart</string>
     <string name="tile_face_both">Both</string>
+    <string name="tile_face_calendar">Calendar</string>
+    <string name="tile_calendar_trailing">Last 365 days</string>
+    <string name="tile_calendar_this_year">This year</string>
     <string name="tile_options_companion">Curve alongside</string>
     <string name="tile_companion_none">None</string>
     <string name="tile_title_span" translatable="false">%1$s · %2$s</string>
