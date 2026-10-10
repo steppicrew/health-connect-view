@@ -509,6 +509,11 @@
     <string name="session_recovery_2">Frequenza cardiaca 2 min dopo la fine</string>
     <string name="session_after_end">Dopo la fine</string>
     <string name="session_after_legend">Dopo la linea tratteggiata: i primi minuti dopo la fine.</string>
+    <string name="session_drift_title">Prima e seconda metà</string>
+    <string name="session_drift_first">Prima metà</string>
+    <string name="session_drift_second">Seconda metà</string>
+    <string name="session_drift_per_distance">%1$s battiti/%2$s</string>
+    <string name="session_drift_note">Il tempo in movimento, senza pause, diviso in due metà uguali. Più battiti per chilometro alla stessa velocità significa che il cuore ha lavorato di più nella seconda metà: per il caldo, la perdita di liquidi o la stanchezza, ma anche per salite o vento. Il riscaldamento cade nella prima metà.</string>
     <string name="session_zones_note_data">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, la più alta raggiunta in almeno tre mesi dell’ultimo anno; puoi impostare la tua nelle impostazioni.</string>
     <string name="session_zones_note_set">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, impostata nelle impostazioni.</string>
     <string name="settings_max_hr">Frequenza cardiaca massima</string>

@@ -487,6 +487,11 @@
     <string name="session_recovery_2">終了 2 分後の心拍数</string>
     <string name="session_after_end">終了後</string>
     <string name="session_after_legend">破線より後：終了後の最初の数分間です。</string>
+    <string name="session_drift_title">前半と後半</string>
+    <string name="session_drift_first">前半</string>
+    <string name="session_drift_second">後半</string>
+    <string name="session_drift_per_distance">%1$s 拍/%2$s</string>
+    <string name="session_drift_note">休憩を除いた動いていた時間を、同じ長さの前半と後半に分けています。同じ速度で1キロあたりの拍数が多いほど、後半に心臓がより多く働いたことを意味します。暑さ、水分の喪失、疲労のほか、上り坂や風によっても起こります。ウォームアップは前半に入ります。</string>
     <string name="session_zones_note_data">ゾーンは最大心拍数 %1$s の 50–60 %% から 90–100 %% です。最大心拍数は過去 1 年間に少なくとも 3 か月で到達した最高値で、設定で独自に指定できます。</string>
     <string name="session_zones_note_set">ゾーンは設定で指定した最大心拍数 %1$s の 50–60 %% から 90–100 %% です。</string>
     <string name="settings_max_hr">最大心拍数</string>

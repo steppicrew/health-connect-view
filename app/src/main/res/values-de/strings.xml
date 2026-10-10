@@ -492,6 +492,11 @@
     <string name="session_recovery_2">Herzfrequenz 2 Min. nach dem Ende</string>
     <string name="session_after_end">Nach dem Ende</string>
     <string name="session_after_legend">Hinter der gestrichelten Linie: die ersten Minuten nach dem Ende.</string>
+    <string name="session_drift_title">Erste und zweite Hälfte</string>
+    <string name="session_drift_first">Erste Hälfte</string>
+    <string name="session_drift_second">Zweite Hälfte</string>
+    <string name="session_drift_per_distance">%1$s Schläge/%2$s</string>
+    <string name="session_drift_note">Die bewegte Zeit, ohne Pausen, in zwei gleich lange Hälften geteilt. Mehr Schläge pro Kilometer bei gleicher Geschwindigkeit heißt: Das Herz hat in der zweiten Hälfte mehr gearbeitet – durch Wärme, Flüssigkeitsverlust oder Ermüdung, aber auch durch Steigungen oder Wind. Das Aufwärmen fällt in die erste Hälfte.</string>
     <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten in mindestens drei Monaten des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen.</string>
     <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt.</string>
     <string name="settings_max_hr">Maximale Herzfrequenz</string>

@@ -487,6 +487,11 @@
     <string name="session_recovery_2">Detak jantung 2 menit setelah selesai</string>
     <string name="session_after_end">Setelah selesai</string>
     <string name="session_after_legend">Setelah garis putus-putus: menit-menit pertama setelah selesai.</string>
+    <string name="session_drift_title">Paruh pertama dan kedua</string>
+    <string name="session_drift_first">Paruh pertama</string>
+    <string name="session_drift_second">Paruh kedua</string>
+    <string name="session_drift_per_distance">%1$s detak/%2$s</string>
+    <string name="session_drift_note">Waktu bergerak, tanpa jeda, dibagi menjadi dua paruh yang sama panjang. Lebih banyak detak per kilometer pada kecepatan yang sama berarti jantung bekerja lebih keras di paruh kedua: karena panas, kehilangan cairan, atau kelelahan, tetapi juga karena tanjakan atau angin. Pemanasan jatuh di paruh pertama.</string>
     <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga bulan dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan.</string>
     <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan.</string>
     <string name="settings_max_hr">Detak jantung maksimum</string>

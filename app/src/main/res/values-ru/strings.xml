@@ -520,6 +520,11 @@
     <string name="session_recovery_2">Пульс через 2 мин после окончания</string>
     <string name="session_after_end">После окончания</string>
     <string name="session_after_legend">За пунктирной линией: первые минуты после окончания.</string>
+    <string name="session_drift_title">Первая и вторая половина</string>
+    <string name="session_drift_first">Первая половина</string>
+    <string name="session_drift_second">Вторая половина</string>
+    <string name="session_drift_per_distance">%1$s уд./%2$s</string>
+    <string name="session_drift_note">Время в движении, без пауз, разделённое на две равные половины. Больше ударов на километр при той же скорости означает, что во второй половине сердце работало больше: из-за жары, потери жидкости или усталости, но также из-за подъёмов или ветра. Разминка приходится на первую половину.</string>
     <string name="session_zones_note_data">Зоны — от 50–60 %% до 90–100 %% максимального пульса %1$s, самого высокого, достигнутого как минимум в трёх месяцах за последний год; вы можете задать свой в настройках.</string>
     <string name="session_zones_note_set">Зоны — от 50–60 %% до 90–100 %% максимального пульса %1$s, заданного в настройках.</string>
     <string name="settings_max_hr">Максимальный пульс</string>
