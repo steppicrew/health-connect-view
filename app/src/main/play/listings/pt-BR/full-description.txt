@@ -37,8 +37,9 @@ PRO — COMPRA ÚNICA, SEM ASSINATURA
 Tudo acima é gratuito e vai continuar assim. O Pro é uma única compra no app que desbloqueia:
 
 • Exportação em CSV de qualquer tipo de dado: cada registro com o app de origem, ou os totais diários sem duplicatas. Você escolhe onde salvar; o app não guarda cópia.
-• Relatórios em PDF para seu médico: pressão com médias da manhã e da noite, peso por semana, frequência cardíaca em repouso comparada à média de quatro semanas, glicemia por refeição e faixa-alvo.
+• Relatórios em PDF para seu médico: pressão com médias da manhã e da noite, peso por semana, frequência cardíaca em repouso comparada à média de quatro semanas, glicemia por refeição e faixa-alvo. Ou os quatro em um só relatório.
 • Blocos maiores — a semana, quatro semanas ou o ano como número, gráfico ou ambos, ou as fases do sono da última noite e seus últimos treinos com a curva que você escolher.
+• O ano como calendário, um tom por dia — abaixo de cada gráfico anual e como bloco.
 • Vários blocos para o mesmo número e uma cor própria para cada bloco.
 • Um bloco com as mudanças desta semana, o peso com a composição corporal e dois números comparados em um mesmo eixo de tempo.
 • Trajetos de treino como arquivos GPX.

@@ -28,23 +28,24 @@ Permissions are requested one data type at a time, and nothing is selected by de
 
 ACCURATE TOTALS
 
-When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are correct rather than double-counted, and it tells you when more than one app contributed.
+When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are not double-counted, and it tells you when more than one app contributed.
 
-Health Connect stores no link between a workout and the readings taken during it. Where this app shows a session's statistics, it says plainly that they are matched by time rather than pretending to a certainty the data does not support.
+Health Connect stores no link between a workout and the readings taken during it. Where this app shows a session's statistics, it says plainly that they are matched by time.
 
 PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
 • CSV export — any data type as a spreadsheet: every record with its source app, or Health Connect's deduplicated daily totals. The app keeps no copy.
-• PDF reports for your doctor — blood pressure with morning and evening averages, every reading graded; weight by week; resting heart rate against its four-week mean; blood glucose by meal and target range. Any period, saved or printed.
+• PDF reports for your doctor — blood pressure with morning and evening averages, every reading graded; weight by week; resting heart rate against its four-week mean; blood glucose by meal and target range. Any period, saved or printed. Or all four in one report.
 • Larger tiles — two cells wide or two by two, showing the week, four weeks or the year as a number, a chart or both, or last night's stages and your latest workouts with a curve of your choice.
+• The year as a calendar, one shade per day — under any year chart and as a tile.
 • Several tiles for the same figure, and a colour of your own for each tile.
 • A tile with what changed this week, weight with its body composition, and two figures compared on one time axis.
 • Workout routes as GPX files, to open in a map or training app.
 • Every future Pro feature, with no further charge.
 
-Purchases are handled entirely by Google Play. Your purchase follows your Google account to a new phone.
+Purchases go through Google Play and follow your Google account to a new phone.
 
 OPEN SOURCE
 

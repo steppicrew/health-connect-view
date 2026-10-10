@@ -37,8 +37,9 @@ PRO — EENMALIGE AANKOOP, GEEN ABONNEMENT
 Alles hierboven is gratis en blijft gratis. Pro is één in-app-aankoop die ontgrendelt:
 
 • CSV-export van elk gegevenstype: elke registratie met de bron-app, of de ontdubbelde dagtotalen van Health Connect. Jij kiest waar het bestand komt; de app houdt geen kopie.
-• PDF-rapporten voor je arts: bloeddruk met ochtend- en avondgemiddelden, gewicht per week, rusthartslag tegenover het 4-weeks gemiddelde, bloedglucose per maaltijd en doelbereik.
+• PDF-rapporten voor je arts: bloeddruk met ochtend- en avondgemiddelden, gewicht per week, rusthartslag tegenover het 4-weeks gemiddelde, bloedglucose per maaltijd en doelbereik. Of alle vier in één rapport.
 • Grotere tegels — de week, vier weken of het jaar als getal, grafiek of beide, of de slaapfasen van afgelopen nacht en je laatste trainingen met een curve naar keuze.
+• Het jaar als kalender, één tint per dag — onder elke jaargrafiek en als tegel.
 • Meerdere tegels voor hetzelfde cijfer en een eigen kleur per tegel.
 • Een tegel met wat er deze week veranderde, gewicht met lichaamssamenstelling, en twee cijfers vergeleken op één tijdas.
 • Trainingsroutes als GPX-bestanden.

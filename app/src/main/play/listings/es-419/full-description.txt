@@ -37,8 +37,9 @@ PRO — PAGO ÚNICO, SIN SUSCRIPCIÓN
 Todo lo anterior es gratis y lo seguirá siendo. Pro es una única compra dentro de la app que desbloquea:
 
 • Exportación CSV de cualquier tipo de datos: cada registro con su app de origen, o los totales diarios sin duplicados. Tú eliges dónde se guarda; la app no guarda copia.
-• Informes PDF para tu médico: presión arterial con medias de mañana y tarde, peso por semana, frecuencia cardíaca en reposo frente a su media de cuatro semanas, glucosa por comida y rango objetivo.
+• Informes PDF para tu médico: presión arterial con medias de mañana y tarde, peso por semana, frecuencia cardíaca en reposo frente a su media de cuatro semanas, glucosa por comida y rango objetivo. O los cuatro en un solo informe.
 • Mosaicos más grandes — la semana, cuatro semanas o el año como número, gráfico o ambos, o las fases de sueño de anoche y tus últimos entrenamientos con la curva que elijas.
+• El año como calendario, un tono por día, bajo cada gráfico anual y como mosaico.
 • Varios mosaicos para una misma cifra y un color propio para cada uno.
 • Un mosaico con los cambios de esta semana, el peso con su composición corporal y dos cifras comparadas en un mismo eje de tiempo.
 • Rutas de entrenamiento como archivos GPX.
