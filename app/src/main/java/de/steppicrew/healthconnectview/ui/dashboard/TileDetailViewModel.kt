@@ -210,6 +210,8 @@ data class TileDetailData(
      * daily means of readings; empty where a type's daily aggregate must be read for them.
      */
     val dayValues: Map<LocalDate, Double> = emptyMap(),
+    /** The apps behind the chart's buckets, where it read buckets; null where it did not. */
+    val aggregateOrigins: Set<String>? = null,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
     /**
@@ -818,9 +820,11 @@ class TileDetailViewModel(
             val capped = span.needsHistoryPermission(offset) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
+            val loadStarted = System.currentTimeMillis()
             val result = runCatching {
                 loadData(spec, span, offset, capped, selectedSource) { chart ->
                     ensureActive()
+                    Log.d(TAG, "chart of ${spec.type.simpleName} in ${System.currentTimeMillis() - loadStarted} ms")
                     _progress.value = null
                     // Only when there is something to show: a partial that turns out empty
                     // would flash a chart-less screen before the empty message.
@@ -834,6 +838,7 @@ class TileDetailViewModel(
             // put that result, or an error, over the newer load's screen.
             ensureActive()
             _progress.value = null
+            Log.d(TAG, "load of ${spec.type.simpleName} in ${System.currentTimeMillis() - loadStarted} ms")
             result.fold(
                 onSuccess = { data ->
                     val empty = data.points.isEmpty() && data.total == null &&
@@ -991,7 +996,9 @@ class TileDetailViewModel(
                 }.getOrDefault(emptySet())
             }
         }
-        val aggregateOriginsRead = metric?.let { aggregate ->
+        // From the chart's buckets where it had them: one aggregate over a year of total
+        // calories, only to name its apps, took 20 s on the phone.
+        val aggregateOriginsRead = chart.aggregateOrigins?.let { known -> async { known } } ?: metric?.let { aggregate ->
             async {
                 runCatching { repository.contributingApps(aggregate, span.localFilter(offset)) }
                     .getOrDefault(emptySet())
@@ -1129,6 +1136,7 @@ class TileDetailViewModel(
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val first = span.startDate(offset)
         val end = span.endDate(offset)
+        val started = System.currentTimeMillis()
         return runCatching {
             // Blood pressure's diastolic from the same buckets: a day is graded on both.
             val second = spec.secondaryAggregate
@@ -1150,6 +1158,7 @@ class TileDetailViewModel(
                     HeatDay(bucket.startTime.toLocalDate(), value, other, floor)
                 }
             }
+            Log.d(TAG, "heatmap: ${days.size} days of ${spec.type.simpleName} in ${System.currentTimeMillis() - started} ms")
             val floor = days.mapNotNull { it.floor }.takeIf { it.isNotEmpty() }?.average()
             yearHeatmap(days.associate { it.date to it.value }, first, end.minusDays(1), fromZero = countsFromZero(spec), floor = floor)
                 ?.let { map ->
