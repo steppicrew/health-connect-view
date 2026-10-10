@@ -1,0 +1,1 @@
+1.4.0 — The year as a calendar, one shade per day, under year charts and as a tile face (Pro). One PDF for the doctor with blood pressure, weight, resting heart rate and glucose (Pro). Sleep stages in the CSV export. A year of calories loads in a second. A new tile appears where you are looking.

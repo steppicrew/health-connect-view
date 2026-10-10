@@ -1,0 +1,1 @@
+1.4.0 — Rok jako kalendarz, jeden odcień na dzień, pod wykresami rocznymi i jako widok kafelka (Pro). Jeden PDF dla lekarza z ciśnieniem, wagą, tętnem spoczynkowym i glukozą (Pro). Fazy snu w eksporcie CSV. Rok kalorii wczytuje się w sekundę. Nowy kafelek pojawia się tam, gdzie patrzysz.

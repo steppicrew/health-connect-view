@@ -1,0 +1,1 @@
+1.4.0 — L’année en calendrier, une nuance par jour, sous les graphiques annuels et en vignette (Pro). Un seul PDF pour votre médecin avec tension, poids, fréquence cardiaque au repos et glycémie (Pro). Phases de sommeil dans l’export CSV. Une année de calories se charge en une seconde. Une nouvelle vignette apparaît là où vous regardez.

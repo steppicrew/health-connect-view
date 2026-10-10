@@ -1,0 +1,1 @@
+1.4.0 — Das Jahr als Kalender, eine Farbstufe pro Tag, unter Jahresdiagrammen und als Kachelansicht (Pro). Ein PDF für die Arztpraxis mit Blutdruck, Gewicht, Ruhepuls und Blutzucker (Pro). Schlafphasen im CSV-Export. Ein Jahr Kalorien lädt in einer Sekunde. Neue Kacheln erscheinen dort, wo Sie gerade sind.
