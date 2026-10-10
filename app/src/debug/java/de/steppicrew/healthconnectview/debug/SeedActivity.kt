@@ -50,12 +50,14 @@ class SeedActivity : ComponentActivity() {
         const val TAG = "SampleDataSeeder"
 
         /**
-         * What Pro adds, on one screen: a night's stages under its heart rate, the day's
-         * workouts as curves, a weight's four weeks, and tile colours throughout.
+         * What Pro adds, on one screen: a year of steps as a calendar, a night's stages under
+         * its heart rate, the day's workouts as curves, a weight's four weeks, and tile colours
+         * throughout. The calendar needs the seeder's year of steps.
          */
         const val SHOWCASE = """[
             {"type": "StepsRecord", "color": "BLUE"},
             {"type": "HeartRateRecord", "color": "CORAL"},
+            {"type": "StepsRecord", "id": "StepsRecord#2", "w": 2, "h": 1, "span": "YEAR", "face": "CALENDAR", "color": "BLUE"},
             {"type": "SleepSessionRecord", "w": 2, "h": 1, "face": "BOTH", "with": "HeartRateRecord", "color": "PURPLE"},
             {"type": "ExerciseSessionRecord", "w": 2, "h": 1, "face": "BOTH", "with": "HeartRateRecord", "color": "GREEN"},
             {"type": "WeightRecord", "w": 2, "h": 1, "span": "MONTH", "face": "BOTH", "color": "TEAL"}

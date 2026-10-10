@@ -48,6 +48,10 @@ object SampleDataSeeder {
 
     private const val DAYS = 30
 
+    /** How far back the year of daily steps reaches, and how often a day of it is left empty. */
+    private const val YEAR_DAYS = 365
+    private const val YEAR_GAP_PERCENT = 4
+
     /** Every type this seeder writes; cleared before re-seeding so fixtures cannot stack. */
     private val SEEDED_TYPES = listOf(
         StepsRecord::class,
@@ -116,6 +120,27 @@ private val SEEDED_WORKOUTS = listOf(
         // not restart at midnight where one seeded day hands over to the next.
         var bpm = 51
         val records = buildList<Record> {
+            // A year of steps before the detailed month, one record a day, so the year
+            // calendar in the Pro screenshot is a year and not a month at its end: busier on
+            // weekends, quieter in winter, and a day now and then with nothing recorded.
+            for (dayOffset in DAYS until YEAR_DAYS) {
+                val dayStart = today.minus(dayOffset.toLong(), ChronoUnit.DAYS)
+                if (random.nextInt(100) < YEAR_GAP_PERCENT) continue
+                val date = dayStart.atZone(zone).toLocalDate()
+                val weekend = date.dayOfWeek.value >= 6
+                val season = kotlin.math.cos((date.dayOfYear - 200) / 365.0 * 2 * Math.PI)
+                val count = 7_500 + season * 2_000 + (if (weekend) 2_500 else 0) + random.nextInt(-3_000, 3_500)
+                add(
+                    StepsRecord(
+                        startTime = dayStart.plus(7, ChronoUnit.HOURS),
+                        startZoneOffset = zone.rules.getOffset(dayStart),
+                        endTime = dayStart.plus(21, ChronoUnit.HOURS),
+                        endZoneOffset = zone.rules.getOffset(dayStart),
+                        count = count.toLong().coerceAtLeast(800),
+                        metadata = metadata(),
+                    ),
+                )
+            }
             repeat(DAYS) { index ->
                 val dayOffset = DAYS - 1 - index
                 val dayStart = today.minus(dayOffset.toLong(), ChronoUnit.DAYS)
@@ -467,7 +492,7 @@ private val SEEDED_WORKOUTS = listOf(
         // alone -- deleting by time range would take real data with it on a device that has
         // any.
         val fixtureWindow = TimeRangeFilter.between(
-            today.minus(DAYS.toLong() + 1, ChronoUnit.DAYS),
+            today.minus(YEAR_DAYS.toLong() + 1, ChronoUnit.DAYS),
             now,
         )
         SEEDED_TYPES.forEach { type ->
