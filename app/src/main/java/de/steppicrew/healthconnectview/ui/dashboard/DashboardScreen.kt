@@ -130,6 +130,7 @@ import de.steppicrew.healthconnectview.ui.components.StageTotals
 import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.night
 import de.steppicrew.healthconnectview.health.counted
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.RefreshBox
@@ -1067,8 +1068,9 @@ private fun TileChart(
 ) {
     val extent = chart.extent
     // A day of sleep is last night, and a night with stages is drawn as them: the owner's
-    // idea, 09.10.2026. A band from 23:02 to 05:15 says when; the stages say how.
-    val night = chart.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
+    // idea, 09.10.2026. A band from 23:02 to 05:15 says when; the stages say how. The night is
+    // the day's longest sleep, so a nap with stages does not take its place.
+    val night = chart.sessions.night()?.takeIf { it.stages.isNotEmpty() }
     if (companion != null && extent != null) {
         CompanionCurves(companion.first, companion.second, compactAxis, modifier)
     } else if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
@@ -1213,7 +1215,7 @@ private fun SessionCount(
             )
         }
         // A night's stages where there is room: the moon beneath "6h 13m" said only "slept".
-        val night = data.sessions.lastOrNull { it.kind == Session.Kind.SLEEP && it.stages.isNotEmpty() }
+        val night = data.sessions.night()?.takeIf { it.stages.isNotEmpty() }
         if (night != null && stagesAt != StageTotalsAt.NONE) {
             StageTotals(night.stages, Modifier.padding(top = 4.dp), stacked = stagesAt == StageTotalsAt.COLUMN)
             return@Column
