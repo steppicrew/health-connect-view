@@ -1,0 +1,1 @@
+1.3.0 — Trainings: Herzfrequenz gegen Tempo, erste gegen zweite Hälfte, und die Trainingszeit neben der Anzahl. Ruhepuls: das nächtliche Minimum nach Trainings- gegen Ruhetage. Vergleichen bietet nur Typen mit Daten, zeigt eine Einheit in einem Diagramm und einen Wert in beiden. Gewichtskachel (Pro): Ansicht „Körper“ mit Fett, Magermasse, Wasser und Knochen.

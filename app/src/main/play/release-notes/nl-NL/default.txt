@@ -1,1 +1,1 @@
-1.2.1 — Trainingen: de hartslagcurve is weer een rustige lijn. Waar één app tijdens een training twee opnamen tegelijk schreef, sprong de curve tussen beide heen en weer.
+1.3.0 — Trainingen: hartslag tegenover snelheid, eerste helft tegen tweede, en de trainingstijd naast het aantal. Rusthartslag: het nachtelijke minimum na trainingsdagen tegenover rustdagen. Vergelijken biedt alleen typen met gegevens, één eenheid in één grafiek en een waarde in beide. Gewichtstegel (Pro): weergave Lichaam met vet, vetvrije massa, water en botten.
