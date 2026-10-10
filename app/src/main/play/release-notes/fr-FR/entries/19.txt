@@ -1,0 +1,1 @@
+1.2.1 — Entraînements : la courbe de fréquence cardiaque est de nouveau une ligne régulière. Lorsqu'une application écrivait deux enregistrements à la fois pendant un entraînement, elle sautait de l'un à l'autre.

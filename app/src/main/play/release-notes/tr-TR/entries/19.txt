@@ -1,0 +1,1 @@
+1.2.1 — Antrenmanlar: Nabız eğrisi yeniden düzgün bir çizgi. Bir uygulama antrenman sırasında aynı anda iki kayıt yazdığında eğri ikisi arasında gidip geliyordu.

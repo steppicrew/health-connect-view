@@ -1,0 +1,1 @@
+1.2.1 — Trainingen: de hartslagcurve is weer een rustige lijn. Waar één app tijdens een training twee opnamen tegelijk schreef, sprong de curve tussen beide heen en weer.

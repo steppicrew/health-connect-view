@@ -1,0 +1,1 @@
+1.2.1 — Treningi: krzywa tętna znów jest gładką linią. Gdy jedna aplikacja zapisywała podczas treningu dwa nagrania naraz, krzywa przeskakiwała między nimi.
