@@ -1,1 +1,3 @@
+1.4.1 — Blocos grandes de treinos: o número abre a lista do dia, a curva o seu treino e, com dois treinos, cada curva abre o seu.
+
 1.4.0 — O ano como calendário, um tom por dia, abaixo dos gráficos anuais e como bloco (Pro). Um só PDF para seu médico com pressão, peso, frequência cardíaca em repouso e glicemia (Pro). Fases do sono na exportação CSV. Um ano de calorias carrega em um segundo. Um bloco novo aparece onde você está olhando.

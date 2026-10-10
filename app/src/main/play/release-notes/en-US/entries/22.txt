@@ -1,0 +1,1 @@
+1.4.1 — Large workout tiles: the count opens the day’s list, the curve its workout, and with two workouts each curve opens its own.

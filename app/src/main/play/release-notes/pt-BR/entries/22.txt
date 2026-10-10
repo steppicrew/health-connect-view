@@ -1,0 +1,1 @@
+1.4.1 — Blocos grandes de treinos: o número abre a lista do dia, a curva o seu treino e, com dois treinos, cada curva abre o seu.

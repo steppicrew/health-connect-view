@@ -1,1 +1,3 @@
+1.4.1 — Große Trainingskacheln: Die Anzahl öffnet die Liste des Tages, die Kurve ihr Training, und bei zwei Trainings öffnet jede Kurve ihr eigenes.
+
 1.4.0 — Das Jahr als Kalender, eine Farbstufe pro Tag, unter Jahresdiagrammen und als Kachelansicht (Pro). Ein PDF für die Arztpraxis mit Blutdruck, Gewicht, Ruhepuls und Blutzucker (Pro). Schlafphasen im CSV-Export. Ein Jahr Kalorien lädt in einer Sekunde. Neue Kacheln erscheinen dort, wo Sie gerade sind.
