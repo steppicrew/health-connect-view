@@ -237,6 +237,14 @@ fun LineChart(
      */
     holdSelection: Boolean = false,
     /**
+     * A moment another chart on the same time axis is reading: shown here as this chart's own
+     * value nearest to it, so a comparison reads both charts at one touch. Ignored while this
+     * chart is touched itself.
+     */
+    linkedTime: Instant? = null,
+    /** The moment this chart is reading, or null once released, for another's [linkedTime]. */
+    onSelectTime: ((Instant?) -> Unit)? = null,
+    /**
      * How a value is written, on the axis and in the readout, where a plain number would be
      * wrong: a pace is minutes and seconds, and 7,73 reads as nothing a runner knows.
      */
@@ -382,6 +390,12 @@ fun LineChart(
     val textMeasurer = rememberTextMeasurer()
 
     var selected by remember(points) { mutableStateOf<Int?>(null) }
+    if (onSelectTime != null) {
+        val report by rememberUpdatedState(onSelectTime)
+        LaunchedEffect(selected, points) { report(selected?.let(points::getOrNull)?.time) }
+    }
+    // What the readout and the marker show: this chart's own touch, else the linked moment.
+    val shown = selected ?: remember(points, linkedTime) { linkedTime?.let { nearestWithin(points, it) } }
 
     // A bar is a slot centred on its day, so across days the plot runs half a slot past the
     // first and last bar. Everything placed by time -- the bars, the tick labels, the touch
@@ -455,7 +469,7 @@ fun LineChart(
         // the chart does not shift the layout under the finger. Nothing can be selected on a
         // chart that ignores touch, so there it would only be an empty row.
         if (interactive) {
-            val selectedPoint = selected?.let(points::getOrNull)
+            val selectedPoint = shown?.let(points::getOrNull)
             if (overlays.isNotEmpty() || stripLabel != null) {
                 OverlayReadout(
                     time = selectedPoint?.time,
@@ -834,7 +848,7 @@ fun LineChart(
                 }
 
                 // The touched moment on this line too, so the readout's value has a place.
-                selected?.let { at -> line.nearest(points[at].time) }?.let { point ->
+                shown?.let { at -> line.nearest(points[at].time) }?.let { point ->
                     val x = xForTime(point.time.toEpochMilli()) ?: return@let
                     drawCircle(color = surfaceColor, radius = 6.dp.toPx(), center = Offset(x, yOf(point.value)))
                     drawCircle(color = line.color, radius = 4.dp.toPx(), center = Offset(x, yOf(point.value)))
@@ -999,7 +1013,7 @@ fun LineChart(
 
             // The selected point: a full-height rule plus a marker, so the position is
             // readable even where the line is flat and a dot alone would be ambiguous.
-            selected?.let { index ->
+            shown?.let { index ->
                 val x = xFor(index)
                 val y = yFor(points[index].value)
                 drawLine(
@@ -1606,6 +1620,20 @@ private val TICK_MONTH_STEPS = listOf(1L, 2L, 3L, 6L, 12L)
 
 private const val DAYS_PER_WEEK = 7L
 private const val DAYS_PER_MONTH = 30L
+
+/**
+ * The point of [points] nearest to [time], or null where none lies within the series' usual
+ * spacing of it: a chart of weigh-ins has nothing to say about a Tuesday between two of them,
+ * and its nearest reading a week off would read as that day's.
+ */
+internal fun nearestWithin(points: List<Point>, time: Instant): Int? {
+    if (points.isEmpty()) return null
+    val nearest = points.indices.minBy { kotlin.math.abs(Duration.between(points[it].time, time).toMillis()) }
+    if (points.size == 1) return nearest.takeIf { points[it].time == time }
+    val gaps = points.zipWithNext { a, b -> Duration.between(a.time, b.time).toMillis() }.filter { it > 0 }.sorted()
+    val usual = gaps.getOrNull(gaps.size / 2) ?: return null
+    return nearest.takeIf { kotlin.math.abs(Duration.between(points[it].time, time).toMillis()) <= usual }
+}
 
 /**
  * Maps a fraction of the whole series onto a fraction of the visible viewport.
