@@ -236,6 +236,13 @@ class DashboardViewModel(
     private var cache: CacheKey? = null
 
     /**
+     * The day the tiles on screen were read for. A reload of the same day keeps them while it
+     * runs; another day's values must not stand under the new date, so a day step shows the
+     * tiles loading instead.
+     */
+    private var tilesDate: LocalDate? = null
+
+    /**
      * Everything a tile's value depends on. Permissions are part of it, so a grant made in
      * settings takes effect on return rather than waiting out the TTL.
      */
@@ -474,12 +481,13 @@ class DashboardViewModel(
      */
     private suspend fun loadTiles() {
         val date = _state.value.date
+        val sameDay = tilesDate == date
         val insightsTile = config.tiles.firstOrNull { it.isInsights }
         _state.update { state ->
             state.copy(
                 layout = config.tiles.map(Tile::id),
                 insights = insightsTile?.let { tile ->
-                    InsightsTileData(tile, state.insights?.insights, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
+                    InsightsTileData(tile, state.insights?.insights?.takeIf { sameDay }, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
                 },
             )
         }
@@ -514,7 +522,7 @@ class DashboardViewModel(
             return
         }
 
-        val previous = _state.value.tiles.associateBy { it.tile.id }
+        val previous = if (sameDay) _state.value.tiles.associateBy { it.tile.id } else emptyMap()
         val placeholders = config.tiles.mapNotNull { tile ->
             val spec = tile.spec ?: return@mapNotNull null
             val requested = when (val chosen = sources[tile.typeName]) {
@@ -533,8 +541,8 @@ class DashboardViewModel(
             )
         }
 
-        // Only the first load has nothing to show. Afterwards the previous values stay on
-        // screen while the re-read runs: replacing them with empty placeholders is what made
+        // Only the first load of a day has nothing to show. Afterwards the previous values stay
+        // on screen while the re-read runs: replacing them with empty placeholders is what made
         // the dashboard blank and refill on the way back from a tile, and the cache above
         // only hides that for as long as its TTL lasts. A stale number for a moment is a
         // better answer than no number, since it is what the tile showed a second ago.
@@ -568,6 +576,7 @@ class DashboardViewModel(
             }
         }
         _state.update { it.copy(tiles = shown, loading = false) }
+        tilesDate = date
 
         val started = System.currentTimeMillis()
         val gate = Semaphore(MAX_CONCURRENT_TILES)
