@@ -1,0 +1,1 @@
+1.4.0 — El año como calendario, un tono por día, bajo los gráficos anuales y como vista de mosaico (Pro). Un solo PDF para tu médico con presión arterial, peso, frecuencia cardíaca en reposo y glucosa (Pro). Fases del sueño en la exportación CSV. Un año de calorías carga en un segundo. Los mosaicos nuevos aparecen donde estás mirando.

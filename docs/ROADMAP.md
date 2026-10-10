@@ -597,16 +597,18 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 
 Before the next release after 1.3.0, from the owner, 10.10.2026:
 
-- [ ] **Name the year calendar in the Pro descriptions** -- `pro_body`, `pro_owned_body` and the
+- [x] **Name the year calendar in the Pro descriptions** -- `pro_body`, `pro_owned_body` and the
   store listing's Pro part in every language (Play caps the full description at 4,000
   characters; the longest stood at 3,984): the calendar under a year and as a tile face, and
   the combined doctor report. Then `publishReleaseListing`, since `release.sh` skips committed
   listing text.
-- [ ] **Store screenshots with the calendar** -- the year calendar in the Pro shots: a large
+- [x] **Store screenshots with the calendar** -- the year calendar in the Pro shots: a large
   tile with the calendar face beside the showcase's other tiles, and the detail screen's
   calendar under a year, marked "Pro" like step 66's shot. From seeded data (`SeedActivity -e
   dashboard showcase` set up with a calendar tile, a year of the type seeded), added to
   `store-assets.sh`'s routes, in all 18 languages; `release.sh --shots` recaptures them.
+  Done for 1.4.0: the seeder writes a year of daily steps, and the showcase has a 2x1 steps
+  calendar under the two small tiles.
 
 Before the next release, from the owner, 09.10.2026:
 

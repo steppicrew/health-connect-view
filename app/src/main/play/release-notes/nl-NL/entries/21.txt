@@ -1,0 +1,1 @@
+1.4.0 — Het jaar als kalender, één tint per dag, onder jaargrafieken en als tegelweergave (Pro). Eén pdf voor je arts met bloeddruk, gewicht, rusthartslag en bloedglucose (Pro). Slaapfasen in de CSV-export. Een jaar calorieën laadt in een seconde. Een nieuwe tegel verschijnt waar je kijkt.

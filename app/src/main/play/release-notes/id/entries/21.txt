@@ -1,0 +1,1 @@
+1.4.0 — Setahun sebagai kalender, satu warna per hari, di bawah diagram tahunan dan sebagai tampilan kartu (Pro). Satu PDF untuk dokter berisi tekanan darah, berat badan, detak jantung istirahat, dan glukosa (Pro). Tahap tidur dalam ekspor CSV. Kalori setahun dimuat dalam sedetik. Kartu baru muncul di tempat yang sedang Anda lihat.
