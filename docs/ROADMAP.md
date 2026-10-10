@@ -728,9 +728,9 @@ doctor report and the year heatmap; the rest unranked.
     zero every day looked alike); generally a stack's first part is the floor. The other
     counted types -- steps, distance, floors, active calories, water, nutrition -- can be
     zero on a day and keep zero.
-75. [ ] **Cycle overview's year window is Pro** -- the owner's decision, 10.10.2026
-    (`LONG_RANGE_HISTORY`). Note before building: the feature is declared but enforced
-    nowhere, and every type's year chart is free, so gating only the cycle would stand alone.
+75. [-] **Cycle overview's year window is Pro** -- dropped by the owner, 10.10.2026: every
+    other year view is free, so gating only the cycle's would stand alone and read as taking
+    something away. (`LONG_RANGE_HISTORY` stays declared and unenforced.)
 76. [ ] **A cycle tile** -- the owner left the form to me, 10.10.2026. Plan: today's cycle day
     and the usual length from the past cycles ("Tag 12 · meist 28 Tage"), and on a wide tile
     the current cycle as a strip with the bleeding days marked; a tap opens the overview.
