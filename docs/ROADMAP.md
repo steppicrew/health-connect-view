@@ -779,9 +779,9 @@ doctor report and the year heatmap; the rest unranked.
     and a cold start. Moving the date by a day re-reads almost the same year, so keep the
     daily totals already read in memory, per type and writer filter, and fetch only the days
     missing: a cache of numbers, never on disk, dropped when the app leaves the foreground or
-    permissions change (rule 3 says records live for the current screen; settle whether a
-    shared in-memory cache of daily totals fits it before building). Today's figure is never
-    cached, since it is still growing.
+    permissions change. Today's figure is never cached, since it is still growing. The owner,
+    11.10.2026: build it without the cache first and time stepping a day back on the phone
+    with a dashboard of year tiles; add the cache only if that is too slow.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
