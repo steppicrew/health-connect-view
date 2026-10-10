@@ -18,7 +18,7 @@ FITUR
 
 DATA ANDA TETAP DI PONSEL ANDA
 
-Aplikasi ini tidak memiliki izin internet. Ini bukan "kami berjanji tidak mengunggah apa pun" — Android sendiri yang mencegahnya membuat koneksi jaringan apa pun. Tanpa akun, server, analitik, iklan, atau pelacakan.
+Aplikasi ini tidak memiliki izin internet. Android sendiri yang mencegahnya membuat koneksi jaringan apa pun. Tanpa akun, server, analitik, iklan, atau pelacakan.
 
 Aplikasi ini hanya membaca: menampilkan data kesehatan Anda tetapi tidak bisa mengubah atau menghapusnya. Tidak ada yang disimpan kecuali Anda mengekspornya sendiri, jadi mencopot pemasangan menghapus semuanya. Rute hanya dibaca jika Anda izinkan dan digambar tanpa peta.
 
@@ -28,26 +28,27 @@ Izin diminta per jenis data, dan tidak ada yang dipilih secara default. Izinkan 
 
 TOTAL YANG TEPAT
 
-Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tepat dan tidak terhitung dua kali, serta memberi tahu Anda jika lebih dari satu aplikasi berkontribusi.
+Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali, serta memberi tahu Anda jika lebih dari satu aplikasi berkontribusi.
 
-Health Connect tidak mengaitkan latihan dengan hasil ukur yang diambil selama latihan itu. Di tempat aplikasi menampilkan angka sebuah sesi, aplikasi menyatakan dengan jelas bahwa angka itu dicocokkan berdasarkan waktu.
+Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Saat menampilkan angka sebuah sesi, aplikasi menyatakan dengan jelas bahwa angka itu dicocokkan berdasarkan waktu.
 
 PRO — SEKALI BELI, TANPA LANGGANAN
 
 Semua yang di atas gratis dan akan tetap gratis. Pro adalah satu pembelian dalam aplikasi yang membuka:
 
-• Ekspor CSV untuk jenis data apa pun: setiap catatan dengan aplikasi sumbernya, atau total harian tanpa duplikat. Anda yang memilih tempat file disimpan; aplikasi tidak menyimpan salinan.
-• Laporan PDF untuk dokter Anda: tekanan darah dengan rata-rata pagi dan malam, berat badan per minggu, detak jantung istirahat terhadap rata-rata empat minggu, glukosa menurut waktu makan dan rentang target.
+• Ekspor CSV untuk jenis data apa pun: setiap catatan dengan aplikasi sumbernya, atau total harian tanpa duplikat. Aplikasi tidak menyimpan salinan.
+• Laporan PDF untuk dokter Anda: tekanan darah dengan rata-rata pagi dan malam, berat badan per minggu, detak jantung istirahat terhadap rata-rata empat minggu, glukosa menurut waktu makan dan rentang target. Atau keempatnya dalam satu laporan.
 • Kartu lebih besar — minggu, empat minggu, atau tahun sebagai angka, diagram, atau keduanya, atau tahap tidur semalam dan latihan terakhir Anda dengan kurva pilihan Anda.
+• Setahun sebagai kalender, satu warna per hari — di bawah setiap diagram tahunan dan sebagai kartu.
 • Beberapa kartu untuk angka yang sama, dan warna sendiri untuk setiap kartu.
 • Kartu berisi perubahan minggu ini, berat badan dengan komposisi tubuh, dan dua angka yang dibandingkan pada satu sumbu waktu.
 • Rute latihan sebagai file GPX.
 • Semua fitur Pro mendatang, tanpa biaya tambahan.
 
-Pembelian sepenuhnya ditangani Google Play dan ikut pindah ke ponsel baru Anda.
+Pembelian lewat Google Play dan ikut pindah ke ponsel baru Anda.
 
 OPEN SOURCE
 
-Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di atas dapat diperiksa.
+Kode sumbernya terbuka untuk umum, jadi setiap pernyataan dapat diperiksa.
 
 Ada fitur yang Anda perlukan? Kirim email ke hcview@steppicrew.de.

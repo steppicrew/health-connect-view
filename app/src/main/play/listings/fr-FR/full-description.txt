@@ -18,13 +18,13 @@ CE QU’ELLE FAIT
 
 VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 
-Cette application n’a aucune autorisation Internet. Ce n’est pas « nous promettons de ne rien envoyer » : Android lui-même l’empêche d’établir la moindre connexion réseau. Pas de compte, pas de serveur, pas d’analyse, pas de publicité, pas de suivi.
+Cette application n’a aucune autorisation Internet. Android lui-même l’empêche d’établir la moindre connexion réseau. Pas de compte, pas de serveur, pas d’analyse, pas de publicité, pas de suivi.
 
 Elle est en lecture seule : elle affiche vos données de santé sans pouvoir les modifier ni les supprimer. Rien n’est écrit sur le stockage sauf si vous l’exportez vous-même. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
 
 VOUS CHOISISSEZ CE QUE VOUS PARTAGEZ
 
-Les autorisations sont demandées type par type, et rien n’est présélectionné. Autorisez seulement ce que vous voulez voir, et changez d’avis quand vous voulez dans les paramètres de Santé Connect.
+Les autorisations sont demandées type par type, et rien n’est présélectionné. Autorisez seulement ce que vous voulez voir ; changez d’avis à tout moment dans Santé Connect.
 
 DES TOTAUX JUSTES
 
@@ -36,18 +36,19 @@ PRO — ACHAT UNIQUE, SANS ABONNEMENT
 
 Tout ce qui précède est gratuit et le restera. Pro est un achat intégré unique qui débloque :
 
-• L’export CSV de n’importe quel type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. L’appli n’en garde aucune copie.
-• Des rapports PDF pour votre médecin : tension du matin et du soir, poids, fréquence cardiaque au repos et glycémie, sur la période de votre choix.
+• L’export CSV de tout type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. L’appli n’en garde aucune copie.
+• Des rapports PDF pour votre médecin : tension du matin et du soir, poids, fréquence cardiaque au repos et glycémie, sur la période de votre choix. Ou les quatre en un seul rapport.
 • Des vignettes plus grandes — la semaine, quatre semaines ou l’année en chiffre ou en graphique, ou la nuit dernière et vos derniers entraînements avec la courbe de votre choix.
+• L’année en calendrier, une nuance par jour — sous chaque graphique annuel et en vignette.
 • Plusieurs vignettes pour un même chiffre, et une couleur pour chacune.
 • Une vignette des évolutions de la semaine, le poids avec la composition corporelle, et deux chiffres comparés sur un même axe du temps.
 • Les parcours d’entraînement en fichiers GPX.
 • Toutes les futures fonctions Pro, sans frais supplémentaires.
 
-Les achats sont entièrement gérés par Google Play et vous suivent sur un nouveau téléphone.
+Les achats passent par Google Play et vous suivent sur un nouveau téléphone.
 
 OPEN SOURCE
 
-Le code source est public : chaque affirmation ci-dessus peut être vérifiée.
+Le code source est public : chaque affirmation est vérifiable.
 
 Il vous manque une fonction ? Écrivez à hcview@steppicrew.de.

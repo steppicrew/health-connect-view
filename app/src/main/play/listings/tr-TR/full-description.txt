@@ -37,8 +37,9 @@ PRO — TEK SEFERLİK SATIN ALMA, ABONELİK YOK
 Yukarıdakilerin hepsi ücretsizdir ve öyle kalacaktır. Pro, şunları açan tek bir uygulama içi satın almadır:
 
 • Herhangi bir veri türünün CSV olarak dışa aktarılması: kaynak uygulamasıyla her kayıt veya tekilleştirilmiş günlük toplamlar. Dosyanın nereye gideceğini siz seçersiniz; uygulama kopya tutmaz.
-• Doktorunuz için PDF raporlar: sabah ve akşam ortalamalarıyla tansiyon, haftalara göre kilo, 4 haftalık ortalamasına göre dinlenme nabzı, öğüne ve hedef aralığa göre kan şekeri.
+• Doktorunuz için PDF raporlar: sabah ve akşam ortalamalarıyla tansiyon, haftalara göre kilo, 4 haftalık ortalamasına göre dinlenme nabzı, öğüne ve hedef aralığa göre kan şekeri. Ya da dördü tek bir raporda.
 • Daha büyük kutucuklar — haftayı, dört haftayı veya yılı sayı, grafik ya da ikisi birden olarak, ya da dün geceki uyku evrelerini ve son antrenmanlarınızı seçtiğiniz bir eğriyle gösterir.
+• Yıl takvim olarak, her gün bir renk tonuyla — her yıllık grafiğin altında ve kutucukta.
 • Aynı değer için birden fazla kutucuk ve her kutucuk için ayrı bir renk.
 • Bu haftaki değişiklikleri gösteren bir kutucuk, vücut kompozisyonuyla birlikte kilo ve tek bir zaman ekseninde karşılaştırılan iki değer.
 • GPX dosyası olarak antrenman rotaları.

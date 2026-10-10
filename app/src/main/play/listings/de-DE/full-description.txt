@@ -18,7 +18,7 @@ WAS SIE KANN
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
-Diese App hat keine Internet-Berechtigung. Kein bloßes Versprechen — Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
+Diese App hat keine Internet-Berechtigung. Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
 
 Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben, außer Sie exportieren es selbst. Routen werden nur gelesen, wenn Sie sie freigeben, und ohne Karte gezeichnet — für eine Karte müsste die App ins Internet.
 
@@ -37,11 +37,12 @@ PRO — EINMALKAUF, KEIN ABO
 Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
 
 • CSV-Export — jeden Datentyp als Tabelle: alle Datensätze mit der schreibenden App oder die entdoppelten Tagessummen. Die App behält keine Kopie.
-• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck morgens und abends, jede Messung eingestuft; Gewicht, Ruhepuls und Blutzucker. Zeitraum frei wählbar, zum Speichern oder Drucken.
+• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck morgens und abends, jede Messung eingestuft; Gewicht, Ruhepuls und Blutzucker. Zeitraum frei wählbar. Oder alle vier in einem Bericht.
 • Größere Kacheln — Woche, vier Wochen oder Jahr als Zahl, Diagramm oder beides, oder die Schlafphasen der letzten Nacht und Ihre letzten Trainings mit einer Kurve Ihrer Wahl.
+• Das Jahr als Kalender, eine Farbstufe pro Tag — unter jedem Jahresdiagramm und als Kachel.
 • Mehrere Kacheln für denselben Wert und eine eigene Farbe für jede Kachel.
 • Eine Kachel mit den Veränderungen dieser Woche, Gewicht mit Körperzusammensetzung und zwei Werte im Vergleich auf einer Zeitachse.
-• Trainingsrouten als GPX-Datei für Karten- oder Trainings-Apps.
+• Trainingsrouten als GPX-Datei.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
 Der Kauf läuft über Google Play und zieht mit Ihrem Konto auf ein neues Handy um.

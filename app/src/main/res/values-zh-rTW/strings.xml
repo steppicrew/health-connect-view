@@ -241,9 +241,9 @@
     <string name="bp_parts_rule">早上為 4:00 至 13:59，晚上從 14:00 開始。午夜之後、4:00 之前的測量計入前一晚。多個應用程式儲存的同一次測量只計算一次。\n\n顏色依照歐洲高血壓學會針對診間測量的分級：偏低為低於 90/60，正常為低於 130/85，正常偏高為不超過 139/89，第 1 級為 140/90 起，第 2 級為 160/100 起。以兩個數值中較高者為準。在家測量時，135/85 以上即視為偏高。僅供參考，並非診斷。</string>
     <string name="settings_pro">Pro</string>
     <string name="pro_buy">購買 Pro · %1$s</string>
-    <string name="pro_body">一次購買，無需訂閱。解鎖以數字或圖表顯示一週、四週或一年，或以您選擇的曲線顯示昨晚睡眠階段和最近運動的較大資訊卡、同一數據的多張資訊卡、資訊卡顏色、「本週變化」資訊卡、身體組成、比較兩項數據、CSV 匯出、給醫師看的 PDF 報告、以 GPX 檔案匯出的運動路線，以及日後所有的 Pro 功能。</string>
+    <string name="pro_body">一次購買，無需訂閱。解鎖以數字或圖表顯示一週、四週或一年，或以您選擇的曲線顯示昨晚睡眠階段和最近運動的較大資訊卡、同一數據的多張資訊卡、資訊卡顏色、「本週變化」資訊卡、每天以不同深淺顯示全年的日曆、身體組成、比較兩項數據、CSV 匯出、給醫師看的 PDF 報告（可單獨或合併為一份）、以 GPX 檔案匯出的運動路線，以及日後所有的 Pro 功能。</string>
     <string name="pro_owned">Pro 已解鎖</string>
-    <string name="pro_owned_body">感謝您支持這個應用程式。具有獨立期間、圖表和曲線的較大資訊卡、同一數據的多張資訊卡、資訊卡顏色、「本週變化」資訊卡、身體組成、數據比較、CSV 匯出、PDF 報告、路線匯出以及日後所有的 Pro 功能都歸您所有。</string>
+    <string name="pro_owned_body">感謝您支持這個應用程式。具有獨立期間、圖表和曲線的較大資訊卡、同一數據的多張資訊卡、資訊卡顏色、「本週變化」資訊卡、年曆、身體組成、數據比較、CSV 匯出、PDF 報告、路線匯出以及日後所有的 Pro 功能都歸您所有。</string>
     <string name="pro_pending">購買交易處理中</string>
     <string name="pro_pending_body">Google Play 確認付款後，Pro 會立即解鎖。</string>
     <string name="pro_unavailable_body">目前無法連線至 Google Play。輕觸即可重試。</string>

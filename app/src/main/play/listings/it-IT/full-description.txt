@@ -18,7 +18,7 @@ COSA FA
 
 I TUOI DATI RESTANO SUL TELEFONO
 
-Questa app non ha l’autorizzazione Internet. Non è «promettiamo di non caricare nulla»: è Android stesso a impedirle qualsiasi connessione di rete. Nessun account, nessun server, nessuna analisi, nessuna pubblicità, nessun tracciamento.
+Questa app non ha l’autorizzazione Internet. È Android stesso a impedirle qualsiasi connessione di rete. Nessun account, nessun server, nessuna analisi, nessuna pubblicità, nessun tracciamento.
 
 È in sola lettura: mostra i tuoi dati sanitari ma non può modificarli né eliminarli. Non scrive nulla in memoria a meno che tu non esporti, quindi disinstallarla rimuove tutto. I percorsi vengono letti solo se lo consenti e disegnati senza mappa.
 
@@ -36,18 +36,19 @@ PRO — ACQUISTO UNICO, NESSUN ABBONAMENTO
 
 Tutto quanto sopra è gratuito e lo resterà. Pro è un singolo acquisto in-app che sblocca:
 
-• Esportazione CSV di qualsiasi tipo di dati: ogni registrazione con l’app di origine, o i totali giornalieri senza duplicati. Scegli tu dove salvare il file; l’app non ne tiene copia.
-• Report PDF per il tuo medico: pressione con medie di mattina e sera, peso per settimana, frequenza cardiaca a riposo rispetto alla media di quattro settimane, glicemia per pasto e intervallo obiettivo.
+• Esportazione CSV di qualsiasi tipo di dati: ogni registrazione con l’app di origine, o i totali giornalieri senza duplicati. L’app non ne tiene copia.
+• Report PDF per il tuo medico: pressione con medie di mattina e sera, peso per settimana, frequenza cardiaca a riposo rispetto alla media di quattro settimane, glicemia per pasto e intervallo obiettivo. Oppure tutti e quattro in un unico report.
 • Riquadri più grandi — la settimana, quattro settimane o l’anno come numero, grafico o entrambi, oppure le fasi del sonno della notte scorsa e i tuoi ultimi allenamenti con una curva a tua scelta.
+• L’anno come calendario, una tonalità per giorno — sotto ogni grafico annuale e come riquadro.
 • Più riquadri per lo stesso valore e un colore per ciascuno.
 • Un riquadro con i cambiamenti della settimana, il peso con la composizione corporea e due valori confrontati su un unico asse del tempo.
 • Percorsi degli allenamenti come file GPX.
 • Tutte le future funzioni Pro, senza costi aggiuntivi.
 
-Gli acquisti sono gestiti interamente da Google Play e ti seguono su un nuovo telefono.
+Gli acquisti passano da Google Play e ti seguono su un nuovo telefono.
 
 OPEN SOURCE
 
-Il codice sorgente è pubblico, quindi ogni affermazione qui sopra può essere verificata.
+Il codice sorgente è pubblico, quindi ogni affermazione è verificabile.
 
 Ti manca una funzione? Scrivi a hcview@steppicrew.de.

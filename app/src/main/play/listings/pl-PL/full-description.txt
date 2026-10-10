@@ -37,8 +37,9 @@ PRO — JEDNORAZOWY ZAKUP, BEZ SUBSKRYPCJI
 Wszystko powyżej jest bezpłatne i takie pozostanie. Pro to jeden zakup w aplikacji, który odblokowuje:
 
 • Eksport CSV dowolnego typu danych: każdy wpis z aplikacją źródłową lub sumy dzienne bez duplikatów. Ty wybierasz, gdzie trafi plik; aplikacja nie zachowuje kopii.
-• Raporty PDF dla lekarza: ciśnienie ze średnimi porannymi i wieczornymi, waga według tygodni, tętno spoczynkowe na tle średniej z czterech tygodni, glukoza według posiłków i zakresu docelowego.
+• Raporty PDF dla lekarza: ciśnienie ze średnimi porannymi i wieczornymi, waga według tygodni, tętno spoczynkowe na tle średniej z czterech tygodni, glukoza według posiłków i zakresu docelowego. Albo wszystkie cztery w jednym raporcie.
 • Większe kafelki — tydzień, cztery tygodnie lub rok jako liczba, wykres lub oba, albo fazy snu z ostatniej nocy i ostatnie treningi z wybraną krzywą.
+• Rok jako kalendarz, jeden odcień na dzień — pod każdym wykresem rocznym i jako kafelek.
 • Kilka kafelków dla tej samej wartości i własny kolor każdego kafelka.
 • Kafelek ze zmianami w tym tygodniu, waga ze składem ciała oraz dwie wartości porównane na jednej osi czasu.
 • Trasy treningów jako pliki GPX.
