@@ -162,6 +162,12 @@
     <string name="report_rhr_legend">Continua: el valor del día. Discontinua: la media de las cuatro semanas hasta ese día.</string>
     <string name="report_rhr_caption">Cada día junto a la media de las cuatro semanas hasta él: la frecuencia cardíaca en reposo se valora frente al nivel habitual de la propia persona, no frente a una norma.</string>
     <string name="report_col_rolling">Media de 4 semanas</string>
+    <string name="export_report_all">Presión arterial, peso, frecuencia cardíaca en reposo y glucosa en sangre en un solo informe</string>
+    <string name="report_doctor_title">Informe de salud</string>
+    <string name="report_overview">De un vistazo</string>
+    <string name="report_col_type">Medida</string>
+    <string name="report_doctor_pressure_extremes">Presión arterial: el mínimo y el máximo son las mediciones con la sistólica más baja y más alta, cada una tal como se midió.</string>
+    <string name="report_doctor_left_out">Solo se incluyen las medidas con valores en este periodo.</string>
     <string name="report_glucose_title">Registro de glucosa en sangre</string>
     <string name="report_col_relation">Relación con la comida</string>
     <string name="report_col_meal">Comida</string>

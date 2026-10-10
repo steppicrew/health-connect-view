@@ -28,7 +28,11 @@ class PressureReportPdf(context: Context) : ReportPdf(context) {
 
     private fun lines(report: PressureReport, zone: ZoneId, source: String?): List<Line> = buildList {
         opening(context.getString(R.string.report_title), report.first, report.last, zone, source)
+        addAll(body(report, zone))
+    }
 
+    /** Everything under the opening; the combined report sets it under its own heading. */
+    internal fun body(report: PressureReport, zone: ZoneId): List<Line> = buildList {
         if (report.overall == null) {
             add(textLine(context.getString(R.string.report_none), text))
             return@buildList

@@ -165,6 +165,12 @@
     <string name="report_rhr_legend">الخط المتصل: قيمة اليوم. الخط المتقطع: متوسط الأسابيع الأربعة حتى ذلك اليوم.</string>
     <string name="report_rhr_caption">كل يوم بجانب متوسط الأسابيع الأربعة حتى ذلك اليوم: يُقرأ نبض الراحة مقارنةً بالمستوى المعتاد لصاحبه، وليس مقارنةً بمعيار عام.</string>
     <string name="report_col_rolling">متوسط 4 أسابيع</string>
+    <string name="export_report_all">ضغط الدم والوزن ومعدل نبض القلب أثناء الراحة وسكر الدم في تقرير واحد</string>
+    <string name="report_doctor_title">تقرير صحي</string>
+    <string name="report_overview">نظرة سريعة</string>
+    <string name="report_col_type">القياس</string>
+    <string name="report_doctor_pressure_extremes">ضغط الدم: الأدنى والأعلى هما القياسان ذوا أدنى وأعلى قيمة انقباضية، كلٌّ كما قيس.</string>
+    <string name="report_doctor_left_out">لا تُدرج إلا القياسات التي لها قيم في هذه الفترة.</string>
     <string name="report_glucose_title">سجل سكر الدم</string>
     <string name="report_col_relation">العلاقة بالوجبة</string>
     <string name="report_col_meal">الوجبة</string>

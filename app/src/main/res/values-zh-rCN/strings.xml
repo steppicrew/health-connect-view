@@ -160,6 +160,12 @@
     <string name="report_rhr_legend">实线：当天的值。虚线：截至当天的四周平均值。</string>
     <string name="report_rhr_caption">每天都与截至当天的四周平均值并列：静息心率应与本人的平常水平对照，而不是与标准值对照。</string>
     <string name="report_col_rolling">4 周平均值</string>
+    <string name="export_report_all">血压、体重、静息心率和血糖合为一份报告</string>
+    <string name="report_doctor_title">健康报告</string>
+    <string name="report_overview">一览</string>
+    <string name="report_col_type">测量项目</string>
+    <string name="report_doctor_pressure_extremes">血压：最低和最高是收缩压最低和最高的那两次测量，均为实测值。</string>
+    <string name="report_doctor_left_out">仅包含此期间内有测量值的项目。</string>
     <string name="report_glucose_title">血糖记录</string>
     <string name="report_col_relation">与进餐的关系</string>
     <string name="report_col_meal">餐次</string>

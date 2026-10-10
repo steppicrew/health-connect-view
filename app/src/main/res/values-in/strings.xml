@@ -160,6 +160,12 @@
     <string name="report_rhr_legend">Garis utuh: nilai hari itu. Garis putus: rata-rata empat minggu sampai hari itu.</string>
     <string name="report_rhr_caption">Setiap hari di samping rata-rata empat minggu sampai hari itu: detak jantung istirahat dibaca terhadap tingkat biasa pemakainya sendiri, bukan terhadap suatu norma.</string>
     <string name="report_col_rolling">Rata-rata 4 minggu</string>
+    <string name="export_report_all">Tekanan darah, berat badan, detak jantung istirahat, dan glukosa darah dalam satu laporan</string>
+    <string name="report_doctor_title">Laporan kesehatan</string>
+    <string name="report_overview">Sekilas</string>
+    <string name="report_col_type">Pengukuran</string>
+    <string name="report_doctor_pressure_extremes">Tekanan darah: terendah dan tertinggi adalah pengukuran dengan nilai sistolik terendah dan tertinggi, masing-masing seperti yang diukur.</string>
+    <string name="report_doctor_left_out">Hanya pengukuran yang memiliki nilai dalam periode ini yang disertakan.</string>
     <string name="report_glucose_title">Catatan glukosa darah</string>
     <string name="report_col_relation">Kaitan dengan makan</string>
     <string name="report_col_meal">Waktu makan</string>

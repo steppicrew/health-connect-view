@@ -161,6 +161,12 @@
     <string name="report_rhr_legend">Doorgetrokken: de waarde van de dag. Gestippeld: het gemiddelde van de vier weken tot die dag.</string>
     <string name="report_rhr_caption">Elke dag naast het gemiddelde van de vier weken tot dan: een rusthartslag wordt afgezet tegen het eigen gebruikelijke niveau van de drager, niet tegen een norm.</string>
     <string name="report_col_rolling">4-weeks gemiddelde</string>
+    <string name="export_report_all">Bloeddruk, gewicht, rusthartslag en bloedglucose in één rapport</string>
+    <string name="report_doctor_title">Gezondheidsrapport</string>
+    <string name="report_overview">In één oogopslag</string>
+    <string name="report_col_type">Meting</string>
+    <string name="report_doctor_pressure_extremes">Bloeddruk: laagste en hoogste zijn de metingen met de laagste en hoogste systolische waarde, elk zoals gemeten.</string>
+    <string name="report_doctor_left_out">Alleen metingen met waarden in deze periode zijn opgenomen.</string>
     <string name="report_glucose_title">Bloedglucosedagboek</string>
     <string name="report_col_relation">Relatie tot maaltijd</string>
     <string name="report_col_meal">Maaltijd</string>

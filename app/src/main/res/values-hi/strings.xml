@@ -161,6 +161,12 @@
     <string name="report_rhr_legend">ठोस: उस दिन की वैल्यू। डैश वाली: उस दिन तक के चार हफ़्तों का औसत।</string>
     <string name="report_rhr_caption">हर दिन उस दिन तक के चार हफ़्तों के औसत के साथ: आराम की धड़कन को किसी मानक से नहीं, बल्कि व्यक्ति के अपने सामान्य स्तर से मिलाकर पढ़ा जाता है।</string>
     <string name="report_col_rolling">4 हफ़्ते का औसत</string>
+    <string name="export_report_all">ब्लड प्रेशर, वज़न, आराम की धड़कन और ब्लड ग्लूकोज़ एक रिपोर्ट में</string>
+    <string name="report_doctor_title">स्वास्थ्य रिपोर्ट</string>
+    <string name="report_overview">एक नज़र में</string>
+    <string name="report_col_type">माप</string>
+    <string name="report_doctor_pressure_extremes">ब्लड प्रेशर: सबसे कम और सबसे ज़्यादा वे रीडिंग हैं जिनका सिस्टोलिक मान सबसे कम और सबसे ज़्यादा है, हर एक जैसी मापी गई।</string>
+    <string name="report_doctor_left_out">केवल वे माप शामिल हैं जिनके इस अवधि में मान हैं।</string>
     <string name="report_glucose_title">ब्लड ग्लूकोज़ लॉग</string>
     <string name="report_col_relation">खाने से संबंध</string>
     <string name="report_col_meal">खाना</string>

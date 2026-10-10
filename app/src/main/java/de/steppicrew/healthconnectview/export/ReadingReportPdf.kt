@@ -36,6 +36,11 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
 
     private fun weightLines(report: WeightReport, zone: ZoneId, source: String?): List<Line> = buildList {
         opening(context.getString(R.string.report_weight_title), report.first, report.last, zone, source)
+        addAll(weightBody(report, zone))
+    }
+
+    /** Everything under the opening; the combined report sets it under its own heading. */
+    internal fun weightBody(report: WeightReport, zone: ZoneId): List<Line> = buildList {
         val overall = report.overall
         if (overall == null) {
             add(textLine(context.getString(R.string.report_none), text))
@@ -92,6 +97,11 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
 
     private fun restingLines(report: RestingReport, zone: ZoneId, source: String?): List<Line> = buildList {
         opening(context.getString(R.string.report_rhr_title), report.first, report.last, zone, source)
+        addAll(restingBody(report, zone))
+    }
+
+    /** Everything under the opening; the combined report sets it under its own heading. */
+    internal fun restingBody(report: RestingReport, zone: ZoneId): List<Line> = buildList {
         val overall = report.overall
         if (overall == null) {
             add(textLine(context.getString(R.string.report_none), text))
@@ -160,6 +170,11 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
 
     private fun glucoseLines(report: GlucoseReport, zone: ZoneId, source: String?): List<Line> = buildList {
         opening(context.getString(R.string.report_glucose_title), report.first, report.last, zone, source)
+        addAll(glucoseBody(report, zone))
+    }
+
+    /** Everything under the opening; the combined report sets it under its own heading. */
+    internal fun glucoseBody(report: GlucoseReport, zone: ZoneId): List<Line> = buildList {
         val overall = report.overall
         if (overall == null) {
             add(textLine(context.getString(R.string.report_none), text))

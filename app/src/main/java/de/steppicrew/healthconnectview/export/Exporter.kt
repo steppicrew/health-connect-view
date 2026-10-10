@@ -9,7 +9,12 @@ import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.WeightRecord
+import de.steppicrew.healthconnectview.health.DoctorReport
 import de.steppicrew.healthconnectview.health.GlucoseReading
+import de.steppicrew.healthconnectview.health.GlucoseReport
+import de.steppicrew.healthconnectview.health.PressureReport
+import de.steppicrew.healthconnectview.health.RestingReport
+import de.steppicrew.healthconnectview.health.WeightReport
 import de.steppicrew.healthconnectview.health.ROLLING_DAYS
 import de.steppicrew.healthconnectview.health.Reading
 import de.steppicrew.healthconnectview.health.glucoseReport
@@ -184,42 +189,19 @@ class Exporter(private val context: Context, private val repository: HealthRepos
         source: String?,
         out: OutputStream,
     ): Int = when (spec.type) {
-        BloodPressureRecord::class -> writePressureReport(first, last, origins, source, out)
-        WeightRecord::class -> {
-            val readings = mutableListOf<Reading>()
-            repository.forEachPage(WeightRecord::class, dayRange(first, last), origins) { page ->
-                page.forEach { readings += Reading(it.time, it.weight.inKilograms, it.metadata.dataOrigin.packageName) }
-            }
-            val report = weightReport(readings, first, last, zone)
+        BloodPressureRecord::class -> pressure(first, last, origins).let { report ->
+            PressureReportPdf(context).write(report, zone, source, out)
+            report.readings.size
+        }
+        WeightRecord::class -> weight(first, last, origins).let { report ->
             ReadingReportPdf(context).write(report, zone, source, out)
             report.readings.size
         }
-        RestingHeartRateRecord::class -> {
-            // From four weeks back, so the first days have their four-week mean too.
-            val readings = mutableListOf<Reading>()
-            val lookback = first.minusDays(ROLLING_DAYS - 1L)
-            repository.forEachPage(RestingHeartRateRecord::class, dayRange(lookback, last), origins) { page ->
-                page.forEach { readings += Reading(it.time, it.beatsPerMinute.toDouble(), it.metadata.dataOrigin.packageName) }
-            }
-            val report = restingReport(readings, first, last, zone)
+        RestingHeartRateRecord::class -> resting(first, last, origins).let { report ->
             ReadingReportPdf(context).write(report, zone, source, out)
             report.days.size
         }
-        BloodGlucoseRecord::class -> {
-            val readings = mutableListOf<GlucoseReading>()
-            repository.forEachPage(BloodGlucoseRecord::class, dayRange(first, last), origins) { page ->
-                page.forEach {
-                    readings += GlucoseReading(
-                        it.time,
-                        it.level.inMillimolesPerLiter,
-                        it.relationToMeal,
-                        it.mealType,
-                        it.metadata.dataOrigin.packageName,
-                        readingContext(it),
-                    )
-                }
-            }
-            val report = glucoseReport(readings, first, last, zone)
+        BloodGlucoseRecord::class -> glucose(first, last, origins).let { report ->
             ReadingReportPdf(context).write(report, zone, source, out)
             report.readings.size
         }
@@ -227,16 +209,71 @@ class Exporter(private val context: Context, private val repository: HealthRepos
     }
 
     /**
+     * All four reports in one PDF for [first] through [last], each type from its own source
+     * ([sources]: package name or null for all, [labels]: the app's name to print). A type
+     * with no reading in the period is left out. Returns how many types it holds.
+     */
+    suspend fun writeDoctorReport(
+        first: LocalDate,
+        last: LocalDate,
+        sources: Map<KClass<out Record>, String?>,
+        labels: Map<KClass<out Record>, String?>,
+        out: OutputStream,
+    ): Int {
+        fun origins(type: KClass<out Record>) = sources[type]?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val report = DoctorReport(
+            first = first,
+            last = last,
+            pressure = pressure(first, last, origins(BloodPressureRecord::class)).takeIf { it.overall != null },
+            weight = weight(first, last, origins(WeightRecord::class)).takeIf { it.overall != null },
+            resting = resting(first, last, origins(RestingHeartRateRecord::class)).takeIf { it.overall != null },
+            glucose = glucose(first, last, origins(BloodGlucoseRecord::class)).takeIf { it.overall != null },
+            sources = labels,
+        )
+        DoctorReportPdf(context).write(report, zone, out)
+        return report.parts
+    }
+
+    private suspend fun weight(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): WeightReport {
+        val readings = mutableListOf<Reading>()
+        repository.forEachPage(WeightRecord::class, dayRange(first, last), origins) { page ->
+            page.forEach { readings += Reading(it.time, it.weight.inKilograms, it.metadata.dataOrigin.packageName) }
+        }
+        return weightReport(readings, first, last, zone)
+    }
+
+    private suspend fun resting(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): RestingReport {
+        // From four weeks back, so the first days have their four-week mean too.
+        val readings = mutableListOf<Reading>()
+        val lookback = first.minusDays(ROLLING_DAYS - 1L)
+        repository.forEachPage(RestingHeartRateRecord::class, dayRange(lookback, last), origins) { page ->
+            page.forEach { readings += Reading(it.time, it.beatsPerMinute.toDouble(), it.metadata.dataOrigin.packageName) }
+        }
+        return restingReport(readings, first, last, zone)
+    }
+
+    private suspend fun glucose(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): GlucoseReport {
+        val readings = mutableListOf<GlucoseReading>()
+        repository.forEachPage(BloodGlucoseRecord::class, dayRange(first, last), origins) { page ->
+            page.forEach {
+                readings += GlucoseReading(
+                    it.time,
+                    it.level.inMillimolesPerLiter,
+                    it.relationToMeal,
+                    it.mealType,
+                    it.metadata.dataOrigin.packageName,
+                    readingContext(it),
+                )
+            }
+        }
+        return glucoseReport(readings, first, last, zone)
+    }
+
+    /**
      * The blood pressure log. Read from 04:00 to 04:00 so each evening keeps its after-midnight
      * readings, as on screen.
      */
-    private suspend fun writePressureReport(
-        first: LocalDate,
-        last: LocalDate,
-        origins: Set<DataOrigin>,
-        source: String?,
-        out: OutputStream,
-    ): Int {
+    private suspend fun pressure(first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): PressureReport {
         val (start, end) = dayPartWindow(first, last, zone)
         val readings = mutableListOf<PressureReading>()
         repository.forEachPage(BloodPressureRecord::class, TimeRangeFilter.between(start, end), origins) { page ->
@@ -249,9 +286,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
                 )
             }
         }
-        val report = pressureReport(readings, first, last, zone)
-        PressureReportPdf(context).write(report, zone, source, out)
-        return report.readings.size
+        return pressureReport(readings, first, last, zone)
     }
 
     private fun dayRange(first: LocalDate, last: LocalDate): TimeRangeFilter =

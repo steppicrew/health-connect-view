@@ -163,6 +163,12 @@
     <string name="report_rhr_legend">Сплошная: значение дня. Пунктир: среднее за четыре недели до этого дня.</string>
     <string name="report_rhr_caption">Каждый день рядом со средним за четыре недели до него: пульс в покое оценивают относительно обычного уровня самого человека, а не нормы.</string>
     <string name="report_col_rolling">Среднее за 4 недели</string>
+    <string name="export_report_all">Давление, вес, пульс в покое и глюкоза крови в одном отчёте</string>
+    <string name="report_doctor_title">Отчёт о здоровье</string>
+    <string name="report_overview">Кратко</string>
+    <string name="report_col_type">Показатель</string>
+    <string name="report_doctor_pressure_extremes">Давление: мин. и макс. — это измерения с самым низким и самым высоким систолическим значением, каждое в том виде, в каком было измерено.</string>
+    <string name="report_doctor_left_out">Включены только показатели, у которых есть значения за этот период.</string>
     <string name="report_glucose_title">Дневник глюкозы крови</string>
     <string name="report_col_relation">Связь с приёмом пищи</string>
     <string name="report_col_meal">Приём пищи</string>

@@ -162,6 +162,12 @@
     <string name="report_rhr_legend">Linea continua: il valore del giorno. Tratteggiata: la media delle quattro settimane fino a quel giorno.</string>
     <string name="report_rhr_caption">Ogni giorno accanto alla media delle quattro settimane fino a esso: una frequenza cardiaca a riposo si legge rispetto al livello abituale della persona, non rispetto a una norma.</string>
     <string name="report_col_rolling">Media 4 settimane</string>
+    <string name="export_report_all">Pressione arteriosa, peso, frequenza cardiaca a riposo e glicemia in un unico report</string>
+    <string name="report_doctor_title">Report sulla salute</string>
+    <string name="report_overview">In breve</string>
+    <string name="report_col_type">Misura</string>
+    <string name="report_doctor_pressure_extremes">Pressione arteriosa: minimo e massimo sono le misurazioni con la sistolica più bassa e più alta, ciascuna così come misurata.</string>
+    <string name="report_doctor_left_out">Sono incluse solo le misure con valori in questo periodo.</string>
     <string name="report_glucose_title">Diario della glicemia</string>
     <string name="report_col_relation">Relazione con il pasto</string>
     <string name="report_col_meal">Pasto</string>

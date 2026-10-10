@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import kotlin.reflect.KClass
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
 import android.app.Application
@@ -350,11 +351,18 @@ class TileDetailViewModel(
 
     private val candidateCache = CandidateCache()
 
-    suspend fun canExport(kind: ExportKind, period: ExportPeriod): Boolean {
+    suspend fun canExport(kind: ExportKind, period: ExportPeriod, combined: Boolean): Boolean {
         val spec = _spec.value ?: return false
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val exporter = Exporter(getApplication(), repository)
         val any = runCatching {
+            if (combined) {
+                val sources = reportSources(period)
+                return@runCatching Exporter.REPORT_TYPES.any { type ->
+                    val each = RecordRegistry.specOrNull(type.simpleName.orEmpty()) ?: return@any false
+                    exporter.hasReportData(each, period.first, period.last, sources[type]?.let { setOf(DataOrigin(it)) } ?: emptySet())
+                }
+            }
             when (kind) {
                 ExportKind.RECORDS -> exporter.hasRecords(spec, period.start(), period.end(), origins)
                 ExportKind.DAILY -> exporter.hasDailyTotals(spec, period.first, period.last.plusDays(1), origins)
@@ -371,7 +379,7 @@ class TileDetailViewModel(
      * A failed export removes the file it started, so a half-written CSV is not left looking
      * like a complete one.
      */
-    fun export(kind: ExportKind, period: ExportPeriod, uri: Uri) {
+    fun export(kind: ExportKind, period: ExportPeriod, combined: Boolean, uri: Uri) {
         val spec = _spec.value ?: return
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         viewModelScope.launch {
@@ -393,7 +401,14 @@ class TileDetailViewModel(
                             )
                             // Printing never reaches a file; see renderReport.
                             ExportKind.PRINT -> error("print is not saved")
-                            ExportKind.REPORT -> ExportResult.Report(
+                            ExportKind.REPORT -> if (combined) {
+                                val sources = reportSources(period)
+                                ExportResult.Report(
+                                    exporter.writeDoctorReport(period.first, period.last, sources, sourceLabels(sources), out),
+                                    uri,
+                                    kind.mimeType,
+                                )
+                            } else ExportResult.Report(
                                 exporter.writeReport(
                                     spec,
                                     period.first,
@@ -445,18 +460,50 @@ class TileDetailViewModel(
      * Read now, while the app is in front: Health Connect refuses reads once the preview covers
      * it. Held only until the preview has taken it -- never written anywhere by the app.
      */
-    suspend fun renderReport(period: ExportPeriod): ByteArray? {
+    suspend fun renderReport(period: ExportPeriod, combined: Boolean): ByteArray? {
         val spec = _spec.value ?: return null
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val source = selectedSource?.let { getApplication<Application>().appLabelFor(it) }
         return runCatching {
             withContext(Dispatchers.IO) {
                 ByteArrayOutputStream().also { out ->
-                    Exporter(getApplication(), repository).writeReport(spec, period.first, period.last, origins, source, out)
+                    val exporter = Exporter(getApplication(), repository)
+                    if (combined) {
+                        val sources = reportSources(period)
+                        exporter.writeDoctorReport(period.first, period.last, sources, sourceLabels(sources), out)
+                    } else {
+                        exporter.writeReport(spec, period.first, period.last, origins, source, out)
+                    }
                 }.toByteArray()
             }
         }.onFailure { Log.w(TAG, "report failed: ${it.javaClass.simpleName}") }.getOrNull()
     }
+
+    /**
+     * The source of each report type for the combined report: this screen's own filter for its
+     * type, and for the others what their screens would open on -- the choice made there, else
+     * the preferred app where it wrote that type in [period].
+     */
+    private suspend fun reportSources(period: ExportPeriod): Map<KClass<out Record>, String?> {
+        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
+        val own = _spec.value?.type
+        return Exporter.REPORT_TYPES.associateWith { type ->
+            if (type == own) return@associateWith selectedSource
+            val name = type.simpleName.orEmpty()
+            val spec = RecordRegistry.specOrNull(name) ?: return@associateWith null
+            val writers = if (preferred != null && selections[name] == null) {
+                runCatching { repository.recordsIn(spec, period.start(), period.end()).map { spec.originOf(it) }.toSet() }
+                    .getOrDefault(emptySet())
+            } else {
+                emptySet()
+            }
+            sourceStore.effective(name, selections, preferred, writers)
+        }
+    }
+
+    private fun sourceLabels(sources: Map<KClass<out Record>, String?>): Map<KClass<out Record>, String?> =
+        sources.mapValues { (_, source) -> source?.let { getApplication<Application>().appLabelFor(it) } }
 
     fun reportNoViewer() {
         _exportResults.tryEmit(ExportResult.NoViewer)

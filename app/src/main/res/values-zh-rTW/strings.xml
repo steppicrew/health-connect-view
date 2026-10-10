@@ -160,6 +160,12 @@
     <string name="report_rhr_legend">實線：當天的數值。虛線：截至當天的四週平均值。</string>
     <string name="report_rhr_caption">每天都與截至當天的四週平均值並列：靜止心率應與本人的平常水準對照，而不是與標準值對照。</string>
     <string name="report_col_rolling">4 週平均值</string>
+    <string name="export_report_all">血壓、體重、靜止心率和血糖合為一份報告</string>
+    <string name="report_doctor_title">健康報告</string>
+    <string name="report_overview">一覽</string>
+    <string name="report_col_type">測量項目</string>
+    <string name="report_doctor_pressure_extremes">血壓：最低和最高是收縮壓最低和最高的那兩次測量，皆為實測值。</string>
+    <string name="report_doctor_left_out">僅包含此期間內有測量值的項目。</string>
     <string name="report_glucose_title">血糖記錄</string>
     <string name="report_col_relation">與用餐的關係</string>
     <string name="report_col_meal">餐別</string>

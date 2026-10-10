@@ -162,6 +162,12 @@
     <string name="report_rhr_legend">Linha contínua: o valor do dia. Tracejada: a média das quatro semanas até aquele dia.</string>
     <string name="report_rhr_caption">Cada dia ao lado da média das quatro semanas até ele: a frequência cardíaca em repouso é avaliada em relação ao nível habitual da própria pessoa, não a uma norma.</string>
     <string name="report_col_rolling">Média de 4 semanas</string>
+    <string name="export_report_all">Pressão arterial, peso, frequência cardíaca em repouso e glicemia em um só relatório</string>
+    <string name="report_doctor_title">Relatório de saúde</string>
+    <string name="report_overview">Resumo rápido</string>
+    <string name="report_col_type">Medida</string>
+    <string name="report_doctor_pressure_extremes">Pressão arterial: mínimo e máximo são as medições com a sistólica mais baixa e mais alta, cada uma como foi medida.</string>
+    <string name="report_doctor_left_out">Só entram as medidas com valores neste período.</string>
     <string name="report_glucose_title">Registro de glicemia</string>
     <string name="report_col_relation">Relação com a refeição</string>
     <string name="report_col_meal">Refeição</string>

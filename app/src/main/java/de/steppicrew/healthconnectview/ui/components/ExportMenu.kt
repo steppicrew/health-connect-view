@@ -60,11 +60,14 @@ fun ExportAction(
     dailyAvailable: Boolean,
     /** Types with a PDF log for a doctor (`Exporter.REPORT_TYPES`). */
     reportAvailable: Boolean,
-    /** Whether the file would hold anything; the dialog opens only if so. */
-    canExport: suspend (ExportKind, ExportPeriod) -> Boolean,
-    onExport: (ExportKind, ExportPeriod, Uri) -> Unit,
+    /**
+     * Whether the file would hold anything; the dialog opens only if so. The flag, here and
+     * below, is the combined report: all four report types in one PDF.
+     */
+    canExport: suspend (ExportKind, ExportPeriod, Boolean) -> Boolean,
+    onExport: (ExportKind, ExportPeriod, Boolean, Uri) -> Unit,
     /** The report for a period in memory, for the print preview; null if it failed. */
-    renderReport: suspend (ExportPeriod) -> ByteArray?,
+    renderReport: suspend (ExportPeriod, Boolean) -> ByteArray?,
     /** Said when the report could not be shown: no print service, or the report failed. */
     onNoViewer: () -> Unit,
 ) {
@@ -74,11 +77,11 @@ fun ExportAction(
     var open by remember { mutableStateOf(false) }
     /** The file type chosen, waiting for its period. */
     var choosing by remember { mutableStateOf<ExportKind?>(null) }
-    var pending by remember { mutableStateOf<Pair<ExportKind, ExportPeriod>?>(null) }
+    var pending by remember { mutableStateOf<Triple<ExportKind, ExportPeriod, Boolean>?>(null) }
     val onSaved: (Uri?) -> Unit = { uri ->
         val job = pending
         pending = null
-        if (uri != null && job != null) onExport(job.first, job.second, uri)
+        if (uri != null && job != null) onExport(job.first, job.second, job.third, uri)
     }
     // One launcher per file type: the save dialog's type is fixed when it is registered.
     val saveCsv = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv"), onSaved)
@@ -127,21 +130,25 @@ fun ExportAction(
             shown = shown,
             historyGranted = historyGranted,
             onDismiss = { choosing = null },
-            onConfirm = { period ->
+            offerCombined = kind == ExportKind.REPORT || kind == ExportKind.PRINT,
+            onConfirm = { period, combined ->
                 choosing = null
                 scope.launch {
-                    if (!canExport(kind, period)) return@launch
-                    val name = "${typeName}_${period.fileTag}_${kind.suffix}.${kind.extension}"
+                    if (!canExport(kind, period, combined)) return@launch
+                    val name = "${if (combined) COMBINED_NAME else typeName}_${period.fileTag}_${kind.suffix}.${kind.extension}"
                     if (kind == ExportKind.PRINT) {
-                        val pdf = renderReport(period)
+                        val pdf = renderReport(period, combined)
                         val shownNow = pdf != null && activity != null && printPdf(activity, name, pdf)
                         if (!shownNow) onNoViewer()
                         return@launch
                     }
-                    pending = kind to period
+                    pending = Triple(kind, period, combined)
                     if (kind.extension == "pdf") savePdf.launch(name) else saveCsv.launch(name)
                 }
             },
         )
     }
 }
+
+/** The combined report's file name, before the period: not one type's. */
+private const val COMBINED_NAME = "Health"
