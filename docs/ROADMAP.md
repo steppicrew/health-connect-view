@@ -675,7 +675,10 @@ doctor report and the year heatmap; the rest unranked.
     it was a lesser twin with no export, compare, sources box or day span, and nothing older
     than its trailing range. Its notes on capped lists, several writers and a thinned chart
     went with it; the sources box and the chart's own notes say the same.
-71. [ ] **Sleep stages in the records CSV**, one row per stage segment under its night.
+71. [x] **Sleep stages in the records CSV**, one row per stage under its night -- built
+    10.10.2026, seen in an export from the emulator: the stage in words in `text`, the
+    platform's code in `context` ("stage=deep", all eight codes kept apart, unlike the
+    hypnogram's one waking lane), its length in hours to four decimals.
 72. [ ] **An honest progress bar before the first answer**: indeterminate until the first read
     reports, and a session type's weekly read drawn as a step (step 49's open note).
 73. [ ] **One report for the doctor** (Pro, `PDF_REPORTS`) -- blood pressure, weight, resting
@@ -1844,8 +1847,7 @@ filter -- into a file chosen in the system save dialog (`export/`).
   release asks Play Billing (section 15). A locked entry shows "Pro" and opens the purchase.
 
 Verified on the emulator: a week of steps exported 840 record rows and 7 daily rows, today's
-matching the tile. Not yet: sleep
-stages are not in the records file, and JSON would plug in beside `Csv`. The PDF report for blood pressure is section 17.
+matching the tile. A JSON format would plug in beside `Csv`. The PDF report for blood pressure is section 17.
 
 ## 14. Settings backup — built
 
