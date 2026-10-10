@@ -174,6 +174,8 @@ fun DashboardScreen(
     onOpenInsights: () -> Unit = {},
     /** The body composition screen, which a weight tile's body face opens. */
     onOpenBody: () -> Unit = {},
+    /** One workout's screen, which a workout tile showing a single workout opens. */
+    onOpenSession: (Session) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
@@ -488,8 +490,11 @@ fun DashboardScreen(
                                                 if (!editing) {
                                                     // The body face names four types; its own screen is the one
                                                     // that shows them together.
+                                                    val workout = tile.openedWorkout
                                                     if (tile.bodyReadings != null) {
                                                         onOpenBody()
+                                                    } else if (workout != null) {
+                                                        onOpenSession(workout)
                                                     } else {
                                                         onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
                                                     }

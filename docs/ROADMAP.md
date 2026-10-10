@@ -667,8 +667,9 @@ Next, from the owner, 10.10.2026, after release 1.3.0 (code 20) -- the open item
 the unpicked ideas of 07.10.2026 gathered into one list. Small leftovers first, then the
 doctor report and the year heatmap; the rest unranked.
 
-69. [ ] **The workouts tile opens the latest workout** on a day span, not the list (left out
-    of step 51).
+69. [x] **The workouts tile opens its workout** on a day span, not the list (left out of
+    step 51) -- built 10.10.2026: the one drawn as a curve, or the day's only workout; several
+    on a timeline still open the day's list, since the tile names none of them.
 70. [ ] **Export from a type's detail screen too** -- the catalog path has no export action.
 71. [ ] **Sleep stages in the records CSV**, one row per stage segment under its night.
 72. [ ] **An honest progress bar before the first answer**: indeterminate until the first read
