@@ -23,6 +23,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,7 @@ import de.steppicrew.healthconnectview.ui.components.SpanSelector
 import de.steppicrew.healthconnectview.ui.components.WindowStepper
 import de.steppicrew.healthconnectview.ui.components.chartTitle
 import de.steppicrew.healthconnectview.ui.components.windowLabel
+import java.time.Instant
 
 /**
  * Weight and its parts, one small chart each on the same time axis.
@@ -124,7 +128,17 @@ private fun Parts(data: BodyComposition, period: String, historyNeeded: Boolean,
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        data.parts.forEach { part -> PartChart(part, data, period) }
+        // Which chart is touched and at what moment, so every other shows its value there too.
+        var reading by remember(data) { mutableStateOf<Pair<Int, Instant>?>(null) }
+        data.parts.forEachIndexed { index, part ->
+            PartChart(
+                part,
+                data,
+                period,
+                linkedTime = reading?.takeIf { it.first != index }?.second,
+                onSelectTime = { time -> reading = time?.let { index to it } ?: reading?.takeIf { it.first != index } },
+            )
+        }
         Text(
             text = stringResource(
                 if (data.weekly) R.string.body_composition_note_weekly else R.string.body_composition_note,
@@ -147,7 +161,13 @@ private fun Parts(data: BodyComposition, period: String, historyNeeded: Boolean,
 
 /** A part's latest value, its change over the window, and its own chart beneath. */
 @Composable
-private fun PartChart(part: BodyPart, data: BodyComposition, period: String) {
+private fun PartChart(
+    part: BodyPart,
+    data: BodyComposition,
+    period: String,
+    linkedTime: Instant?,
+    onSelectTime: (Instant?) -> Unit,
+) {
     val unit = " " + stringResource(part.unitRes)
     val first = part.points.first()
     val last = part.points.last()
@@ -179,6 +199,8 @@ private fun PartChart(part: BodyPart, data: BodyComposition, period: String) {
         ExpandableChart(chartTitle(stringResource(part.labelRes), part.unitRes, period)) { expanded, onExpand ->
             LineChart(
                 points = part.points,
+                // Softened, monotone so it never overshoots a reading; the readings stay marked.
+                smooth = true,
                 unitRes = part.unitRes,
                 valueDecimals = CHANGE_DECIMALS,
                 markReadings = true,
@@ -187,6 +209,9 @@ private fun PartChart(part: BodyPart, data: BodyComposition, period: String) {
                 fillHeight = true,
                 onExpand = onExpand,
                 holdSelection = expanded,
+                // Inline only: full screen, one chart is read alone.
+                linkedTime = if (expanded) null else linkedTime,
+                onSelectTime = if (expanded) null else onSelectTime,
                 modifier = if (expanded) {
                     Modifier.fillMaxSize()
                 } else {
