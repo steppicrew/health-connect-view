@@ -602,6 +602,11 @@ Before the next release after 1.3.0, from the owner, 10.10.2026:
   characters; the longest stood at 3,984): the calendar under a year and as a tile face, and
   the combined doctor report. Then `publishReleaseListing`, since `release.sh` skips committed
   listing text.
+- [ ] **Store screenshots with the calendar** -- the year calendar in the Pro shots: a large
+  tile with the calendar face beside the showcase's other tiles, and the detail screen's
+  calendar under a year, marked "Pro" like step 66's shot. From seeded data (`SeedActivity -e
+  dashboard showcase` set up with a calendar tile, a year of the type seeded), added to
+  `store-assets.sh`'s routes, in all 18 languages; `release.sh --shots` recaptures them.
 
 Before the next release, from the owner, 09.10.2026:
 
@@ -755,6 +760,10 @@ doctor report and the year heatmap; the rest unranked.
 84. [ ] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
     not yet, its types have no figure to shade. Flow days by strength, spotting and a
     positive ovulation test marked, in the cycle overview's year; plan before building.
+85. [ ] **A weekday rhythm on the 2x2 calendar tile** -- the owner's pick, 10.10.2026, for the
+    room a 2x2 calendar leaves: seven small bars Mo-So, the year's mean per weekday ("Sundays
+    are long sleep"), from the days the calendar already read. Unlabelled, so the tile keeps
+    one labelled scale; 2x2 only, since a 2x1 has room only in a narrow strip beside the grid.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
