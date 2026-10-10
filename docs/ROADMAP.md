@@ -292,10 +292,7 @@ open items below and `FEATURE-IDEAS.md`.
     month (the phone has one day of readings, and one day draws no ribbon). Left over from
     step 19: a min-max band for systolic and one for diastolic, from the same daily buckets as
     the means; the chart draws a second ribbon with the same code as the first.
-42. [ ] **Local reminder** -- from `FEATURE-IDEAS.md`: "noch kein Blutdruck heute" in the
-    afternoon. Needs a notification permission and reading in the background
-    (`READ_HEALTH_DATA_IN_BACKGROUND`), so it changes what the privacy page promises; the
-    owner decides before any code.
+42. [-] **Local reminder** -- deferred by the owner, 10.10.2026; see section 19.
 43. [x] **Two display slips seen in step 22** -- fixed 27.09.2026. Glucose went by the
     magnitude rule, so mg/dL read "91,8" and mmol/L "5,35"; the unit now fixes the places
     (`Quantity.decimals`, whole mg/dL, one place in mmol/L) on the tile, the headline, the
@@ -666,6 +663,40 @@ Also from the owner, 09.10.2026, done the same day:
   day's last workout (two on a taller tile), breaks shaded, each captioned with its icon and
   times. Offered in the options only with a day's span and a chart face, where it is drawn.
 
+Next, from the owner, 10.10.2026, after release 1.3.0 (code 20) -- the open items and
+the unpicked ideas of 07.10.2026 gathered into one list. Small leftovers first, then the
+doctor report and the year heatmap; the rest unranked.
+
+69. [ ] **The workouts tile opens the latest workout** on a day span, not the list (left out
+    of step 51).
+70. [ ] **Export from a type's detail screen too** -- the catalog path has no export action.
+71. [ ] **Sleep stages in the records CSV**, one row per stage segment under its night.
+72. [ ] **An honest progress bar before the first answer**: indeterminate until the first read
+    reports, and a session type's weekly read drawn as a step (step 49's open note).
+73. [ ] **One report for the doctor** (Pro, `PDF_REPORTS`) -- blood pressure, weight, resting
+    heart rate and glucose for one period in a single PDF, from the four reports that exist;
+    a type with no data in the period is left out, not printed empty.
+74. [ ] **Year heatmap per metric** -- a calendar grid coloured by daily value, from the daily
+    totals already read; one sequential hue, a gap uncoloured rather than lightest.
+75. [ ] **Cycle overview's year window is Pro** -- the owner's decision, 10.10.2026
+    (`LONG_RANGE_HISTORY`). Note before building: the feature is declared but enforced
+    nowhere, and every type's year chart is free, so gating only the cycle would stand alone.
+76. [ ] **A cycle tile** -- the owner left the form to me, 10.10.2026. Plan: today's cycle day
+    and the usual length from the past cycles ("Tag 12 · meist 28 Tage"), and on a wide tile
+    the current cycle as a strip with the bleeding days marked; a tap opens the overview.
+    Offered only where menstruation is recorded. Describes, never predicts: no "next period
+    in N days", no fertile window -- that is a medical claim from someone else's data.
+77. [ ] **What a larger insights tile shows** (step 40's open note).
+78. [ ] **Compare periods** (Pro) -- this month over the same month last year on one chart.
+79. [ ] **Sleep regularity** (Pro) -- the spread of bedtimes and wake times and the usual
+    bedtime, from the nights alone (`night()`); a description, never a score.
+80. [ ] **Charts described for screen readers** -- "Schritte, 4 Wochen, Mittel 8.200,
+    steigend" from the trend numbers that exist.
+81. [ ] **The same workout over time** (Pro) -- pace and heart rate for one activity type
+    across weeks; writers disagree about activity types, so the grouping must say what it
+    matched.
+82. [ ] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
+
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
 matches Garmin Connect. Garmin's sum is lower on three of five days (19/21, 13/15, 12/13) and
@@ -685,11 +716,10 @@ Nothing marks a session as auto-detected. Not something this app can recover.
 
 Decisions waiting on the owner, not on code:
 
-- Whether the cycle overview's year window counts as `LONG_RANGE_HISTORY` (premium). It
-  needs `READ_HEALTH_DATA_HISTORY` to show more than 30 days, which is one to two cycles.
 - Whether a custom dashboard becomes the premium feature (section 1), and the default tile set.
-- A dashboard strip for the cycle -- the overview has no tile. Worth building only if the
-  overview proves useful on the phone.
+
+The cycle overview's year window (Pro) and a cycle tile were decided on 10.10.2026: steps 75
+and 76.
 
 Not ranked yet: overlaying two metrics on one timeline, a local reminder notification, goal
 streaks.
@@ -1997,7 +2027,14 @@ a cold start.
 
 ## 19. Deferred
 
-Nothing at the moment. MindfulnessSession, deferred here until 27.09.2026, is plan step 25.
+- **Local reminder** (was step 42), deferred by the owner on 10.10.2026: this app cannot
+  enter a blood pressure reading, so reminding to take one belongs to the app that records it.
+  It would also need notification and background-read permissions, which change what the
+  privacy page promises.
+- **Home-screen widget**: needs reading in the background (`READ_HEALTH_DATA_IN_BACKGROUND`),
+  the same change to the privacy promise.
+
+MindfulnessSession, deferred here until 27.09.2026, is plan step 25.
 
 ## 20. Data audit: what Health Connect holds that the app does not show
 
