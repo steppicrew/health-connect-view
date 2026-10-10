@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.compare
 
 import android.app.Application
+import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
@@ -8,6 +9,7 @@ import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.dashboard.openingSource
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.UiState
@@ -15,10 +17,15 @@ import de.steppicrew.healthconnectview.ui.dashboard.TileChartLoader
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailData
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -109,7 +116,12 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         reload()
     }
 
-    suspend fun candidates(): List<RecordTypeSpec<*>> = repository.comparableTypes()
+    /** The types with data in the window shown, read once per window. */
+    suspend fun candidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, _offset.value) {
+        repository.comparableTypes(_span.value, _offset.value)
+    }
+
+    private val candidateCache = CandidateCache()
 
     private fun reload() {
         val (firstName, secondName) = _types.value ?: return
@@ -175,8 +187,76 @@ internal fun sharedExtent(span: Span, offset: Int, first: TileDetailData, second
     return start.minus(half)..end.minus(half)
 }
 
-/** Every type with a chart and access granted, the choice for a comparison's second chart. */
-suspend fun HealthRepository.comparableTypes(): List<RecordTypeSpec<*>> {
+/**
+ * Every type with a chart, access granted and something in the window [span] at [offset]
+ * shows, the choice for a comparison's second chart: a type with nothing there would only
+ * draw an empty chart beside the first.
+ *
+ * One record read per type, a few at a time, plus the aggregate where the type has one --
+ * basal metabolic rate stores no records. Records are looked for from a day before the
+ * window, since a night is kept by its end and begins the evening before. A probe that fails
+ * keeps its type: better one empty chart than a type missing from the list for no reason.
+ */
+suspend fun HealthRepository.comparableTypes(span: Span, offset: Int): List<RecordTypeSpec<*>> {
     val granted = runCatching { grantedPermissions() }.getOrDefault(emptySet())
-    return RecordRegistry.all.filter { it.isPinnable && it.permission in granted }
+    val zone = HealthRepository.DEFAULT_ZONE
+    val records = TimeRangeFilter.between(
+        span.startDate(offset).minusDays(1).atStartOfDay(zone).toInstant(),
+        span.endDate(offset).atStartOfDay(zone).toInstant(),
+    )
+    val local = span.localFilter(offset)
+    val gate = Semaphore(MAX_CONCURRENT_PROBES)
+    return coroutineScope {
+        RecordRegistry.all
+            .filter { it.isPinnable && it.permission in granted }
+            .map { spec ->
+                async {
+                    gate.withPermit {
+                        val has = try {
+                            hasData(spec.type, records, local, spec.aggregate)
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            true
+                        }
+                        spec.takeIf { has }
+                    }
+                }
+            }
+            .awaitAll()
+            .filterNotNull()
+    }
+}
+
+/**
+ * [items] by category for the picker: [current]'s own first -- body fat, water and bone mass
+ * beside weight -- then the others in the catalog's order, each by name.
+ */
+internal fun <T> relatedFirst(
+    current: Category?,
+    items: List<T>,
+    category: (T) -> Category,
+    name: (T) -> String,
+): List<Pair<Category, List<T>>> =
+    items.groupBy(category)
+        .toSortedMap(compareBy<Category> { it != current }.thenBy { it.ordinal })
+        .map { (group, members) -> group to members.sortedBy(name) }
+
+private const val MAX_CONCURRENT_PROBES = 6
+
+/**
+ * The last window's candidates, so opening the picker twice on one window probes once. Kept
+ * in memory only, and a list of types -- no reading.
+ */
+class CandidateCache {
+    private var key: Pair<Span, Int>? = null
+    private var value: List<RecordTypeSpec<*>>? = null
+
+    suspend fun get(span: Span, offset: Int, load: suspend () -> List<RecordTypeSpec<*>>): List<RecordTypeSpec<*>> {
+        value?.takeIf { key == span to offset }?.let { return it }
+        return load().also {
+            key = span to offset
+            value = it
+        }
+    }
 }

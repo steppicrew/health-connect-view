@@ -780,6 +780,7 @@
     <string name="body_fat_mass_note">Calcolata: percentuale di grasso corporeo × peso dello stesso giorno</string>
     <string name="compare_title">Confronta</string>
     <string name="compare_pick">Confronta con</string>
+    <string name="compare_pick_none">Nessun altro tipo ha dati nel periodo mostrato.</string>
     <string name="compare_swap">Inverti l\'ordine</string>
     <string name="compare_none">Nessun valore in questo periodo</string>
     <string name="compare_note">Due grafici su un unico asse del tempo, ciascuno con la sua scala. Che due valori cambino insieme non significa che uno causi l\'altro.</string>

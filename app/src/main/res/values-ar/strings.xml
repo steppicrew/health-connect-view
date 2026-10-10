@@ -855,6 +855,7 @@
     <string name="body_fat_mass_note">محسوبة: نسبة الدهون في الجسم × وزن اليوم نفسه</string>
     <string name="compare_title">مقارنة</string>
     <string name="compare_pick">مقارنة مع</string>
+    <string name="compare_pick_none">لا يوجد نوع آخر له بيانات في الفترة المعروضة.</string>
     <string name="compare_swap">تبديل الترتيب</string>
     <string name="compare_none">لا توجد قيم في هذه الفترة</string>
     <string name="compare_note">مخططان على محور زمني واحد، لكل منهما مقياسه الخاص. تغيّر قيمتين معًا لا يعني أن إحداهما سبب الأخرى.</string>

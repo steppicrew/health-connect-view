@@ -730,6 +730,7 @@
     <string name="body_fat_mass_note">계산값: 체지방률 × 같은 날의 체중</string>
     <string name="compare_title">비교</string>
     <string name="compare_pick">비교할 항목</string>
+    <string name="compare_pick_none">표시된 기간에 데이터가 있는 다른 항목이 없습니다.</string>
     <string name="compare_swap">순서 바꾸기</string>
     <string name="compare_none">이 기간에 값이 없습니다</string>
     <string name="compare_note">하나의 시간 축에 두 그래프가 있으며 눈금은 각각 다릅니다. 두 값이 함께 움직인다고 해서 하나가 다른 하나의 원인이라는 뜻은 아닙니다.</string>

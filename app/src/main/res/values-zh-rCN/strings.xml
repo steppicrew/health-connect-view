@@ -730,6 +730,7 @@
     <string name="body_fat_mass_note">计算值：体脂率 × 同一天的体重</string>
     <string name="compare_title">比较</string>
     <string name="compare_pick">与之比较</string>
+    <string name="compare_pick_none">所示时段内没有其他类型的数据。</string>
     <string name="compare_swap">交换顺序</string>
     <string name="compare_none">此期间没有数值</string>
     <string name="compare_note">两个图表共用一条时间轴，各有自己的刻度。两个数值一起变化并不意味着其中一个导致了另一个。</string>

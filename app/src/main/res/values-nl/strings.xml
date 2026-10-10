@@ -755,6 +755,7 @@
     <string name="body_fat_mass_note">Berekend: vetpercentage × gewicht van dezelfde dag</string>
     <string name="compare_title">Vergelijken</string>
     <string name="compare_pick">Vergelijken met</string>
+    <string name="compare_pick_none">Geen ander type heeft gegevens in de getoonde periode.</string>
     <string name="compare_swap">Volgorde omwisselen</string>
     <string name="compare_none">Geen waarden in deze periode</string>
     <string name="compare_note">Twee grafieken op één tijdas, elk met een eigen schaal. Dat twee waarden samen bewegen, betekent niet dat de ene de andere veroorzaakt.</string>

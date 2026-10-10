@@ -549,8 +549,13 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     workout and 20 min moving: on the phone the indoor bike and the power meter write one
     summary value per workout, too little to halve, so power is not used. Checked on the
     phone on a ride: 133 bpm at 22.2 km/h (359/km) against 138 at 21.7 (382/km).
-61. [ ] **Compare: offer what is on screen** -- the picker lists only types with data in the
-    window shown, related ones first (body composition with weight).
+61. [x] **Compare: offer what is on screen** -- the picker lists only types with data in the
+    window shown, related ones first (body composition with weight). Built 10.10.2026: each
+    granted type is probed over the window (one record from a day before it, for a night
+    begun the evening before, or the aggregate), six at a time and once per window; a failed
+    probe keeps its type. Grouped under the catalog's headers, the current type's category
+    first. Checked on the phone: weight over a day offers only basal metabolic rate under
+    "Body"; over a year also height, bone mass, body fat and body water.
 62. [ ] **Compare: one chart for one unit** -- weight, body water and bone mass on one scale
     with the chips of step 54; different units stay stacked.
 63. [ ] **Across days** -- the night's lowest heart rate after training days against rest days;
