@@ -1,0 +1,1 @@
+1.2.1 — Workouts: the heart-rate curve is a smooth line again. Where one app wrote two recordings at once during a workout, it jumped back and forth between them.

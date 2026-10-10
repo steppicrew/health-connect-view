@@ -1,0 +1,1 @@
+1.2.1 — Latihan: kurva detak jantung kembali menjadi garis yang mulus. Jika satu aplikasi menulis dua rekaman sekaligus selama latihan, kurva melompat bolak-balik di antara keduanya.

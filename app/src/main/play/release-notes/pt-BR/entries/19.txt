@@ -1,0 +1,1 @@
+1.2.1 — Treinos: a curva de frequência cardíaca volta a ser uma linha suave. Quando um app gravava dois registros ao mesmo tempo durante um treino, ela pulava de um para o outro.

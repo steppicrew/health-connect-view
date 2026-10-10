@@ -1,1 +1,1 @@
-1.2.0 — Treningi: przerwy są pomijane; czas w pięciu strefach tętna z obciążeniem, okrążenia na wykresie i tętno po zakończeniu wraz z jego spadkiem. Kilka linii na wykresie: prędkość i wysokość na rowerze; częstość oddechów, SpO₂ i HRV w nocy. Duże kafelki (Pro): fazy snu z ostatniej nocy i ostatnie treningi jako krzywe. Wybierz dzień w kalendarzu, przeciągnij w dół, aby odświeżyć. Szybsze ładowanie.
+1.2.1 — Treningi: krzywa tętna znów jest gładką linią. Gdy jedna aplikacja zapisywała podczas treningu dwa nagrania naraz, krzywa przeskakiwała między nimi.

@@ -1,0 +1,1 @@
+1.2.1 — Allenamenti: la curva della frequenza cardiaca è di nuovo una linea regolare. Quando un'app scriveva due registrazioni insieme durante un allenamento, saltava avanti e indietro tra le due.

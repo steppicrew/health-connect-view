@@ -1,1 +1,1 @@
-1.2.0 — Antrenmanlar: molalar düşülür; beş nabız bölgesindeki süre ve bir yük değeri, grafikte turlar ve bitişten sonraki nabız ile düşüşü. Grafik başına birden çok çizgi: bisiklette hız ve yükseklik; gece solunum hızı, SpO₂ ve HRV. Büyük kutucuklar (Pro): dün geceki uyku evreleri ve son antrenmanlarınız eğri olarak. Takvimden bir gün seçin, yeniden yüklemek için aşağı çekin. Daha hızlı yükleme.
+1.2.1 — Antrenmanlar: Nabız eğrisi yeniden düzgün bir çizgi. Bir uygulama antrenman sırasında aynı anda iki kayıt yazdığında eğri ikisi arasında gidip geliyordu.
