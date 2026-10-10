@@ -245,6 +245,17 @@ fun LineChart(
     /** The moment this chart is reading, or null once released, for another's [linkedTime]. */
     onSelectTime: ((Instant?) -> Unit)? = null,
     /**
+     * What the readout row says while nothing is touched -- a name and latest value, and a
+     * detail beside it -- for a stack of compact charts with no heading of their own. Null
+     * leaves the row empty until touched, as everywhere else.
+     */
+    idleTitle: String? = null,
+    idleDetail: String? = null,
+    /** The readout names the day alone: each point is a day's mean, and "00:00" says nothing. */
+    dateOnly: Boolean = false,
+    /** The dates beneath the plot; off for all but the lowest of charts stacked on one axis. */
+    timeAxis: Boolean = true,
+    /**
      * How a value is written, on the axis and in the readout, where a plain number would be
      * wrong: a pace is minutes and seconds, and 7,73 reads as nothing a runner knows.
      */
@@ -492,6 +503,9 @@ fun LineChart(
                 onExpand = onExpand,
                 valueText = valueText,
                 unitText = unitText,
+                idleTitle = idleTitle,
+                idleDetail = idleDetail,
+                dateOnly = dateOnly,
             )
         }
 
@@ -1168,7 +1182,9 @@ fun LineChart(
             SessionAxisIcons(sessions = sessions, extent = timeExtent, zoom = zoom, pan = pan)
         }
 
-        if (evenlySpaced) {
+        if (!timeAxis) {
+            // Stacked on another chart's axis, whose dates below serve both.
+        } else if (evenlySpaced) {
             ReadingAxis(points = points, fractions = fractions, highlight = highlight, zoom = zoom, pan = pan)
         } else {
             TimeAxis(points = points, extent = plotExtent, zoom = zoom, pan = pan, datesOnDayChange = extent == null)
@@ -1809,6 +1825,9 @@ private fun SelectionReadout(
     onExpand: (() -> Unit)? = null,
     valueText: ((Double) -> String)? = null,
     unitText: String? = null,
+    idleTitle: String? = null,
+    idleDetail: String? = null,
+    dateOnly: Boolean = false,
 ) {
     val unit = unitText ?: unitRes?.let { stringResource(it) }
     fun text(value: Double) = valueText?.invoke(value) ?: Formatting.number(value, decimals)
@@ -1822,12 +1841,12 @@ private fun SelectionReadout(
                 text(selected.value) +
                     (secondary?.let { "/" + text(it.value) } ?: "") +
                     (unit?.let { " $it" } ?: "")
-            }.orEmpty(),
+            } ?: idleTitle.orEmpty(),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = point?.let { Formatting.dateTime(it.time) }.orEmpty(),
+            text = point?.let { if (dateOnly) Formatting.date(it.time) else Formatting.dateTime(it.time) } ?: idleDetail.orEmpty(),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),

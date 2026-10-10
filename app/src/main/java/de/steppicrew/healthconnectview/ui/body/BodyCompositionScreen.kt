@@ -130,13 +130,27 @@ private fun Parts(data: BodyComposition, period: String, historyNeeded: Boolean,
     ) {
         // Which chart is touched and at what moment, so every other shows its value there too.
         var reading by remember(data) { mutableStateOf<Pair<Int, Instant>?>(null) }
-        data.parts.forEachIndexed { index, part ->
-            PartChart(
-                part,
-                data,
-                period,
-                linkedTime = reading?.takeIf { it.first != index }?.second,
-                onSelectTime = { time -> reading = time?.let { index to it } ?: reading?.takeIf { it.first != index } },
+        // All parts in one card, close together, so the whole window fits on one screen and a
+        // day can be followed down through every chart at once.
+        InfoGroup {
+            data.parts.forEachIndexed { index, part ->
+                PartChart(
+                    part,
+                    data,
+                    period,
+                    linkedTime = reading?.takeIf { it.first != index }?.second,
+                    onSelectTime = { time -> reading = time?.let { index to it } ?: reading?.takeIf { it.first != index } },
+                    lowest = index == data.parts.lastIndex,
+                )
+            }
+        }
+        // Once beneath the card for the part marked with it, rather than inside the stack.
+        if (data.parts.any { it.derived }) {
+            Text(
+                text = "* " + stringResource(R.string.body_fat_mass_note),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
         Text(
@@ -159,7 +173,11 @@ private fun Parts(data: BodyComposition, period: String, historyNeeded: Boolean,
     }
 }
 
-/** A part's latest value, its change over the window, and its own chart beneath. */
+/**
+ * One part as a compact chart: its name, latest value and change over the window in the
+ * readout row while nothing is touched, the touched day's value while something is. Only the
+ * [lowest] chart writes the dates; the others share its axis.
+ */
 @Composable
 private fun PartChart(
     part: BodyPart,
@@ -167,58 +185,45 @@ private fun PartChart(
     period: String,
     linkedTime: Instant?,
     onSelectTime: (Instant?) -> Unit,
+    lowest: Boolean,
 ) {
     val unit = " " + stringResource(part.unitRes)
     val first = part.points.first()
     val last = part.points.last()
-
-    InfoGroup {
-        Text(stringResource(part.labelRes), style = MaterialTheme.typography.titleSmall)
-        Text(
-            text = Formatting.number(last.value, CHANGE_DECIMALS) + unit,
-            style = MaterialTheme.typography.headlineSmall,
-        )
-        // Since the window's first reading, named by its date: over an uneven gap a bare
-        // change would read as a rate.
-        Text(
-            text = if (part.points.size > 1) {
-                stringResource(R.string.context_change, Formatting.signed(last.value - first.value, CHANGE_DECIMALS) + unit, Formatting.date(first.time))
+    val name = stringResource(part.labelRes) + if (part.derived) " *" else ""
+    // Since the window's first reading, named by its date: over an uneven gap a bare change
+    // would read as a rate.
+    val change = if (part.points.size > 1) {
+        stringResource(R.string.context_change, Formatting.signed(last.value - first.value, CHANGE_DECIMALS) + unit, Formatting.date(first.time))
+    } else {
+        stringResource(R.string.body_composition_one)
+    }
+    ExpandableChart(chartTitle(stringResource(part.labelRes), part.unitRes, period)) { expanded, onExpand ->
+        LineChart(
+            points = part.points,
+            // Softened, monotone so it never overshoots a reading; the readings stay marked.
+            smooth = true,
+            unitRes = part.unitRes,
+            valueDecimals = CHANGE_DECIMALS,
+            markReadings = true,
+            extent = data.extent,
+            compactAxis = true,
+            fillHeight = true,
+            onExpand = onExpand,
+            holdSelection = expanded,
+            // Inline only: full screen, one chart is read alone.
+            linkedTime = if (expanded) null else linkedTime,
+            onSelectTime = if (expanded) null else onSelectTime,
+            idleTitle = "$name  " + Formatting.number(last.value, CHANGE_DECIMALS) + unit,
+            idleDetail = change,
+            dateOnly = true,
+            timeAxis = expanded || lowest,
+            modifier = if (expanded) {
+                Modifier.fillMaxSize()
             } else {
-                stringResource(R.string.body_composition_one)
+                Modifier.fillMaxWidth().height(if (lowest) LOWEST_CHART_HEIGHT.dp else PART_CHART_HEIGHT.dp)
             },
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        if (part.derived) {
-            Text(
-                text = stringResource(R.string.body_fat_mass_note),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        ExpandableChart(chartTitle(stringResource(part.labelRes), part.unitRes, period)) { expanded, onExpand ->
-            LineChart(
-                points = part.points,
-                // Softened, monotone so it never overshoots a reading; the readings stay marked.
-                smooth = true,
-                unitRes = part.unitRes,
-                valueDecimals = CHANGE_DECIMALS,
-                markReadings = true,
-                extent = data.extent,
-                compactAxis = !expanded,
-                fillHeight = true,
-                onExpand = onExpand,
-                holdSelection = expanded,
-                // Inline only: full screen, one chart is read alone.
-                linkedTime = if (expanded) null else linkedTime,
-                onSelectTime = if (expanded) null else onSelectTime,
-                modifier = if (expanded) {
-                    Modifier.fillMaxSize()
-                } else {
-                    Modifier.fillMaxWidth().height(PART_CHART_HEIGHT.dp).padding(top = 8.dp)
-                },
-            )
-        }
     }
 }
 
@@ -227,4 +232,6 @@ private val SPANS = listOf(Span.WEEK, Span.MONTH, Span.YEAR)
 /** Kilograms and percent alike to one place: a scale reads no finer. */
 private const val CHANGE_DECIMALS = 1
 
-private const val PART_CHART_HEIGHT = 140
+/** Readout row and plot of one compact part; the lowest adds the row of dates. */
+private const val PART_CHART_HEIGHT = 104
+private const val LOWEST_CHART_HEIGHT = 124
