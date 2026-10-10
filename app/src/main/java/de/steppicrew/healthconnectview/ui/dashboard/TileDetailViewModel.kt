@@ -311,9 +311,7 @@ data class TileDetailData(
 /**
  * One type, over a span that can be stepped backwards and forwards.
  *
- * Separate from TypeDetailViewModel, which shows a fixed trailing range plus the raw record
- * list. This is the chart-first view reached from a dashboard tile, and it is the only place
- * that can reach data older than a year.
+ * Reached from a dashboard tile and from the catalog alike.
  */
 class TileDetailViewModel(
     application: Application,

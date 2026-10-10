@@ -616,19 +616,6 @@
         <item quantity="other">Najnowsze %1$d wpisu w powiększonym odcinku</item>
     </plurals>
     <string name="detail_list_zoom_hint">Powiększ wykres, aby wyświetlić wpisy z odcinka.</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">Lista pokazuje tylko najnowszy wpis. Wykres nadal obejmuje cały okres.</item>
-        <item quantity="few">Lista pokazuje tylko %1$d najnowsze wpisy. Wykres nadal obejmuje cały okres.</item>
-        <item quantity="many">Lista pokazuje tylko %1$d najnowszych wpisów. Wykres nadal obejmuje cały okres.</item>
-        <item quantity="other">Lista pokazuje tylko %1$d najnowszego wpisu. Wykres nadal obejmuje cały okres.</item>
-    </plurals>
-    <string name="chart_source_sampled">Pojedyncze pomiary, próbkowane w całym okresie</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">Te dane zapisała %1$d aplikacja.</item>
-        <item quantity="few">Te dane zapisały %1$d aplikacje. Health Connect usuwa duplikaty z sum, więc mogą się one różnić od wartości pojedynczej aplikacji.</item>
-        <item quantity="many">Te dane zapisało %1$d aplikacji. Health Connect usuwa duplikaty z sum, więc mogą się one różnić od wartości pojedynczej aplikacji.</item>
-        <item quantity="other">Te dane zapisało %1$d aplikacji. Health Connect usuwa duplikaty z sum, więc mogą się one różnić od wartości pojedynczej aplikacji.</item>
-    </plurals>
     <string name="legend_sleep">Sen</string>
     <string name="legend_exercise">Aktywność</string>
     <string name="legend_range">Zakres dnia</string>

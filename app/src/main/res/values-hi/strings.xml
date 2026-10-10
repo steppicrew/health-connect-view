@@ -580,15 +580,6 @@
         <item quantity="other">ज़ूम किए गए हिस्से के सबसे नए %1$d रिकॉर्ड</item>
     </plurals>
     <string name="detail_list_zoom_hint">किसी हिस्से के रिकॉर्ड की सूची देखने के लिए चार्ट पर ज़ूम करें।</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">सूची में सिर्फ़ सबसे नया %1$d रिकॉर्ड दिख रहा है। चार्ट अब भी पूरी अवधि दिखाता है।</item>
-        <item quantity="other">सूची में सिर्फ़ सबसे नए %1$d रिकॉर्ड दिख रहे हैं। चार्ट अब भी पूरी अवधि दिखाता है।</item>
-    </plurals>
-    <string name="chart_source_sampled">अलग-अलग रीडिंग, पूरी अवधि से चुनी गईं</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">%1$d ऐप ने यह डेटा लिखा।</item>
-        <item quantity="other">%1$d ऐप ने यह डेटा लिखा। Health Connect कुल में से डुप्लीकेट हटाता है, इसलिए ये किसी एक ऐप के आंकड़े से अलग हो सकते हैं।</item>
-    </plurals>
     <string name="legend_sleep">नींद</string>
     <string name="legend_exercise">गतिविधि</string>
     <string name="legend_range">दिन की रेंज</string>

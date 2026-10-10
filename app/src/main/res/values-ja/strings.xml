@@ -562,13 +562,6 @@
         <item quantity="other">拡大した区間の最新 %1$d 件の記録</item>
     </plurals>
     <string name="detail_list_zoom_hint">区間の記録を一覧表示するには、グラフを拡大してください。</string>
-    <plurals name="detail_truncated">
-        <item quantity="other">一覧には最新の %1$d 件のみ表示しています。グラフは期間全体を表示しています。</item>
-    </plurals>
-    <string name="chart_source_sampled">期間全体から抽出した個々の測定値</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="other">%1$d 個のアプリがこのデータを書き込みました。合計はヘルスコネクトが重複を除外しているため、個々のアプリの値と異なる場合があります。</item>
-    </plurals>
     <string name="legend_sleep">睡眠</string>
     <string name="legend_exercise">アクティビティ</string>
     <string name="legend_range">その日の範囲</string>

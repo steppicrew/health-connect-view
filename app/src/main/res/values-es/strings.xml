@@ -598,17 +598,6 @@
         <item quantity="other">Los %1$d registros más recientes del tramo ampliado</item>
     </plurals>
     <string name="detail_list_zoom_hint">Amplía el gráfico para ver los registros de un tramo.</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">La lista solo muestra el registro más reciente. El gráfico sigue cubriendo todo el periodo.</item>
-        <item quantity="many">La lista solo muestra los %1$d registros más recientes. El gráfico sigue cubriendo todo el periodo.</item>
-        <item quantity="other">La lista solo muestra los %1$d registros más recientes. El gráfico sigue cubriendo todo el periodo.</item>
-    </plurals>
-    <string name="chart_source_sampled">Mediciones individuales, muestreadas a lo largo del periodo</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">%1$d aplicación escribió estos datos.</item>
-        <item quantity="many">%1$d aplicaciones escribieron estos datos. Health Connect elimina los duplicados de los totales, por lo que pueden diferir de los de cualquier aplicación individual.</item>
-        <item quantity="other">%1$d aplicaciones escribieron estos datos. Health Connect elimina los duplicados de los totales, por lo que pueden diferir de los de cualquier aplicación individual.</item>
-    </plurals>
     <string name="legend_sleep">Sueño</string>
     <string name="legend_exercise">Actividad</string>
     <string name="legend_range">Rango del día</string>

@@ -614,15 +614,6 @@
         <item quantity="other">The newest %1$d records in the zoomed stretch</item>
     </plurals>
     <string name="detail_list_zoom_hint">Zoom into the chart to list the records of a stretch.</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">The list shows the most recent record only. The chart still covers the whole period.</item>
-        <item quantity="other">The list shows the most recent %1$d records only. The chart still covers the whole period.</item>
-    </plurals>
-    <string name="chart_source_sampled">Individual readings, sampled across the period</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">%1$d app wrote this data.</item>
-        <item quantity="other">%1$d apps wrote this data. Totals are deduplicated by Health Connect, so they may differ from any single app.</item>
-    </plurals>
     <string name="legend_sleep">Sleep</string>
     <string name="legend_exercise">Activity</string>
     <string name="legend_range">Range of the day</string>

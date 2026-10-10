@@ -616,19 +616,6 @@
         <item quantity="other">Последние %1$d записи в увеличенном отрезке</item>
     </plurals>
     <string name="detail_list_zoom_hint">Увеличьте график, чтобы увидеть записи за отрезок.</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">В списке только %1$d последняя запись. График по-прежнему охватывает весь период.</item>
-        <item quantity="few">В списке только %1$d последние записи. График по-прежнему охватывает весь период.</item>
-        <item quantity="many">В списке только %1$d последних записей. График по-прежнему охватывает весь период.</item>
-        <item quantity="other">В списке только %1$d последней записи. График по-прежнему охватывает весь период.</item>
-    </plurals>
-    <string name="chart_source_sampled">Отдельные измерения, выборка по всему периоду</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">Эти данные записало %1$d приложение. Health Connect убирает дубликаты из итогов, поэтому они могут отличаться от показателей отдельного приложения.</item>
-        <item quantity="few">Эти данные записали %1$d приложения. Health Connect убирает дубликаты из итогов, поэтому они могут отличаться от показателей отдельного приложения.</item>
-        <item quantity="many">Эти данные записали %1$d приложений. Health Connect убирает дубликаты из итогов, поэтому они могут отличаться от показателей отдельного приложения.</item>
-        <item quantity="other">Эти данные записали %1$d приложения. Health Connect убирает дубликаты из итогов, поэтому они могут отличаться от показателей отдельного приложения.</item>
-    </plurals>
     <string name="legend_sleep">Сон</string>
     <string name="legend_exercise">Активность</string>
     <string name="legend_range">Диапазон дня</string>
