@@ -1,5 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.heatmapShades
+import de.steppicrew.healthconnectview.ui.components.YearHeatmapGrid
+import de.steppicrew.healthconnectview.health.YearHeatmap
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.activity.compose.LocalActivity
@@ -1099,6 +1102,14 @@ private fun SpanSummary(
         // values so the space is its own size: arriving, it no longer pushes the list down.
         val active = data.spec.tile.form == TileSpec.Form.SESSIONS
         val today = LocalDate.now()
+        if (data.heatmapOffered) {
+            val heatmap = data.heatmap
+            when {
+                heatmap != null -> HeatmapSection(heatmap, data.spec)
+                data.heatmapPending -> Reserved { HeatmapSection(standInHeatmap(today), data.spec) }
+                !heatmapUnlocked() -> LockedHeatmap()
+            }
+        }
         val nights = data.trainingNights
         when {
             nights != null -> TrainingNightsSection(nights, data.spec.displayUnitRes)
@@ -1142,6 +1153,149 @@ private fun Reserved(content: @Composable () -> Unit) {
                 .pointerInput(Unit) { detectTapGestures { } },
         )
         CircularProgressIndicator(Modifier.size(RESERVED_SPINNER.dp), strokeWidth = 2.dp)
+    }
+}
+
+@Composable
+private fun heatmapUnlocked(): Boolean {
+    val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
+    return pro.allows(Feature.YEAR_HEATMAP)
+}
+
+/** An empty year the size of a real one, for the place held while it is read. */
+private fun standInHeatmap(today: LocalDate) =
+    YearHeatmap(first = today.minusYears(1).plusDays(1), last = today, values = emptyMap(), low = 0.0, high = 1.0)
+
+/**
+ * The year as a calendar, one shade per day, with the tapped day's value beneath and a way
+ * to it. Says what the shades mean, since the darkest is "the top 5 %" rather than the maximum.
+ */
+@Composable
+private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
+    var selected by rememberSaveable(heatmap.first) { mutableStateOf<LocalDate?>(null) }
+    val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    // Sleep and training are hours, read as a duration; everything else in its own unit.
+    val durations = spec.tile.form == TileSpec.Form.SESSIONS
+    fun value(v: Double) = if (durations) {
+        // "0", not "0s": the legend's start, where seconds were never meant.
+        if (v == 0.0) "0" else Formatting.duration(Duration.ofMinutes((v * MINUTES_PER_HOUR).roundToLong()))
+    } else {
+        Formatting.number(v, spec.valueDecimals) + unit
+    }
+    // Blood pressure is coloured by the grade of the day's averages, as every reading of it is
+    // elsewhere; one shade of the systolic alone would hide half the reading.
+    val graded = heatmap.secondValues.isNotEmpty()
+    val shades = heatmapShades()
+    val colorOf: (LocalDate) -> Color? = { day ->
+        heatmap.values[day]?.let { first ->
+            val second = heatmap.secondValues[day]
+            if (graded && second != null) pressureCategory(first, second).color else shades[heatmap.step(first)]
+        }
+    }
+    fun reading(day: LocalDate): String? {
+        val first = heatmap.values[day] ?: return null
+        val second = heatmap.secondValues[day]
+        return if (graded && second != null) "${pressureText(first, second)}$unit"
+        else value(first)
+    }
+    val zone = HealthRepository.DEFAULT_ZONE
+    val title = stringResource(R.string.heatmap_title)
+    InfoGroup {
+        Text(title, style = MaterialTheme.typography.titleSmall)
+        YearHeatmapGrid(
+            heatmap = heatmap,
+            colorOf = colorOf,
+            selected = selected,
+            onSelect = { selected = it },
+            description = title,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        val day = selected
+        if (day == null) {
+            Text(
+                text = stringResource(R.string.heatmap_tap),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        } else {
+            Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = Formatting.date(day.atStartOfDay(zone).toInstant(), zone) + ": " +
+                        (reading(day) ?: stringResource(R.string.heatmap_nothing)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                val jump = LocalDayJump.current
+                TextButton(onClick = { jump.onShow(day) }) { Text(stringResource(R.string.record_show)) }
+            }
+        }
+        if (graded) {
+            // The grades the year holds, each named beside its colour.
+            val grades = heatmap.values.mapNotNull { (day, first) -> heatmap.secondValues[day]?.let { pressureCategory(first, it) } }
+                .toSortedSet()
+            FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                grades.forEach { CategoryBadge(it) }
+            }
+        } else {
+            // A floor is named: "1.790 kcal" alone would read as the year's lowest day.
+            val low = value(heatmap.low) + heatmap.lowLabel?.let { " (" + stringResource(it) + ")" }.orEmpty()
+            HeatmapLegend(low, value(heatmap.high), shades)
+        }
+        Text(
+            text = stringResource(if (graded) R.string.heatmap_note_graded else R.string.heatmap_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+    }
+}
+
+/** The five shades from the lightest's start to the darkest's. */
+@Composable
+private fun HeatmapLegend(low: String, high: String, shades: List<Color>) {
+    Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(low, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        shades.forEach { shade ->
+            Box(
+                Modifier
+                    .padding(start = 3.dp)
+                    .size(10.dp)
+                    .background(shade, RoundedCornerShape(2.dp)),
+            )
+        }
+        Text(
+            "≥ $high",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 6.dp),
+        )
+    }
+}
+
+/** The heatmap's place without Pro: what it is, and the way to it. */
+@Composable
+private fun LockedHeatmap() {
+    val activity = LocalActivity.current
+    InfoGroup(Modifier.clickable { activity?.let(AppEntitlements.current::buy) }) {
+        Row(verticalAlignment = Alignment.Top) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 20.dp)).size(20.dp),
+            )
+            Text(
+                stringResource(R.string.export_premium, stringResource(R.string.heatmap_title)),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 20.dp)),
+            )
+        }
+        Text(
+            text = stringResource(R.string.heatmap_locked),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 

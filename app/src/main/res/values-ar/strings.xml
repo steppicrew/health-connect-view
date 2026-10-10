@@ -746,6 +746,12 @@
     <string name="record_title_longest">أطول تمرين في العام الماضي</string>
     <string name="record_value_on">%1$s في %2$s</string>
     <string name="record_show">عرض هذا اليوم</string>
+    <string name="heatmap_title">السنة كتقويم</string>
+    <string name="heatmap_tap">المس يومًا لترى قيمته.</string>
+    <string name="heatmap_nothing">لم يُسجَّل شيء</string>
+    <string name="heatmap_note" formatted="false">مربع لكل يوم، والأسابيع من اليسار إلى اليمين. المربع الفارغ لم يُسجَّل فيه شيء. أغمق درجة تضم أعلى 5 % من الأيام.</string>
+    <string name="heatmap_note_graded">مربع لكل يوم، والأسابيع من اليسار إلى اليمين، ملوّن بحسب درجة متوسط اليوم. المربع الفارغ لم يُسجَّل فيه شيء.</string>
+    <string name="heatmap_locked">كل يوم من السنة بدرجة لون، لرؤية العادات والفجوات بنظرة واحدة.</string>
     <string name="record_rule">يُبحث بين الأيام السابقة لليوم خلال العام الماضي. القيم اليومية هي مجاميع Health Connect بعد إزالة التكرار، لذا يُحتسب اليوم الذي سجّلته عدة تطبيقات مرة واحدة، وكذلك التمرين. يُحتسب اليوم بعد انتهائه.</string>
     <string name="history_limit_note">من دون الوصول إلى البيانات الأقدم، بُحث في آخر 30 يومًا فقط.</string>
     <string name="history_grant">السماح بالبيانات الأقدم</string>

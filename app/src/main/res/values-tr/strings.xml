@@ -650,6 +650,12 @@
     <string name="record_title_longest">Son bir yılın en uzun antrenmanı</string>
     <string name="record_value_on">%1$s, %2$s</string>
     <string name="record_show">Bu günü göster</string>
+    <string name="heatmap_title">Takvim olarak yıl</string>
+    <string name="heatmap_tap">Değerini görmek için bir güne dokunun.</string>
+    <string name="heatmap_nothing">kayıt yok</string>
+    <string name="heatmap_note" formatted="false">Her gün bir kare, haftalar soldan sağa. Boş kare, kayıt olmayan gündür. En koyu ton, en yüksek %5’lik günleri kapsar.</string>
+    <string name="heatmap_note_graded">Her gün bir kare, haftalar soldan sağa, günlük ortalamanın derecesine göre renkli. Boş kare, kayıt olmayan gündür.</string>
+    <string name="heatmap_locked">Alışkanlıkları ve boşlukları bir bakışta görmek için yılın her günü bir tonda.</string>
     <string name="record_rule">Son bir yıl içinde bugünden önceki günler arasında aranır. Günlük değerler, Health Connect’in tekrarlar çıkarılmış toplamlarıdır; birkaç uygulamanın kaydettiği bir gün bir kez sayılır, bir antrenman da öyle. Bugün, gün bitince sayılır.</string>
     <string name="history_limit_note">Daha eski verilere erişim olmadığından yalnızca son 30 gün tarandı.</string>
     <string name="history_grant">Eski verilere izin verin</string>

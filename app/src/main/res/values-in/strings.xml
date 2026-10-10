@@ -626,6 +626,12 @@
     <string name="record_title_longest">Latihan terlama dalam setahun terakhir</string>
     <string name="record_value_on">%1$s pada %2$s</string>
     <string name="record_show">Tampilkan hari ini</string>
+    <string name="heatmap_title">Tahun sebagai kalender</string>
+    <string name="heatmap_tap">Ketuk hari untuk melihat nilainya.</string>
+    <string name="heatmap_nothing">tidak ada catatan</string>
+    <string name="heatmap_note" formatted="false">Satu kotak per hari, minggu dari kiri ke kanan. Kotak kosong berarti tidak ada catatan. Warna tergelap berisi 5 % hari tertinggi.</string>
+    <string name="heatmap_note_graded">Satu kotak per hari, minggu dari kiri ke kanan, diwarnai menurut tingkat rata-rata hari itu. Kotak kosong berarti tidak ada catatan.</string>
+    <string name="heatmap_locked">Setiap hari dalam setahun dalam satu warna, untuk melihat kebiasaan dan celah sekilas.</string>
     <string name="record_rule">Dicari di antara hari-hari sebelum hari ini dalam setahun terakhir. Nilai harian adalah total Health Connect tanpa duplikat, jadi hari yang dicatat oleh beberapa aplikasi dihitung sekali, begitu pula latihan. Hari ini dihitung setelah berakhir.</string>
     <string name="history_limit_note">Tanpa akses ke data yang lebih lama, hanya 30 hari terakhir yang dicari.</string>
     <string name="history_grant">Izinkan data lama</string>

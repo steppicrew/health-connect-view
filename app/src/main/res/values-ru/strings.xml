@@ -698,6 +698,12 @@
     <string name="record_title_longest">Самая долгая тренировка за последний год</string>
     <string name="record_value_on">%1$s, %2$s</string>
     <string name="record_show">Показать этот день</string>
+    <string name="heatmap_title">Год в виде календаря</string>
+    <string name="heatmap_tap">Нажмите на день, чтобы увидеть значение.</string>
+    <string name="heatmap_nothing">ничего не записано</string>
+    <string name="heatmap_note" formatted="false">Один квадрат на день, недели слева направо. Пустой квадрат — ничего не записано. Самый тёмный оттенок — 5 % дней с наибольшими значениями.</string>
+    <string name="heatmap_note_graded">Один квадрат на день, недели слева направо, цвет — по степени среднего за день. Пустой квадрат — ничего не записано.</string>
+    <string name="heatmap_locked">Каждый день года одним оттенком, чтобы сразу видеть привычки и пропуски.</string>
     <string name="record_rule">Поиск идёт среди дней до сегодняшнего за последний год. Дневные значения — это суммы Health Connect без повторов, поэтому день, записанный несколькими приложениями, учитывается один раз, как и тренировка. Сегодняшний день учитывается после его окончания.</string>
     <string name="history_limit_note">Без доступа к более старым данным просмотрены только последние 30 дней.</string>
     <string name="history_grant">Разрешить старые данные</string>

@@ -650,6 +650,12 @@
     <string name="record_title_longest">पिछले एक साल की सबसे लंबी ट्रेनिंग</string>
     <string name="record_value_on">%2$s को %1$s</string>
     <string name="record_show">यह दिन दिखाएँ</string>
+    <string name="heatmap_title">कैलेंडर के रूप में साल</string>
+    <string name="heatmap_tap">किसी दिन का मान देखने के लिए उस पर टैप करें।</string>
+    <string name="heatmap_nothing">कुछ दर्ज नहीं</string>
+    <string name="heatmap_note" formatted="false">हर दिन एक खाना, हफ़्ते बाएँ से दाएँ। खाली खाने में कुछ दर्ज नहीं था। सबसे गहरा रंग सबसे ऊँचे 5 % दिनों का है।</string>
+    <string name="heatmap_note_graded">हर दिन एक खाना, हफ़्ते बाएँ से दाएँ, दिन के औसत की श्रेणी के रंग में। खाली खाने में कुछ दर्ज नहीं था।</string>
+    <string name="heatmap_locked">साल का हर दिन एक रंगत में, ताकि आदतें और खाली दिन एक नज़र में दिखें।</string>
     <string name="record_rule">पिछले एक साल में आज से पहले के दिनों में खोजा जाता है। दैनिक मान Health Connect के दोहराव हटाकर बने कुल योग हैं, इसलिए कई ऐप्स द्वारा दर्ज किया गया दिन एक ही बार गिना जाता है, ट्रेनिंग भी। आज का दिन खत्म होने के बाद गिना जाता है।</string>
     <string name="history_limit_note">पुराने डेटा तक पहुंच न होने से केवल पिछले 30 दिन खोजे गए।</string>
     <string name="history_grant">पुराने डेटा की अनुमति दें</string>

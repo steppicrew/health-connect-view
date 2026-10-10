@@ -650,6 +650,12 @@
     <string name="record_title_longest">Langste training van het afgelopen jaar</string>
     <string name="record_value_on">%1$s op %2$s</string>
     <string name="record_show">Deze dag tonen</string>
+    <string name="heatmap_title">Het jaar als kalender</string>
+    <string name="heatmap_tap">Tik op een dag voor de waarde.</string>
+    <string name="heatmap_nothing">niets vastgelegd</string>
+    <string name="heatmap_note" formatted="false">Een vakje per dag, de weken van links naar rechts. Een leeg vakje had niets vastgelegd. De donkerste tint omvat de hoogste 5 % van de dagen.</string>
+    <string name="heatmap_note_graded">Een vakje per dag, de weken van links naar rechts, gekleurd naar de klasse van het daggemiddelde. Een leeg vakje had niets vastgelegd.</string>
+    <string name="heatmap_locked">Elke dag van het jaar in één tint, om gewoonten en gaten in één oogopslag te zien.</string>
     <string name="record_rule">Gezocht onder de dagen vóór vandaag in het afgelopen jaar. Dagwaarden zijn de totalen van Health Connect zonder dubbelingen, dus een dag die meerdere apps hebben vastgelegd telt één keer, net als een training. Vandaag telt mee zodra de dag voorbij is.</string>
     <string name="history_limit_note">Zonder toegang tot oudere gegevens zijn alleen de laatste 30 dagen doorzocht.</string>
     <string name="history_grant">Oudere gegevens toestaan</string>

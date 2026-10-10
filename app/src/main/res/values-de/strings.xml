@@ -644,6 +644,12 @@
     <string name="record_title_longest">Längstes Training im vergangenen Jahr</string>
     <string name="record_value_on">%1$s am %2$s</string>
     <string name="record_show">Diesen Tag anzeigen</string>
+    <string name="heatmap_title">Das Jahr als Kalender</string>
+    <string name="heatmap_tap">Tippen Sie auf einen Tag für seinen Wert.</string>
+    <string name="heatmap_nothing">nichts aufgezeichnet</string>
+    <string name="heatmap_note" formatted="false">Ein Feld pro Tag, die Wochen von links nach rechts. Ein leeres Feld hatte keine Aufzeichnung. Der dunkelste Ton umfasst die obersten 5 % der Tage.</string>
+    <string name="heatmap_note_graded">Ein Feld pro Tag, die Wochen von links nach rechts, gefärbt nach der Einstufung des Tagesmittels. Ein leeres Feld hatte keine Aufzeichnung.</string>
+    <string name="heatmap_locked">Jeder Tag des Jahres in einem Farbton, um Gewohnheiten und Lücken auf einen Blick zu sehen.</string>
     <string name="record_rule">Gesucht wird unter den Tagen vor heute im vergangenen Jahr. Tageswerte sind die Summen von Health Connect ohne Doppelungen: Ein Tag, den mehrere Apps aufgezeichnet haben, zählt einmal, ebenso ein Training. Heute zählt, sobald der Tag vorbei ist.</string>
     <string name="history_limit_note">Ohne Zugriff auf ältere Daten wurden nur die letzten 30 Tage durchsucht.</string>
     <string name="history_grant">Ältere Daten freigeben</string>

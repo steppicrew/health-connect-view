@@ -698,6 +698,12 @@
     <string name="record_title_longest">Najdłuższy trening w ostatnim roku</string>
     <string name="record_value_on">%1$s, %2$s</string>
     <string name="record_show">Pokaż ten dzień</string>
+    <string name="heatmap_title">Rok jako kalendarz</string>
+    <string name="heatmap_tap">Dotknij dnia, aby zobaczyć wartość.</string>
+    <string name="heatmap_nothing">brak zapisu</string>
+    <string name="heatmap_note" formatted="false">Jeden kwadrat na dzień, tygodnie od lewej do prawej. Pusty kwadrat oznacza brak zapisu. Najciemniejszy odcień obejmuje 5 % dni z najwyższymi wartościami.</string>
+    <string name="heatmap_note_graded">Jeden kwadrat na dzień, tygodnie od lewej do prawej, w kolorze klasy średniej z dnia. Pusty kwadrat oznacza brak zapisu.</string>
+    <string name="heatmap_locked">Każdy dzień roku w jednym odcieniu, by od razu widzieć nawyki i luki.</string>
     <string name="record_rule">Szukane wśród dni przed dzisiejszym w ostatnim roku. Wartości dzienne to sumy z Health Connect bez duplikatów, więc dzień zapisany przez kilka aplikacji liczy się raz, podobnie jak trening. Dzisiejszy dzień liczy się po jego zakończeniu.</string>
     <string name="history_limit_note">Bez dostępu do starszych danych przeszukano tylko ostatnie 30 dni.</string>
     <string name="history_grant">Zezwól na starsze dane</string>

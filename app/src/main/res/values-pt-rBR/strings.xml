@@ -674,6 +674,12 @@
     <string name="record_title_longest">Treino mais longo do último ano</string>
     <string name="record_value_on">%1$s em %2$s</string>
     <string name="record_show">Mostrar este dia</string>
+    <string name="heatmap_title">O ano como calendário</string>
+    <string name="heatmap_tap">Toque em um dia para ver o valor.</string>
+    <string name="heatmap_nothing">nada registrado</string>
+    <string name="heatmap_note" formatted="false">Um quadrado por dia, as semanas da esquerda para a direita. Um quadrado vazio não teve registro. O tom mais escuro reúne os 5 % de dias mais altos.</string>
+    <string name="heatmap_note_graded">Um quadrado por dia, as semanas da esquerda para a direita, colorido pela classe da média do dia. Um quadrado vazio não teve registro.</string>
+    <string name="heatmap_locked">Cada dia do ano em um tom, para ver hábitos e lacunas de relance.</string>
     <string name="record_rule">Buscado entre os dias antes de hoje no último ano. Os valores diários são os totais do Conexão Saúde sem duplicatas, então um dia registrado por vários apps conta uma vez, assim como um treino. Hoje conta quando terminar.</string>
     <string name="history_limit_note">Sem acesso a dados mais antigos, só os últimos 30 dias foram pesquisados.</string>
     <string name="history_grant">Permitir dados antigos</string>

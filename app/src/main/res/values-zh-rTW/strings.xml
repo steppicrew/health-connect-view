@@ -626,6 +626,12 @@
     <string name="record_title_longest">過去一年中最長的運動</string>
     <string name="record_value_on">%2$s：%1$s</string>
     <string name="record_show">顯示這一天</string>
+    <string name="heatmap_title">日曆檢視中的一年</string>
+    <string name="heatmap_tap">輕觸某天查看其數值。</string>
+    <string name="heatmap_nothing">無記錄</string>
+    <string name="heatmap_note" formatted="false">每天一格，週從左到右。空格表示當天無記錄。最深的顏色代表數值最高的 5 % 的日子。</string>
+    <string name="heatmap_note_graded">每天一格，週從左到右，依當天平均值的分級著色。空格表示當天無記錄。</string>
+    <string name="heatmap_locked">全年每天以一種色深顯示，一眼看出習慣與空缺。</string>
     <string name="record_rule">在過去一年中今天之前的日子裡尋找。每日數值是 Health Connect 去除重複後的總計，因此由多個應用程式記錄的一天只算一次，運動也是如此。今天在結束後才計入。</string>
     <string name="history_limit_note">由於無法存取更早的資料，僅搜尋了最近 30 天。</string>
     <string name="history_grant">允許存取較舊的資料</string>

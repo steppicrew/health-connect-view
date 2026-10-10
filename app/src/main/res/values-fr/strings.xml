@@ -674,6 +674,12 @@
     <string name="record_title_longest">Entraînement le plus long de l’année écoulée</string>
     <string name="record_value_on">%1$s le %2$s</string>
     <string name="record_show">Afficher ce jour</string>
+    <string name="heatmap_title">L’année en calendrier</string>
+    <string name="heatmap_tap">Touchez un jour pour voir sa valeur.</string>
+    <string name="heatmap_nothing">rien d’enregistré</string>
+    <string name="heatmap_note" formatted="false">Une case par jour, les semaines de gauche à droite. Une case vide n’a rien d’enregistré. La teinte la plus foncée regroupe les 5 % de jours les plus élevés.</string>
+    <string name="heatmap_note_graded">Une case par jour, les semaines de gauche à droite, colorée selon la classe de la moyenne du jour. Une case vide n’a rien d’enregistré.</string>
+    <string name="heatmap_locked">Chaque jour de l’année dans une teinte, pour voir habitudes et lacunes d’un coup d’œil.</string>
     <string name="record_rule">Recherché parmi les jours précédant aujourd’hui sur l’année écoulée. Les valeurs quotidiennes sont les totaux de Santé Connect sans doublons : un jour enregistré par plusieurs applications ne compte qu’une fois, de même qu’un entraînement. Aujourd’hui compte une fois la journée terminée.</string>
     <string name="history_limit_note">Sans accès aux données plus anciennes, seuls les 30 derniers jours ont été examinés.</string>
     <string name="history_grant">Autoriser les données plus anciennes</string>
