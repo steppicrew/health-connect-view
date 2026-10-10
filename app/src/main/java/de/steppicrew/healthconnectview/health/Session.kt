@@ -115,6 +115,15 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
 }
 
 /**
+ * The day's night: its longest sleep. Not the last -- after an afternoon nap that was the nap,
+ * and the tile showed it in place of the night. Some devices write naps as sleep sessions of
+ * their own; the owner's watch writes one session a night, so this is read from the code, not
+ * measured. A night broken into two sessions shows its longer part.
+ */
+fun List<Session>.night(): Session? =
+    filter { it.kind == Session.Kind.SLEEP }.maxByOrNull { Duration.between(it.start, it.end) }
+
+/**
  * Builds a [Session] from an exercise record. The title is the writer's own or none: a name
  * from the type is the UI's to give, in the user's language, and [dedupeSessions] prefers the
  * copy a writer named.

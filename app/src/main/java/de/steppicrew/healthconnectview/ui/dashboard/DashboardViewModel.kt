@@ -29,6 +29,7 @@ import de.steppicrew.healthconnectview.health.currentStreak
 import de.steppicrew.healthconnectview.health.dailyActivities
 import de.steppicrew.healthconnectview.health.dailyTotalsOf
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.night
 import de.steppicrew.healthconnectview.health.atLeast
 import de.steppicrew.healthconnectview.health.dayTotalFilter
 import de.steppicrew.healthconnectview.health.dayInstants
@@ -672,15 +673,20 @@ class DashboardViewModel(
             TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source, withStreak = false)
         }
 
-        // The chosen readings over the day's last sessions: last night, read over the night
-        // itself, which begins the evening before the day it is credited to; the last workout,
-        // or the last two where a taller tile has room for both.
+        // The chosen readings over the day's sessions: its night -- the longest sleep, not a
+        // nap after it -- read over the night itself, which begins the evening before the day
+        // it is credited to; the last workout, or the last two where a taller tile has room.
         val kind = placeholder.spec.tile.sessionKind
         val companionCurves = tile.companion
             ?.takeIf { it in companionsOf(tile.typeName) && tile.span == Span.DAY && kind != null }
             ?.let { type ->
-                val shown = if (kind == Session.Kind.SLEEP || tile.height == 1) 1 else MAX_COMPANION_SESSIONS
-                chart?.sessions.orEmpty().filter { it.kind == kind }.takeLast(shown).mapNotNull { session ->
+                val sessions = chart?.sessions.orEmpty()
+                val picked = if (kind == Session.Kind.SLEEP) {
+                    listOfNotNull(sessions.night())
+                } else {
+                    sessions.filter { it.kind == kind }.takeLast(if (tile.height == 1) 1 else MAX_COMPANION_SESSIONS)
+                }
+                picked.mapNotNull { session ->
                     reads.attempt { repository.readingsDuring(session, type) }?.let { session to it }
                 }
             }
