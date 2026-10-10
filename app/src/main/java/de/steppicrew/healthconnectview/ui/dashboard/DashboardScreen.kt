@@ -219,7 +219,7 @@ fun DashboardScreen(
             candidates = viewModel.addableTypes(),
             repeatUnlocked = repeatable,
             onDismiss = { addingTile = false },
-            onAdd = viewModel::addTile,
+            onAdd = { viewModel.addTile(it, before = drag.firstInView(state.layout)) },
             onBuy = { activity?.let(AppEntitlements.current::buy) },
             insightsOffered = !viewModel.hasInsightsTile,
             insightsUnlocked = pro.allows(Feature.INSIGHTS),

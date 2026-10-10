@@ -178,10 +178,13 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
     fun without(id: String): DashboardConfig = DashboardConfig(tiles.filterNot { it.id == id })
 
     /**
-     * Appends a tile of [typeName]. A type already pinned gets another tile with an id of its
-     * own and the type's goal and zones; whether that is allowed is the caller's to decide.
+     * Adds a tile of [typeName] in front of the tile [before], or at the end where that is null
+     * or gone: the dashboard passes the first tile in view, so a new tile appears where the
+     * user is looking rather than below everything. A type already pinned gets another tile
+     * with an id of its own and the type's goal and zones; whether that is allowed is the
+     * caller's to decide.
      */
-    fun adding(typeName: String): DashboardConfig {
+    fun adding(typeName: String, before: String? = null): DashboardConfig {
         val sibling = tiles.firstOrNull { it.typeName == typeName }
         val tile = Tile(
             typeName = typeName,
@@ -189,7 +192,8 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
             zones = sibling?.zones,
             id = freeId(typeName, tiles.map { it.id }.toSet()),
         )
-        return DashboardConfig(tiles + tile)
+        val at = tiles.indexOfFirst { it.id == before }.takeIf { it >= 0 } ?: tiles.size
+        return DashboardConfig(tiles.take(at) + tile + tiles.drop(at))
     }
 
     fun has(typeName: String): Boolean = tiles.any { it.typeName == typeName }

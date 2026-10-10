@@ -430,13 +430,14 @@ class DashboardViewModel(
 
     /**
      * Pins a type. A type already on the dashboard gets another tile only with Pro; the picker
-     * offers it locked otherwise, so this refuses rather than trusting the caller.
+     * offers it locked otherwise, so this refuses rather than trusting the caller. In front of
+     * the tile [before], the first in view, so it does not land out of sight at the end.
      */
-    fun addTile(typeName: String) {
+    fun addTile(typeName: String, before: String? = null) {
         // One insights tile: a second would repeat the same list.
         if (typeName == Tile.INSIGHTS && config.has(typeName)) return
         if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
-        config = config.adding(typeName)
+        config = config.adding(typeName, before)
         viewModelScope.launch { store.save(config) }
         reload()
     }
