@@ -1262,6 +1262,8 @@ internal fun DataLineChart(
     axis: ClosedRange<Instant>? = data.extent,
     onExpand: (() -> Unit)? = null,
     holdSelection: Boolean = false,
+    linkedTime: Instant? = null,
+    onSelectTime: ((Instant?) -> Unit)? = null,
 ) {
     LineChart(
         points = data.points,
@@ -1300,6 +1302,8 @@ internal fun DataLineChart(
         onVisibleRange = onVisibleRange,
         onExpand = onExpand,
         holdSelection = holdSelection,
+        linkedTime = linkedTime,
+        onSelectTime = onSelectTime,
         modifier = modifier,
     )
 }
@@ -1317,6 +1321,9 @@ internal fun ExpandableDataChart(
     modifier: Modifier = Modifier,
     onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
     axis: ClosedRange<Instant>? = data.extent,
+    /** See [LineChart]'s parameters of the same names; inline only, full screen reads alone. */
+    linkedTime: Instant? = null,
+    onSelectTime: ((Instant?) -> Unit)? = null,
 ) {
     if (data.points.isEmpty()) return
     val title = chartTitle(stringResource(data.spec.displayNameRes), data.spec.displayUnitRes, period)
@@ -1329,6 +1336,8 @@ internal fun ExpandableDataChart(
             fillHeight = expanded,
             onExpand = onExpand,
             holdSelection = expanded,
+            linkedTime = if (expanded) null else linkedTime,
+            onSelectTime = if (expanded) null else onSelectTime,
         )
     }
 }

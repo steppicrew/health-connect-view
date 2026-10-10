@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import de.steppicrew.healthconnectview.ui.components.windowLabel
 import de.steppicrew.healthconnectview.ui.dashboard.DataLineChart
 import de.steppicrew.healthconnectview.ui.dashboard.ExpandableDataChart
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailData
+import java.time.Instant
 
 /**
  * Two types, one chart each, on one time axis.
@@ -143,8 +145,13 @@ private fun Charts(data: Compared, period: String, historyNeeded: Boolean, onOpe
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Chart(data.first, data, period)
-        Chart(data.second, data, period)
+        // Which chart is touched and at what moment, so the other shows its value there too.
+        var reading by remember(data) { mutableStateOf<Pair<Int, Instant>?>(null) }
+        fun report(chart: Int): (Instant?) -> Unit = { time ->
+            reading = time?.let { chart to it } ?: reading?.takeIf { it.first != chart }
+        }
+        Chart(data.first, data, period, linkedTime = reading?.takeIf { it.first == 1 }?.second, onSelectTime = report(0))
+        Chart(data.second, data, period, linkedTime = reading?.takeIf { it.first == 0 }?.second, onSelectTime = report(1))
         Text(
             text = stringResource(R.string.compare_note),
             style = MaterialTheme.typography.bodySmall,
@@ -165,7 +172,13 @@ private fun Charts(data: Compared, period: String, historyNeeded: Boolean, onOpe
 
 /** One type's chart, as on its own screen, drawn on the shared axis. */
 @Composable
-private fun Chart(chart: TileDetailData, data: Compared, period: String) {
+private fun Chart(
+    chart: TileDetailData,
+    data: Compared,
+    period: String,
+    linkedTime: Instant?,
+    onSelectTime: (Instant?) -> Unit,
+) {
     InfoGroup {
         val name = stringResource(chart.spec.displayNameRes)
         // "Schritte (Schritte)" says nothing twice; "Schlaf (h)" needs its unit.
@@ -181,7 +194,14 @@ private fun Chart(chart: TileDetailData, data: Compared, period: String) {
                 modifier = Modifier.padding(vertical = 24.dp),
             )
         } else {
-            ExpandableDataChart(chart, period, Modifier.padding(top = 8.dp), axis = data.extent)
+            ExpandableDataChart(
+                chart,
+                period,
+                Modifier.padding(top = 8.dp),
+                axis = data.extent,
+                linkedTime = linkedTime,
+                onSelectTime = onSelectTime,
+            )
         }
     }
 }
