@@ -49,6 +49,10 @@ internal class TileDragState(private val scroll: ScrollState) {
     private var moved by mutableStateOf(Offset.Zero)
     private var sizes: Map<String, Pair<Int, Int>> = emptyMap()
 
+    /** The first of [ids] whose top is in view, or null where all are scrolled past. */
+    fun firstInView(ids: List<String>): String? =
+        ids.firstOrNull { id -> bounds[id]?.let { it.top >= scroll.value } == true }
+
     /** [ids] in their shown order, with the size each is drawn at. */
     fun start(id: String, ids: List<String>, sizes: Map<String, Pair<Int, Int>>) {
         start = bounds[id] ?: return

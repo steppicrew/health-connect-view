@@ -266,4 +266,15 @@ class DashboardConfigTest {
         )
         assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
     }
+
+    @Test
+    fun `a new tile goes in front of the one named, or last`() {
+        val tiles = DashboardConfig(listOf(Tile("StepsRecord"), Tile("WeightRecord"), Tile("HeartRateRecord")))
+        assertEquals(
+            listOf("StepsRecord", "SleepSessionRecord", "WeightRecord", "HeartRateRecord"),
+            tiles.adding("SleepSessionRecord", before = "WeightRecord").tiles.map { it.typeName },
+        )
+        assertEquals("SleepSessionRecord", tiles.adding("SleepSessionRecord", before = "gone").tiles.last().typeName)
+        assertEquals("SleepSessionRecord", tiles.adding("SleepSessionRecord").tiles.last().typeName)
+    }
 }
