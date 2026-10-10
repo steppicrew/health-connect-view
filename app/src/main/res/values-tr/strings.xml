@@ -580,15 +580,6 @@
         <item quantity="other">Yakınlaştırılan bölümdeki en yeni %1$d kayıt</item>
     </plurals>
     <string name="detail_list_zoom_hint">Bir bölümün kayıtlarını listelemek için grafiği yakınlaştırın.</string>
-    <plurals name="detail_truncated">
-        <item quantity="one">Liste yalnızca en yeni kaydı gösteriyor. Grafik yine de dönemin tamamını kapsıyor.</item>
-        <item quantity="other">Liste yalnızca en yeni %1$d kaydı gösteriyor. Grafik yine de dönemin tamamını kapsıyor.</item>
-    </plurals>
-    <string name="chart_source_sampled">Tekil ölçümler, dönem boyunca örneklendi</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="one">Bu verileri %1$d uygulama yazdı.</item>
-        <item quantity="other">Bu verileri %1$d uygulama yazdı. Toplamlar Health Connect tarafından tekilleştirildiği için tek bir uygulamanınkinden farklı olabilir.</item>
-    </plurals>
     <string name="legend_sleep">Uyku</string>
     <string name="legend_exercise">Etkinlik</string>
     <string name="legend_range">Günün aralığı</string>

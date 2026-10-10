@@ -652,23 +652,6 @@
         <item quantity="other">أحدث %1$d سجل في الجزء المكبَّر</item>
     </plurals>
     <string name="detail_list_zoom_hint">كبِّر الرسم البياني لعرض سجلات جزء منه.</string>
-    <plurals name="detail_truncated">
-        <item quantity="zero">لا تعرض القائمة أي سجل. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-        <item quantity="one">تعرض القائمة أحدث سجل فقط. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-        <item quantity="two">تعرض القائمة أحدث سجلين فقط. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-        <item quantity="few">تعرض القائمة أحدث %1$d سجلات فقط. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-        <item quantity="many">تعرض القائمة أحدث %1$d سجلًا فقط. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-        <item quantity="other">تعرض القائمة أحدث %1$d سجل فقط. لا يزال الرسم البياني يغطي الفترة كاملة.</item>
-    </plurals>
-    <string name="chart_source_sampled">قراءات فردية، مأخوذة كعيّنات على امتداد الفترة</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="zero">لم يكتب أي تطبيق هذه البيانات.</item>
-        <item quantity="one">كتب تطبيق واحد هذه البيانات.</item>
-        <item quantity="two">كتب تطبيقان هذه البيانات. يزيل Health Connect التكرار من المجاميع، لذا قد تختلف عن قيم أي تطبيق منفرد.</item>
-        <item quantity="few">كتبت %1$d تطبيقات هذه البيانات. يزيل Health Connect التكرار من المجاميع، لذا قد تختلف عن قيم أي تطبيق منفرد.</item>
-        <item quantity="many">كتب %1$d تطبيقًا هذه البيانات. يزيل Health Connect التكرار من المجاميع، لذا قد تختلف عن قيم أي تطبيق منفرد.</item>
-        <item quantity="other">كتب %1$d تطبيق هذه البيانات. يزيل Health Connect التكرار من المجاميع، لذا قد تختلف عن قيم أي تطبيق منفرد.</item>
-    </plurals>
     <string name="legend_sleep">النوم</string>
     <string name="legend_exercise">النشاط</string>
     <string name="legend_range">نطاق اليوم</string>

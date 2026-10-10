@@ -562,13 +562,6 @@
         <item quantity="other">%1$d catatan terbaru di bagian yang diperbesar</item>
     </plurals>
     <string name="detail_list_zoom_hint">Perbesar diagram untuk mencantumkan catatan suatu bagian.</string>
-    <plurals name="detail_truncated">
-        <item quantity="other">Daftar hanya menampilkan %1$d catatan terbaru. Diagram tetap mencakup seluruh periode.</item>
-    </plurals>
-    <string name="chart_source_sampled">Hasil ukur tunggal, diambil sampelnya di sepanjang periode</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="other">%1$d aplikasi menulis data ini. Total dibuat tanpa duplikat oleh Health Connect, jadi bisa berbeda dari angka satu aplikasi.</item>
-    </plurals>
     <string name="legend_sleep">Tidur</string>
     <string name="legend_exercise">Aktivitas</string>
     <string name="legend_range">Rentang hari itu</string>

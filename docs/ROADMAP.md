@@ -670,7 +670,11 @@ doctor report and the year heatmap; the rest unranked.
 69. [x] **The workouts tile opens its workout** on a day span, not the list (left out of
     step 51) -- built 10.10.2026: the one drawn as a curve, or the day's only workout; several
     on a timeline still open the day's list, since the tile names none of them.
-70. [ ] **Export from a type's detail screen too** -- the catalog path has no export action.
+70. [x] **Export from a type's detail screen too** -- built 10.10.2026 by opening the catalog
+    on the screen a tile opens (on a week, as before) and dropping the catalog's own screen:
+    it was a lesser twin with no export, compare, sources box or day span, and nothing older
+    than its trailing range. Its notes on capped lists, several writers and a thinned chart
+    went with it; the sources box and the chart's own notes say the same.
 71. [ ] **Sleep stages in the records CSV**, one row per stage segment under its night.
 72. [ ] **An honest progress bar before the first answer**: indeterminate until the first read
     reports, and a session type's weekly read drawn as a step (step 49's open note).
@@ -1840,7 +1844,7 @@ filter -- into a file chosen in the system save dialog (`export/`).
   release asks Play Billing (section 15). A locked entry shows "Pro" and opens the purchase.
 
 Verified on the emulator: a week of steps exported 840 record rows and 7 daily rows, today's
-matching the tile. Not yet: the type detail screen (catalog path) has no export action, sleep
+matching the tile. Not yet: sleep
 stages are not in the records file, and JSON would plug in beside `Csv`. The PDF report for blood pressure is section 17.
 
 ## 14. Settings backup — built

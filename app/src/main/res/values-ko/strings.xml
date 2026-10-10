@@ -562,13 +562,6 @@
         <item quantity="other">확대한 구간의 최신 기록 %1$d개</item>
     </plurals>
     <string name="detail_list_zoom_hint">구간의 기록을 보려면 차트를 확대하세요.</string>
-    <plurals name="detail_truncated">
-        <item quantity="other">목록에는 최신 기록 %1$d개만 표시됩니다. 차트는 여전히 전체 기간을 보여 줍니다.</item>
-    </plurals>
-    <string name="chart_source_sampled">기간 전체에서 표본 추출한 개별 측정값</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="other">앱 %1$d개가 이 데이터를 기록했습니다. 합계는 헬스 커넥트가 중복을 제거하므로 개별 앱의 값과 다를 수 있습니다.</item>
-    </plurals>
     <string name="legend_sleep">수면</string>
     <string name="legend_exercise">활동</string>
     <string name="legend_range">그날의 범위</string>

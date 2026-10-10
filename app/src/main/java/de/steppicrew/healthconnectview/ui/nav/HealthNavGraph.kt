@@ -31,8 +31,6 @@ import de.steppicrew.healthconnectview.ui.dashboard.DashboardScreen
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardViewModel
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailScreen
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailViewModel
-import de.steppicrew.healthconnectview.ui.detail.TypeDetailScreen
-import de.steppicrew.healthconnectview.ui.detail.TypeDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsViewModel
 import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
@@ -44,7 +42,6 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val CATALOG = "catalog"
     const val PERMISSIONS = "permissions"
-    const val TYPE_DETAIL = "type/{typeName}"
     const val TILE_DETAIL = "tile/{typeName}?date={date}&span={span}&session={session}"
     const val SETTINGS = "settings"
     const val PRIVACY = "privacy"
@@ -72,7 +69,6 @@ object Routes {
 
     fun cycle() = "cycle"
 
-    fun typeDetail(typeName: String) = "type/$typeName"
     fun tileDetail(typeName: String, date: String, span: Span = Span.DAY) = "tile/$typeName?date=$date&span=${span.name}"
 }
 
@@ -115,7 +111,9 @@ fun HealthNavGraph(
             val viewModel: CatalogViewModel = viewModel()
             CatalogScreen(
                 viewModel = viewModel,
-                onOpenType = { navController.navigate(Routes.typeDetail(it)) },
+                // The same screen a tile opens, on a week as the catalog's own screen did: one
+                // place to export, compare and choose sources rather than a lesser twin.
+                onOpenType = { navController.navigate(Routes.tileDetail(it, "", Span.WEEK)) },
                 onOpenCycles = { navController.navigate(Routes.cycle()) },
                 onOpenInsights = { navController.navigate(Routes.insights()) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
@@ -304,19 +302,6 @@ fun HealthNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenSession = { navController.navigate(Routes.session(it)) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
-            )
-        }
-
-        composable(
-            route = Routes.TYPE_DETAIL,
-            arguments = listOf(navArgument("typeName") { type = NavType.StringType }),
-        ) { entry ->
-            val typeName = entry.arguments?.getString("typeName").orEmpty()
-            val viewModel: TypeDetailViewModel = viewModel()
-            LaunchedEffect(typeName) { viewModel.load(typeName) }
-            TypeDetailScreen(
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() },
             )
         }
     }

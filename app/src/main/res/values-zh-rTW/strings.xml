@@ -562,13 +562,6 @@
         <item quantity="other">放大區段內最新的 %1$d 筆記錄</item>
     </plurals>
     <string name="detail_list_zoom_hint">放大圖表即可列出某個區段的記錄。</string>
-    <plurals name="detail_truncated">
-        <item quantity="other">清單只顯示最新的 %1$d 筆記錄。圖表仍涵蓋整段期間。</item>
-    </plurals>
-    <string name="chart_source_sampled">單次測量值，在整段期間內取樣</string>
-    <plurals name="detail_multiple_writers">
-        <item quantity="other">有 %1$d 個應用程式寫入了這些資料。總計已由 Health Connect 去除重複，因此可能與單一應用程式的數值不同。</item>
-    </plurals>
     <string name="legend_sleep">睡眠</string>
     <string name="legend_exercise">活動</string>
     <string name="legend_range">當天範圍</string>
