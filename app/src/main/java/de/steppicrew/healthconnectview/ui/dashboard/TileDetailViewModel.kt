@@ -14,6 +14,7 @@ import de.steppicrew.healthconnectview.export.Gpx
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.toPoints
 import androidx.health.connect.client.records.ExerciseRouteResult
+import de.steppicrew.healthconnectview.ui.compare.CandidateCache
 import de.steppicrew.healthconnectview.ui.compare.comparableTypes
 import de.steppicrew.healthconnectview.ui.components.ExportKind
 import de.steppicrew.healthconnectview.util.appLabelFor
@@ -315,8 +316,12 @@ class TileDetailViewModel(
      * period no longer leaves a file of headers. A failed check lets the export go ahead:
      * the write reports its own failure.
      */
-    /** The types a comparison may set beside this one. */
-    suspend fun compareCandidates(): List<RecordTypeSpec<*>> = repository.comparableTypes()
+    /** The types a comparison may set beside this one: those with data in the window shown. */
+    suspend fun compareCandidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, _offset.value) {
+        repository.comparableTypes(_span.value, _offset.value)
+    }
+
+    private val candidateCache = CandidateCache()
 
     suspend fun canExport(kind: ExportKind, period: ExportPeriod): Boolean {
         val spec = _spec.value ?: return false

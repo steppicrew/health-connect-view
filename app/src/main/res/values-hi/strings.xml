@@ -755,6 +755,7 @@
     <string name="body_fat_mass_note">गणना: शरीर में वसा का प्रतिशत × उसी दिन का वज़न</string>
     <string name="compare_title">तुलना करें</string>
     <string name="compare_pick">इससे तुलना करें</string>
+    <string name="compare_pick_none">दिखाई गई अवधि में किसी अन्य प्रकार का डेटा नहीं है।</string>
     <string name="compare_swap">क्रम बदलें</string>
     <string name="compare_none">इस अवधि में कोई मान नहीं</string>
     <string name="compare_note">एक ही समय-अक्ष पर दो चार्ट, हर एक का अपना पैमाना। दो मानों का साथ बदलना यह नहीं दर्शाता कि एक दूसरे का कारण है।</string>

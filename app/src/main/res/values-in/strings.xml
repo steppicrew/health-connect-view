@@ -730,6 +730,7 @@
     <string name="body_fat_mass_note">Dihitung: persentase lemak tubuh × berat pada hari yang sama</string>
     <string name="compare_title">Bandingkan</string>
     <string name="compare_pick">Bandingkan dengan</string>
+    <string name="compare_pick_none">Tidak ada jenis lain yang memiliki data pada periode yang ditampilkan.</string>
     <string name="compare_swap">Tukar urutan</string>
     <string name="compare_none">Tidak ada nilai pada periode ini</string>
     <string name="compare_note">Dua grafik pada satu sumbu waktu, masing-masing dengan skalanya sendiri. Dua nilai yang bergerak bersama tidak berarti yang satu menyebabkan yang lain.</string>

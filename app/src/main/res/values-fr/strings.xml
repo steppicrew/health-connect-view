@@ -780,6 +780,7 @@
     <string name="body_fat_mass_note">Calculé : pourcentage de masse grasse × poids du même jour</string>
     <string name="compare_title">Comparer</string>
     <string name="compare_pick">Comparer avec</string>
+    <string name="compare_pick_none">Aucun autre type n\'a de données sur la période affichée.</string>
     <string name="compare_swap">Inverser l\'ordre</string>
     <string name="compare_none">Aucune valeur sur cette période</string>
     <string name="compare_note">Deux graphiques sur un même axe du temps, chacun avec sa propre échelle. Que deux valeurs évoluent ensemble ne signifie pas que l\'une cause l\'autre.</string>
