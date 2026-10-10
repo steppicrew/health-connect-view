@@ -361,3 +361,33 @@ fun <K> fullestWriter(
 }
 
 private val COVERAGE_SLOT: Duration = Duration.ofMinutes(5)
+
+/**
+ * One writer's records as a single stream: where its records overlap, only the densest one's
+ * samples there.
+ *
+ * One app can hold two accounts of the same moment. On the phone Health Sync wrote a strength
+ * session's heart rate once a second and also carried on an all-day record, begun before the
+ * session, with a reading every 15 s through it; merged, the two alternated into a comb of
+ * 68 jumps of 15 bpm and more, where each alone had five. Records are taken densest first,
+ * and a record's samples count only outside the spans of those already taken, so a sparse
+ * record still fills the minutes the dense one does not reach, and back-to-back records --
+ * a watch writing one a minute -- join whole.
+ */
+fun singleStream(records: List<List<Point>>): List<Point> {
+    val taken = mutableListOf<ClosedRange<Instant>>()
+    val kept = mutableListOf<Point>()
+    records.filter { it.isNotEmpty() }
+        .sortedByDescending { points ->
+            val span = Duration.between(points.minOf { it.time }, points.maxOf { it.time }).toMillis()
+            points.size.toDouble() / (span + DENSITY_FLOOR_MS)
+        }
+        .forEach { points ->
+            kept += points.filter { point -> taken.none { point.time in it } }
+            taken += points.minOf { it.time }..points.maxOf { it.time }
+        }
+    return kept.sortedBy { it.time }
+}
+
+/** Keeps a record of one or two samples from counting as infinitely dense. */
+private const val DENSITY_FLOOR_MS = 1_000L

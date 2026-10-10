@@ -16,6 +16,7 @@ import de.steppicrew.healthconnectview.health.activePieces
 import de.steppicrew.healthconnectview.health.combinePieces
 import de.steppicrew.healthconnectview.health.movementIn
 import de.steppicrew.healthconnectview.health.fullestWriter
+import de.steppicrew.healthconnectview.health.singleStream
 import de.steppicrew.healthconnectview.health.toPoints
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -231,6 +232,9 @@ private val AFTER_SLOT: Duration = Duration.ofSeconds(30)
  * Sync's 990 heart-rate samples in it, since its record began before the ride, so the curve
  * fell to the watch's copy at a quarter of the density; strength sessions lost an eighth of
  * theirs at the start. The points are cut to the window, so nothing from before is drawn.
+ *
+ * Reaching back also brings in a writer's all-day record running through the session beside
+ * its workout record, so each writer's records are made one stream ([singleStream]).
  */
 private suspend fun HealthRepository.pointsByWriter(
     spec: RecordTypeSpec<*>,
@@ -245,7 +249,9 @@ private suspend fun HealthRepository.pointsByWriter(
         emptyList()
     }
     return records.groupBy { spec.originOf(it) }
-        .mapValues { (_, group) -> group.flatMap { spec.pointsOf(it) }.filter { it.time >= from && it.time <= to } }
+        .mapValues { (_, group) ->
+            singleStream(group.map { record -> spec.pointsOf(record).filter { it.time >= from && it.time <= to } })
+        }
 }
 
 /** Longer than any heart-rate series record seen spanning a session's edge (10 min). */
