@@ -109,6 +109,7 @@ class SessionCurveShapeActivity : ComponentActivity() {
                             "max=${gaps.maxOrNull()}s over1min=${gaps.count { it > 60 }}",
                     )
                     logLongGaps(session.startTime, times)
+                    logJumps(group)
                 }
 
                 // Series records that start before the session and run into it: Health Connect
@@ -139,6 +140,28 @@ class SessionCurveShapeActivity : ComponentActivity() {
                         )
                     }
                 }
+
+                // The same, read from well before the start as the app does: a record that began
+                // earlier can carry a second stream through the session.
+                runCatching {
+                    repository.read(
+                        HeartRateRecord::class,
+                        TimeRangeFilter.between(session.startTime.minus(SERIES_LEAD), session.endTime),
+                    )
+                }.getOrDefault(emptyList())
+                    .map { record ->
+                        record.metadata.dataOrigin.packageName to record.copyInside(session.startTime, session.endTime)
+                    }
+                    .filter { (_, record) -> record.samples.isNotEmpty() }
+                    .groupBy({ it.first }, { it.second })
+                    .forEach { (app, group) ->
+                        Log.i(
+                            TAG,
+                            "  early writer=$app records=${group.size} samples=${group.map { it.samples.size }} " +
+                                "startsBefore=${group.count { it.startTime < session.startTime }}",
+                        )
+                        logJumps(group)
+                    }
 
                 // After the end, for heart-rate recovery: samples per minute in the first
                 // minutes, per writer, and the gap from the last sample inside to the first
@@ -213,6 +236,30 @@ class SessionCurveShapeActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Whether one writer's samples are one stream or two interleaved: samples out of time
+     * order inside a record, samples sharing a timestamp, and steps of [JUMP] bpm or more
+     * between samples at most [JUMP_WITHIN] apart -- a heart does not do that, two accounts of
+     * it alternating does. Counts only, never a reading.
+     */
+    private fun logJumps(group: List<HeartRateRecord>) {
+        val unordered = group.sumOf { record -> record.samples.zipWithNext().count { (a, b) -> b.time < a.time } }
+        val samples = group.flatMap { it.samples }.sortedBy { it.time }
+        val sameTime = samples.zipWithNext().count { (a, b) -> a.time == b.time }
+        val steps = samples.zipWithNext().filter { (a, b) -> Duration.between(a.time, b.time) <= JUMP_WITHIN }
+        val jumps = steps.count { (a, b) -> kotlin.math.abs(b.beatsPerMinute - a.beatsPerMinute) >= JUMP }
+        val back = steps.zipWithNext().count { (x, y) ->
+            val up = x.second.beatsPerMinute - x.first.beatsPerMinute
+            val down = y.second.beatsPerMinute - y.first.beatsPerMinute
+            kotlin.math.abs(up) >= JUMP && kotlin.math.abs(down) >= JUMP && (up > 0) != (down > 0)
+        }
+        Log.i(TAG, "    jumps unordered=$unordered sameTime=$sameTime steps=${steps.size} jumps=$jumps thereAndBack=$back")
+    }
+
+    /** [this] with only its samples from [from] to [to]. */
+    private fun HeartRateRecord.copyInside(from: Instant, to: Instant): HeartRateRecord =
+        HeartRateRecord(startTime, startZoneOffset, endTime, endZoneOffset, samples.filter { it.time in from..to }, metadata)
+
     private fun offset(start: Instant, time: Instant): Long = Duration.between(start, time).toMinutes()
 
     private fun List<Long>.median(): Long? =
@@ -224,5 +271,7 @@ class SessionCurveShapeActivity : ComponentActivity() {
         val AFTER_LEAD: Duration = Duration.ofMinutes(1)
         val AFTER_SPAN: Duration = Duration.ofMinutes(5)
         val SERIES_LEAD: Duration = Duration.ofMinutes(30)
+        const val JUMP = 15L
+        val JUMP_WITHIN: Duration = Duration.ofSeconds(3)
     }
 }
