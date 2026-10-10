@@ -778,6 +778,7 @@ internal class TileChartLoader(
             records = emptyList(),
             truncated = false,
             listPending = true,
+            extrasPending = deferExtras,
         )
 
         chart
