@@ -185,6 +185,13 @@ data class TileDetailData(
      * shown first and these follow; see `loadData`.
      */
     val listPending: Boolean = false,
+    /**
+     * True until the boxes read after the chart -- trend, streak, record -- have arrived, so
+     * the screen can hold their place rather than push everything below down on arrival.
+     */
+    val extrasPending: Boolean = false,
+    /** Resting heart rate across days: true until the night section has been read, found or not. */
+    val trainingNightsPending: Boolean = false,
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
     /**
@@ -777,10 +784,11 @@ class TileDetailViewModel(
                     if (!empty && spec.type == RestingHeartRateRecord::class && marksTraining(spec, span)) {
                         val split = trainingNightsFor(span, offset, data.trainingDays)
                         ensureActive()
-                        if (split != null) {
-                            _state.update { current ->
-                                (current as? UiState.Data)?.let { UiState.Data(it.value.copy(trainingNights = split)) } ?: current
-                            }
+                        // Found or not, its held place is given up.
+                        _state.update { current ->
+                            (current as? UiState.Data)?.let {
+                                UiState.Data(it.value.copy(trainingNights = split, trainingNightsPending = false))
+                            } ?: current
                         }
                     }
                 },
@@ -1021,6 +1029,8 @@ class TileDetailViewModel(
             streak = extras.streak,
             record = record,
             trainingDays = training,
+            extrasPending = false,
+            trainingNightsPending = spec.type == RestingHeartRateRecord::class && marksTraining(spec, span),
         )
     }
 

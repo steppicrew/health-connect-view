@@ -9,6 +9,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
+import de.steppicrew.healthconnectview.health.LongestStreak
+import de.steppicrew.healthconnectview.health.MIN_GROUP_NIGHTS
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -1090,12 +1095,67 @@ private fun SpanSummary(
         // Under the chart, not beside the total: they are read after it (a streak reaching
         // back a year took 12.5 s), and arriving above it pushed the chart a quarter of the
         // screen down while it was being looked at.
-        data.trainingNights?.let { TrainingNightsSection(it, data.spec.displayUnitRes) }
-        data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
-        data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
-        data.record?.let { RecordExplanation(it, data.spec) }
+        // Each box read after the chart holds its place while it is read, laid out with stand-in
+        // values so the space is its own size: arriving, it no longer pushes the list down.
+        val active = data.spec.tile.form == TileSpec.Form.SESSIONS
+        val today = LocalDate.now()
+        val nights = data.trainingNights
+        when {
+            nights != null -> TrainingNightsSection(nights, data.spec.displayUnitRes)
+            data.trainingNightsPending ->
+                Reserved { TrainingNightsSection(TrainingNights(STAND_IN_GROUP, STAND_IN_GROUP), data.spec.displayUnitRes) }
+        }
+        val streak = data.streak
+        when {
+            streak != null -> StreakExplanation(streak, active)
+            data.extrasPending && data.expectsStreak ->
+                Reserved { StreakExplanation(StreakSummary(MIN_STREAK, LongestStreak(MIN_STREAK, today, today)), active) }
+        }
+        val trend = data.trend
+        when {
+            trend != null -> TrendExplanation(trend, data.spec.displayUnitRes, data.spec.valueDecimals)
+            data.extrasPending && data.expectsTrend ->
+                Reserved { TrendExplanation(TrendResult(Trend.FLAT, 0.0, 0.0), data.spec.displayUnitRes, data.spec.valueDecimals) }
+        }
+        val record = data.record
+        val recordKind = data.spec.tile.personalRecord
+        when {
+            record != null -> RecordExplanation(record, data.spec)
+            // Dated away from the shown day, so the "show this day" button is laid out too.
+            data.extrasPending && recordKind != null ->
+                Reserved { RecordExplanation(PersonalRecord(recordKind, 0.0, today.minusYears(1)), data.spec) }
+        }
     }
 }
+
+/**
+ * [content] laid out but not shown, with a small spinner over it: the place a box will take
+ * once read. Not tappable and silent to accessibility, since nothing in it is real.
+ */
+@Composable
+private fun Reserved(content: @Composable () -> Unit) {
+    Box(contentAlignment = Alignment.Center) {
+        Box(Modifier.alpha(0f).clearAndSetSemantics {}) { content() }
+        Box(
+            Modifier
+                .matchParentSize()
+                .pointerInput(Unit) { detectTapGestures { } },
+        )
+        CircularProgressIndicator(Modifier.size(RESERVED_SPINNER.dp), strokeWidth = 2.dp)
+    }
+}
+
+private const val RESERVED_SPINNER = 20
+private val STAND_IN_GROUP = TrainingNights.Group(meanLow = 0.0, nights = MIN_GROUP_NIGHTS)
+
+/** A streak box comes on a day of a goal ring or of workouts; see the loader's streak. */
+private val TileDetailData.expectsStreak: Boolean
+    get() = extent != null &&
+        ((goal != null && spec.tile.form == TileSpec.Form.RING) || spec.tile.sessionKind == Session.Kind.EXERCISE && spec.tile.form == TileSpec.Form.SESSIONS)
+
+/** A trend box comes on a day of a type with a daily figure, sessions aside. */
+private val TileDetailData.expectsTrend: Boolean
+    get() = extent != null && spec.aggregate != null && spec.tile.form != TileSpec.Form.SESSIONS
 
 /** One session named on a single line, under the chart it explains. */
 /**
