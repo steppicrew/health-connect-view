@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import java.time.LocalDateTime
 import de.steppicrew.healthconnectview.health.nightsByMorning
 import de.steppicrew.healthconnectview.health.rollingUsualRange
 import de.steppicrew.healthconnectview.R
@@ -136,6 +137,8 @@ internal class TileChartLoader(
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
+        // The bucketed branch's own results, which the total and the writers are taken from.
+        var periodBuckets: List<AggregationResultGroupedByPeriod>? = null
         // Filled in wherever the type has a second value, from the same read as the first.
         var secondaryPoints: List<Point> = emptyList()
         // Whether the points on screen actually came from aggregation. A type can have an
@@ -236,6 +239,7 @@ internal class TileChartLoader(
                             ).toSet(),
                         onFraction = ::stepPart,
                     )
+                    periodBuckets = buckets
 
                     // The day's total split into its parts, from the same buckets as the
                     // total itself so the segments cannot sum to something other than the bar.
@@ -399,7 +403,12 @@ internal class TileChartLoader(
 
         stepDone(chartWeight) // the chart
         val aggregatedTotal = if (metric != null) {
-            val platform = runCatching { repository.total(metric, span.totalFilter(offset), origins) }.getOrNull()
+            val buckets = periodBuckets
+            val platform = if (buckets != null && spec.tile.cumulativeIntraday) {
+                totalFromBuckets(metric, buckets, span, offset, origins)
+            } else {
+                runCatching { repository.total(metric, span.totalFilter(offset), origins) }.getOrNull()
+            }
             if (offset == 0) withOpenTally(spec, metric, span, platform, origins) else platform
         } else {
             null
@@ -817,6 +826,7 @@ internal class TileChartLoader(
             listPending = true,
             extrasPending = deferExtras,
             dayValues = dayValues,
+            aggregateOrigins = periodBuckets?.flatMap { bucket -> bucket.result.dataOrigins.map { it.packageName } }?.toSet(),
         )
 
         chart
@@ -987,6 +997,32 @@ internal class TileChartLoader(
      * On a day span the window *is* today. On a wider one only today's part is short, so the
      * shortfall against today's own total is added rather than the tally replacing the lot.
      */
+    /**
+     * A quantity's window total as the sum of its deduplicated buckets, the ones still open
+     * asked for up to now as [Span.totalFilter] does. One aggregate over a year of total
+     * calories took 20 s on the phone -- the platform derives the basal share day by day --
+     * while the year's weekly buckets, already read for the bars, took about one.
+     */
+    private suspend fun totalFromBuckets(
+        metric: AggregateMetric<*>,
+        buckets: List<AggregationResultGroupedByPeriod>,
+        span: Span,
+        offset: Int,
+        origins: Set<DataOrigin>,
+    ): Double? {
+        val now = LocalDateTime.now()
+        val todayStart = LocalDate.now().atStartOfDay()
+        val (closed, open) = buckets.partition { !it.endTime.isAfter(todayStart) }
+        val closedValues = closed.mapNotNull { bucket -> bucket.result[metric]?.let { numericAggregate(it, metric) } }
+        val openStart = open.minOfOrNull { it.startTime }
+        val openTotal = openStart?.let { from ->
+            val to = minOf(span.endDate(offset).atStartOfDay(), now)
+            if (to.isAfter(from)) runCatching { repository.total(metric, TimeRangeFilter.between(from, to), origins) }.getOrNull() else null
+        }
+        if (closedValues.isEmpty() && openTotal == null) return null
+        return closedValues.sum() + (openTotal ?: 0.0)
+    }
+
     private suspend fun withOpenTally(
         spec: RecordTypeSpec<*>,
         metric: AggregateMetric<*>,
