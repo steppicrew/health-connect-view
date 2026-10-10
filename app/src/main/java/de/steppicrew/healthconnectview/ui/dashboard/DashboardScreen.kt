@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.smoothPath
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.annotation.StringRes
 import androidx.compose.material3.LocalContentColor
@@ -82,6 +83,9 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -124,6 +128,7 @@ import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.DayPickerDialog
 import de.steppicrew.healthconnectview.registry.RecordRegistry
+import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.colorOf
@@ -143,6 +148,7 @@ import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.ProgressRing
 import de.steppicrew.healthconnectview.ui.components.SparkCurve
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -254,6 +260,8 @@ fun DashboardScreen(
             companions = companionsOf(editing.tile.typeName),
             currentCompanion = editing.tile.companion,
             faces = facesFor(editing.tile.typeName),
+            // A 2x2 body face draws its window; a 2x1 one shows the latest numbers alone.
+            bodyHasWindow = editing.tile.height > 1,
             onDismiss = { editingOptionsFor = null },
             onSave = { span, face, companion -> viewModel.setOptions(editing.tile.id, span, face, companion) },
         )
@@ -591,6 +599,9 @@ private fun TileCard(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = when {
+                        // A 2x2 body face names weight in its first row; the tile is all four.
+                        data.bodyWindow != null ->
+                            stringResource(R.string.tile_title_span, stringResource(R.string.body_composition), stringResource(data.shownSpan.labelRes))
                         data.shownSpan == Span.DAY -> name
                         // Without the history permission a year holds 30 days; the detail screen
                         // warns in red, and a tile titled "Year" over a month would not.
@@ -649,7 +660,8 @@ private fun TileCard(
             ) {
                 // Not for a session tile: its face is a count and its subtitle a duration, so
                 // the type's own unit ("h", for sleep) would label neither of them.
-                data.spec.displayUnitRes?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
+                // Nor for a 2x2 body face, whose rows carry their own units, kg and % alike.
+                data.spec.displayUnitRes?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS && data.bodyWindow == null }
                     ?.let { unit ->
                         Text(
                             text = stringResource(unit),
@@ -1026,6 +1038,8 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         !data.granted -> LockedTile(onGrantAccess)
 
         // With no part known, the plain weight: half a tile left empty read as broken.
+        data.bodyWindow != null && !data.loading -> BodyCurves(data, data.bodyReadings.orEmpty(), data.bodyWindow)
+
         !data.bodyReadings.isNullOrEmpty() && !data.loading -> BodyFace(data, data.bodyReadings, large)
 
         chart != null && data.tile.face == TileFace.CHART ->
@@ -1106,6 +1120,85 @@ private fun BodyFace(data: TileData, parts: List<BodyReading>, large: Boolean) {
         }
     }
 }
+
+/**
+ * A 2x2 body face over a window: weight and each part in a row, name and latest value above a
+ * curve of its daily means across the window. Each curve on its own scale, fitted to its own
+ * range, so a change of half a kilo shows as clearly as one of a percent -- never two scales
+ * on one plot, and never weight and bone mass squashed onto one.
+ */
+@Composable
+private fun BodyCurves(data: TileData, parts: List<BodyReading>, window: ClosedRange<Instant>) {
+    val rows = buildList {
+        data.value?.let { add(BodyRow(data.spec, it, data.valueDate, data.bodyCurves[data.spec.type.simpleName].orEmpty())) }
+        parts.forEach { add(BodyRow(it.spec, it.value, it.date, data.bodyCurves[it.spec.type.simpleName].orEmpty())) }
+    }
+    if (rows.isEmpty()) {
+        TileValue(data, large = true)
+        return
+    }
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        rows.forEach { row ->
+            Column(Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.Top) {
+                    Text(
+                        text = stringResource(row.spec.displayNameRes),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    row.date?.let { day ->
+                        Text(
+                            text = day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)) + "  ",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Text(
+                        text = Formatting.number(row.value, row.spec.valueDecimals) +
+                            row.spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty(),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+                PartCurve(row.curve, window, Modifier.fillMaxWidth().weight(1f).padding(vertical = 2.dp))
+            }
+        }
+    }
+}
+
+private data class BodyRow(val spec: RecordTypeSpec<*>, val value: Double, val date: LocalDate?, val curve: List<Point>)
+
+/**
+ * One part's daily means across [window], placed by time so the rows' days line up, on the
+ * part's own range. A single day is a dot; none leaves the row its number alone.
+ */
+@Composable
+private fun PartCurve(points: List<Point>, window: ClosedRange<Instant>, modifier: Modifier) {
+    if (points.isEmpty()) return
+    val color = MaterialTheme.colorScheme.primary
+    val low = points.minOf { it.value }
+    val high = points.maxOf { it.value }
+    val range = (high - low).takeIf { it > 0.0 } ?: 1.0
+    val from = window.start.toEpochMilli()
+    val length = (window.endInclusive.toEpochMilli() - from).coerceAtLeast(1L).toFloat()
+    Canvas(modifier) {
+        val stroke = PART_STROKE.dp.toPx()
+        val offsets = points.map { point ->
+            Offset(
+                x = ((point.time.toEpochMilli() - from) / length).coerceIn(0f, 1f) * size.width,
+                // Flat where all readings agree: drawn through the middle rather than at the floor.
+                y = if (high > low) size.height - ((point.value - low) / range).toFloat() * size.height else size.height / 2,
+            )
+        }
+        // Smoothed like the detail charts, monotone so the curve never overshoots a reading.
+        if (offsets.size > 1) drawPath(smoothPath(offsets), color, style = Stroke(width = stroke, cap = StrokeCap.Round))
+        offsets.forEach { drawCircle(color, radius = stroke, center = it) }
+    }
+}
+
+private const val PART_STROKE = 1.5f
 
 /** The parts' column against the weight's: the names need the room. */
 private const val BODY_PARTS_WEIGHT = 1.6f

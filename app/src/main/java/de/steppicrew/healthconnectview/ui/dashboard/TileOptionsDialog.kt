@@ -42,6 +42,8 @@ fun TileOptionsDialog(
     currentCompanion: String? = null,
     /** The faces to offer; see [facesFor]. */
     faces: List<TileFace> = TileFace.entries.filter { it != TileFace.BODY },
+    /** Whether the body face draws a window: on a 2x2 tile, not on a 2x1 one. */
+    bodyHasWindow: Boolean = false,
 ) {
     var span by remember { mutableStateOf(currentSpan) }
     var face by remember { mutableStateOf(currentFace) }
@@ -53,8 +55,8 @@ fun TileOptionsDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(displayName)
-                // The body face shows the latest of each, whatever the window: no window to choose.
-                if (face != TileFace.BODY) {
+                // A 2x1 body face shows the latest of each, whatever the window: nothing to choose.
+                if (face != TileFace.BODY || bodyHasWindow) {
                     Text(
                         text = stringResource(R.string.tile_options_span),
                         style = MaterialTheme.typography.labelLarge,

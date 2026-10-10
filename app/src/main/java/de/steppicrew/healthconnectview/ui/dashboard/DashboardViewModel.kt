@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvStanding
+import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.dashboard.WEIGHT_TYPE
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.billing.AppEntitlements
@@ -82,6 +83,17 @@ import java.time.temporal.ChronoUnit
  */
 data class BodyReading(val spec: RecordTypeSpec<*>, val value: Double, val date: LocalDate?)
 
+/**
+ * One point a day, the day's mean at its start: two writers copying one weigh-in agree to the
+ * gram, and a curve through both copies would only draw the same point twice.
+ */
+internal fun dailyMeans(points: List<Point>): List<Point> {
+    val zone = HealthRepository.DEFAULT_ZONE
+    return points.groupBy { it.time.atZone(zone).toLocalDate() }
+        .toSortedMap()
+        .map { (day, readings) -> Point(day.atStartOfDay(zone).toInstant(), readings.map { it.value }.average()) }
+}
+
 /** The body face's parts, in the order the tile lists them. */
 private val BODY_PARTS = listOf("BodyFatRecord", "BodyWaterMassRecord", "BoneMassRecord")
 
@@ -157,6 +169,13 @@ data class TileData(
      * other tile.
      */
     val bodyReadings: List<BodyReading>? = null,
+    /**
+     * A 2x2 body face over a week, four weeks or a year: each part's daily means through the
+     * window, weight included, by type name, and the window they are drawn across. Empty on a
+     * 2x1 tile and on a day, which show the numbers alone.
+     */
+    val bodyCurves: Map<String, List<Point>> = emptyMap(),
+    val bodyWindow: ClosedRange<Instant>? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -589,6 +608,8 @@ class DashboardViewModel(
                     standing = carried.standing,
                     chart = carried.chart,
                     bodyReadings = carried.bodyReadings,
+                    bodyCurves = carried.bodyCurves,
+                    bodyWindow = carried.bodyWindow,
                     loading = false,
                 )
             }
@@ -676,7 +697,24 @@ class DashboardViewModel(
         if (showsBody(tile)) {
             val day = loadDay(placeholder, date)
             val weighed = day.valueDate ?: date
-            return day.copy(bodyReadings = bodyReadings(date).map { if (it.date == weighed) it.copy(date = null) else it })
+            val readings = bodyReadings(date).map { if (it.date == weighed) it.copy(date = null) else it }
+            // Curves only where there is room for them and a window to draw: a 2x2 tile over
+            // more than a day. A 2x1 row is too short for a curve beside its name and number.
+            if (tile.height < 2 || tile.span == Span.DAY) return day.copy(bodyReadings = readings)
+            val offset = tile.span.offsetOf(date)
+            val start = windowStart(tile.span, offset)
+            val end = windowEnd(tile.span, offset)
+            val curves = (listOf(WEIGHT_TYPE) + BODY_PARTS).mapNotNull { typeName ->
+                val spec = RecordRegistry.specOrNull(typeName) ?: return@mapNotNull null
+                try {
+                    typeName to dailyMeans(repository.recordsIn(spec, start, end).flatMap { spec.pointsOf(it) })
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    null
+                }
+            }.toMap()
+            return day.copy(bodyReadings = readings, bodyCurves = curves, bodyWindow = start..end, shownSpan = tile.span)
         }
         if (!showsWindow(tile)) return loadDay(placeholder, date)
 
