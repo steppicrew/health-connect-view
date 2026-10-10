@@ -563,9 +563,17 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     bars, stacks and two-line types (blood pressure) stay stacked. The axis mark on a chip and
     its note show only where a line has a scale of its own. Checked on the phone: weight and
     body water over a year, 80 against 45 kg on one 40-100 kg scale.
-63. [ ] **Across days** -- the night's lowest heart rate after training days against rest days;
+63. [x] **Across days** -- the night's lowest heart rate after training days against rest days;
     resting heart rate or HRV over weeks with workouts marked. With the "moving together is not
-    cause" note.
+    cause" note. Built 10.10.2026, the owner's choice of place (`health/TrainingNights.kt`): on
+    the resting heart rate screen across days, the mean of the nightly lows after a day with a
+    workout of 20 min or more against after a day without, each with its count of nights and
+    only from three nights; the night is the longest sleep ending that morning, its low the
+    lowest of the fullest writer's readings through it. A minimum aggregate per night took 27 s
+    for 28 nights on the phone; the raw readings take 2.5 s, a year 17 s (359 nights), read
+    after the page shows. Resting heart rate and HRV mark the training days in a strip along
+    the chart's bottom, named in the legend. Checked on the phone, 13.09-10.10: 52 bpm after
+    21 training days, 45 bpm after 7 rest days.
 64. [ ] **Combined weight tile** (Pro) -- the owner's idea, 09.10.2026: weight, body fat,
     water and bone mass on one tile where known, opening the body composition screen.
 65. [ ] **Training time behind the session count** -- the owner's idea, 09.10.2026: across days

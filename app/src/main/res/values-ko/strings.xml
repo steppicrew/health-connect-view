@@ -399,6 +399,15 @@
     <string name="span_total">합계</string>
     <string name="span_daily_value">그날의 값</string>
     <string name="legend_rolling_mean">4주 평균</string>
+    <string name="training_nights_title">밤사이 최저 심박수</string>
+    <string name="training_nights_after_training">운동한 날 다음</string>
+    <string name="training_nights_after_rest">쉰 날 다음</string>
+    <string name="training_nights_too_few">밤이 너무 적습니다</string>
+    <string name="training_nights_note">수면 중 매일 밤의 최저 심박수를 20분 이상 운동한 날 다음 밤과 운동하지 않은 날 다음 밤으로 나누어 평균한 값입니다. 각 그룹에 최소 3일 밤이 필요합니다. 질병, 음주, 늦은 식사도 밤에 영향을 줍니다. 두 값이 함께 움직인다고 해서 하나가 다른 하나의 원인이라는 뜻은 아닙니다.</string>
+    <string name="legend_training_days">20분 이상 운동</string>
+    <plurals name="training_nights_count">
+        <item quantity="other">%1$d번의 밤 평균</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4주 평균 표시</string>
 
     <!-- Permissions screen -->

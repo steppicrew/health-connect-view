@@ -439,6 +439,16 @@
     <string name="span_total">Total</string>
     <string name="span_daily_value">Value for the day</string>
     <string name="legend_rolling_mean">4-week mean</string>
+    <string name="training_nights_title">Lowest heart rate at night</string>
+    <string name="training_nights_after_training">After a training day</string>
+    <string name="training_nights_after_rest">After a rest day</string>
+    <string name="training_nights_too_few">Too few nights</string>
+    <string name="training_nights_note">Each night\'s lowest heart rate during its sleep, averaged over the nights after a day with a workout of 20 minutes or more and over the nights after a day without one. A group needs at least three nights. Illness, alcohol or a late meal change the night as well. Two values moving together does not mean that one causes the other.</string>
+    <string name="legend_training_days">Workout of 20 min or more</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Mean of %1$d night</item>
+        <item quantity="other">Mean of %1$d nights</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Show 4-week mean</string>
 
     <!-- Permissions screen -->

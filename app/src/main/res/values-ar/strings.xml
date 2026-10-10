@@ -444,6 +444,20 @@
     <string name="span_total">الإجمالي</string>
     <string name="span_daily_value">قيمة اليوم</string>
     <string name="legend_rolling_mean">متوسط 4 أسابيع</string>
+    <string name="training_nights_title">أدنى معدل نبض في الليل</string>
+    <string name="training_nights_after_training">بعد يوم تدريب</string>
+    <string name="training_nights_after_rest">بعد يوم راحة</string>
+    <string name="training_nights_too_few">عدد الليالي قليل جدًا</string>
+    <string name="training_nights_note">أدنى معدل نبض في كل ليلة أثناء النوم، بمتوسط منفصل لليالي التي تلي يومًا فيه تدريب لا يقل عن 20 دقيقة ولليالي التي تلي يومًا بلا تدريب. تحتاج كل مجموعة إلى ثلاث ليالٍ على الأقل. المرض أو الكحول أو العشاء المتأخر تغيّر الليلة أيضًا. تحرّك قيمتين معًا لا يعني أن إحداهما تسبب الأخرى.</string>
+    <string name="legend_training_days">تدريب 20 دقيقة أو أكثر</string>
+    <plurals name="training_nights_count">
+        <item quantity="zero">متوسط %1$d ليلة</item>
+        <item quantity="one">متوسط ليلة واحدة</item>
+        <item quantity="two">متوسط ليلتين</item>
+        <item quantity="few">متوسط %1$d ليالٍ</item>
+        <item quantity="many">متوسط %1$d ليلة</item>
+        <item quantity="other">متوسط %1$d ليلة</item>
+    </plurals>
     <string name="chart_show_rolling_mean">إظهار متوسط 4 أسابيع</string>
 
     <!-- Permissions screen -->

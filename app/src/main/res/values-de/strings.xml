@@ -402,6 +402,16 @@
     <string name="span_total">Gesamt</string>
     <string name="span_daily_value">Tageswert</string>
     <string name="legend_rolling_mean">4-Wochen-Mittel</string>
+    <string name="training_nights_title">Niedrigster Puls in der Nacht</string>
+    <string name="training_nights_after_training">Nach einem Trainingstag</string>
+    <string name="training_nights_after_rest">Nach einem Ruhetag</string>
+    <string name="training_nights_too_few">Zu wenige Nächte</string>
+    <string name="training_nights_note">Der niedrigste Puls jeder Nacht während des Schlafs, gemittelt über die Nächte nach einem Tag mit mindestens 20 Minuten Training und über die Nächte nach einem Tag ohne. Eine Gruppe braucht mindestens drei Nächte. Auch Krankheit, Alkohol oder ein spätes Essen verändern die Nacht. Dass sich zwei Werte gemeinsam bewegen, heißt nicht, dass einer den anderen verursacht.</string>
+    <string name="legend_training_days">Training ab 20 Min.</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Mittel aus %1$d Nacht</item>
+        <item quantity="other">Mittel aus %1$d Nächten</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4-Wochen-Mittel zeigen</string>
 
     <!-- Berechtigungen -->

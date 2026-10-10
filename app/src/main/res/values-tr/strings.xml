@@ -408,6 +408,16 @@
     <string name="span_total">Toplam</string>
     <string name="span_daily_value">Günün değeri</string>
     <string name="legend_rolling_mean">4 haftalık ortalama</string>
+    <string name="training_nights_title">Gece en düşük nabız</string>
+    <string name="training_nights_after_training">Antrenman gününden sonra</string>
+    <string name="training_nights_after_rest">Dinlenme gününden sonra</string>
+    <string name="training_nights_too_few">Çok az gece</string>
+    <string name="training_nights_note">Her gecenin uyku sırasındaki en düşük nabzı: en az 20 dakikalık antrenman yapılan bir günden sonraki gecelerin ve antrenmansız bir günden sonraki gecelerin ortalaması. Her grup için en az üç gece gerekir. Hastalık, alkol veya geç bir yemek de geceyi değiştirir. İki değerin birlikte değişmesi, birinin diğerine neden olduğu anlamına gelmez.</string>
+    <string name="legend_training_days">20 dk veya daha uzun antrenman</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">%1$d gecenin ortalaması</item>
+        <item quantity="other">%1$d gecenin ortalaması</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 haftalık ortalamayı göster</string>
 
     <!-- Permissions screen -->

@@ -399,6 +399,15 @@
     <string name="span_total">合計</string>
     <string name="span_daily_value">その日の値</string>
     <string name="legend_rolling_mean">4 週間平均</string>
+    <string name="training_nights_title">夜間の最低心拍数</string>
+    <string name="training_nights_after_training">トレーニングした日の後</string>
+    <string name="training_nights_after_rest">休息日の後</string>
+    <string name="training_nights_too_few">夜の数が足りません</string>
+    <string name="training_nights_note">睡眠中の各夜の最低心拍数を、20 分以上のトレーニングをした日の後の夜と、トレーニングをしなかった日の後の夜に分けて平均しています。各グループに 3 夜以上が必要です。体調不良、飲酒、遅い食事なども夜に影響します。2 つの値が一緒に動いても、一方が他方の原因とは限りません。</string>
+    <string name="legend_training_days">20 分以上のトレーニング</string>
+    <plurals name="training_nights_count">
+        <item quantity="other">%1$d 夜の平均</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 週間平均を表示</string>
 
     <!-- Permissions screen -->

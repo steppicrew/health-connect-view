@@ -408,6 +408,16 @@
     <string name="span_total">Totaal</string>
     <string name="span_daily_value">Waarde van de dag</string>
     <string name="legend_rolling_mean">4-weeks gemiddelde</string>
+    <string name="training_nights_title">Laagste hartslag \'s nachts</string>
+    <string name="training_nights_after_training">Na een trainingsdag</string>
+    <string name="training_nights_after_rest">Na een rustdag</string>
+    <string name="training_nights_too_few">Te weinig nachten</string>
+    <string name="training_nights_note">De laagste hartslag van elke nacht tijdens de slaap, gemiddeld over de nachten na een dag met minstens 20 minuten training en over de nachten na een dag zonder. Een groep heeft minstens drie nachten nodig. Ziekte, alcohol of een late maaltijd veranderen de nacht ook. Dat twee waarden samen bewegen, betekent niet dat de ene de andere veroorzaakt.</string>
+    <string name="legend_training_days">Training van 20 min of meer</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Gemiddelde van %1$d nacht</item>
+        <item quantity="other">Gemiddelde van %1$d nachten</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4-weeks gemiddelde tonen</string>
 
     <!-- Permissions screen -->
