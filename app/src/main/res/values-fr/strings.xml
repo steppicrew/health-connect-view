@@ -162,6 +162,12 @@
     <string name="report_rhr_legend">Trait plein : la valeur du jour. Pointillés : la moyenne des quatre semaines jusqu’à ce jour.</string>
     <string name="report_rhr_caption">Chaque jour à côté de la moyenne des quatre semaines jusqu’à lui : une fréquence cardiaque au repos se lit par rapport au niveau habituel de la personne, pas par rapport à une norme.</string>
     <string name="report_col_rolling">Moyenne sur 4 semaines</string>
+    <string name="export_report_all">Tension artérielle, poids, fréquence cardiaque au repos et glycémie dans un seul rapport</string>
+    <string name="report_doctor_title">Rapport de santé</string>
+    <string name="report_overview">En un coup d’œil</string>
+    <string name="report_col_type">Mesure</string>
+    <string name="report_doctor_pressure_extremes">Tension artérielle : le minimum et le maximum sont les mesures à la systolique la plus basse et la plus haute, chacune telle que mesurée.</string>
+    <string name="report_doctor_left_out">Seules les mesures comportant des valeurs sur cette période sont incluses.</string>
     <string name="report_glucose_title">Relevé de glycémie</string>
     <string name="report_col_relation">Lien avec le repas</string>
     <string name="report_col_meal">Repas</string>

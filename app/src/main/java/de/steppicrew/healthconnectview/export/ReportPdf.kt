@@ -44,11 +44,20 @@ abstract class ReportPdf(protected val context: Context) {
     private val shade = Paint().apply { color = SHADE }
     protected val dot = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    /** A horizontal slice of a page. [header] is the table heading to repeat after a page break. */
-    protected class Line(val height: Float, val header: Line? = null, val draw: Canvas.(Float) -> Unit)
+    /**
+     * A horizontal slice of a page. [header] is the table heading to repeat after a page break;
+     * [newPage] starts a page with this line, as each part of the combined report does.
+     * Internal rather than protected so the combined report can set one report's lines into its own.
+     */
+    internal class Line(
+        val height: Float,
+        val header: Line? = null,
+        val newPage: Boolean = false,
+        val draw: Canvas.(Float) -> Unit,
+    )
 
     /** Draws [lines] onto as many pages as they need, [footerText] on each. Returns the page count. */
-    protected fun write(lines: List<Line>, footerText: String, out: OutputStream): Int {
+    internal fun write(lines: List<Line>, footerText: String, out: OutputStream): Int {
         val pages = paginate(lines)
         val document = PdfDocument()
         try {
@@ -70,7 +79,7 @@ abstract class ReportPdf(protected val context: Context) {
     }
 
     /** Title, period, when and from what it was made, and the source filter if one is set. */
-    protected fun MutableList<Line>.opening(titleText: String, first: LocalDate, last: LocalDate, zone: ZoneId, source: String?) {
+    internal fun MutableList<Line>.opening(titleText: String, first: LocalDate, last: LocalDate, zone: ZoneId, source: String?) {
         add(textLine(titleText, title, TITLE_SIZE + 10))
         add(textLine(context.getString(R.string.report_period, first.format(dates), last.format(dates)), bold))
         add(textLine(context.getString(R.string.report_created, LocalDate.now(zone).format(dates)), small))
@@ -78,14 +87,14 @@ abstract class ReportPdf(protected val context: Context) {
         add(gap())
     }
 
-    protected fun gap(): Line = Line(GAP) {}
+    internal fun gap(): Line = Line(GAP) {}
 
     /**
      * How the readings were taken, counted once for the whole report -- "Körperhaltung:
      * Sitzend 40 · Stehend 2" -- instead of a column on every row, which the tables have no
      * room for; the file and the app show it per reading. Nothing where no reading had any.
      */
-    protected fun contextSection(tallies: List<ContextTally>): List<Line> {
+    internal fun contextSection(tallies: List<ContextTally>): List<Line> {
         if (tallies.isEmpty()) return emptyList()
         return buildList {
             add(section(context.getString(R.string.report_context)))
@@ -98,7 +107,7 @@ abstract class ReportPdf(protected val context: Context) {
         }
     }
 
-    protected fun section(label: String): Line = textLine(label, heading, HEADING_SIZE + 10)
+    internal fun section(label: String): Line = textLine(label, heading, HEADING_SIZE + 10)
 
     /**
      * Greedy page filling. A page that opens inside a table starts with that table's column
@@ -112,7 +121,7 @@ abstract class ReportPdf(protected val context: Context) {
             val next = lines.getOrNull(index + 1)
             val keepWithNext = next?.header === line
             val needed = line.height + if (keepWithNext) next.height else 0f
-            if (y + needed > usable && pages.last().isNotEmpty()) {
+            if ((line.newPage || y + needed > usable) && pages.last().isNotEmpty()) {
                 pages.add(mutableListOf())
                 y = MARGIN
                 line.header?.let {
@@ -138,11 +147,11 @@ abstract class ReportPdf(protected val context: Context) {
         canvas.drawText(number, PAGE_WIDTH - MARGIN - small.measureText(number), top + SMALL_SIZE + 6, small)
     }
 
-    protected fun textLine(value: String, paint: Paint, height: Float = paint.textSize + 5): Line =
+    internal fun textLine(value: String, paint: Paint, height: Float = paint.textSize + 5): Line =
         Line(height) { y -> drawText(value, MARGIN, y + paint.textSize, paint) }
 
     /** Word-wrapped to the content width; a report's only running text is short. */
-    protected fun wrapped(value: String, paint: Paint, width: Float = CONTENT_WIDTH): List<Line> {
+    internal fun wrapped(value: String, paint: Paint, width: Float = CONTENT_WIDTH): List<Line> {
         val lines = mutableListOf<String>()
         var current = ""
         value.split(' ').forEach { word ->
@@ -158,16 +167,16 @@ abstract class ReportPdf(protected val context: Context) {
         return lines.map { textLine(it, paint, paint.textSize + 3) }
     }
 
-    protected fun headerLine(columns: FloatArray, vararg labels: String): Line = Line(ROW) { y ->
+    internal fun headerLine(columns: FloatArray, vararg labels: String): Line = Line(ROW) { y ->
         labels.forEachIndexed { index, label -> cell(label, columns[index], y, bold) }
         drawLine(MARGIN, y + ROW - 1, PAGE_WIDTH - MARGIN, y + ROW - 1, rule)
     }
 
-    protected fun headerLine(columns: FloatArray, vararg labels: Int): Line =
+    internal fun headerLine(columns: FloatArray, vararg labels: Int): Line =
         headerLine(columns, *labels.map { context.getString(it) }.toTypedArray())
 
     /** A table row, every other one shaded so a long column stays readable on paper. */
-    protected fun row(index: Int, header: Line, content: Canvas.(Float) -> Unit): Line = Line(ROW, header) { y ->
+    internal fun row(index: Int, header: Line, content: Canvas.(Float) -> Unit): Line = Line(ROW, header) { y ->
         if (index % 2 == 1) drawRect(MARGIN, y, PAGE_WIDTH - MARGIN, y + ROW, shade)
         content(y)
     }
@@ -181,7 +190,7 @@ abstract class ReportPdf(protected val context: Context) {
      * wrong for spot readings of different kinds, where it zigzags between a fasting value and
      * one after a meal as if one had turned into the other.
      */
-    protected class ChartSeries(
+    internal class ChartSeries(
         val points: List<Pair<Instant, Double>>,
         val dashed: Boolean = false,
         val dots: Boolean = true,
@@ -195,7 +204,7 @@ abstract class ReportPdf(protected val context: Context) {
      * below, each series drawn in ink. [band] shades a range of values behind the lines -- a
      * target range. Printable in black and white; the dashed series is told apart by its dash.
      */
-    protected fun chart(
+    internal fun chart(
         series: List<ChartSeries>,
         from: Instant,
         to: Instant,

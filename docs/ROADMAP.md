@@ -685,9 +685,17 @@ doctor report and the year heatmap; the rest unranked.
     there), with each workout's movement read counted as it finishes. Seen on the phone on
     four weeks of workouts: the bar now moves through the movement reads instead of standing
     near the end.
-73. [ ] **One report for the doctor** (Pro, `PDF_REPORTS`) -- blood pressure, weight, resting
-    heart rate and glucose for one period in a single PDF, from the four reports that exist;
-    a type with no data in the period is left out, not printed empty.
+73. [x] **One report for the doctor** (Pro, `PDF_REPORTS`) -- built 10.10.2026, seen in a PDF
+    from the emulator's seeded month (11 pages). A checkbox under the periods of "Bericht" and
+    "Ansehen oder drucken" on any of the four report types: blood pressure, weight, resting
+    heart rate and glucose in one PDF. An overview first (mean, lowest, highest, readings per
+    type), then each type's own log on pages of its own, the same tables as alone, so nothing
+    is drawn twice in two ways. A type with no reading in the period is left out and the
+    overview says so. Blood pressure's lowest and highest are whole readings (lowest and
+    highest systolic), never a pair made up of two; its grading note, the single log's footer,
+    follows its tables. Each type is read from what its own screen would show: the filter on
+    the screen exporting, the choice made on the others', else the preferred app where it
+    wrote that type.
 74. [ ] **Year heatmap per metric** -- a calendar grid coloured by daily value, from the daily
     totals already read; one sequential hue, a gap uncoloured rather than lightest.
 75. [ ] **Cycle overview's year window is Pro** -- the owner's decision, 10.10.2026

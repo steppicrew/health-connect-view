@@ -161,6 +161,12 @@
     <string name="report_rhr_legend">Durchgezogen: der Tageswert. Gestrichelt: das Mittel der vier Wochen bis zu diesem Tag.</string>
     <string name="report_rhr_caption">Jeder Tag neben dem Mittel der vier Wochen bis zu ihm: Ein Ruhepuls wird am eigenen üblichen Wert gemessen, nicht an einer Norm.</string>
     <string name="report_col_rolling">4-Wochen-Mittel</string>
+    <string name="export_report_all">Blutdruck, Gewicht, Ruhepuls und Blutzucker in einem Bericht</string>
+    <string name="report_doctor_title">Gesundheitsbericht</string>
+    <string name="report_overview">Auf einen Blick</string>
+    <string name="report_col_type">Messgröße</string>
+    <string name="report_doctor_pressure_extremes">Blutdruck: Niedrigster und höchster sind die Messungen mit dem niedrigsten und höchsten systolischen Wert, jeweils so, wie sie gemessen wurden.</string>
+    <string name="report_doctor_left_out">Enthalten sind nur Messgrößen mit Messwerten in diesem Zeitraum.</string>
     <string name="report_glucose_title">Blutzucker-Protokoll</string>
     <string name="report_col_relation">Bezug zur Mahlzeit</string>
     <string name="report_col_meal">Mahlzeit</string>

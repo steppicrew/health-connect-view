@@ -160,6 +160,12 @@
     <string name="report_rhr_legend">실선: 그날의 값. 점선: 그날까지 4주간의 평균.</string>
     <string name="report_rhr_caption">각 날을 그날까지 4주간의 평균과 나란히 표시합니다. 안정 시 심박수는 기준치가 아니라 본인의 평소 수준과 비교해 읽습니다.</string>
     <string name="report_col_rolling">4주 평균</string>
+    <string name="export_report_all">혈압, 체중, 안정 시 심박수, 혈당을 하나의 보고서로</string>
+    <string name="report_doctor_title">건강 보고서</string>
+    <string name="report_overview">한눈에 보기</string>
+    <string name="report_col_type">측정 항목</string>
+    <string name="report_doctor_pressure_extremes">혈압: 최저와 최고는 수축기 값이 가장 낮은 측정과 가장 높은 측정이며, 각각 측정된 그대로입니다.</string>
+    <string name="report_doctor_left_out">이 기간에 측정값이 있는 항목만 포함됩니다.</string>
     <string name="report_glucose_title">혈당 기록</string>
     <string name="report_col_relation">식사와의 관계</string>
     <string name="report_col_meal">식사</string>

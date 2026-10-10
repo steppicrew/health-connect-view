@@ -163,6 +163,12 @@
     <string name="report_rhr_legend">Linia ciągła: wartość dnia. Przerywana: średnia z czterech tygodni do tego dnia.</string>
     <string name="report_rhr_caption">Każdy dzień obok średniej z czterech tygodni do niego: tętno spoczynkowe ocenia się względem zwykłego poziomu danej osoby, a nie normy.</string>
     <string name="report_col_rolling">Średnia 4-tygodniowa</string>
+    <string name="export_report_all">Ciśnienie krwi, waga, tętno spoczynkowe i glukoza we krwi w jednym raporcie</string>
+    <string name="report_doctor_title">Raport zdrowotny</string>
+    <string name="report_overview">W skrócie</string>
+    <string name="report_col_type">Pomiar</string>
+    <string name="report_doctor_pressure_extremes">Ciśnienie krwi: najniższa i najwyższa to pomiary o najniższym i najwyższym ciśnieniu skurczowym, każdy w postaci, w jakiej został zmierzony.</string>
+    <string name="report_doctor_left_out">Uwzględniono tylko pomiary z wartościami w tym okresie.</string>
     <string name="report_glucose_title">Dziennik glukozy we krwi</string>
     <string name="report_col_relation">Związek z posiłkiem</string>
     <string name="report_col_meal">Posiłek</string>

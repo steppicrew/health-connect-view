@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,9 +50,13 @@ fun ExportPeriodDialog(
     /** Whether older data than 30 days is readable; without it a long period is cut short. */
     historyGranted: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (ExportPeriod) -> Unit,
+    /** The period, and whether the combined report was ticked. */
+    onConfirm: (ExportPeriod, Boolean) -> Unit,
+    /** Offers the four reports in one, as a checkbox under the periods; off unless ticked. */
+    offerCombined: Boolean = false,
 ) {
     val today = remember { LocalDate.now() }
+    var combined by remember { mutableStateOf(false) }
     var preset by remember { mutableStateOf<ExportPeriod.Preset?>(ExportPeriod.Preset.SHOWN) }
     var custom by remember { mutableStateOf<ExportPeriod?>(null) }
     var picking by remember { mutableStateOf(false) }
@@ -75,6 +81,29 @@ fun ExportPeriodDialog(
                     selected = preset == null,
                     onClick = { picking = true },
                 )
+                if (offerCombined) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .toggleable(value = combined, onValueChange = { combined = it }, role = Role.Checkbox)
+                            .padding(top = 12.dp, bottom = 4.dp),
+                    ) {
+                        Checkbox(
+                            checked = combined,
+                            onCheckedChange = null,
+                            modifier = Modifier.padding(top = firstLineInset(MaterialTheme.typography.bodyLarge, TOGGLE_SIZE.dp)),
+                        )
+                        Text(
+                            stringResource(R.string.export_report_all),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(
+                                start = 12.dp,
+                                top = firstLineTextInset(MaterialTheme.typography.bodyLarge, TOGGLE_SIZE.dp),
+                            ),
+                        )
+                    }
+                }
                 if (chosen != null && !historyGranted && chosen.needsHistory(today)) {
                     Text(
                         text = stringResource(R.string.export_period_history),
@@ -86,7 +115,7 @@ fun ExportPeriodDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { chosen?.let(onConfirm) }, enabled = chosen != null) {
+            TextButton(onClick = { chosen?.let { onConfirm(it, offerCombined && combined) } }, enabled = chosen != null) {
                 Text(stringResource(R.string.export_period_next))
             }
         },

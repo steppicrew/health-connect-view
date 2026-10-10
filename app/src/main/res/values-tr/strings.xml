@@ -161,6 +161,12 @@
     <string name="report_rhr_legend">Düz çizgi: günün değeri. Kesikli çizgi: o güne kadarki dört haftanın ortalaması.</string>
     <string name="report_rhr_caption">Her gün, o güne kadarki dört haftanın ortalamasının yanında: dinlenme nabzı bir normla değil, kişinin kendi olağan düzeyiyle karşılaştırılarak okunur.</string>
     <string name="report_col_rolling">4 haftalık ortalama</string>
+    <string name="export_report_all">Tansiyon, kilo, dinlenme nabzı ve kan şekeri tek raporda</string>
+    <string name="report_doctor_title">Sağlık raporu</string>
+    <string name="report_overview">Bir bakışta</string>
+    <string name="report_col_type">Ölçüm</string>
+    <string name="report_doctor_pressure_extremes">Tansiyon: en düşük ve en yüksek, sistolik değeri en düşük ve en yüksek olan ölçümlerdir; her biri ölçüldüğü gibidir.</string>
+    <string name="report_doctor_left_out">Yalnızca bu dönemde değeri olan ölçümler dahildir.</string>
     <string name="report_glucose_title">Kan şekeri günlüğü</string>
     <string name="report_col_relation">Öğünle ilişkisi</string>
     <string name="report_col_meal">Öğün</string>

@@ -160,6 +160,12 @@
     <string name="report_rhr_legend">実線: その日の値。破線: その日までの 4 週間の平均。</string>
     <string name="report_rhr_caption">各日をその日までの 4 週間の平均と並べています。安静時心拍数は基準値ではなく、本人のいつもの水準と比べて読み取るものです。</string>
     <string name="report_col_rolling">4 週間平均</string>
+    <string name="export_report_all">血圧・体重・安静時心拍数・血糖値を1つのレポートに</string>
+    <string name="report_doctor_title">健康レポート</string>
+    <string name="report_overview">一覧</string>
+    <string name="report_col_type">測定項目</string>
+    <string name="report_doctor_pressure_extremes">血圧：最低と最高は、収縮期の値が最も低い測定と最も高い測定で、それぞれ測定されたとおりの値です。</string>
+    <string name="report_doctor_left_out">この期間に測定値がある項目のみを含みます。</string>
     <string name="report_glucose_title">血糖値記録</string>
     <string name="report_col_relation">食事との関係</string>
     <string name="report_col_meal">食事</string>

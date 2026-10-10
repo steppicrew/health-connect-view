@@ -163,6 +163,12 @@
     <string name="report_rhr_legend">Solid: the day\'s value. Dashed: the mean of the four weeks up to that day.</string>
     <string name="report_rhr_caption">Each day beside the mean of the four weeks up to it: a resting heart rate is read against the wearer\'s own usual level, not a norm.</string>
     <string name="report_col_rolling">4-week mean</string>
+    <string name="export_report_all">Blood pressure, weight, resting heart rate and blood glucose in one report</string>
+    <string name="report_doctor_title">Health report</string>
+    <string name="report_overview">At a glance</string>
+    <string name="report_col_type">Measurement</string>
+    <string name="report_doctor_pressure_extremes">Blood pressure: lowest and highest are the readings with the lowest and highest systolic value, each as measured.</string>
+    <string name="report_doctor_left_out">Only measurements with readings in this period are included.</string>
     <string name="report_glucose_title">Blood glucose log</string>
     <string name="report_col_relation">Relation to meal</string>
     <string name="report_col_meal">Meal</string>
