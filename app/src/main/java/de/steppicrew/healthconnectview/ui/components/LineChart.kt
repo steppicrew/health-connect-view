@@ -1843,7 +1843,7 @@ private fun SelectionReadout(
  * step counts, for instance -- which for health data is not a cosmetic problem but a false
  * statement.
  */
-private fun smoothPath(offsets: List<Offset>): Path = Path().apply {
+internal fun smoothPath(offsets: List<Offset>): Path = Path().apply {
     val controls = monotoneControls(
         FloatArray(offsets.size) { offsets[it].x },
         FloatArray(offsets.size) { offsets[it].y },
