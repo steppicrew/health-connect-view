@@ -510,6 +510,13 @@ fun DashboardScreen(
                                                     }
                                                 }
                                             },
+                                            // Where a tap opens one workout, the count beside its curve
+                                            // still opens the day's list, as a small tile does: without
+                                            // it the day's workouts were out of reach from a large tile.
+                                            onOpenDay = tile.openedWorkout?.let {
+                                                { onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan) }
+                                            },
+                                            onOpenWorkout = onOpenSession,
                                             onLongClick = { editing = true },
                                             onMoveUp = { viewModel.moveTile(tile.tile.id, forward = false) },
                                             onMoveDown = { viewModel.moveTile(tile.tile.id, forward = true) },
@@ -578,6 +585,10 @@ private fun TileCard(
     onSetZones: () -> Unit,
     onSetOptions: () -> Unit,
     onGrantAccess: () -> Unit,
+    /** What a tap on the figure opens where it differs from the tile's own tap; see [TileValueAndChart]. */
+    onOpenDay: (() -> Unit)? = null,
+    /** What a tap on one workout's curve opens; see [CompanionCurves]. */
+    onOpenWorkout: ((Session) -> Unit)? = null,
 ) {
     val moveUp = stringResource(R.string.tile_move_up)
     val moveDown = stringResource(R.string.tile_move_down)
@@ -674,7 +685,7 @@ private fun TileCard(
                         onSetOptions = onSetOptions,
                     )
                 } else {
-                    TileBody(data, large = resizable && data.tile.height > 1, onGrantAccess)
+                    TileBody(data, large = resizable && data.tile.height > 1, onGrantAccess, onOpenDay, onLongClick, onOpenWorkout)
                 }
             }
 
@@ -1051,8 +1062,16 @@ private fun TileEditControls(
  * -- so a tile always shows something rather than an empty box.
  */
 @Composable
-private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) {
+private fun TileBody(
+    data: TileData,
+    large: Boolean,
+    onGrantAccess: () -> Unit,
+    onOpenDay: (() -> Unit)? = null,
+    onLongClick: () -> Unit = {},
+    onOpenWorkout: ((Session) -> Unit)? = null,
+) {
     val progress = data.progress
+    val workoutTap = onOpenWorkout?.let { WorkoutTap(it, onLongClick) }
     // The user's bands where they set them; the type's defaults otherwise.
     val zones = data.tile.effectiveZones
 
@@ -1069,9 +1088,9 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         data.heatmap != null && data.tile.face == TileFace.CALENDAR -> TileCalendar(data, data.heatmap)
 
         chart != null && data.tile.face == TileFace.CHART ->
-            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion())
+            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion(), workoutTap = workoutTap)
 
-        chart != null && data.tile.face == TileFace.BOTH -> TileValueAndChart(data, chart)
+        chart != null && data.tile.face == TileFace.BOTH -> TileValueAndChart(data, chart, onOpenDay, onLongClick, workoutTap)
 
         // Before the loading and null-value checks: a session tile never has a value, and
         // zero sessions is a real answer rather than an absence of data.
@@ -1240,6 +1259,7 @@ private fun TileChart(
     compactAxis: Boolean = false,
     /** The tile's second curve and its readings; see [Tile.companion]. */
     companion: Pair<SessionLine, List<Pair<Session, List<Point>>>>? = null,
+    workoutTap: WorkoutTap? = null,
 ) {
     val extent = chart.extent
     // A day of sleep is last night, and a night with stages is drawn as them: the owner's
@@ -1247,7 +1267,7 @@ private fun TileChart(
     // the day's longest sleep, so a nap with stages does not take its place.
     val night = chart.sessions.night()?.takeIf { it.stages.isNotEmpty() }
     if (companion != null && extent != null) {
-        CompanionCurves(companion.first, companion.second, compactAxis, modifier)
+        CompanionCurves(companion.first, companion.second, compactAxis, modifier, workoutTap)
     } else if (chart.spec.tile.sessionKind == Session.Kind.SLEEP && extent != null && night != null) {
         Hypnogram(
             stages = night.stages,
@@ -1269,8 +1289,20 @@ private fun TileChart(
  * The number beside the chart on a wide tile, above it on a tall one: a 2x1 tile is too short
  * to stack both and leave the chart anything to show.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
+private fun TileValueAndChart(
+    data: TileData,
+    chart: TileDetailData,
+    /**
+     * Where the tile's tap opens one workout, a tap on the count opens the day's list instead,
+     * so a large tile reaches every workout of the day, as a small one does.
+     */
+    onOpenDay: (() -> Unit)? = null,
+    onLongClick: () -> Unit = {},
+    workoutTap: WorkoutTap? = null,
+) {
+    val figureTap = onOpenDay?.let { Modifier.combinedClickable(onClick = it, onLongClick = onLongClick) } ?: Modifier
     // A session tile's figure as its single cell writes it: "6,22" was a night's hours as a
     // bare decimal, where the cell beside says "6h 13m".
     @Composable
@@ -1279,15 +1311,17 @@ private fun TileValueAndChart(data: TileData, chart: TileDetailData) {
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // The stage chart names its own stages; a curve over the strip does not.
-            Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE, inline = true)
-            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion())
+            Box(Modifier.fillMaxWidth().then(figureTap), contentAlignment = Alignment.Center) {
+                Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE, inline = true)
+            }
+            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion(), workoutTap = workoutTap)
         }
     } else {
         Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.weight(VALUE_SHARE), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(VALUE_SHARE).fillMaxHeight().then(figureTap), contentAlignment = Alignment.Center) {
                 Figure(StageTotalsAt.COLUMN)
             }
-            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true, companion = data.companion())
+            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true, companion = data.companion(), workoutTap = workoutTap)
         }
     }
 }
@@ -1691,33 +1725,43 @@ private fun TileData.companion(): Pair<SessionLine, List<Pair<Session, List<Poin
  * screen; a workout's breaks are shaded, and above it its icon and times say which one it is
  * -- the timeline it replaces said that by where the band sat.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CompanionCurves(
     line: SessionLine,
     curves: List<Pair<Session, List<Point>>>,
     compactAxis: Boolean,
     modifier: Modifier,
+    /**
+     * Each workout's curve opens that workout, its time line with it: with two on a tall
+     * tile, the tile's own tap opens the day's list, and one of them was a tap away.
+     */
+    workoutTap: WorkoutTap? = null,
 ) {
     val spec = RecordRegistry.specOrNull(line.typeName)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         curves.forEach { (session, points) ->
-            if (session.kind != Session.Kind.SLEEP) {
-                // One line that cannot wrap: the icon rule for wrapping text does not apply.
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = iconFor(session),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(COMPANION_ICON_SIZE.dp),
-                    )
-                    Text(
-                        text = Formatting.time(session.start) + "–" + Formatting.time(session.end) + " · " + Formatting.duration(session.counted),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        modifier = Modifier.padding(start = 4.dp),
-                    )
-                }
+            val tap = workoutTap?.takeIf { session.kind == Session.Kind.EXERCISE }
+                ?.let { Modifier.combinedClickable(onClick = { it.open(session) }, onLongClick = it.onLongClick) }
+                ?: Modifier
+            Column(Modifier.fillMaxWidth().weight(1f).then(tap)) {
+                if (session.kind != Session.Kind.SLEEP) {
+                    // One line that cannot wrap: the icon rule for wrapping text does not apply.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = iconFor(session),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(COMPANION_ICON_SIZE.dp),
+                        )
+                        Text(
+                            text = Formatting.time(session.start) + "–" + Formatting.time(session.end) + " · " + Formatting.duration(session.counted),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            modifier = Modifier.padding(start = 4.dp),
+                        )
+                    }
             }
             LineChart(
                 points = line.shown(points),
@@ -1734,9 +1778,13 @@ private fun CompanionCurves(
                 compactAxis = compactAxis,
                 modifier = Modifier.fillMaxWidth().weight(1f),
             )
+            }
         }
     }
 }
+
+/** A tap that opens one workout, and the long press that starts arranging, as on the tile itself. */
+private class WorkoutTap(val open: (Session) -> Unit, val onLongClick: () -> Unit)
 
 /** Where a sleep tile lists the time in each stage beside its hours, if anywhere. */
 private enum class StageTotalsAt { NONE, ROW, COLUMN }
