@@ -679,8 +679,12 @@ doctor report and the year heatmap; the rest unranked.
     10.10.2026, seen in an export from the emulator: the stage in words in `text`, the
     platform's code in `context` ("stage=deep", all eight codes kept apart, unlike the
     hypnogram's one waking lane), its length in hours to four decimals.
-72. [ ] **An honest progress bar before the first answer**: indeterminate until the first read
-    reports, and a session type's weekly read drawn as a step (step 49's open note).
+72. [x] **An honest progress bar before the first answer** (step 49's open note) -- built
+    10.10.2026: the bar runs indeterminate until the first read reports, and on a session
+    type's own screen the sessions weigh what the chart did (its aggregate draws nothing
+    there), with each workout's movement read counted as it finishes. Seen on the phone on
+    four weeks of workouts: the bar now moves through the movement reads instead of standing
+    near the end.
 73. [ ] **One report for the doctor** (Pro, `PDF_REPORTS`) -- blood pressure, weight, resting
     heart rate and glucose for one period in a single PDF, from the four reports that exist;
     a type with no data in the period is left out, not printed empty.

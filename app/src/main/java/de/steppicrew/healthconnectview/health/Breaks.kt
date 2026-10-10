@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * A stretch inside a workout where nothing moved, inferred from missing readings.
@@ -204,15 +205,24 @@ suspend fun HealthRepository.movementDuring(session: Session): Movement? {
 
 /**
  * [sessions] with each workout's breaks and moving time read, so totals count time on the
- * move and bands leave the breaks out. Other kinds pass through as they are.
+ * move and bands leave the breaks out. Other kinds pass through as they are. [onFraction]
+ * hears the share of sessions done: four weeks of workouts are some 55 reads.
  */
-suspend fun HealthRepository.withMovement(sessions: List<Session>): List<Session> = coroutineScope {
+suspend fun HealthRepository.withMovement(
+    sessions: List<Session>,
+    onFraction: (Float) -> Unit = {},
+): List<Session> = coroutineScope {
     val gate = Semaphore(CONCURRENT_MOVEMENT_READS)
+    val done = AtomicInteger(0)
     sessions.map { session ->
         async {
-            if (session.kind != Session.Kind.EXERCISE) return@async session
-            val movement = gate.withPermit { movementDuring(session) } ?: return@async session
-            session.copy(breaks = movement.breaks, moving = movement.moving)
+            try {
+                if (session.kind != Session.Kind.EXERCISE) return@async session
+                val movement = gate.withPermit { movementDuring(session) } ?: return@async session
+                session.copy(breaks = movement.breaks, moving = movement.moving)
+            } finally {
+                onFraction(done.incrementAndGet().toFloat() / sessions.size)
+            }
         }
     }.awaitAll()
 }

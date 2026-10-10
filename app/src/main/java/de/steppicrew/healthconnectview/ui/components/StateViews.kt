@@ -64,6 +64,10 @@ fun LoadingView(modifier: Modifier = Modifier, progress: Float? = null) {
         // otherwise, rather than a bar that would have to guess.
         if (progress == null) {
             CircularProgressIndicator()
+        } else if (progress <= 0f) {
+            // Nothing reported yet: Health Connect's first answer can take seconds, and an
+            // empty bar standing still read as no progress at all.
+            LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
         } else {
             LinearProgressIndicator(
                 progress = { shown },

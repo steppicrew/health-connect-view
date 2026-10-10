@@ -100,7 +100,13 @@ internal class TileChartLoader(
         // respiratory rate pages for a minute or more -- and the total and sessions are single
         // requests. Counted equally, the chart's progress filled half the bar and the rest
         // jumped.
-        val steps = CHART_WEIGHT + 1 + if (hasSessions) 1 else 0
+        // A session type's own screen is the other way round: its aggregate draws nothing and
+        // its sessions are the content -- four weeks of workouts read each one's movement, 6-9 s
+        // on the phone, which as one step in ten left the bar standing near the end.
+        val ownSessions = spec.tile.form == TileSpec.Form.SESSIONS
+        val chartWeight = if (ownSessions) 1 else CHART_WEIGHT
+        val sessionWeight = if (ownSessions) CHART_WEIGHT else 1
+        val steps = chartWeight + 1 + if (hasSessions) sessionWeight else 0
         val done = java.util.concurrent.atomic.AtomicInteger(0)
         fun stepDone(weight: Int = 1) {
             onProgress(done.addAndGet(weight).toFloat() / steps)
@@ -108,7 +114,11 @@ internal class TileChartLoader(
         // Progress within the chart's read, so the bar moves while it pages instead of sitting
         // at 0 and then jumping to the end.
         fun stepPart(fraction: Float) {
-            onProgress((done.get() + fraction * CHART_WEIGHT) / steps)
+            onProgress((done.get() + fraction * chartWeight) / steps)
+        }
+        // Within the sessions: the one read of them first, then each workout's movement.
+        fun sessionPart(fraction: Float) {
+            onProgress((done.get() + (SESSION_LIST_SHARE + (1 - SESSION_LIST_SHARE) * fraction) * sessionWeight) / steps)
         }
         val readProgress = PageProgress<Record>(spec::timeOf, ::stepPart)
         // How many records the window holds, where the chart's read went through all of them
@@ -386,7 +396,7 @@ internal class TileChartLoader(
             }
         }
 
-        stepDone(CHART_WEIGHT) // the chart
+        stepDone(chartWeight) // the chart
         val aggregatedTotal = if (metric != null) {
             val platform = runCatching { repository.total(metric, span.totalFilter(offset), origins) }.getOrNull()
             if (offset == 0) withOpenTally(spec, metric, span, platform, origins) else platform
@@ -489,8 +499,11 @@ internal class TileChartLoader(
             // A workout screen counts moving time and draws breaks, which needs each workout's
             // movement read: one speed record apiece, in parallel. Not across a year, where
             // that is hundreds of reads for a bar per week that counts workouts, not hours.
-            sessionKind == Session.Kind.EXERCISE && span != Span.YEAR ->
-                repository.withMovement(loadSessions(span, offset, setOf(sessionKind)))
+            sessionKind == Session.Kind.EXERCISE && span != Span.YEAR -> {
+                val listed = loadSessions(span, offset, setOf(sessionKind))
+                sessionPart(0f)
+                repository.withMovement(listed, onFraction = ::sessionPart)
+            }
 
             sessionKind != null -> loadSessions(span, offset, setOf(sessionKind))
 
@@ -499,7 +512,7 @@ internal class TileChartLoader(
 
             else -> emptyList()
         }
-        if (hasSessions) stepDone()
+        if (hasSessions) stepDone(sessionWeight)
 
         // A multi-day window asks a different question of a sessions type than a day does.
         //
@@ -1203,6 +1216,9 @@ private const val BUCKETS_PER_PIECE = 13
 
 /** The chart's share of the progress bar, against one for each single-request step. */
 private const val CHART_WEIGHT = 8
+
+/** The sessions' own read within their step, before each workout's movement is read. */
+private const val SESSION_LIST_SHARE = 0.2f
 
 internal fun windowStart(span: Span, offset: Int): Instant =
     span.startDate(offset).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
