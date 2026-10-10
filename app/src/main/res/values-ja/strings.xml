@@ -626,6 +626,12 @@
     <string name="record_title_longest">過去1年で最長のトレーニング</string>
     <string name="record_value_on">%2$s：%1$s</string>
     <string name="record_show">この日を表示</string>
+    <string name="heatmap_title">カレンダーで見る1年</string>
+    <string name="heatmap_tap">日をタップすると値が表示されます。</string>
+    <string name="heatmap_nothing">記録なし</string>
+    <string name="heatmap_note" formatted="false">1日1マス、週は左から右へ。空のマスは記録のない日です。最も濃い色は上位5 %の日です。</string>
+    <string name="heatmap_note_graded">1日1マス、週は左から右へ。その日の平均値の分類で色分けしています。空のマスは記録のない日です。</string>
+    <string name="heatmap_locked">1年の毎日を色の濃さで表し、習慣や空白をひと目で確認できます。</string>
     <string name="record_rule">過去1年のうち今日より前の日から探します。1日の値はヘルスコネクトの重複を除いた合計なので、複数のアプリが記録した日も1回として数えます。トレーニングも同様です。今日は1日が終わってから含めます。</string>
     <string name="history_limit_note">過去のデータへのアクセスがないため、直近30日間のみを検索しました。</string>
     <string name="history_grant">過去のデータを許可</string>

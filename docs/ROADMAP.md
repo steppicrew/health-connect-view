@@ -696,8 +696,25 @@ doctor report and the year heatmap; the rest unranked.
     follows its tables. Each type is read from what its own screen would show: the filter on
     the screen exporting, the choice made on the others', else the preferred app where it
     wrote that type.
-74. [ ] **Year heatmap per metric** -- a calendar grid coloured by daily value, from the daily
-    totals already read; one sequential hue, a gap uncoloured rather than lightest.
+74. [x] **Year heatmap per metric** (Pro, `YEAR_HEATMAP`, the owner's call, 10.10.2026) --
+    built 10.10.2026, seen on the phone with a year of steps and on the emulator. On a type's
+    year, under the chart: a column per week, the locale's first weekday on top, month names
+    where they fit. One daily aggregate per day, deduplicated like every total, read last in
+    four quarter-year requests with its place held. One hue in five strengths; a day with
+    nothing recorded is an empty grey square, never the lightest shade. The darkest step
+    starts at the 95th percentile, not the maximum, so one exceptional day does not leave the
+    year pale; a count is shaded from zero, a level (resting heart rate, weight) across its
+    own range. A tap shows the day's value with "Diesen Tag anzeigen". Without Pro the box
+    is a padlocked title that opens the purchase, and nothing is read. Widened the same day
+    at the owner's asking to every year whose chart has daily values: workouts (hours a day,
+    from zero), sleep (each night by its morning, across its own range -- from zero, 6 h and
+    8 h nights shaded alike), daily means of readings, HRV nights -- all from the chart's own
+    read, so only aggregate types read anything extra. Blood pressure is coloured by the
+    grade of the day's averages, the grades named beneath, as its readings are everywhere.
+    Total calories start at the year's mean basal rate, named in the legend (the owner: from
+    zero every day looked alike); generally a stack's first part is the floor. The other
+    counted types -- steps, distance, floors, active calories, water, nutrition -- can be
+    zero on a day and keep zero.
 75. [ ] **Cycle overview's year window is Pro** -- the owner's decision, 10.10.2026
     (`LONG_RANGE_HISTORY`). Note before building: the feature is declared but enforced
     nowhere, and every type's year chart is free, so gating only the cycle would stand alone.
@@ -716,6 +733,12 @@ doctor report and the year heatmap; the rest unranked.
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.
 82. [ ] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
+83. [ ] **The calendar as a face of a large year tile** -- the owner's idea, 10.10.2026: a
+    2x2 (or 2x1) tile on a year showing step 74's calendar instead of the chart, over the
+    last 365 days or the calendar year so far.
+84. [ ] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
+    not yet, its types have no figure to shade. Flow days by strength, spotting and a
+    positive ovulation test marked, in the cycle overview's year; plan before building.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that

@@ -684,6 +684,12 @@
     <string name="record_title_longest">Longest workout of the past year</string>
     <string name="record_value_on">%1$s on %2$s</string>
     <string name="record_show">Show this day</string>
+    <string name="heatmap_title">The year as a calendar</string>
+    <string name="heatmap_tap">Tap a day for its value.</string>
+    <string name="heatmap_nothing">nothing recorded</string>
+    <string name="heatmap_note" formatted="false">A square per day, weeks from left to right. An empty square had nothing recorded. The darkest shade holds the top 5 % of days.</string>
+    <string name="heatmap_note_graded">A square per day, weeks from left to right, coloured by the grade of the day’s average. An empty square had nothing recorded.</string>
+    <string name="heatmap_locked">Every day of the year in one shade, to see habits and gaps at a glance.</string>
     <string name="record_rule">Searched among the days before today in the past year. Daily figures are Health Connect\'s totals with duplicates removed, so a day several apps recorded counts once, and so does a workout. Today counts once it is over.</string>
     <string name="history_limit_note">Without access to older data, only the last 30 days were searched.</string>
     <string name="history_grant">Allow older data</string>

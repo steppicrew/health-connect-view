@@ -626,6 +626,12 @@
     <string name="record_title_longest">지난 1년 중 가장 긴 운동</string>
     <string name="record_value_on">%2$s: %1$s</string>
     <string name="record_show">이 날 보기</string>
+    <string name="heatmap_title">달력으로 보는 1년</string>
+    <string name="heatmap_tap">날짜를 탭하면 값이 표시됩니다.</string>
+    <string name="heatmap_nothing">기록 없음</string>
+    <string name="heatmap_note" formatted="false">하루에 한 칸, 주는 왼쪽에서 오른쪽으로. 빈 칸은 기록이 없는 날입니다. 가장 진한 색은 상위 5 %의 날입니다.</string>
+    <string name="heatmap_note_graded">하루에 한 칸, 주는 왼쪽에서 오른쪽으로, 그날 평균의 등급에 따라 색을 칠했습니다. 빈 칸은 기록이 없는 날입니다.</string>
+    <string name="heatmap_locked">한 해의 매일을 색의 농도로 보여 주어 습관과 빈 날을 한눈에 볼 수 있습니다.</string>
     <string name="record_rule">지난 1년 동안 오늘 이전의 날 중에서 찾습니다. 하루 값은 헬스 커넥트의 중복을 제거한 합계이므로 여러 앱이 기록한 날도 한 번만 계산되며, 운동도 마찬가지입니다. 오늘은 하루가 끝난 뒤에 포함됩니다.</string>
     <string name="history_limit_note">이전 데이터에 대한 액세스가 없어 최근 30일만 검색했습니다.</string>
     <string name="history_grant">이전 데이터 허용</string>

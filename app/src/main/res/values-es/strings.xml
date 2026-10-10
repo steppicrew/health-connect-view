@@ -674,6 +674,12 @@
     <string name="record_title_longest">Entrenamiento más largo del último año</string>
     <string name="record_value_on">%1$s el %2$s</string>
     <string name="record_show">Mostrar este día</string>
+    <string name="heatmap_title">El año como calendario</string>
+    <string name="heatmap_tap">Toca un día para ver su valor.</string>
+    <string name="heatmap_nothing">nada registrado</string>
+    <string name="heatmap_note" formatted="false">Un cuadro por día, las semanas de izquierda a derecha. Un cuadro vacío no tiene nada registrado. El tono más oscuro reúne el 5 % de los días más altos.</string>
+    <string name="heatmap_note_graded">Un cuadro por día, las semanas de izquierda a derecha, coloreado según el grado del promedio del día. Un cuadro vacío no tiene nada registrado.</string>
+    <string name="heatmap_locked">Cada día del año en un tono, para ver hábitos y huecos de un vistazo.</string>
     <string name="record_rule">Se busca entre los días anteriores a hoy en el último año. Los valores diarios son los totales de Health Connect sin duplicados, así que un día registrado por varias aplicaciones cuenta una vez, igual que un entrenamiento. Hoy cuenta cuando termine.</string>
     <string name="history_limit_note">Sin acceso a datos más antiguos, solo se han revisado los últimos 30 días.</string>
     <string name="history_grant">Permitir datos antiguos</string>

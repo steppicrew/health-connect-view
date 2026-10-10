@@ -1,5 +1,11 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import java.time.Period
+import de.steppicrew.healthconnectview.health.numericAggregate
+import de.steppicrew.healthconnectview.health.yearHeatmap
+import de.steppicrew.healthconnectview.health.YearHeatmap
+import de.steppicrew.healthconnectview.billing.Feature
+import de.steppicrew.healthconnectview.billing.AppEntitlements
 import kotlin.reflect.KClass
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
@@ -193,6 +199,17 @@ data class TileDetailData(
     val extrasPending: Boolean = false,
     /** Resting heart rate across days: true until the night section has been read, found or not. */
     val trainingNightsPending: Boolean = false,
+    /** The year as a calendar, on a year with Pro; read last, see [heatmapFor]. */
+    val heatmap: YearHeatmap? = null,
+    /** True until [heatmap] has been read, found or not. */
+    val heatmapPending: Boolean = false,
+    /** Whether this window has a heatmap at all, read or locked: a type's year. */
+    val heatmapOffered: Boolean = false,
+    /**
+     * A year's daily values where the chart's own read supplied them -- nights, workouts,
+     * daily means of readings; empty where a type's daily aggregate must be read for them.
+     */
+    val dayValues: Map<LocalDate, Double> = emptyMap(),
     /** True when the series accumulates through the day rather than showing each bucket. */
     val cumulative: Boolean,
     /**
@@ -836,6 +853,19 @@ class TileDetailViewModel(
                             } ?: current
                         }
                     }
+                    if (!empty && data.heatmapPending) {
+                        val heatmap = if (data.dayValues.isNotEmpty()) {
+                            yearHeatmap(data.dayValues, span.startDate(offset), span.endDate(offset).minusDays(1), fromZero = countsFromZero(spec))
+                        } else {
+                            heatmapFor(spec, span, offset, selectedSource)
+                        }
+                        ensureActive()
+                        _state.update { current ->
+                            (current as? UiState.Data)?.let {
+                                UiState.Data(it.value.copy(heatmap = heatmap, heatmapPending = false))
+                            } ?: current
+                        }
+                    }
                 },
                 onFailure = { error ->
                     _state.update { UiState.Error(error.message ?: "Could not read data") }
@@ -1076,6 +1106,9 @@ class TileDetailViewModel(
             trainingDays = training,
             extrasPending = false,
             trainingNightsPending = spec.type == RestingHeartRateRecord::class && marksTraining(spec, span),
+            heatmapOffered = showsHeatmap(spec, span, listed.dayValues),
+            heatmapPending = showsHeatmap(spec, span, listed.dayValues) &&
+                AppEntitlements.current.pro.value.allows(Feature.YEAR_HEATMAP),
         )
     }
 
@@ -1086,6 +1119,48 @@ class TileDetailViewModel(
      * nights on the phone, about a second each. Null where there are too few nights, or no
      * access to sleep or heart rate -- the section then stays away.
      */
+    /**
+     * The window's days as a calendar: one daily aggregate per day, deduplicated as every
+     * total is, read in quarters so a slow answer for one does not hold the rest. Null where
+     * no day has a value or the read failed.
+     */
+    private suspend fun heatmapFor(spec: RecordTypeSpec<*>, span: Span, offset: Int, source: String?): YearHeatmap? {
+        val metric = spec.aggregate ?: return null
+        val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val first = span.startDate(offset)
+        val end = span.endDate(offset)
+        return runCatching {
+            // Blood pressure's diastolic from the same buckets: a day is graded on both.
+            val second = spec.secondaryAggregate
+            // A stack's first part is the floor the day is built on -- the basal rate under
+            // total calories -- and the shading starts at its mean day.
+            val floorPart = spec.stackComponents.firstOrNull()
+            val days = generateSequence(first) { it.plusDays(HEATMAP_PIECE_DAYS) }.takeWhile { it < end }.toList().flatMap { from ->
+                val to = minOf(from.plusDays(HEATMAP_PIECE_DAYS), end)
+                repository.bucketedTotals(
+                    metric,
+                    TimeRangeFilter.between(from.atStartOfDay(), to.atStartOfDay()),
+                    Period.ofDays(1),
+                    origins,
+                    also = setOfNotNull(second, floorPart?.second),
+                ).mapNotNull { bucket ->
+                    val value = bucket.result[metric]?.let { numericAggregate(it, metric) } ?: return@mapNotNull null
+                    val other = second?.let { bucket.result[it]?.let { v -> numericAggregate(v, it) } }
+                    val floor = floorPart?.second?.let { bucket.result[it]?.let { v -> numericAggregate(v, it) } }
+                    HeatDay(bucket.startTime.toLocalDate(), value, other, floor)
+                }
+            }
+            val floor = days.mapNotNull { it.floor }.takeIf { it.isNotEmpty() }?.average()
+            yearHeatmap(days.associate { it.date to it.value }, first, end.minusDays(1), fromZero = countsFromZero(spec), floor = floor)
+                ?.let { map ->
+                    map.copy(
+                        secondValues = days.mapNotNull { day -> day.second?.let { day.date to it } }.toMap(),
+                        lowLabel = floorPart?.first?.takeIf { floor != null && map.low == floor },
+                    )
+                }
+        }.getOrNull()
+    }
+
     private suspend fun trainingNightsFor(span: Span, offset: Int, training: Set<LocalDate>): TrainingNights? {
         val zone = HealthRepository.DEFAULT_ZONE
         val started = System.currentTimeMillis()
@@ -1145,3 +1220,25 @@ data class SourceDefault(val preferred: String?, val ownChoice: Boolean)
 /** Resting heart rate and HRV across days mark their training days; nothing else does. */
 internal fun marksTraining(spec: RecordTypeSpec<*>, span: Span): Boolean =
     span != Span.DAY && (spec.type == RestingHeartRateRecord::class || spec.type == HeartRateVariabilityRmssdRecord::class)
+
+/**
+ * A type's year as a calendar: where a daily aggregate can be read, or the chart's own read
+ * gave daily values -- nights, workouts, daily means. Not for the cycle types, which have no
+ * figure to shade.
+ */
+internal fun showsHeatmap(spec: RecordTypeSpec<*>, span: Span, dayValues: Map<LocalDate, Double>): Boolean =
+    span == Span.YEAR && (dayValues.isNotEmpty() || spec.aggregate != null && spec.tile.form != TileSpec.Form.SESSIONS)
+
+/**
+ * Shaded from zero: what adds up -- steps, a day's training. A level across its own range, and
+ * a night too: from zero, 6 h and 8 h nights came out almost the same dark.
+ */
+private fun countsFromZero(spec: RecordTypeSpec<*>): Boolean =
+    spec.tile.cumulativeIntraday ||
+        spec.tile.form == TileSpec.Form.SESSIONS && spec.tile.sessionKind == Session.Kind.EXERCISE
+
+/** Days per request for the heatmap: a quarter. */
+private const val HEATMAP_PIECE_DAYS = 92L
+
+/** One day of a heatmap read: the value, a second one, and the floor beneath it. */
+private class HeatDay(val date: LocalDate, val value: Double, val second: Double?, val floor: Double?)

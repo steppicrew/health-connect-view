@@ -42,4 +42,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** Every type's last week against its month, the unusual moves first. */
     INSIGHTS(isPremium = true),
+
+    /** A year of daily values as a calendar, one shade per day, on a type's year. */
+    YEAR_HEATMAP(isPremium = true),
 }

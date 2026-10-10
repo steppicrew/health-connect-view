@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.nightsByMorning
 import de.steppicrew.healthconnectview.health.rollingUsualRange
 import de.steppicrew.healthconnectview.R
 import androidx.annotation.StringRes
@@ -723,6 +724,29 @@ internal class TileChartLoader(
             null
         }
 
+        // The year's days for its calendar, from what was read for the chart anyway; empty
+        // where only a separate daily read can supply them, which the screen makes last.
+        val dayValues: Map<LocalDate, Double> = if (span != Span.YEAR) {
+            emptyMap()
+        } else {
+            val zone = HealthRepository.DEFAULT_ZONE
+            when {
+                hrv != null -> hrv.nights.associate { it.date to it.mean }
+                dailyReadings != null -> dailyReadings.dailyMeans()
+                sessionKind == Session.Kind.SLEEP -> nightsByMorning(sessions, zone)
+                    .mapValues { (_, night) -> Duration.between(night.start, night.end).toMinutes() / MINUTES_PER_HOUR }
+                sessionKind == Session.Kind.EXERCISE -> sessions
+                    .filter { it.kind == Session.Kind.EXERCISE }
+                    .groupBy { it.start.atZone(zone).toLocalDate() }
+                    .mapValues { (_, day) -> day.sumOf { (it.moving ?: Duration.between(it.start, it.end)).toMinutes() } / MINUTES_PER_HOUR }
+                // Readings with no aggregate and no daily means: each day's mean of them.
+                metric == null && spec.tile.form != TileSpec.Form.SESSIONS -> chartPoints
+                    .groupBy { it.time.atZone(zone).toLocalDate() }
+                    .mapValues { (_, day) -> day.map { it.value }.average() }
+                else -> emptyMap()
+            }
+        }
+
         val chart = TileDetailData(
             spec = spec,
             points = shownPoints,
@@ -792,6 +816,7 @@ internal class TileChartLoader(
             truncated = false,
             listPending = true,
             extrasPending = deferExtras,
+            dayValues = dayValues,
         )
 
         chart
@@ -1261,3 +1286,4 @@ internal data class ChartExtras(
     val usualBand: List<ValueBand> = emptyList(),
 )
 
+private const val MINUTES_PER_HOUR = 60.0

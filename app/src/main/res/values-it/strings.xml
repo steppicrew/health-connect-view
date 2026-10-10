@@ -674,6 +674,12 @@
     <string name="record_title_longest">Allenamento più lungo dell’ultimo anno</string>
     <string name="record_value_on">%1$s il %2$s</string>
     <string name="record_show">Mostra questo giorno</string>
+    <string name="heatmap_title">L’anno come calendario</string>
+    <string name="heatmap_tap">Tocca un giorno per vederne il valore.</string>
+    <string name="heatmap_nothing">nulla registrato</string>
+    <string name="heatmap_note" formatted="false">Un quadrato per giorno, le settimane da sinistra a destra. Un quadrato vuoto non ha nulla registrato. La tonalità più scura raccoglie il 5 % dei giorni più alti.</string>
+    <string name="heatmap_note_graded">Un quadrato per giorno, le settimane da sinistra a destra, colorato secondo la classe della media del giorno. Un quadrato vuoto non ha nulla registrato.</string>
+    <string name="heatmap_locked">Ogni giorno dell’anno in una tonalità, per vedere abitudini e lacune a colpo d’occhio.</string>
     <string name="record_rule">Cercato tra i giorni prima di oggi nell’ultimo anno. I valori giornalieri sono i totali di Connessione Salute senza duplicati, quindi un giorno registrato da più app conta una volta sola, come un allenamento. Oggi conta quando è finito.</string>
     <string name="history_limit_note">Senza accesso ai dati più vecchi, sono stati esaminati solo gli ultimi 30 giorni.</string>
     <string name="history_grant">Consenti dati meno recenti</string>
