@@ -40,6 +40,8 @@ fun TileOptionsDialog(
     /** The curves the type may draw beside its own, by type name; none offers no choice. */
     companions: List<String> = emptyList(),
     currentCompanion: String? = null,
+    /** The faces to offer; see [facesFor]. */
+    faces: List<TileFace> = TileFace.entries.filter { it != TileFace.BODY },
 ) {
     var span by remember { mutableStateOf(currentSpan) }
     var face by remember { mutableStateOf(currentFace) }
@@ -51,18 +53,21 @@ fun TileOptionsDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(displayName)
-                Text(
-                    text = stringResource(R.string.tile_options_span),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Span.entries.forEach { choice ->
-                        FilterChip(
-                            selected = span == choice,
-                            onClick = { span = choice },
-                            label = { Text(stringResource(choice.labelRes)) },
-                        )
+                // The body face shows the latest of each, whatever the window: no window to choose.
+                if (face != TileFace.BODY) {
+                    Text(
+                        text = stringResource(R.string.tile_options_span),
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Span.entries.forEach { choice ->
+                            FilterChip(
+                                selected = span == choice,
+                                onClick = { span = choice },
+                                label = { Text(stringResource(choice.labelRes)) },
+                            )
+                        }
                     }
                 }
                 Text(
@@ -71,7 +76,7 @@ fun TileOptionsDialog(
                     modifier = Modifier.padding(top = 8.dp),
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TileFace.entries.forEach { choice ->
+                    faces.forEach { choice ->
                         FilterChip(
                             selected = face == choice,
                             onClick = { face = choice },
@@ -128,4 +133,6 @@ private fun TileFace.labelRes(): Int = when (this) {
     TileFace.VALUE -> R.string.tile_face_value
     TileFace.CHART -> R.string.tile_face_chart
     TileFace.BOTH -> R.string.tile_face_both
+    // The catalog's own word for the group, "Körper": no new string to translate.
+    TileFace.BODY -> R.string.category_body
 }

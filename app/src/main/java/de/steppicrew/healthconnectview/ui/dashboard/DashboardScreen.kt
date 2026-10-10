@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Insights
 import de.steppicrew.healthconnectview.ui.insights.notable
 import de.steppicrew.healthconnectview.ui.insights.insightAmount
 import de.steppicrew.healthconnectview.dashboard.TileColor
+import de.steppicrew.healthconnectview.dashboard.facesFor
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -165,6 +166,8 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     /** The insights tile's full list. */
     onOpenInsights: () -> Unit = {},
+    /** The body composition screen, which a weight tile's body face opens. */
+    onOpenBody: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
@@ -250,6 +253,7 @@ fun DashboardScreen(
             currentFace = editing.tile.face,
             companions = companionsOf(editing.tile.typeName),
             currentCompanion = editing.tile.companion,
+            faces = facesFor(editing.tile.typeName),
             onDismiss = { editingOptionsFor = null },
             onSave = { span, face, companion -> viewModel.setOptions(editing.tile.id, span, face, companion) },
         )
@@ -474,7 +478,13 @@ fun DashboardScreen(
                                                 // It opens on the window the tile shows, so the figure under
                                                 // the finger is the one at the top of the screen it opens.
                                                 if (!editing) {
-                                                    onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+                                                    // The body face names four types; its own screen is the one
+                                                    // that shows them together.
+                                                    if (tile.bodyReadings != null) {
+                                                        onOpenBody()
+                                                    } else {
+                                                        onOpenType(tile.tile.typeName, state.date.toString(), tile.shownSpan)
+                                                    }
                                                 }
                                             },
                                             onLongClick = { editing = true },
@@ -1015,6 +1025,9 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
     when {
         !data.granted -> LockedTile(onGrantAccess)
 
+        // With no part known, the plain weight: half a tile left empty read as broken.
+        !data.bodyReadings.isNullOrEmpty() && !data.loading -> BodyFace(data, data.bodyReadings, large)
+
         chart != null && data.tile.face == TileFace.CHART ->
             TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion())
 
@@ -1053,6 +1066,49 @@ private fun TileBody(data: TileData, large: Boolean, onGrantAccess: () -> Unit) 
         else -> TileValue(data, large)
     }
 }
+
+/**
+ * Weight beside its parts: the weight as the single cell shows it, and body fat, water and
+ * bone mass each with its value. A part measured on another day than the weight carries its
+ * own date, muted, so a body fat reading from months ago is not read as this morning's.
+ */
+@Composable
+private fun BodyFace(data: TileData, parts: List<BodyReading>, large: Boolean) {
+    Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { TileValue(data, large) }
+        Column(Modifier.weight(BODY_PARTS_WEIGHT), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            parts.forEach { part ->
+                Row(verticalAlignment = Alignment.Top) {
+                    Text(
+                        text = stringResource(part.spec.displayNameRes),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = Formatting.number(part.value, part.spec.valueDecimals) +
+                                part.spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty(),
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                        part.date?.let { day ->
+                            Text(
+                                text = day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** The parts' column against the weight's: the names need the room. */
+private const val BODY_PARTS_WEIGHT = 1.6f
 
 /**
  * The window's chart filling the tile: the detail screen's chart, with its axis values and

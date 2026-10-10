@@ -574,8 +574,20 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     after the page shows. Resting heart rate and HRV mark the training days in a strip along
     the chart's bottom, named in the legend. Checked on the phone, 13.09-10.10: 52 bpm after
     21 training days, 45 bpm after 7 rest days.
-64. [ ] **Combined weight tile** (Pro) -- the owner's idea, 09.10.2026: weight, body fat,
-    water and bone mass on one tile where known, opening the body composition screen.
+64. [x] **Combined weight tile** (Pro) -- the owner's idea, 09.10.2026: weight, body fat,
+    water and bone mass on one tile where known, opening the body composition screen. Built
+    10.10.2026 as a fourth face of a large weight tile, the owner's choice ("Körper", the
+    catalog's word, so no new string): the weight as the cell shows it, and each part at its
+    latest reading up to the day, dated where it was not taken with the weight; parts never
+    measured are left out, and with none the tile is the plain weight. No window to choose for
+    it. Checked on the phone: 81,9 kg (07.10.) with body fat 24,4 %, water 45,2 kg and bone
+    mass 4,25 kg; the tap into body composition on the emulator. Then, the owner's request: on
+    a 2x2 tile over a week, four weeks or a year, a row per part with its value above a
+    smoothed curve of its daily means, each on its own range -- asked for kg and % on two
+    axes, declined for the reasons in the dataviz rules (which line reads on which axis;
+    weight, water and bone on one kg axis flatten every change). The body composition screen
+    is smoothed too, and a value read on one of its charts shows on all of them, as on the
+    compare screen. Both checked on the phone.
 65. [ ] **Training time behind the session count** -- the owner's idea, 09.10.2026: across days
     the workouts screen shows sessions per day; add each day's moving time as a faint bar on a
     second scale. Built with step 54, which brings the second scale.

@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvStanding
+import de.steppicrew.healthconnectview.dashboard.WEIGHT_TYPE
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.dashboard.TileColor
@@ -75,6 +76,15 @@ import java.time.temporal.ChronoUnit
  * zero: "no steps recorded" and "zero steps" mean different things, and rendering the first as
  * "0" is the misreading the roadmap calls out.
  */
+/**
+ * One part on a weight tile's body face: its type, the latest value in the shown unit, and its
+ * day where that is not the weight's -- null where both were measured on the same day.
+ */
+data class BodyReading(val spec: RecordTypeSpec<*>, val value: Double, val date: LocalDate?)
+
+/** The body face's parts, in the order the tile lists them. */
+private val BODY_PARTS = listOf("BodyFatRecord", "BodyWaterMassRecord", "BoneMassRecord")
+
 data class TileData(
     val tile: Tile,
     val spec: RecordTypeSpec<*>,
@@ -141,6 +151,12 @@ data class TileData(
      * activity, for the activities tile. Zero where there is no run. See [currentStreak].
      */
     val streak: Int = 0,
+    /**
+     * A weight tile showing the body face: body fat, water and bone mass, each its latest
+     * reading up to the shown day, in that order, those never measured left out. Null on every
+     * other tile.
+     */
+    val bodyReadings: List<BodyReading>? = null,
 ) {
     /** Everything the day's sessions covered, for the subtitle under a session count. */
     val sessionDuration: Duration get() = sessions.totalDuration()
@@ -572,6 +588,7 @@ class DashboardViewModel(
                     shownSpan = carried.shownSpan,
                     standing = carried.standing,
                     chart = carried.chart,
+                    bodyReadings = carried.bodyReadings,
                     loading = false,
                 )
             }
@@ -656,6 +673,11 @@ class DashboardViewModel(
      */
     private suspend fun load(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
         val tile = placeholder.tile
+        if (showsBody(tile)) {
+            val day = loadDay(placeholder, date)
+            val weighed = day.valueDate ?: date
+            return day.copy(bodyReadings = bodyReadings(date).map { if (it.date == weighed) it.copy(date = null) else it })
+        }
         if (!showsWindow(tile)) return loadDay(placeholder, date)
 
         // The day's own path still supplies a day's number -- a carried weight, a ring, the
@@ -714,7 +736,32 @@ class DashboardViewModel(
     private fun showsWindow(tile: Tile): Boolean =
         AppEntitlements.current.pro.value.allows(Feature.TILE_SIZES) &&
             tile.isLarge &&
+            tile.face != TileFace.BODY &&
             (tile.span != Span.DAY || tile.face != TileFace.VALUE)
+
+    /** Whether [tile] is a large weight tile showing the body face; Pro only, like any face. */
+    private fun showsBody(tile: Tile): Boolean =
+        AppEntitlements.current.pro.value.allows(Feature.TILE_SIZES) &&
+            tile.isLarge &&
+            tile.face == TileFace.BODY &&
+            tile.typeName == WEIGHT_TYPE
+
+    /**
+     * The body face's parts: each type's latest reading up to and including [date], from all
+     * writers. A type not granted or never measured is left out, so the tile lists what is
+     * known rather than a row of dashes.
+     */
+    private suspend fun bodyReadings(date: LocalDate): List<BodyReading> =
+        BODY_PARTS.mapNotNull { typeName ->
+            val spec = RecordRegistry.specOrNull(typeName) ?: return@mapNotNull null
+            try {
+                lastReadingBefore(spec, date.plusDays(1), emptySet())?.let { (day, value) -> BodyReading(spec, value, day) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+        }
 
     /**
      * The per-type choice, else the preferred app where it wrote into [range].
