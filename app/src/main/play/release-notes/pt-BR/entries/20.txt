@@ -1,0 +1,1 @@
+1.3.0 — Treinos: frequência cardíaca contra velocidade, primeira metade contra a segunda, e o tempo de treino ao lado da contagem. Frequência em repouso: a mínima da noite após dias de treino contra dias de descanso. Comparar oferece só tipos com dados, uma unidade em um só gráfico e um valor nos dois. Bloco de peso (Pro): visão Corpo com gordura, massa magra, água e ossos.

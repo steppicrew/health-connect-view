@@ -1,1 +1,1 @@
-1.2.1 — Workouts: the heart-rate curve is a smooth line again. Where one app wrote two recordings at once during a workout, it jumped back and forth between them.
+1.3.0 — Workouts: heart rate against speed, first half against second, and training time beside the count. Resting heart rate: the night’s low after training days against rest days. Compare offers only types with data, draws one unit on one chart and shows a value on both. Weight tile (Pro): a Body face with fat, lean mass, water and bone.

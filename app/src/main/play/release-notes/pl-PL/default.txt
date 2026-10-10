@@ -1,1 +1,1 @@
-1.2.1 — Treningi: krzywa tętna znów jest gładką linią. Gdy jedna aplikacja zapisywała podczas treningu dwa nagrania naraz, krzywa przeskakiwała między nimi.
+1.3.0 — Treningi: tętno względem prędkości, pierwsza połowa wobec drugiej, oraz czas treningu obok liczby. Tętno spoczynkowe: nocne minimum po dniach treningowych wobec dni odpoczynku. Porównanie proponuje tylko typy z danymi, jedną jednostkę na jednym wykresie i wartość na obu. Kafelek wagi (Pro): widok Ciało z tłuszczem, beztłuszczową masą ciała, wodą i kośćmi.

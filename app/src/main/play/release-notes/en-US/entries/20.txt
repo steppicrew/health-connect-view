@@ -1,0 +1,1 @@
+1.3.0 — Workouts: heart rate against speed, first half against second, and training time beside the count. Resting heart rate: the night’s low after training days against rest days. Compare offers only types with data, draws one unit on one chart and shows a value on both. Weight tile (Pro): a Body face with fat, lean mass, water and bone.

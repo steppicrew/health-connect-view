@@ -1,1 +1,1 @@
-1.2.1 — Antrenmanlar: Nabız eğrisi yeniden düzgün bir çizgi. Bir uygulama antrenman sırasında aynı anda iki kayıt yazdığında eğri ikisi arasında gidip geliyordu.
+1.3.0 — Antrenmanlar: hıza karşı nabız, ilk yarıya karşı ikinci yarı ve sayının yanında antrenman süresi. Dinlenme nabzı: antrenman günlerinden sonraki gece en düşük değeri, dinlenme günlerine karşı. Karşılaştır yalnızca verisi olan türleri sunar, aynı birimi tek grafikte gösterir ve bir değeri ikisinde de gösterir. Kilo kutucuğu (Pro): yağ, yağsız kütle, su ve kemikle Vücut görünümü.
