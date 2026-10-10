@@ -542,6 +542,24 @@ internal class TileChartLoader(
         } else {
             emptyList()
         }
+        // Behind a workout count, each bucket's training time: moving time where it was read
+        // (a week or four), whole durations across a year, where reading every workout's
+        // movement would be hundreds of reads. In hours, like sleep's bars.
+        val timePoints = if (sessionKind == Session.Kind.EXERCISE && perDayPoints.isNotEmpty()) {
+            val zone = HealthRepository.DEFAULT_ZONE
+            val first = span.startDate(offset)
+            sessions
+                .groupBy { session ->
+                    val day = session.end.atZone(zone).toLocalDate()
+                    first.plusDays(ChronoUnit.DAYS.between(first, day) / bucketDays * bucketDays)
+                }
+                .toSortedMap()
+                .map { (bucket, ofBucket) ->
+                    Point(bucket.atStartOfDay(zone).toInstant(), numericAggregate(ofBucket.totalDuration()) ?: 0.0)
+                }
+        } else {
+            emptyList()
+        }
         val weekly = bucketDays > 1
         @StringRes val sessionCaption: Int? = if (perDayPoints.isEmpty()) {
             null
@@ -704,6 +722,8 @@ internal class TileChartLoader(
             stack = stack,
             stackLabels = spec.stackComponents.map { it.first },
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind == Session.Kind.EXERCISE,
+            timePoints = timePoints,
+            timeMoving = span != Span.YEAR,
             sessionCaption = sessionCaption,
             total = headlineTotal,
             secondaryPoints = secondaryPoints,

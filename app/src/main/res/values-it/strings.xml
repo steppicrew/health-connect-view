@@ -480,6 +480,7 @@
     <string name="session_stat_max">max %1$s</string>
     <string name="session_time_total">Tempo totale</string>
     <string name="session_time_moving">Tempo in movimento</string>
+    <string name="chart_training_time_whole">Tempo con pause</string>
     <string name="session_break">Pausa</string>
     <string name="session_breaks_note">Il tempo in movimento esclude ogni sosta senza dati di velocità o distanza. Le soste di oltre cinque minuti sono elencate come pause, escluse dai valori qui sopra ed evidenziate nel grafico della frequenza cardiaca.</string>
     <string name="session_break_legend">Pausa: nessun dato di velocità o distanza</string>

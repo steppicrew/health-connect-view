@@ -375,7 +375,8 @@ fun LineChart(
                     high = high + widen,
                     targetSteps = GUIDE_INTERVALS,
                     integral = false,
-                    includeZero = false,
+                    // A bar stands on zero, or its height says nothing.
+                    includeZero = line.bars,
                 )
             }
         }
@@ -674,6 +675,32 @@ fun LineChart(
             // The width comes from the gap between neighbouring points rather than from the
             // point count, so a missing day leaves a space instead of widening its neighbours
             // -- the same reason points are placed by timestamp everywhere else here.
+            // Another kind of bar beside these, on its own scale, in the right half of each slot.
+            overlays.forEachIndexed { index, line ->
+                if (!line.bars || line.points.isEmpty()) return@forEachIndexed
+                val scale = overlayScales[index]
+                fun yOf(value: Double): Float = if (scale == null) {
+                    yFor(value)
+                } else {
+                    val own = (value - scale.min) / ((scale.max - scale.min).takeIf { it > 0.0 } ?: 1.0)
+                    yFor(minValue + own * span)
+                }
+                val xs = line.points.mapNotNull { xForTime(it.time.toEpochMilli()) }
+                val slot = xs.zipWithNext { a, b -> b - a }.filter { it > 0f }.minOrNull() ?: (size.width / BAR_LONE_DIVISOR)
+                val width = (slot * PAIRED_BAR_FRACTION).coerceAtLeast(1f)
+                val floor = yOf(0.0).coerceAtMost(size.height)
+                line.points.forEach { point ->
+                    val x = xForTime(point.time.toEpochMilli()) ?: return@forEach
+                    val top = yOf(point.value).coerceAtMost(floor)
+                    // The right half of the slot; the chart's own bar takes the left.
+                    drawRect(
+                        color = line.color.copy(alpha = OVERLAY_BAR_ALPHA),
+                        topLeft = Offset(x + PAIRED_BAR_GAP.dp.toPx() / 2f, top),
+                        size = androidx.compose.ui.geometry.Size(width, (floor - top).coerceAtLeast(1f)),
+                    )
+                }
+            }
+
             if (bars && offsets.isNotEmpty()) {
                 val baseline = yFor(minValue.coerceAtMost(0.0).let { if (it < 0) it else 0.0 })
                     .coerceAtMost(size.height)
@@ -683,14 +710,17 @@ fun LineChart(
                 } else {
                     size.width / BAR_LONE_DIVISOR
                 }
-                val barWidth = (slot * BAR_WIDTH_FRACTION).coerceAtLeast(1f)
+                // Beside another kind of bar, each takes half the slot: hidden behind, a shorter
+                // one would vanish wherever it was lower.
+                val paired = overlays.any { it.bars && it.points.isNotEmpty() }
+                val barWidth = (slot * if (paired) PAIRED_BAR_FRACTION else BAR_WIDTH_FRACTION).coerceAtLeast(1f)
                 val byTime = stack.associateBy { it.time.toEpochMilli() }
 
                 // Centred on the bucket's own position. The plot already runs half a slot past
                 // the first and last bar (`barExtent`), so nothing is clipped at the ends and
                 // every gap is the same.
                 offsets.forEachIndexed { index, offset ->
-                    val left = offset.x - barWidth / 2f
+                    val left = if (paired) offset.x - barWidth - PAIRED_BAR_GAP.dp.toPx() / 2f else offset.x - barWidth / 2f
                     val parts = byTime[points[index].time.toEpochMilli()]?.parts
 
                     if (parts == null) {
@@ -822,6 +852,8 @@ fun LineChart(
             // The other lines first, so the one owning the axis is drawn over them. Each broken
             // where its readings stop for longer than its own gap, like the main line.
             overlays.forEachIndexed { index, line ->
+                // Bars are drawn beside the chart's own, above; the readout names their value.
+                if (line.bars) return@forEachIndexed
                 val scale = overlayScales[index]
                 fun yOf(value: Double): Float = if (scale == null) {
                     yFor(value)
@@ -1745,6 +1777,11 @@ data class OverlayLine(
     val dots: Boolean = false,
     /** The narrowest range its own scale may show, as [LineChart]'s minSpan. */
     val minSpan: Double? = null,
+    /**
+     * Lighter bars beside the chart's own instead of a line: a day's training time beside its
+     * count of workouts, each in half of the day's slot.
+     */
+    val bars: Boolean = false,
 ) {
     /**
      * The reading nearest [time], or null where none is within [maxGap] of it -- a moment the
@@ -1956,6 +1993,13 @@ private const val LINE_WIDTH = 2f
 
 /** Bar width as a fraction of the gap to its neighbour, leaving a gutter between bars. */
 private const val BAR_WIDTH_FRACTION = 0.7f
+
+/** Two kinds of bar side by side in one slot: each this share of it, with a gap between. */
+private const val PAIRED_BAR_FRACTION = 0.4f
+private const val PAIRED_BAR_GAP = 1f
+
+/** The second kind lighter, so the one owning the axis reads first. */
+private const val OVERLAY_BAR_ALPHA = 0.45f
 
 /** Opacity of the min/max ribbon. Faint: it is context for the line, not a second line. */
 private const val RANGE_BAND_ALPHA = 0.18f

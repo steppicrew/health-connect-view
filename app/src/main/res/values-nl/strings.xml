@@ -468,6 +468,7 @@
     <string name="session_stat_max">max. %1$s</string>
     <string name="session_time_total">Totale tijd</string>
     <string name="session_time_moving">Tijd in beweging</string>
+    <string name="chart_training_time_whole">Tijd met pauzes</string>
     <string name="session_break">Pauze</string>
     <string name="session_breaks_note">De tijd in beweging laat elke stop zonder snelheids- of afstandsgegevens weg. Stops van meer dan vijf minuten staan als pauze vermeld, tellen niet mee in de waarden hierboven en zijn gemarkeerd in de hartslaggrafiek.</string>
     <string name="session_break_legend">Pauze: geen snelheid of afstand vastgelegd</string>
