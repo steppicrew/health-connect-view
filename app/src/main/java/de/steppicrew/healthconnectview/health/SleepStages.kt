@@ -31,6 +31,21 @@ fun stageKindOf(type: Int): StageKind? = when (type) {
     else -> null
 }
 
+/**
+ * The platform's own stage code as a CSV key, all eight kept apart: an export is what the
+ * writer stored, so the three waking codes drawn as one lane stay three here.
+ */
+fun stageCsv(type: Int): String = when (type) {
+    SleepSessionRecord.STAGE_TYPE_AWAKE -> "awake"
+    SleepSessionRecord.STAGE_TYPE_AWAKE_IN_BED -> "awake_in_bed"
+    SleepSessionRecord.STAGE_TYPE_OUT_OF_BED -> "out_of_bed"
+    SleepSessionRecord.STAGE_TYPE_REM -> "rem"
+    SleepSessionRecord.STAGE_TYPE_LIGHT -> "light"
+    SleepSessionRecord.STAGE_TYPE_DEEP -> "deep"
+    SleepSessionRecord.STAGE_TYPE_SLEEPING -> "sleeping"
+    else -> "unknown"
+}
+
 fun SleepSessionRecord.Stage.toSleepStage(): SleepStage? =
     stageKindOf(stage)?.let { SleepStage(startTime, endTime, it) }
 

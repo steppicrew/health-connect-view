@@ -22,12 +22,16 @@ import de.steppicrew.healthconnectview.health.pressureReport
 import de.steppicrew.healthconnectview.health.SESSION_MARGIN
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.recordsIn
+import de.steppicrew.healthconnectview.health.stageCsv
+import de.steppicrew.healthconnectview.health.stageKindOf
+import de.steppicrew.healthconnectview.ui.components.labelOf
 import de.steppicrew.healthconnectview.registry.DeviceKind
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.RecordingMethod
 import de.steppicrew.healthconnectview.registry.csv
 import de.steppicrew.healthconnectview.registry.readingContext
 import java.io.OutputStream
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
@@ -102,6 +106,27 @@ class Exporter(private val context: Context, private val repository: HealthRepos
                     points.forEach { point ->
                         writer.write(
                             Csv.line(fixed + listOf(Csv.time(point.time, zone), Csv.number(point.value), unit, words.orEmpty(), source) + provenance),
+                        )
+                        rows++
+                    }
+                }
+                // A night's stages under it, one row each, in the night's own unit; the stage
+                // in words and as the platform's code ("stage=deep") for a spreadsheet filter.
+                if (record is SleepSessionRecord) {
+                    record.stages.forEach { stage ->
+                        val label = stageKindOf(stage.stage)?.let { context.getString(labelOf(it)) }.orEmpty()
+                        writer.write(
+                            Csv.line(
+                                listOf(
+                                    Csv.time(stage.startTime, zone),
+                                    Csv.time(stage.endTime, zone),
+                                    Csv.time(stage.startTime, zone),
+                                    Csv.number(Math.round(Duration.between(stage.startTime, stage.endTime).toMinutes() / MINUTES_PER_HOUR * HOURS_ROUNDING) / HOURS_ROUNDING),
+                                    unit,
+                                    label,
+                                    source,
+                                ) + provenance.dropLast(1) + "stage=${stageCsv(stage.stage)}",
+                            ),
                         )
                         rows++
                     }
@@ -276,5 +301,11 @@ class Exporter(private val context: Context, private val repository: HealthRepos
          * do not need it skip it.
          */
         private const val BOM = "\uFEFF"
+
+        /** As the night's own row: whole minutes, so a night and its stages add up alike. */
+        private const val MINUTES_PER_HOUR = 60.0
+
+        /** Four decimals of an hour, a third of a second: 0.5667 h, not 0.5666666666666667. */
+        private const val HOURS_ROUNDING = 10_000.0
     }
 }
