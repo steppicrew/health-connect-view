@@ -1,1 +1,3 @@
+1.4.1 — Büyük antrenman kutucukları: sayı günün listesini, eğri kendi antrenmanını açar; iki antrenmanda her eğri kendi antrenmanını açar.
+
 1.4.0 — Yıl takvim olarak, her gün bir renk tonuyla, yıllık grafiklerin altında ve kutucukta (Pro). Doktorunuz için tansiyon, kilo, dinlenme nabzı ve kan şekerini içeren tek bir PDF (Pro). CSV dışa aktarmada uyku evreleri. Bir yıllık kalori bir saniyede yüklenir. Yeni kutucuk baktığınız yerde belirir.

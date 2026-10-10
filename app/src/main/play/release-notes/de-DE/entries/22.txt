@@ -1,0 +1,1 @@
+1.4.1 — Große Trainingskacheln: Die Anzahl öffnet die Liste des Tages, die Kurve ihr Training, und bei zwei Trainings öffnet jede Kurve ihr eigenes.

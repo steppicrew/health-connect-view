@@ -1,0 +1,1 @@
+1.4.1 — Grote trainingstegels: het aantal opent de lijst van de dag, de curve zijn training, en bij twee trainingen opent elke curve de eigen training.

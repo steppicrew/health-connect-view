@@ -1,0 +1,1 @@
+1.4.1 — Riquadri grandi degli allenamenti: il numero apre l’elenco del giorno, la curva il suo allenamento e, con due allenamenti, ogni curva apre il proprio.

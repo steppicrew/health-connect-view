@@ -1,0 +1,1 @@
+1.4.1 — Büyük antrenman kutucukları: sayı günün listesini, eğri kendi antrenmanını açar; iki antrenmanda her eğri kendi antrenmanını açar.

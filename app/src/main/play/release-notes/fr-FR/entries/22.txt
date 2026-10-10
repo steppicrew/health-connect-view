@@ -1,0 +1,1 @@
+1.4.1 — Grandes vignettes d’entraînement : le nombre ouvre la liste du jour, la courbe son entraînement, et avec deux entraînements chaque courbe ouvre le sien.

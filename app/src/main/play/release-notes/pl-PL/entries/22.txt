@@ -1,0 +1,1 @@
+1.4.1 — Duże kafelki treningów: liczba otwiera listę dnia, krzywa swój trening, a przy dwóch treningach każda krzywa otwiera własny.

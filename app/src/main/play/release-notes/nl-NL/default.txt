@@ -1,1 +1,3 @@
+1.4.1 — Grote trainingstegels: het aantal opent de lijst van de dag, de curve zijn training, en bij twee trainingen opent elke curve de eigen training.
+
 1.4.0 — Het jaar als kalender, één tint per dag, onder jaargrafieken en als tegelweergave (Pro). Eén pdf voor je arts met bloeddruk, gewicht, rusthartslag en bloedglucose (Pro). Slaapfasen in de CSV-export. Een jaar calorieën laadt in een seconde. Een nieuwe tegel verschijnt waar je kijkt.

@@ -1,0 +1,1 @@
+1.4.1 — Kartu latihan besar: angka membuka daftar hari itu, kurva membuka latihannya, dan dengan dua latihan setiap kurva membuka latihannya sendiri.

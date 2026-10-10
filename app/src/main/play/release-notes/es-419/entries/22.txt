@@ -1,0 +1,1 @@
+1.4.1 — Mosaicos grandes de entrenamientos: el número abre la lista del día, la curva su entrenamiento y, con dos entrenamientos, cada curva abre el suyo.
