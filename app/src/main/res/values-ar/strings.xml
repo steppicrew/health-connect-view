@@ -542,6 +542,11 @@
     <string name="session_recovery_2">نبض القلب بعد دقيقتين من الانتهاء</string>
     <string name="session_after_end">بعد الانتهاء</string>
     <string name="session_after_legend">بعد الخط المتقطع: الدقائق الأولى بعد الانتهاء.</string>
+    <string name="session_drift_title">النصف الأول والثاني</string>
+    <string name="session_drift_first">النصف الأول</string>
+    <string name="session_drift_second">النصف الثاني</string>
+    <string name="session_drift_per_distance">%1$s نبضة/%2$s</string>
+    <string name="session_drift_note">وقت الحركة، دون الاستراحات، مقسومًا إلى نصفين متساويين. المزيد من النبضات لكل كيلومتر بالسرعة نفسها يعني أن القلب عمل أكثر في النصف الثاني: بسبب الحرارة أو فقدان السوائل أو التعب، وأيضًا بسبب الصعود أو الرياح. الإحماء يقع في النصف الأول.</string>
     <string name="session_zones_note_data">المناطق من 50–60 %% إلى 90–100 %% من أقصى معدل لنبض القلب قدره %1$s، وهو الأعلى الذي بلغته في ثلاثة أشهر على الأقل خلال العام الماضي؛ ويمكنك تحديد قيمتك في الإعدادات.</string>
     <string name="session_zones_note_set">المناطق من 50–60 %% إلى 90–100 %% من أقصى معدل لنبض القلب قدره %1$s، كما حُدد في الإعدادات.</string>
     <string name="settings_max_hr">أقصى معدل لنبض القلب</string>

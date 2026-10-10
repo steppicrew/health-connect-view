@@ -520,6 +520,11 @@
     <string name="session_recovery_2">Tętno 2 min po zakończeniu</string>
     <string name="session_after_end">Po zakończeniu</string>
     <string name="session_after_legend">Za linią przerywaną: pierwsze minuty po zakończeniu.</string>
+    <string name="session_drift_title">Pierwsza i druga połowa</string>
+    <string name="session_drift_first">Pierwsza połowa</string>
+    <string name="session_drift_second">Druga połowa</string>
+    <string name="session_drift_per_distance">%1$s uderzeń/%2$s</string>
+    <string name="session_drift_note">Czas w ruchu, bez przerw, podzielony na dwie równe połowy. Więcej uderzeń na kilometr przy tej samej prędkości oznacza, że serce pracowało ciężej w drugiej połowie: przez ciepło, utratę płynów lub zmęczenie, ale też przez podjazdy lub wiatr. Rozgrzewka przypada na pierwszą połowę.</string>
     <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech miesiącach ostatniego roku; własne możesz ustawić w ustawieniach.</string>
     <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach.</string>
     <string name="settings_max_hr">Tętno maksymalne</string>

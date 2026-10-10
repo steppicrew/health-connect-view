@@ -498,6 +498,11 @@
     <string name="session_recovery_2">समाप्ति के 2 मिनट बाद हृदय गति</string>
     <string name="session_after_end">समाप्ति के बाद</string>
     <string name="session_after_legend">डैश वाली रेखा के बाद: समाप्ति के बाद के पहले मिनट।</string>
+    <string name="session_drift_title">पहला और दूसरा आधा</string>
+    <string name="session_drift_first">पहला आधा</string>
+    <string name="session_drift_second">दूसरा आधा</string>
+    <string name="session_drift_per_distance">%1$s धड़कनें/%2$s</string>
+    <string name="session_drift_note">चलने का समय, विरामों के बिना, दो बराबर हिस्सों में बाँटा गया। एक ही गति पर प्रति किलोमीटर ज़्यादा धड़कनों का मतलब है कि दूसरे आधे में दिल ने ज़्यादा काम किया: गर्मी, तरल की कमी या थकान से, लेकिन चढ़ाई या हवा से भी। वार्म-अप पहले आधे में आता है।</string>
     <string name="session_zones_note_data">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जो पिछले साल कम से कम तीन महीनों में पहुँची सबसे ऊँची हृदय गति है; आप सेटिंग में अपनी तय कर सकते हैं।</string>
     <string name="session_zones_note_set">ज़ोन %1$s की अधिकतम हृदय गति के 50–60 %% से 90–100 %% तक हैं, जैसा सेटिंग में तय किया गया है।</string>
     <string name="settings_max_hr">अधिकतम हृदय गति</string>

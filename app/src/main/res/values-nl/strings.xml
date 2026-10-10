@@ -498,6 +498,11 @@
     <string name="session_recovery_2">Hartslag 2 min na het einde</string>
     <string name="session_after_end">Na het einde</string>
     <string name="session_after_legend">Na de stippellijn: de eerste minuten na het einde.</string>
+    <string name="session_drift_title">Eerste en tweede helft</string>
+    <string name="session_drift_first">Eerste helft</string>
+    <string name="session_drift_second">Tweede helft</string>
+    <string name="session_drift_per_distance">%1$s slagen/%2$s</string>
+    <string name="session_drift_note">De tijd in beweging, zonder pauzes, in twee even lange helften gedeeld. Meer slagen per kilometer bij dezelfde snelheid betekent dat je hart in de tweede helft harder werkte: door warmte, vochtverlies of vermoeidheid, maar ook door hellingen of wind. De warming-up valt in de eerste helft.</string>
     <string name="session_zones_note_data">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, de hoogste die in minstens drie maanden van het afgelopen jaar werd bereikt; je kunt je eigen instellen in de instellingen.</string>
     <string name="session_zones_note_set">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, zoals ingesteld.</string>
     <string name="settings_max_hr">Maximale hartslag</string>

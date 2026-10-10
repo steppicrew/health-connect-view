@@ -541,8 +541,14 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     workout, and the change after one and two minutes is given only where a reading lies
     within 10 s of the end and of each minute. Readings after a workout that is followed by
     another within minutes are the next one's warm-up; not filtered.
-60. [ ] **Heart-rate drift** -- heart rate against speed or power, first half against second,
-    the two figures side by side and no grade.
+60. [x] **Heart-rate drift** -- heart rate against speed or power, first half against second,
+    the two figures side by side and no grade. Built 10.10.2026 (`health/Drift.kt`): the
+    moving time, breaks left out, cut in two equal halves; each shows its mean heart rate and
+    speed and the heartbeats per kilometre, with a note naming warmth, lost fluid and tiredness
+    but also climbs and wind, and the warm-up in the first half. Only with speed through the
+    workout and 20 min moving: on the phone the indoor bike and the power meter write one
+    summary value per workout, too little to halve, so power is not used. Checked on the
+    phone on a ride: 133 bpm at 22.2 km/h (359/km) against 138 at 21.7 (382/km).
 61. [ ] **Compare: offer what is on screen** -- the picker lists only types with data in the
     window shown, related ones first (body composition with weight).
 62. [ ] **Compare: one chart for one unit** -- weight, body water and bone mass on one scale

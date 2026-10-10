@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.ui.session
 
 import androidx.compose.foundation.layout.height
 import de.steppicrew.healthconnectview.health.AFTER_END
+import de.steppicrew.healthconnectview.health.Drift
 import de.steppicrew.healthconnectview.health.HeartZones
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.ui.geometry.Size
@@ -239,6 +240,11 @@ private fun SessionContent(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        // Above the zones, which arrive after the rest of the page and so move nothing here.
+        detail.drift?.let { drift ->
+            Section(stringResource(R.string.session_drift_title))
+            Halves(drift, detail.heartRateUnitRes)
         }
         detail.heartZones?.let { zones ->
             Section(stringResource(R.string.session_zones_title))
@@ -619,6 +625,37 @@ private fun loadSum(zones: HeartZones): String {
             Formatting.number(time.toMinutes().toDouble()) + " × " + Formatting.number((index + 1).toDouble())
         }
     return "\u2066" + terms.ifEmpty { Formatting.number(0.0) } + "\u2069"
+}
+
+/**
+ * Heart rate against speed in each half of the moving time, with heartbeats per kilometre (or
+ * mile) as the one figure that compares them. No grade: a climb or a headwind raises it as
+ * much as tiredness does, and the note says so.
+ */
+@Composable
+private fun Halves(drift: Drift, heartRateUnitRes: Int?) {
+    val beatsUnit = heartRateUnitRes?.let { " " + stringResource(it) } ?: ""
+    val speedUnit = Quantity.SPEED
+    val distanceUnit = Quantity.DISTANCE
+    listOf(R.string.session_drift_first to drift.first, R.string.session_drift_second to drift.second)
+        .forEach { (label, half) ->
+            StatRow(
+                label = stringResource(label),
+                value = Formatting.number(half.heartRate, 0) + beatsUnit + " · " +
+                    Formatting.number(speedUnit.convert(half.speed * MS_TO_KMH), 1) + " " + speedUnit.symbol(),
+                detail = stringResource(
+                    R.string.session_drift_per_distance,
+                    // Per mile where miles are shown: a mile holds more beats than a kilometre.
+                    Formatting.number(half.beatsPerKm / distanceUnit.convert(1.0), 0),
+                    distanceUnit.symbol(),
+                ),
+            )
+        }
+    Text(
+        text = stringResource(R.string.session_drift_note),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 /**

@@ -531,6 +531,11 @@
     <string name="session_recovery_2">Heart rate 2 min after the end</string>
     <string name="session_after_end">After the end</string>
     <string name="session_after_legend">Past the dashed line: the first minutes after the end.</string>
+    <string name="session_drift_title">First and second half</string>
+    <string name="session_drift_first">First half</string>
+    <string name="session_drift_second">Second half</string>
+    <string name="session_drift_per_distance">%1$s beats/%2$s</string>
+    <string name="session_drift_note">The moving time, without breaks, cut into two halves of equal length. More beats per kilometre at the same speed means the heart worked harder in the second half: warmth, lost fluid or tiredness, but also climbs or wind. The warm-up falls into the first half.</string>
     <string name="session_zones_note_data">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, the highest reached in at least three months of the past year; you can set your own in settings.</string>
     <string name="session_zones_note_set">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, as set in settings.</string>
     <string name="settings_max_hr">Maximum heart rate</string>

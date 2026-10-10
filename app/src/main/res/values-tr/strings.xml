@@ -498,6 +498,11 @@
     <string name="session_recovery_2">Bitişten 2 dk sonra nabız</string>
     <string name="session_after_end">Bitişten sonra</string>
     <string name="session_after_legend">Kesikli çizginin ötesi: bitişten sonraki ilk dakikalar.</string>
+    <string name="session_drift_title">İlk ve ikinci yarı</string>
+    <string name="session_drift_first">İlk yarı</string>
+    <string name="session_drift_second">İkinci yarı</string>
+    <string name="session_drift_per_distance">%1$s atım/%2$s</string>
+    <string name="session_drift_note">Molalar hariç hareket süresi, eşit uzunlukta iki yarıya bölündü. Aynı hızda kilometre başına daha fazla atım, kalbin ikinci yarıda daha çok çalıştığı anlamına gelir: sıcaklık, sıvı kaybı ya da yorgunluk nedeniyle, ama yokuşlar ya da rüzgâr nedeniyle de. Isınma ilk yarıya düşer.</string>
     <string name="session_zones_note_data">Bölgeler, son bir yılda en az üç ayda ulaşılan en yüksek nabız olan %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlardan kendi değerinizi belirleyebilirsiniz.</string>
     <string name="session_zones_note_set">Bölgeler, ayarlarda belirlenen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır.</string>
     <string name="settings_max_hr">Maksimum nabız</string>

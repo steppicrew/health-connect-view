@@ -487,6 +487,11 @@
     <string name="session_recovery_2">종료 2분 후 심박수</string>
     <string name="session_after_end">종료 후</string>
     <string name="session_after_legend">점선 이후: 종료 후 처음 몇 분입니다.</string>
+    <string name="session_drift_title">전반과 후반</string>
+    <string name="session_drift_first">전반</string>
+    <string name="session_drift_second">후반</string>
+    <string name="session_drift_per_distance">%1$s회/%2$s</string>
+    <string name="session_drift_note">휴식을 뺀 움직인 시간을 같은 길이의 두 부분으로 나눴습니다. 같은 속도에서 킬로미터당 심박이 더 많다면 후반에 심장이 더 많이 일했다는 뜻입니다. 더위, 수분 손실, 피로 때문일 수도 있고 오르막이나 바람 때문일 수도 있습니다. 워밍업은 전반에 포함됩니다.</string>
     <string name="session_zones_note_data">구간은 최대 심박수 %1$s의 50–60 %%에서 90–100 %%까지입니다. 최대 심박수는 지난 1년 동안 최소 3개월 동안 도달한 가장 높은 값이며, 설정에서 직접 지정할 수 있습니다.</string>
     <string name="session_zones_note_set">구간은 설정에서 지정한 최대 심박수 %1$s의 50–60 %%에서 90–100 %%까지입니다.</string>
     <string name="settings_max_hr">최대 심박수</string>

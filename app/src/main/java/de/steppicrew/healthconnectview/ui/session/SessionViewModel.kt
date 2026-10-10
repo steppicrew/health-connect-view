@@ -15,6 +15,9 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.HeartZones
 import de.steppicrew.healthconnectview.health.Recovery
+import de.steppicrew.healthconnectview.health.Drift
+import de.steppicrew.healthconnectview.health.activePieces
+import de.steppicrew.healthconnectview.health.driftOf
 import de.steppicrew.healthconnectview.health.recoveryOf
 import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.heartZones
@@ -78,6 +81,8 @@ data class SessionDetail(
     /** A workout's heart rate in the minutes after it, drawn on past its end; null for a night. */
     val heartRateAfter: List<Point>? = null,
     val recovery: Recovery? = null,
+    /** A workout's heart rate against its speed, first half against second; null without both. */
+    val drift: Drift? = null,
 )
 
 /**
@@ -197,6 +202,11 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             heartZones = heartZones,
             heartRateAfter = after.await(),
             recovery = after.await()?.let { recoveryOf(it, session.end) },
+            drift = heartPoints?.let { beats ->
+                speed.await()?.let { pace ->
+                    driftOf(beats, pace, activePieces(session.start, session.end, movement.await()?.breaks.orEmpty()))
+                }
+            },
         )
         currentCoroutineContext().ensureActive()
         UiState.Data(detail)
