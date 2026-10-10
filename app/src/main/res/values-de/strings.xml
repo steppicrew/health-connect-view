@@ -759,6 +759,7 @@
     <string name="compare_swap">Reihenfolge tauschen</string>
     <string name="compare_none">Keine Werte in diesem Zeitraum</string>
     <string name="compare_note">Zwei Diagramme auf einer Zeitachse, jedes mit eigener Skala. Dass sich zwei Werte gemeinsam bewegen, heißt nicht, dass einer den anderen verursacht.</string>
+    <string name="compare_note_shared">Beide in derselben Einheit, auf einer Skala. Dass sich zwei Werte gemeinsam bewegen, heißt nicht, dass einer den anderen verursacht.</string>
     <string name="insights_title">Veränderungen dieser Woche</string>
     <string name="insights_open_body">Die letzten 7 Tage jedes Typs gegen sein 30-Tage-Mittel</string>
     <string name="insight_above">Letzte 7 Tage %1$s über dem 30-Tage-Mittel</string>

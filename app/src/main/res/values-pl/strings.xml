@@ -809,6 +809,7 @@
     <string name="compare_swap">Zamień kolejność</string>
     <string name="compare_none">Brak wartości w tym okresie</string>
     <string name="compare_note">Dwa wykresy na jednej osi czasu, każdy z własną skalą. To, że dwie wartości zmieniają się razem, nie znaczy, że jedna powoduje drugą.</string>
+    <string name="compare_note_shared">Oba w tej samej jednostce, na jednej skali. To, że dwie wartości zmieniają się razem, nie znaczy, że jedna powoduje drugą.</string>
     <string name="insights_title">Zmiany w tym tygodniu</string>
     <string name="insights_open_body">Ostatnie 7 dni każdego typu wobec jego średniej z 30 dni</string>
     <string name="insight_above">Ostatnie 7 dni: %1$s powyżej średniej z 30 dni</string>

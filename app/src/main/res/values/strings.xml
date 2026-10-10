@@ -793,6 +793,7 @@
     <string name="compare_swap">Swap order</string>
     <string name="compare_none">No values in this period</string>
     <string name="compare_note">Two charts on one time axis, each with its own scale. Two values moving together does not mean that one causes the other.</string>
+    <string name="compare_note_shared">Both in the same unit, on one scale. Two values moving together does not mean that one causes the other.</string>
     <string name="insights_title">Changes this week</string>
     <string name="insights_open_body">Every type\'s last 7 days against its 30-day average</string>
     <string name="insight_above">Last 7 days %1$s above the 30-day average</string>

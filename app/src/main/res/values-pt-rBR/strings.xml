@@ -784,6 +784,7 @@
     <string name="compare_swap">Inverter a ordem</string>
     <string name="compare_none">Nenhum valor neste período</string>
     <string name="compare_note">Dois gráficos no mesmo eixo de tempo, cada um com sua própria escala. Dois valores que mudam juntos não significam que um causa o outro.</string>
+    <string name="compare_note_shared">Ambos na mesma unidade, em uma só escala. Dois valores que mudam juntos não significam que um cause o outro.</string>
     <string name="insights_title">Mudanças desta semana</string>
     <string name="insights_open_body">Os últimos 7 dias de cada tipo em relação à média de 30 dias</string>
     <string name="insight_above">Últimos 7 dias: %1$s acima da média de 30 dias</string>

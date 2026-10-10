@@ -734,6 +734,7 @@
     <string name="compare_swap">Tukar urutan</string>
     <string name="compare_none">Tidak ada nilai pada periode ini</string>
     <string name="compare_note">Dua grafik pada satu sumbu waktu, masing-masing dengan skalanya sendiri. Dua nilai yang bergerak bersama tidak berarti yang satu menyebabkan yang lain.</string>
+    <string name="compare_note_shared">Keduanya dalam satuan yang sama, pada satu skala. Dua nilai yang bergerak bersama tidak berarti yang satu menyebabkan yang lain.</string>
     <string name="insights_title">Perubahan minggu ini</string>
     <string name="insights_open_body">7 hari terakhir setiap jenis dibandingkan rata-rata 30 harinya</string>
     <string name="insight_above">7 hari terakhir %1$s di atas rata-rata 30 hari</string>

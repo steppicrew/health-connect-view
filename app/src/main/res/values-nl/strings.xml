@@ -759,6 +759,7 @@
     <string name="compare_swap">Volgorde omwisselen</string>
     <string name="compare_none">Geen waarden in deze periode</string>
     <string name="compare_note">Twee grafieken op één tijdas, elk met een eigen schaal. Dat twee waarden samen bewegen, betekent niet dat de ene de andere veroorzaakt.</string>
+    <string name="compare_note_shared">Beide in dezelfde eenheid, op één schaal. Dat twee waarden samen bewegen, betekent niet dat de ene de andere veroorzaakt.</string>
     <string name="insights_title">Veranderingen deze week</string>
     <string name="insights_open_body">De laatste 7 dagen van elk type tegenover het 30-daagse gemiddelde</string>
     <string name="insight_above">Laatste 7 dagen %1$s boven het 30-daagse gemiddelde</string>

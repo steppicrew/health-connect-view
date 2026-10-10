@@ -734,6 +734,7 @@
     <string name="compare_swap">順序を入れ替え</string>
     <string name="compare_none">この期間の値はありません</string>
     <string name="compare_note">1つの時間軸に2つのグラフ（目盛りはそれぞれ独自）。2つの値が一緒に動いても、一方が他方の原因とは限りません。</string>
+    <string name="compare_note_shared">どちらも同じ単位で、1つの目盛りに表示しています。2つの値が一緒に動いても、一方が他方の原因とは限りません。</string>
     <string name="insights_title">今週の変化</string>
     <string name="insights_open_body">各種類の直近7日間と30日間の平均との比較</string>
     <string name="insight_above">直近7日間は30日間の平均より%1$s高い</string>

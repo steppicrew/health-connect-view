@@ -734,6 +734,7 @@
     <string name="compare_swap">交换顺序</string>
     <string name="compare_none">此期间没有数值</string>
     <string name="compare_note">两个图表共用一条时间轴，各有自己的刻度。两个数值一起变化并不意味着其中一个导致了另一个。</string>
+    <string name="compare_note_shared">两者单位相同，共用一个刻度。两个数值一起变化，并不代表其中一个导致了另一个。</string>
     <string name="insights_title">本周变化</string>
     <string name="insights_open_body">每种类型最近 7 天与其 30 天平均值的对比</string>
     <string name="insight_above">最近 7 天比 30 天平均值高 %1$s</string>
