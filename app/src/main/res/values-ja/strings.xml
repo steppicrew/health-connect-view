@@ -456,6 +456,7 @@
     <string name="session_stat_max">最高 %1$s</string>
     <string name="session_time_total">合計時間</string>
     <string name="session_time_moving">移動時間</string>
+    <string name="chart_training_time_whole">休憩を含む時間</string>
     <string name="session_break">休憩</string>
     <string name="session_breaks_note">移動時間には、速度や距離のデータがない停止を含めていません。5分を超える停止は休憩として表示し、上の数値から除外して、心拍数グラフでは網掛けで示しています。</string>
     <string name="session_break_legend">休憩：速度・距離の記録なし</string>

@@ -588,9 +588,15 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     weight, water and bone on one kg axis flatten every change). The body composition screen
     is smoothed too, and a value read on one of its charts shows on all of them, as on the
     compare screen. Both checked on the phone.
-65. [ ] **Training time behind the session count** -- the owner's idea, 09.10.2026: across days
+65. [x] **Training time behind the session count** -- the owner's idea, 09.10.2026: across days
     the workouts screen shows sessions per day; add each day's moving time as a faint bar on a
-    second scale. Built with step 54, which brings the second scale.
+    second scale. Built with step 54, which brings the second scale. Built 10.10.2026 with the
+    chips of step 54, the owner's choice: "Trainings" and "In Bewegung", the chip tapped last
+    owning the labelled axis, the other on its own unlabelled scale and read by touch. Drawn
+    side by side in each slot, the second lighter: behind the count, a shorter time bar
+    vanished wherever it was lower, which across a year was nearly everywhere. Moving time
+    over a week or four; across a year whole durations ("Zeit mit Pausen"), since reading
+    every workout's movement there is hundreds of reads.
 
 Before the next release, from the owner, 09.10.2026:
 

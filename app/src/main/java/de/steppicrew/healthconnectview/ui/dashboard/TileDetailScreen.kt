@@ -133,6 +133,10 @@ import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.compare.CompareTypeDialog
+import kotlin.math.roundToLong
+import de.steppicrew.healthconnectview.ui.components.SeriesColors
+import de.steppicrew.healthconnectview.ui.components.MultiLineChart
+import de.steppicrew.healthconnectview.ui.components.ChartSeries
 import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.DotText
@@ -985,7 +989,11 @@ private fun SpanSummary(
                 rangeBand = data.usualBand.ifEmpty { data.rangeBand },
             )
             // Zoomed, the list below follows the stretch on screen.
-            ExpandableDataChart(shown, period, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
+            if (shown.sessionCounts && shown.points.size > 1 && shown.timePoints.size > 1) {
+                WorkoutCountAndTime(shown, period, Modifier.padding(top = 16.dp))
+            } else {
+                ExpandableDataChart(shown, period, Modifier.padding(top = 16.dp), onVisibleRange = onVisibleRange)
+            }
             Text(
                 text = stringResource(
                     when {
@@ -1248,6 +1256,63 @@ private fun ChartLegend(data: TileDetailData) {
         }
     }
 }
+
+/**
+ * Workouts across days: the count per day or week, and the training time behind it -- the
+ * owner's idea, 09.10.2026. A chip each, as on a workout's chart: the one tapped last owns the
+ * labelled axis, the other stands beside it as lighter bars on its own unlabelled scale, and
+ * a touch reads both. Moving time where breaks were worked out, whole durations across a year.
+ */
+@Composable
+private fun WorkoutCountAndTime(data: TileDetailData, period: String, modifier: Modifier) {
+    val countLabel = stringResource(R.string.type_exercise_session)
+    val timeLabel = stringResource(if (data.timeMoving) R.string.session_time_moving else R.string.chart_training_time_whole)
+    ExpandableChart(chartTitle(stringResource(data.spec.displayNameRes), null, period)) { expanded, onExpand ->
+        MultiLineChart(
+            chartId = WORKOUT_TIME_CHART,
+            series = listOf(
+                ChartSeries(
+                    key = LINE_COUNT,
+                    label = countLabel,
+                    points = data.points,
+                    color = SeriesColors.blue(),
+                    unitKey = LINE_COUNT,
+                    integral = true,
+                    bars = true,
+                ),
+                ChartSeries(
+                    key = LINE_TIME,
+                    label = timeLabel,
+                    points = data.timePoints,
+                    color = SeriesColors.orange(),
+                    unitKey = LINE_TIME,
+                    bars = true,
+                    valueText = ::hoursText,
+                ),
+            ),
+            defaultShown = listOf(LINE_COUNT, LINE_TIME),
+            dateOnly = true,
+            fillHeight = expanded,
+            onExpand = onExpand,
+            holdSelection = expanded,
+            modifier = if (expanded) Modifier.fillMaxSize() else modifier,
+        )
+    }
+}
+
+/** A time in hours as the axis and readout write it: "8h 33m", and a whole "30h" or "0" plain. */
+private fun hoursText(hours: Double): String {
+    val minutes = (hours * MINUTES_PER_HOUR).roundToLong()
+    return when {
+        minutes == 0L -> "0"
+        minutes % MINUTES_PER_HOUR == 0L -> "${minutes / MINUTES_PER_HOUR}h"
+        else -> Formatting.duration(Duration.ofMinutes(minutes))
+    }
+}
+
+private const val WORKOUT_TIME_CHART = "workouts_count_time"
+private const val LINE_COUNT = "count"
+private const val LINE_TIME = "time"
 
 /** The strip of training days and its legend swatch: the exercise bands' hue, solid enough to see at 8 dp. */
 @Composable

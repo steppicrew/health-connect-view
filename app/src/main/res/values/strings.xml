@@ -499,6 +499,7 @@
     <string name="session_stat_max">max %1$s</string>
     <string name="session_time_total">Total time</string>
     <string name="session_time_moving">Time moving</string>
+    <string name="chart_training_time_whole">Time incl. breaks</string>
     <string name="session_break">Break</string>
     <string name="session_breaks_note">Time moving leaves out every stop without speed or distance readings. Stops of more than five minutes are listed as breaks, left out of the figures above and shaded on the heart-rate chart.</string>
     <string name="session_break_legend">Break: no speed or distance recorded</string>

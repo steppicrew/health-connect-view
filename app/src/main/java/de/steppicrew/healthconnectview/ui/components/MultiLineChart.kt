@@ -72,6 +72,10 @@ data class ChartSeries(
      * coloured zones, which on a wrist sensor's noisy night would read as a diagnosis.
      */
     val reference: ReferenceRange? = null,
+    /** Bars rather than a line: a count or a time per day. Beside another kind, in half its slot. */
+    val bars: Boolean = false,
+    /** How a value is written where a number and unit would be wrong: a time as "1h 35m". */
+    val valueText: ((Double) -> String)? = null,
 )
 
 /**
@@ -103,6 +107,8 @@ fun MultiLineChart(
     /** See [LineChart]: a night's stages along the bottom, named in the readout. */
     strip: List<StripSegment> = emptyList(),
     stripLabel: ((Instant) -> String?)? = null,
+    /** See [LineChart]: a day's or week's value is read by its date, without "00:00". */
+    dateOnly: Boolean = false,
 ) {
     val available = series.filter { it.points.size > 1 }
     if (available.isEmpty()) return
@@ -139,6 +145,8 @@ fun MultiLineChart(
             LineChart(
                 points = primary.points,
                 smooth = false,
+                bars = primary.bars,
+                valueText = primary.valueText,
                 unitRes = primary.unitRes,
                 unitText = primary.unitText,
                 valueDecimals = primary.valueDecimals,
@@ -157,17 +165,19 @@ fun MultiLineChart(
                 holdSelection = holdSelection,
                 strip = strip,
                 stripLabel = stripLabel,
+                dateOnly = dateOnly,
                 overlays = others.mapIndexed { index, line ->
                     OverlayLine(
                         points = line.points,
                         color = line.color,
-                        format = { value ->
+                        format = line.valueText ?: { value ->
                             Formatting.number(value, line.valueDecimals) + (units[index]?.let { " $it" } ?: "")
                         },
                         sharesScale = line.unitKey == primary.unitKey,
                         maxGap = line.maxGap,
                         dots = line.dots,
                         minSpan = line.minSpan,
+                        bars = line.bars,
                     )
                 },
             )

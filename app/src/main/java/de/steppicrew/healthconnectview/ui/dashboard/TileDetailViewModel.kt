@@ -171,6 +171,13 @@ data class TileDetailData(
     val trainingDays: Set<LocalDate> = emptySet(),
     /** Resting heart rate across days: the night's lowest after training days and rest days. */
     val trainingNights: TrainingNights? = null,
+    /**
+     * Workouts across days: each bucket's training time in hours, at the same times as the
+     * counts in [points], for the lighter bars beside them. Empty everywhere else.
+     */
+    val timePoints: List<Point> = emptyList(),
+    /** Whether [timePoints] is moving time, breaks left out; across a year it is whole durations. */
+    val timeMoving: Boolean = true,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
     /**

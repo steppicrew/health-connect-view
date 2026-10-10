@@ -462,6 +462,7 @@
     <string name="session_stat_max">max. %1$s</string>
     <string name="session_time_total">Gesamtzeit</string>
     <string name="session_time_moving">In Bewegung</string>
+    <string name="chart_training_time_whole">Zeit mit Pausen</string>
     <string name="session_break">Pause</string>
     <string name="session_breaks_note">Die Zeit in Bewegung lässt jeden Halt ohne Geschwindigkeits- oder Distanzwerte aus. Halte von mehr als fünf Minuten sind als Pause aufgeführt, in den Werten oben nicht enthalten und in der Herzfrequenzkurve hinterlegt.</string>
     <string name="session_break_legend">Pause: keine Geschwindigkeit oder Distanz aufgezeichnet</string>

@@ -468,6 +468,7 @@
     <string name="session_stat_max">en yüksek %1$s</string>
     <string name="session_time_total">Toplam süre</string>
     <string name="session_time_moving">Hareket süresi</string>
+    <string name="chart_training_time_whole">Molalar dahil süre</string>
     <string name="session_break">Mola</string>
     <string name="session_breaks_note">Hareket süresi, hız veya mesafe verisi olmayan her duruşu dışarıda bırakır. Beş dakikadan uzun duruşlar mola olarak listelenir, yukarıdaki değerlere katılmaz ve nabız grafiğinde gölgeli gösterilir.</string>
     <string name="session_break_legend">Mola: hız veya mesafe kaydedilmedi</string>
