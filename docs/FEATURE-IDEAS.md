@@ -45,6 +45,9 @@ Picked by the owner on 07.10.2026 from a list of ideas, alongside goal streaks (
 
 ## From the list of 07.10.2026, not picked first
 
+*Moved to the plan on 10.10.2026* (`ROADMAP.md`, steps 73-82); the reminder and the widget are
+deferred (`ROADMAP.md` §19). Kept here for the scores.
+
 Ideas from the same list; recorded so they are not lost, not ranked. Scores are from that list
 (out of 10), which weighed value against cost and risk.
 
