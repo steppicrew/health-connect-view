@@ -417,6 +417,17 @@
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valeur du jour</string>
     <string name="legend_rolling_mean">Moyenne sur 4 semaines</string>
+    <string name="training_nights_title">Fréquence cardiaque la plus basse la nuit</string>
+    <string name="training_nights_after_training">Après un jour d\'entraînement</string>
+    <string name="training_nights_after_rest">Après un jour de repos</string>
+    <string name="training_nights_too_few">Trop peu de nuits</string>
+    <string name="training_nights_note">La fréquence cardiaque la plus basse de chaque nuit pendant le sommeil, en moyenne sur les nuits suivant un jour avec au moins 20 minutes d\'entraînement et sur les nuits suivant un jour sans. Chaque groupe doit compter au moins trois nuits. Une maladie, l\'alcool ou un repas tardif modifient aussi la nuit. Que deux valeurs évoluent ensemble ne signifie pas que l\'une cause l\'autre.</string>
+    <string name="legend_training_days">Entraînement de 20 min ou plus</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Moyenne de %1$d nuit</item>
+        <item quantity="many">Moyenne de %1$d nuits</item>
+        <item quantity="other">Moyenne de %1$d nuits</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Afficher la moyenne sur 4 semaines</string>
 
     <!-- Permissions screen -->

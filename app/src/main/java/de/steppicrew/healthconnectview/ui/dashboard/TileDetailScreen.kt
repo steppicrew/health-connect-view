@@ -101,6 +101,7 @@ import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.TrainingNights
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
@@ -132,6 +133,7 @@ import de.steppicrew.healthconnectview.registry.segmentAtGaps
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.ui.UiState
 import de.steppicrew.healthconnectview.ui.compare.CompareTypeDialog
+import de.steppicrew.healthconnectview.ui.components.StripSegment
 import de.steppicrew.healthconnectview.ui.components.AppIcon
 import de.steppicrew.healthconnectview.ui.components.DotText
 import de.steppicrew.healthconnectview.ui.components.ExpandableChart
@@ -1080,6 +1082,7 @@ private fun SpanSummary(
         // Under the chart, not beside the total: they are read after it (a streak reaching
         // back a year took 12.5 s), and arriving above it pushed the chart a quarter of the
         // screen down while it was being looked at.
+        data.trainingNights?.let { TrainingNightsSection(it, data.spec.displayUnitRes) }
         data.streak?.let { StreakExplanation(it, active = data.spec.tile.form == TileSpec.Form.SESSIONS) }
         data.trend?.let { TrendExplanation(it, data.spec.displayUnitRes, data.spec.valueDecimals) }
         data.record?.let { RecordExplanation(it, data.spec) }
@@ -1153,7 +1156,8 @@ private fun ChartLegend(data: TileDetailData) {
     // nothing. The sleep timeline is exactly that case: a single band, reported as
     // unexplained, which the "more than one entry" rule would have gone on suppressing.
     val reference = data.spec.tile.referenceRange
-    val bandShown = sleepShown || exerciseShown || data.rangeBand.isNotEmpty() || reference != null
+    val trainingShown = data.trainingDays.isNotEmpty()
+    val bandShown = sleepShown || exerciseShown || trainingShown || data.rangeBand.isNotEmpty() || reference != null
     val entries = (if (seriesLabel != null) 1 else 0) +
         (if (stacked) data.stackLabels.size else 0) +
         listOf(
@@ -1161,6 +1165,7 @@ private fun ChartLegend(data: TileDetailData) {
             reference != null,
             sleepShown,
             exerciseShown,
+            trainingShown,
             data.goal != null,
             data.nightPoints.isNotEmpty(),
             data.baseline.isNotEmpty(),
@@ -1238,8 +1243,57 @@ private fun ChartLegend(data: TileDetailData) {
         if (data.goal != null) {
             LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
         }
+        if (trainingShown) {
+            LegendEntry(color = trainingColor(), label = R.string.legend_training_days)
+        }
     }
 }
+
+/** The strip of training days and its legend swatch: the exercise bands' hue, solid enough to see at 8 dp. */
+@Composable
+private fun trainingColor(): Color = MaterialTheme.colorScheme.tertiary.copy(alpha = TRAINING_ALPHA)
+
+/**
+ * The night's lowest heart rate after training days against rest days, side by side with the
+ * number of nights behind each. No verdict: a higher low after training is common, and the
+ * note names what else moves it.
+ */
+@Composable
+private fun TrainingNightsSection(split: TrainingNights, @StringRes unitRes: Int?) {
+    val unit = unitRes?.let { " " + stringResource(it) }.orEmpty()
+    InfoGroup {
+        Text(stringResource(R.string.training_nights_title), style = MaterialTheme.typography.titleSmall)
+        listOf(
+            R.string.training_nights_after_training to split.afterTraining,
+            R.string.training_nights_after_rest to split.afterRest,
+        ).forEach { (label, group) ->
+            Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.Top) {
+                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = group?.let { Formatting.number(it.meanLow, 0) + unit } ?: "–",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = group?.let { pluralStringResource(R.plurals.training_nights_count, it.nights, it.nights) }
+                            ?: stringResource(R.string.training_nights_too_few),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+        Text(
+            text = stringResource(R.string.training_nights_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+    }
+}
+
+private val HALF_DAY: Duration = Duration.ofHours(12)
+private const val TRAINING_ALPHA = 0.7f
 
 /**
  * The window's series as a chart, drawn the same wherever it appears.
@@ -1299,6 +1353,13 @@ internal fun DataLineChart(
         },
         scatter = data.nightPoints,
         baseline = data.baseline,
+        // Each training day centred on its point, as the day's value sits at its start.
+        strip = trainingColor().let { color ->
+            data.trainingDays.map { day ->
+                val point = day.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+                StripSegment(point.minus(HALF_DAY), point.plus(HALF_DAY), color)
+            }
+        },
         onVisibleRange = onVisibleRange,
         onExpand = onExpand,
         holdSelection = holdSelection,

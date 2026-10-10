@@ -417,6 +417,17 @@
     <string name="span_total">Total</string>
     <string name="span_daily_value">Valor do dia</string>
     <string name="legend_rolling_mean">Média de 4 semanas</string>
+    <string name="training_nights_title">Frequência cardíaca mais baixa à noite</string>
+    <string name="training_nights_after_training">Depois de um dia de treino</string>
+    <string name="training_nights_after_rest">Depois de um dia de descanso</string>
+    <string name="training_nights_too_few">Poucas noites</string>
+    <string name="training_nights_note">A frequência cardíaca mais baixa de cada noite durante o sono, em média nas noites após um dia com pelo menos 20 minutos de treino e nas noites após um dia sem treino. Cada grupo precisa de pelo menos três noites. Doença, álcool ou uma refeição tardia também mudam a noite. Dois valores que mudam juntos não significam que um cause o outro.</string>
+    <string name="legend_training_days">Treino de 20 min ou mais</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Média de %1$d noite</item>
+        <item quantity="many">Média de %1$d noites</item>
+        <item quantity="other">Média de %1$d noites</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Mostrar média de 4 semanas</string>
 
     <!-- Permissions screen -->

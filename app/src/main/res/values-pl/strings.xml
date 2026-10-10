@@ -426,6 +426,18 @@
     <string name="span_total">Łącznie</string>
     <string name="span_daily_value">Wartość dnia</string>
     <string name="legend_rolling_mean">Średnia 4-tygodniowa</string>
+    <string name="training_nights_title">Najniższe tętno w nocy</string>
+    <string name="training_nights_after_training">Po dniu treningowym</string>
+    <string name="training_nights_after_rest">Po dniu odpoczynku</string>
+    <string name="training_nights_too_few">Za mało nocy</string>
+    <string name="training_nights_note">Najniższe tętno każdej nocy podczas snu, uśrednione dla nocy po dniu z co najmniej 20 minutami treningu i dla nocy po dniu bez treningu. Każda grupa potrzebuje co najmniej trzech nocy. Choroba, alkohol czy późny posiłek też zmieniają noc. To, że dwie wartości zmieniają się razem, nie znaczy, że jedna powoduje drugą.</string>
+    <string name="legend_training_days">Trening od 20 min</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Średnia z %1$d nocy</item>
+        <item quantity="few">Średnia z %1$d nocy</item>
+        <item quantity="many">Średnia z %1$d nocy</item>
+        <item quantity="other">Średnia z %1$d nocy</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Pokaż średnią 4-tygodniową</string>
 
     <!-- Permissions screen -->

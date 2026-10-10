@@ -76,6 +76,14 @@ import de.steppicrew.healthconnectview.health.SourceCoverage
 import de.steppicrew.healthconnectview.health.sourceCoverage
 import de.steppicrew.healthconnectview.health.PersonalRecord
 import kotlinx.coroutines.delay
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
+import de.steppicrew.healthconnectview.health.MIN_TRAINING
+import de.steppicrew.healthconnectview.health.TrainingNights
+import de.steppicrew.healthconnectview.health.nightsByMorning
+import de.steppicrew.healthconnectview.health.sessionsIn
+import de.steppicrew.healthconnectview.health.splitByTraining
+import de.steppicrew.healthconnectview.health.trainingDays
 import java.time.Instant
 import java.time.LocalDate
 
@@ -156,6 +164,13 @@ data class TileDetailData(
     val streak: StreakSummary? = null,
     /** The type's best over the year before today, where it has one. See [RecordKind]. */
     val record: PersonalRecord? = null,
+    /**
+     * Days with a workout of [MIN_TRAINING] or more, marked along the bottom of a resting heart
+     * rate or HRV chart across days ([marksTraining]); empty everywhere else.
+     */
+    val trainingDays: Set<LocalDate> = emptySet(),
+    /** Resting heart rate across days: the night's lowest after training days and rest days. */
+    val trainingNights: TrainingNights? = null,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
     /**
@@ -752,6 +767,15 @@ class TileDetailViewModel(
                     _emptyRecord.value = data.record.takeIf { empty }
                     _state.update { if (empty) UiState.Empty else UiState.Data(data) }
                     if (empty) _latestBefore.value = latestBefore(spec, windowStart(span, offset))
+                    if (!empty && spec.type == RestingHeartRateRecord::class && marksTraining(spec, span)) {
+                        val split = trainingNightsFor(span, offset, data.trainingDays)
+                        ensureActive()
+                        if (split != null) {
+                            _state.update { current ->
+                                (current as? UiState.Data)?.let { UiState.Data(it.value.copy(trainingNights = split)) } ?: current
+                            }
+                        }
+                    }
                 },
                 onFailure = { error ->
                     _state.update { UiState.Error(error.message ?: "Could not read data") }
@@ -974,10 +998,65 @@ class TileDetailViewModel(
                 null
             }
         }
-        listed.copy(baseline = extras.baseline, usualBand = extras.usualBand, trend = extras.trend, streak = extras.streak, record = record)
+        val training = if (marksTraining(spec, span)) {
+            runCatching {
+                // From the day before the window: its first morning's night follows that day.
+                val sessions = repository.sessionsIn(windowStart.minus(Duration.ofDays(1)), windowEnd, setOf(Session.Kind.EXERCISE))
+                trainingDays(sessions, HealthRepository.DEFAULT_ZONE)
+            }.getOrDefault(emptySet())
+        } else {
+            emptySet()
+        }
+        listed.copy(
+            baseline = extras.baseline,
+            usualBand = extras.usualBand,
+            trend = extras.trend,
+            streak = extras.streak,
+            record = record,
+            trainingDays = training,
+        )
+    }
+
+    /**
+     * Each night's lowest heart rate in the window, split by the day before it, read last
+     * because a year is 365 nights. The lowest of the fullest writer's readings through each
+     * night, as the night's curve is drawn: a minimum aggregate per night took 27 s for 28
+     * nights on the phone, about a second each. Null where there are too few nights, or no
+     * access to sleep or heart rate -- the section then stays away.
+     */
+    private suspend fun trainingNightsFor(span: Span, offset: Int, training: Set<LocalDate>): TrainingNights? {
+        val zone = HealthRepository.DEFAULT_ZONE
+        val started = System.currentTimeMillis()
+        val nights = nightsByMorning(
+            runCatching {
+                repository.sessionsIn(windowStart(span, offset), windowEnd(span, offset), setOf(Session.Kind.SLEEP))
+            }.getOrDefault(emptyList()),
+            zone,
+        )
+        val gate = Semaphore(MAX_NIGHT_READS)
+        val lows = coroutineScope {
+            nights.map { (morning, night) ->
+                async {
+                    gate.withPermit {
+                        try {
+                            repository.heartRateDuring(night)?.minOf { it.value }?.let { morning to it }
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+                }
+            }.awaitAll().filterNotNull().toMap()
+        }
+        // Counts and timing only, never a reading.
+        Log.d(TAG, "training nights: ${lows.size}/${nights.size} nights in ${System.currentTimeMillis() - started} ms")
+        return splitByTraining(lows, training)
     }
 
     private companion object {
+        /** Night aggregates in flight at once; Health Connect serves them largely in turn. */
+        const val MAX_NIGHT_READS = 4
         const val TAG = "TileDetail"
         const val KEY_TYPE = "shownType"
         const val KEY_SPAN = "shownSpan"
@@ -1000,3 +1079,7 @@ sealed interface CoverageLoad {
 
 /** The app chosen in settings as the default source, and whether a type overrides it. */
 data class SourceDefault(val preferred: String?, val ownChoice: Boolean)
+
+/** Resting heart rate and HRV across days mark their training days; nothing else does. */
+internal fun marksTraining(spec: RecordTypeSpec<*>, span: Span): Boolean =
+    span != Span.DAY && (spec.type == RestingHeartRateRecord::class || spec.type == HeartRateVariabilityRmssdRecord::class)

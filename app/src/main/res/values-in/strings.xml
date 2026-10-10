@@ -399,6 +399,15 @@
     <string name="span_total">Total</string>
     <string name="span_daily_value">Nilai hari itu</string>
     <string name="legend_rolling_mean">Rata-rata 4 minggu</string>
+    <string name="training_nights_title">Detak jantung terendah di malam hari</string>
+    <string name="training_nights_after_training">Setelah hari latihan</string>
+    <string name="training_nights_after_rest">Setelah hari istirahat</string>
+    <string name="training_nights_too_few">Terlalu sedikit malam</string>
+    <string name="training_nights_note">Detak jantung terendah setiap malam selama tidur, dirata-ratakan untuk malam setelah hari dengan latihan minimal 20 menit dan untuk malam setelah hari tanpa latihan. Setiap kelompok memerlukan minimal tiga malam. Sakit, alkohol, atau makan larut juga mengubah malam. Dua nilai yang bergerak bersama tidak berarti yang satu menyebabkan yang lain.</string>
+    <string name="legend_training_days">Latihan 20 menit atau lebih</string>
+    <plurals name="training_nights_count">
+        <item quantity="other">Rata-rata dari %1$d malam</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Tampilkan rata-rata 4 minggu</string>
 
     <!-- Permissions screen -->

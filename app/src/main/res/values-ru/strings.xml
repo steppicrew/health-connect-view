@@ -426,6 +426,18 @@
     <string name="span_total">Итого</string>
     <string name="span_daily_value">Значение за день</string>
     <string name="legend_rolling_mean">Среднее за 4 недели</string>
+    <string name="training_nights_title">Самый низкий пульс ночью</string>
+    <string name="training_nights_after_training">После дня с тренировкой</string>
+    <string name="training_nights_after_rest">После дня отдыха</string>
+    <string name="training_nights_too_few">Слишком мало ночей</string>
+    <string name="training_nights_note">Самый низкий пульс каждой ночи во время сна, усреднённый по ночам после дня с тренировкой от 20 минут и по ночам после дня без неё. В каждой группе нужно не меньше трёх ночей. Болезнь, алкоголь или поздний ужин тоже меняют ночь. То, что два значения меняются вместе, не значит, что одно вызывает другое.</string>
+    <string name="legend_training_days">Тренировка от 20 мин</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">Среднее за %1$d ночь</item>
+        <item quantity="few">Среднее за %1$d ночи</item>
+        <item quantity="many">Среднее за %1$d ночей</item>
+        <item quantity="other">Среднее за %1$d ночи</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Показать среднее за 4 недели</string>
 
     <!-- Permissions screen -->

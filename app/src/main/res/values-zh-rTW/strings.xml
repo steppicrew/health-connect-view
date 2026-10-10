@@ -399,6 +399,15 @@
     <string name="span_total">總計</string>
     <string name="span_daily_value">當天的數值</string>
     <string name="legend_rolling_mean">4 週平均值</string>
+    <string name="training_nights_title">夜間最低心率</string>
+    <string name="training_nights_after_training">訓練日之後</string>
+    <string name="training_nights_after_rest">休息日之後</string>
+    <string name="training_nights_too_few">夜晚太少</string>
+    <string name="training_nights_note">每晚睡眠期間的最低心率，分別按至少訓練 20 分鐘的日子之後的夜晚和未訓練的日子之後的夜晚求平均。每組至少需要三晚。生病、飲酒或晚餐過晚也會影響夜間心率。兩個數值一起變化，並不代表其中一個導致了另一個。</string>
+    <string name="legend_training_days">20 分鐘以上的訓練</string>
+    <plurals name="training_nights_count">
+        <item quantity="other">%1$d 晚的平均值</item>
+    </plurals>
     <string name="chart_show_rolling_mean">顯示 4 週平均值</string>
 
     <!-- Permissions screen -->

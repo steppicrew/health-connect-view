@@ -408,6 +408,16 @@
     <string name="span_total">कुल</string>
     <string name="span_daily_value">दिन की वैल्यू</string>
     <string name="legend_rolling_mean">4 हफ़्ते का औसत</string>
+    <string name="training_nights_title">रात में सबसे कम हृदय गति</string>
+    <string name="training_nights_after_training">प्रशिक्षण वाले दिन के बाद</string>
+    <string name="training_nights_after_rest">आराम के दिन के बाद</string>
+    <string name="training_nights_too_few">बहुत कम रातें</string>
+    <string name="training_nights_note">नींद के दौरान हर रात की सबसे कम हृदय गति, जिसका औसत कम से कम 20 मिनट के प्रशिक्षण वाले दिन के बाद की रातों और बिना प्रशिक्षण वाले दिन के बाद की रातों के लिए अलग से निकाला गया है। हर समूह के लिए कम से कम तीन रातें चाहिए। बीमारी, शराब या देर से खाना भी रात को बदलते हैं। दो मानों का साथ-साथ बदलना यह नहीं दर्शाता कि एक दूसरे का कारण है।</string>
+    <string name="legend_training_days">20 मिनट या अधिक का प्रशिक्षण</string>
+    <plurals name="training_nights_count">
+        <item quantity="one">%1$d रात का औसत</item>
+        <item quantity="other">%1$d रातों का औसत</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 हफ़्ते का औसत दिखाएं</string>
 
     <!-- Permissions screen -->
