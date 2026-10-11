@@ -5,6 +5,7 @@ import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
 import java.time.Period
@@ -37,6 +38,26 @@ fun calendarHeadline(spec: RecordTypeSpec<*>, heatmap: YearHeatmap): Pair<Double
         else -> values.takeIf { it.isNotEmpty() }?.sum()
     } ?: return null
     return value to spec.combine(heatmap.secondValues.values.toList())
+}
+
+/**
+ * The calendar's mean for each weekday: of the days with a value, or for workouts of every day
+ * from the first one trained through [today] -- a day without a workout trained for none, and
+ * averaged over training days alone two Sunday rides made Sunday the longest. Empty with fewer
+ * than [MIN_RHYTHM_DAYS] days to go on, where a weekday is one or two days.
+ */
+fun weekdayMeans(spec: RecordTypeSpec<*>, heatmap: YearHeatmap, today: LocalDate): Map<DayOfWeek, Double> {
+    val values = heatmap.values.filterKeys { !it.isAfter(today) }
+    if (values.isEmpty()) return emptyMap()
+    val days = if (spec.tile.form == TileSpec.Form.SESSIONS && spec.tile.sessionKind == Session.Kind.EXERCISE) {
+        generateSequence(values.keys.min()) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(minOf(heatmap.last, today)) }
+            .associateWith { values[it] ?: 0.0 }
+    } else {
+        values
+    }
+    if (days.size < MIN_RHYTHM_DAYS) return emptyMap()
+    return days.entries.groupBy({ it.key.dayOfWeek }, { it.value }).mapValues { (_, v) -> v.average() }
 }
 
 /**
@@ -112,3 +133,6 @@ private class HeatDay(val date: LocalDate, val value: Double, val second: Double
 private const val PIECE_DAYS = 92L
 private const val MINUTES_PER_HOUR = 60.0
 private const val TAG = "Heatmap"
+
+/** Four weeks: fewer, and each weekday's mean is a day or two. */
+private const val MIN_RHYTHM_DAYS = 28

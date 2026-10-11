@@ -766,10 +766,14 @@ doctor report and the year heatmap; the rest unranked.
 84. [ ] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
     not yet, its types have no figure to shade. Flow days by strength, spotting and a
     positive ovulation test marked, in the cycle overview's year; plan before building.
-85. [ ] **A weekday rhythm on the 2x2 calendar tile** -- the owner's pick, 10.10.2026, for the
+85. [x] **A weekday rhythm on the 2x2 calendar tile** -- the owner's pick, 10.10.2026, for the
     room a 2x2 calendar leaves: seven small bars Mo-So, the year's mean per weekday ("Sundays
     are long sleep"), from the days the calendar already read. Unlabelled, so the tile keeps
     one labelled scale; 2x2 only, since a 2x1 has room only in a narrow strip beside the grid.
+    Built 11.10.2026, seen on the emulator: bars from the calendar's own start (zero for a
+    count), shaded as a day of that mean, weekday initials beneath in the grid's order. Days
+    without a workout count as none, else two Sunday rides made Sunday the longest; under four
+    weeks of days, no bars. Not for blood pressure, which is graded rather than shaded.
 86. [ ] **The chosen date is shared, and history ends on it** -- the owner, 11.10.2026, for
     the next release. A date picked in a detail view carries back to the dashboard, and the
     dashboard's date into every detail view, as one date for the whole app rather than one

@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.ui.dashboard
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
+import de.steppicrew.healthconnectview.ui.components.WeekdayRhythm
 import de.steppicrew.healthconnectview.ui.components.heatmapValue
 import de.steppicrew.healthconnectview.ui.components.heatmapColors
 import de.steppicrew.healthconnectview.ui.components.YearHeatmapGrid
@@ -125,6 +126,7 @@ import kotlin.math.roundToInt
 import androidx.compose.foundation.shape.CircleShape
 import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.health.pressureCategory
+import de.steppicrew.healthconnectview.health.weekdayMeans
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.health.Trend
@@ -1822,7 +1824,15 @@ private fun TileCalendar(data: TileData, heatmap: YearHeatmap) {
             onSelect = null,
             description = stringResource(R.string.heatmap_title),
         )
-        if (heatmap.secondValues.isEmpty()) HeatmapLegend(heatmap, data.spec, Modifier.align(Alignment.Start))
+        // Blood pressure is graded, not shaded: neither the bars nor the legend would read.
+        if (heatmap.secondValues.isEmpty()) {
+            // The room a 2x2 leaves: which weekdays run long or short.
+            if (data.tile.height == 2) {
+                val means = remember(heatmap) { weekdayMeans(data.spec, heatmap, LocalDate.now()) }
+                if (means.isNotEmpty()) WeekdayRhythm(heatmap, means, data.spec)
+            }
+            HeatmapLegend(heatmap, data.spec, Modifier.align(Alignment.Start))
+        }
     }
 }
 
