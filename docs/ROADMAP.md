@@ -598,7 +598,7 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 Before the next release after 1.4.1, from the owner, 11.10.2026:
 
 - [x] **Step 86** -- one date for dashboard and detail views, and history ending on it.
-- [ ] **Name the new Pro parts** -- the weekday rhythm (85), sleep rhythm (79) and year comparison (78) in
+- [x] **Name the new Pro parts** -- the weekday rhythm (85), sleep rhythm (79) and year comparison (78) in
   `pro_body`, `pro_owned_body` and the listing's Pro part, every language, under 4,000. Also,
   the owner agreeing, 11.10.2026: the insights tile in larger sizes with a coloured strip per
   type and a choice of types and order, and the dashed mean on a heart rate tile. Whether the
@@ -606,6 +606,14 @@ Before the next release after 1.4.1, from the owner, 11.10.2026:
   Since then (11.10.2026): the PDF report for every type with daily totals (82) and a kind's
   course over the year on the workouts screen (81), both Pro; the free part can name the cycle
   tile (76), the cycle calendar (84) and charts read out to screen readers (80).
+  Done 11.10.2026 in all 17 app languages and 18 listings: the Pro part names the daily-value
+  PDFs, the weekday bars under the calendar, the coloured strips of this week's changes, the
+  year comparison, sleep rhythm and a kind of workout over the year; the free part the cycle
+  calendar and tile and charts described for screen readers. The dashed mean and the shared
+  date stay unnamed, too small to spend characters on. To make room each listing lost "Google
+  Play handles purchases", the line on several apps contributing, and the longer wording of the
+  time-matching note; the longest now stands at 3,986 (Italian). Still to do at release:
+  `publishReleaseListing`, since `release.sh` skips committed listing text.
 - [x] **More Pro screenshots, to show what it is for** -- the owner, 11.10.2026: blood pressure
   gives up its place (`7-blood-pressure`) to `7-insights-pro`, a 2x1 insights tile filled with
   coloured strips above a 2x2 year of steps with its weekday bars (`SeedActivity -e dashboard
