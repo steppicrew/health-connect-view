@@ -16,7 +16,7 @@ import org.json.JSONArray
  *
  *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.SeedActivity
  *
- * With `-e dashboard default|showcase` it seeds nothing and sets the dashboard instead: the
+ * With `-e dashboard default|showcase|insights` it seeds nothing and sets the dashboard instead: the
  * default layout, or one of large, coloured tiles with their curves for the store's Pro
  * screenshots, which nobody can arrange by hand on an emulator run from a script. Either way
  * the "What's new" card is put away, so no screenshot shows it.
@@ -35,6 +35,7 @@ class SeedActivity : ComponentActivity() {
                 } else {
                     val config = when {
                         dashboard == "showcase" -> DashboardJson.decode(JSONArray(SHOWCASE))
+                        dashboard == "insights" -> DashboardJson.decode(JSONArray(INSIGHTS))
                         // A layout of its own, for a tile the showcase does not have.
                         dashboard.startsWith("[") -> DashboardJson.decode(JSONArray(dashboard))
                         else -> DashboardConfig.DEFAULT
@@ -65,6 +66,16 @@ class SeedActivity : ComponentActivity() {
             {"type": "SleepSessionRecord", "w": 2, "h": 1, "face": "BOTH", "with": "HeartRateRecord", "color": "PURPLE"},
             {"type": "ExerciseSessionRecord", "w": 2, "h": 1, "face": "BOTH", "with": "HeartRateRecord", "color": "GREEN"},
             {"type": "WeightRecord", "w": 2, "h": 1, "span": "MONTH", "face": "BOTH", "color": "TEAL"}
+        ]"""
+
+        /**
+         * The second Pro shot, what Pro tells you: the week's changes with their strips, and a
+         * year of steps as a calendar with its weekday rhythm. The seeder's busier last week
+         * gives the strips a week off its usual level.
+         */
+        const val INSIGHTS = """[
+            {"type": "Insights", "w": 2, "h": 1},
+            {"type": "StepsRecord", "w": 2, "h": 2, "span": "YEAR", "face": "CALENDAR", "color": "BLUE"}
         ]"""
     }
 }
