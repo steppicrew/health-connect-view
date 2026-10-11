@@ -361,6 +361,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Cicli</string>
+    <string name="cycle_tile_title">Ciclo</string>
+    <string name="cycle_tile_day">Giorno %1$d</string>
+    <string name="cycle_tile_usual">di solito %1$s</string>
+    <string name="cycle_tile_none">Nessun ciclo mestruale registrato nell’ultimo anno</string>
+    <string name="cycle_tile_since">dal %1$s</string>
     <string name="cycle_open">Panoramica dei cicli</string>
     <string name="cycle_open_body">Tutti i cicli di un anno affiancati, allineati sul giorno 1</string>
     <string name="cycle_empty_body">In quest’anno non sono state registrate mestruazioni né flusso, quindi non ci sono cicli da allineare.</string>

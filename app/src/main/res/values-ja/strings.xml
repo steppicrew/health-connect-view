@@ -351,6 +351,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">周期</string>
+    <string name="cycle_tile_title">周期</string>
+    <string name="cycle_tile_day">%1$d日目</string>
+    <string name="cycle_tile_usual">通常 %1$s</string>
+    <string name="cycle_tile_none">過去1年間に生理の記録がありません</string>
+    <string name="cycle_tile_since">%1$sから</string>
     <string name="cycle_open">周期の概要</string>
     <string name="cycle_open_body">1 年間のすべての周期を、1 日目にそろえて並べて表示</string>
     <string name="cycle_empty_body">この年は生理も経血も記録されていないため、そろえる周期がありません。</string>

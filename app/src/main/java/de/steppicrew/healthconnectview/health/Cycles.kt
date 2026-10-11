@@ -221,3 +221,36 @@ private val EMPTY = CycleDay()
  * gaps are read as one period with unlogged days in it.
  */
 const val MIN_GAP_DAYS = 3
+
+/**
+ * Where a cycle stands on one day, for the dashboard's tile: which day of the running cycle
+ * [date] is, the usual length from the completed cycles of the year before it, and those
+ * cycles themselves, newest first, for a wide tile's rows. Describes, never predicts.
+ */
+data class CycleNow(
+    /** Day of the running cycle on [date], day 1 being the first day of its period. */
+    val day: Int,
+    /** The running cycle first, then the ones before it. */
+    val cycles: List<Cycle>,
+    val stats: CycleStats?,
+) {
+    val start: LocalDate get() = cycles.first().start
+}
+
+/**
+ * The cycle [date] falls in, from cycles starting in the year up to it; null where none does.
+ * Days after [date] are left out, so a past date shows that day as it was.
+ */
+fun cycleNow(days: Map<LocalDate, CycleDay>, date: LocalDate): CycleNow? {
+    val upTo = days.filterKeys { it <= date }
+    val cycles = buildCycles(upTo, window = date.minusDays(CYCLE_TILE_DAYS)..date, lastDay = date)
+    val current = cycles.lastOrNull() ?: return null
+    return CycleNow(
+        day = ChronoUnit.DAYS.between(current.start, date).toInt() + 1,
+        cycles = cycles.asReversed(),
+        stats = cycleStats(cycles),
+    )
+}
+
+/** How far back the tile looks for cycles: a year, as the overview. */
+const val CYCLE_TILE_DAYS = 365L

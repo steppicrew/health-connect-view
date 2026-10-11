@@ -358,6 +358,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Cycles</string>
+    <string name="cycle_tile_title">Cycle</string>
+    <string name="cycle_tile_day">Day %1$d</string>
+    <string name="cycle_tile_usual">usually %1$s</string>
+    <string name="cycle_tile_none">No period recorded in the last year</string>
+    <string name="cycle_tile_since">since %1$s</string>
     <string name="cycle_open">Cycle overview</string>
     <string name="cycle_open_body">Every cycle of a year side by side, aligned on day 1</string>
     <string name="cycle_empty_body">No period or flow was recorded in this year, so there is no cycle to align.</string>

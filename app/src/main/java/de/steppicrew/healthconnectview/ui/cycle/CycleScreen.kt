@@ -235,9 +235,9 @@ private fun CycleRow(cycle: Cycle, columns: Int, scale: ClosedFloatingPointRange
     }
 }
 
-private data class RowColors(val cell: Color, val test: Color, val mucus: Color, val temperature: Color)
+internal data class RowColors(val cell: Color, val test: Color, val mucus: Color, val temperature: Color)
 
-private fun DrawScope.drawCycle(
+internal fun DrawScope.drawCycle(
     days: List<CycleDay>,
     columns: Int,
     scale: ClosedFloatingPointRange<Double>?,
@@ -348,8 +348,8 @@ private fun flowStrength(flow: Int?): Float = when (flow) {
 private val BLEEDING = Color(0xFFC2185B)
 
 private val ROW_HEIGHT = 30.dp
-private const val MIN_COLUMNS = 28
-private const val MAX_COLUMNS = 45
+internal const val MIN_COLUMNS = 28
+internal const val MAX_COLUMNS = 45
 private const val CELL_GAP = 0.15f
 private const val BAND_HEIGHT = 0.5f
 private const val MARK_SIZE = 0.22f

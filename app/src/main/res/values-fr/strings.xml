@@ -361,6 +361,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Cycles</string>
+    <string name="cycle_tile_title">Cycle</string>
+    <string name="cycle_tile_day">Jour %1$d</string>
+    <string name="cycle_tile_usual">généralement %1$s</string>
+    <string name="cycle_tile_none">Aucunes règles enregistrées au cours de l’année écoulée</string>
+    <string name="cycle_tile_since">depuis le %1$s</string>
     <string name="cycle_open">Vue des cycles</string>
     <string name="cycle_open_body">Tous les cycles d’une année côte à côte, alignés sur le jour 1</string>
     <string name="cycle_empty_body">Aucunes règles ni aucun flux n’ont été enregistrés cette année, il n’y a donc pas de cycle à aligner.</string>

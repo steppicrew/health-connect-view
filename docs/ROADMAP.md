@@ -750,11 +750,19 @@ doctor report and the year heatmap; the rest unranked.
 75. [-] **Cycle overview's year window is Pro** -- dropped by the owner, 10.10.2026: every
     other year view is free, so gating only the cycle's would stand alone and read as taking
     something away. (`LONG_RANGE_HISTORY` stays declared and unenforced.)
-76. [ ] **A cycle tile** -- the owner left the form to me, 10.10.2026. Plan: today's cycle day
+76. [x] **A cycle tile** -- the owner left the form to me, 10.10.2026. Plan: today's cycle day
     and the usual length from the past cycles ("Tag 12 · meist 28 Tage"), and on a wide tile
     the current cycle as a strip with the bleeding days marked; a tap opens the overview.
     Offered only where menstruation is recorded. Describes, never predicts: no "next period
     in N days", no fertile window -- that is a medical claim from someone else's data.
+    Built 11.10.2026, seen on the emulator at all three sizes: a tile of no type's like the
+    insights tile (`Tile.CYCLE`, one at most), free at 1x1. The day is the dashboard's, so a
+    past date shows that day's cycle; "meist" is the median of the year's completed cycles,
+    left out before one completes, and the caption names the day 1 ("seit 23. Sept."). A wide
+    tile draws the cycles as the overview does, the running one on top and only up to the day
+    shown, the ones before it under it on one scale, as many as fit. Reads periods and flow
+    alone -- the other layers mark a day, they never start a cycle. The add picker offers it
+    where a period was recorded in the year, looked up as the picker opens.
 77. [x] **What a larger insights tile shows** (step 40's open note). Built as step 90.
 78. [x] **Compare periods** (Pro) -- this month over the same month last year on one chart.
     Built 11.10.2026, seen on the emulator: "Mit dem Vorjahr vergleichen" under the chart of a

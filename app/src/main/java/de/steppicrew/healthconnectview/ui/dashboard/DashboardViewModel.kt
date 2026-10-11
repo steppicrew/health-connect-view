@@ -16,6 +16,8 @@ import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 import android.app.Application
 import android.util.Log
+import androidx.health.connect.client.records.MenstruationFlowRecord
+import androidx.health.connect.client.records.MenstruationPeriodRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -29,7 +31,13 @@ import de.steppicrew.healthconnectview.ui.insights.insightTypes
 import de.steppicrew.healthconnectview.ui.insights.Insight
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Availability
+import de.steppicrew.healthconnectview.health.CYCLE_TILE_DAYS
+import de.steppicrew.healthconnectview.health.CycleDay
+import de.steppicrew.healthconnectview.health.CycleNow
+import de.steppicrew.healthconnectview.health.CycleRecords
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.cycleNow
+import de.steppicrew.healthconnectview.health.mergeCycleDays
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.currentStreak
@@ -230,6 +238,8 @@ data class DashboardUiState(
     val loading: Boolean = true,
     /** The insights tile where one is pinned; it sits among [tiles] at its place in [layout]. */
     val insights: InsightsTileData? = null,
+    /** The cycle tile where one is pinned; placed by [layout] like the insights tile. */
+    val cycle: CycleTileData? = null,
     /** Every tile's id in the stored order, the insights tile's among them. */
     val layout: List<String> = emptyList(),
 ) {
@@ -245,6 +255,19 @@ data class InsightsTileData(
     val tile: Tile,
     val insights: List<Insight>? = null,
     val locked: Boolean = false,
+)
+
+/**
+ * The cycle tile: the running cycle on the dashboard's day. [now] is null where no period was
+ * recorded in the year up to it; [loaded] tells that apart from still reading.
+ */
+data class CycleTileData(
+    val tile: Tile,
+    val now: CycleNow? = null,
+    val loaded: Boolean = false,
+    /** Not allowed to read menstruation, which every cycle starts from. */
+    val noAccess: Boolean = false,
+    val failed: Boolean = false,
 )
 
 /** A type the add picker offers, and whether a tile of it is already pinned. */
@@ -461,8 +484,8 @@ class DashboardViewModel(
      * the tile [before], the first in view, so it does not land out of sight at the end.
      */
     fun addTile(typeName: String, before: String? = null) {
-        // One insights tile: a second would repeat the same list.
-        if (typeName == Tile.INSIGHTS && config.has(typeName)) return
+        // One insights tile and one cycle tile: a second would repeat the same.
+        if ((typeName == Tile.INSIGHTS || typeName == Tile.CYCLE) && config.has(typeName)) return
         if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
         config = config.adding(typeName, before)
         viewModelScope.launch { store.save(config) }
@@ -513,6 +536,7 @@ class DashboardViewModel(
                 layout = config.tiles.map(Tile::id),
                 // The insights tile is kept apart from the type tiles, so its size is set here.
                 insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
+                cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
             )
         }
         viewModelScope.launch { store.save(config) }
@@ -541,6 +565,45 @@ class DashboardViewModel(
      */
     /** Whether the insights tile is on the dashboard; there is only ever one. */
     val hasInsightsTile: Boolean get() = config.has(Tile.INSIGHTS)
+
+    /** Whether the cycle tile is on the dashboard; there is only ever one. */
+    val hasCycleTile: Boolean get() = config.has(Tile.CYCLE)
+
+    private val _cycleRecorded = MutableStateFlow(false)
+
+    /** Whether a period was recorded in the last year, so the add picker offers the cycle tile. */
+    val cycleRecorded: StateFlow<Boolean> = _cycleRecorded.asStateFlow()
+
+    /** Looks whether to offer the cycle tile; the picker asks when it opens. */
+    fun checkCycleRecorded() {
+        viewModelScope.launch {
+            _cycleRecorded.value = runCatching {
+                val granted = repository.grantedPermissions()
+                val today = LocalDate.now()
+                readCycleDays(granted, today)?.values?.any { it.bleeding } == true
+            }.getOrDefault(false)
+        }
+    }
+
+    /**
+     * Bleeding days for the year up to [date], merged across writers, or null without access.
+     * Periods and flow share one permission and are all a cycle needs: the other layers mark
+     * a day, they never start one.
+     */
+    private suspend fun readCycleDays(granted: Set<String>, date: LocalDate): Map<LocalDate, CycleDay>? {
+        val permission = RecordRegistry.spec(MenstruationPeriodRecord::class).permission
+        if (permission !in granted) return null
+        val zone = HealthRepository.DEFAULT_ZONE
+        // A period running into the window from before it would give a false day 1.
+        val from = date.minusDays(CYCLE_TILE_DAYS + CYCLE_MARGIN_DAYS).atStartOfDay(zone).toInstant()
+        val to = date.plusDays(1).atStartOfDay(zone).toInstant()
+        val range = TimeRangeFilter.between(from, to)
+        val records = CycleRecords(
+            periods = repository.read(MenstruationPeriodRecord::class, range),
+            flows = repository.read(MenstruationFlowRecord::class, range),
+        )
+        return mergeCycleDays(records, zone)
+    }
 
     fun addableTypes(): List<AddCandidate> = RecordRegistry.all
         .filter { it.isPinnable }
@@ -578,9 +641,13 @@ class DashboardViewModel(
         val date = _state.value.date
         val sameDay = tilesDate == date
         val insightsTile = config.tiles.firstOrNull { it.isInsights }
+        val cycleTile = config.tiles.firstOrNull { it.isCycle }
         _state.update { state ->
             state.copy(
                 layout = config.tiles.map(Tile::id),
+                cycle = cycleTile?.let { tile ->
+                    state.cycle?.takeIf { sameDay }?.copy(tile = tile) ?: CycleTileData(tile)
+                },
                 insights = insightsTile?.let { tile ->
                     InsightsTileData(tile, state.insights?.insights?.takeIf { sameDay }, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
                 },
@@ -728,6 +795,23 @@ class DashboardViewModel(
             }
         }
         Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
+
+        // The cycle on the day shown: two reads of a few records a month, after the numbers.
+        val cycle = _state.value.cycle
+        if (cycle != null) {
+            val read = runCatching { readCycleDays(granted, date) }
+            currentCoroutineContext().ensureActive()
+            val shown = read.fold(
+                onSuccess = { days ->
+                    if (days == null) cycle.copy(now = null, loaded = true, noAccess = true, failed = false)
+                    else cycle.copy(now = cycleNow(days, date), loaded = true, noAccess = false, failed = false)
+                },
+                onFailure = { cycle.copy(now = null, loaded = true, failed = true) },
+            )
+            _state.update { state ->
+                state.cycle?.takeIf { it.tile.id == cycle.tile.id }?.let { state.copy(cycle = shown.copy(tile = it.tile)) } ?: state
+            }
+        }
 
         // Last: after the numbers and their arrows, so the tile never holds up a figure. Always
         // this week, whatever day the dashboard shows -- the tile says "this week".
@@ -1146,6 +1230,9 @@ class DashboardViewModel(
     }
 
     private companion object {
+        /** Read before the year, so a period running into it is not taken for a day 1. */
+        const val CYCLE_MARGIN_DAYS = 60L
+
         const val TAG = "Dashboard"
         const val KEY_DATE = "date"
         const val MAX_CONCURRENT_TILES = 4
