@@ -1,3 +1,1 @@
-1.4.1 — Mosaicos grandes de entrenamientos: el número abre la lista del día, la curva su entrenamiento y, con dos entrenamientos, cada curva abre el suyo.
-
-1.4.0 — El año como calendario, un tono por día, bajo los gráficos anuales y como vista de mosaico (Pro). Un solo PDF para tu médico con presión arterial, peso, frecuencia cardíaca en reposo y glucosa (Pro). Fases del sueño en la exportación CSV. Un año de calorías carga en un segundo. Los mosaicos nuevos aparecen donde estás mirando.
+1.5.0 — Cambios de esta semana en mosaicos grandes con franjas de color y tipos a tu elección (Pro). Este mes junto al mismo mes del año pasado, ritmo de sueño, un tipo de entrenamiento a lo largo del año, barras por día de la semana en el mosaico de calendario y un informe PDF para cada tipo (Pro). Nutrientes además de la energía, mosaico y calendario del ciclo, una sola fecha para toda la app, gráficos para lectores de pantalla.

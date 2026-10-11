@@ -1,3 +1,1 @@
-1.4.1 — Kartu latihan besar: angka membuka daftar hari itu, kurva membuka latihannya, dan dengan dua latihan setiap kurva membuka latihannya sendiri.
-
-1.4.0 — Setahun sebagai kalender, satu warna per hari, di bawah diagram tahunan dan sebagai tampilan kartu (Pro). Satu PDF untuk dokter berisi tekanan darah, berat badan, detak jantung istirahat, dan glukosa (Pro). Tahap tidur dalam ekspor CSV. Kalori setahun dimuat dalam sedetik. Kartu baru muncul di tempat yang sedang Anda lihat.
+1.5.0 — Perubahan minggu ini dalam kartu besar dengan pita berwarna dan pilihan jenis sendiri (Pro). Bulan ini di samping bulan yang sama tahun lalu, ritme tidur, satu jenis latihan selama setahun, batang hari dalam seminggu pada kartu kalender, dan laporan PDF untuk setiap jenis (Pro). Nutrisi selain energi, kartu dan kalender siklus, satu tanggal untuk seluruh aplikasi, diagram untuk pembaca layar.

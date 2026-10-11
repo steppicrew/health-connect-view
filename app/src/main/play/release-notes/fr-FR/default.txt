@@ -1,3 +1,1 @@
-1.4.1 — Grandes vignettes d’entraînement : le nombre ouvre la liste du jour, la courbe son entraînement, et avec deux entraînements chaque courbe ouvre le sien.
-
-1.4.0 — L’année en calendrier, une nuance par jour, sous les graphiques annuels et en vignette (Pro). Un seul PDF pour votre médecin avec tension, poids, fréquence cardiaque au repos et glycémie (Pro). Phases de sommeil dans l’export CSV. Une année de calories se charge en une seconde. Une nouvelle vignette apparaît là où vous regardez.
+1.5.0 — Évolutions de la semaine en grandes vignettes avec bandes colorées et types au choix (Pro). Ce mois-ci à côté du même mois l’an dernier, rythme du sommeil, un type d’entraînement sur l’année, jours de la semaine sur la vignette calendrier et un rapport PDF pour chaque type (Pro). Nutriments au-delà de l’énergie, vignette et calendrier du cycle, une seule date pour toute l’appli, graphiques décrits pour les lecteurs d’écran.
