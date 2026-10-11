@@ -801,6 +801,19 @@ doctor report and the year heatmap; the rest unranked.
     permissions change. Today's figure is never cached, since it is still growing. The owner,
     11.10.2026: build it without the cache first and time stepping a day back on the phone
     with a dashboard of year tiles; add the cache only if that is too slow.
+87. [ ] **No session icons on a tile's chart** -- the owner, 11.10.2026: steps or heart rate
+    on a tile keep sleep and workouts shaded behind the chart, but the icons above the bands
+    take height the chart could use. Detail screens keep them.
+88. [ ] **HRV on a tile from its own low** -- the owner, 11.10.2026: the tile's chart starts at
+    zero, the detail chart at the values' own range; the tile should fit its range the same way.
+89. [ ] **A tighter value-and-chart tile** -- the owner, 11.10.2026: the left margin as narrow
+    as the calendar face's, and the number's column (with any second line) only as wide as it
+    needs, the rest going to the chart.
+90. [ ] **Larger "Veränderungen dieser Woche" tiles** (Pro) -- the owner, 11.10.2026: more to
+    see at 2x1 and 2x2, e.g. each mover's week against its month as a small bar or sparkline.
+    Plan the form first; overlaps step 77.
+91. [ ] **Heart rate tile with its mean** -- the owner, 11.10.2026: an optional dashed line at
+    the window's mean, as the detail chart's four-week mean is optional.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
