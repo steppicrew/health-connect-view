@@ -31,6 +31,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -1319,11 +1321,20 @@ private fun TileValueAndChart(
             TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion(), workoutTap = workoutTap)
         }
     } else {
-        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.weight(VALUE_SHARE).fillMaxHeight().then(figureTap), contentAlignment = Alignment.Center) {
-                Figure(StageTotalsAt.COLUMN)
+        // The number as wide as it needs, up to half the tile, and the rest to the chart: a
+        // fixed share left a short number in a wide margin -- the owner's request, 11.10.2026.
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val valueMax = maxWidth * VALUE_MAX_SHARE
+            Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.widthIn(max = valueMax).fillMaxHeight()
+                        .padding(end = VALUE_GAP.dp).then(figureTap),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Figure(StageTotalsAt.COLUMN)
+                }
+                TileChart(chart, Modifier.weight(1f).fillMaxHeight(), compactAxis = true, companion = data.companion(), workoutTap = workoutTap)
             }
-            TileChart(chart, Modifier.weight(1f - VALUE_SHARE).fillMaxHeight(), compactAxis = true, companion = data.companion(), workoutTap = workoutTap)
         }
     }
 }
@@ -1652,8 +1663,9 @@ private fun dayLabel(date: LocalDate): String =
 
 private const val CURVE_HEIGHT = 28
 
-/** How much of a wide tile's width the number takes beside its chart. */
-private const val VALUE_SHARE = 0.35f
+/** The most of a wide tile's width the number takes beside its chart, and the gap between. */
+private const val VALUE_MAX_SHARE = 0.5f
+private const val VALUE_GAP = 12
 
 /** How many activity icons fit on a tile face beside the count without crowding it. */
 /** Just enough to recognise the app; the tile has little room to spare. */
