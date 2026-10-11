@@ -9,11 +9,11 @@ O QUE ELE FAZ
 • Sono e treinos sombreados atrás dos gráficos do dia, para que um pico tenha explicação
 • Cada treino com frequência cardíaca, velocidade e altitude em um gráfico, pausas detectadas e descontadas, e o trajeto se você permitir
 • Fases do sono de cada noite registrada pelo relógio, ao lado da frequência cardíaca, frequência respiratória, SpO₂ e VFC da noite
-• Uma visão geral dos ciclos: todos os ciclos de um ano lado a lado, alinhados no dia um, sem previsões
+• Uma visão geral dos ciclos: todos os ciclos de um ano lado a lado, alinhados no dia um, também como calendário e bloco, sem previsões
 • Setas de tendência: a última semana comparada com sua média de 30 dias
 • Sequências: dias seguidos cumprindo a meta ou ativo, e a mais longa do ano
 • Como cada medição foi feita: glicemia em jejum ou depois de comer, pressão sentado ou no pulso
-• Blocos organizados arrastando, unidades métricas ou imperiais, glicemia em mmol/L ou mg/dL
+• Blocos organizados arrastando, unidades métricas ou imperiais, glicemia em mmol/L ou mg/dL, gráficos descritos para leitores de tela
 • Backup do painel e das configurações em um arquivo, para restaurar em um novo smartphone
 
 SEUS DADOS FICAM NO SEU SMARTPHONE
@@ -28,24 +28,26 @@ As permissões são pedidas um tipo de dado por vez, e nada vem selecionado. Per
 
 TOTAIS CORRETOS
 
-Quando vários apps registram a mesma coisa — um smartphone e um relógio contando passos —, os registros se sobrepõem. Este app usa a agregação do próprio Conexão Saúde para remover duplicatas, então os totais diários estão corretos, sem contagem dupla, e ele avisa quando mais de um app contribuiu.
+Quando vários apps registram a mesma coisa — um smartphone e um relógio contando passos —, os registros se sobrepõem. Este app usa a agregação do próprio Conexão Saúde para remover duplicatas, então os totais diários não são contados em dobro.
 
-O Conexão Saúde não vincula um treino às medições feitas durante ele. Onde o app mostra os números de uma sessão, ele diz claramente que foram associados pelo horário.
+O Conexão Saúde não vincula um treino às medições feitas durante ele. O app as associa pelo horário e diz isso.
 
 PRO — COMPRA ÚNICA, SEM ASSINATURA
 
-Tudo acima é gratuito e vai continuar assim. O Pro é uma única compra no app que desbloqueia:
+Tudo acima é gratuito e vai continuar assim. O Pro, uma compra única, desbloqueia:
 
-• Exportação em CSV de qualquer tipo de dado: cada registro com o app de origem, ou os totais diários sem duplicatas. Você escolhe onde salvar; o app não guarda cópia.
-• Relatórios em PDF para seu médico: pressão com médias da manhã e da noite, peso por semana, frequência cardíaca em repouso comparada à média de quatro semanas, glicemia por refeição e faixa-alvo. Ou os quatro em um só relatório.
+• Exportação em CSV de qualquer tipo de dado: cada registro com o app de origem, ou os totais diários sem duplicatas. O app não guarda cópia.
+• Relatórios em PDF: os valores diários de qualquer número, e para seu médico pressão com médias da manhã e da noite, peso, frequência cardíaca em repouso e glicemia, para qualquer período, separados ou em um só.
 • Blocos maiores — a semana, quatro semanas ou o ano como número, gráfico ou ambos, ou as fases do sono da última noite e seus últimos treinos com a curva que você escolher.
-• O ano como calendário, um tom por dia — abaixo de cada gráfico anual e como bloco.
-• Vários blocos para o mesmo número e uma cor própria para cada bloco.
-• Um bloco com as mudanças desta semana, o peso com a composição corporal e dois números comparados em um mesmo eixo de tempo.
-• Trajetos de treino como arquivos GPX.
+• O ano como calendário, um tom por dia, com a média de cada dia da semana.
+• As mudanças desta semana em faixas coloridas que mostram o quanto ela foi incomum.
+• Este mês ao lado do mesmo mês do ano anterior.
+• Ritmo do sono: o quanto são regulares seus horários de dormir e acordar.
+• Um tipo de treino ao longo do ano: velocidade ou ritmo e frequência cardíaca.
+• Vários blocos por número, cores de bloco, composição corporal, dois números em um mesmo eixo de tempo, trajetos como arquivos GPX.
 • Todos os recursos Pro futuros, sem custo adicional.
 
-As compras são gerenciadas inteiramente pelo Google Play e acompanham sua conta em um novo smartphone.
+As compras acompanham sua conta do Google em um novo smartphone.
 
 CÓDIGO ABERTO
 

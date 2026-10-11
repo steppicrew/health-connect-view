@@ -3,24 +3,24 @@ Santé Connect stocke les données écrites par votre montre, votre balance et v
 CE QU’ELLE FAIT
 
 • Un tableau de bord des chiffres qui vous importent, jour après jour
-• Tous les types de données de Santé Connect, des pas et du sommeil à la tension artérielle et à la VO₂ max
-• Chaque enregistrement avec son heure exacte, sa valeur, son unité et l’appli qui l’a écrit
+• Tous les types de données de Santé Connect, des pas et du sommeil à la tension et à la VO₂ max
+• Chaque enregistrement avec son heure, sa valeur et l’appli qui l’a écrit
 • Graphiques par jour, semaine, quatre semaines ou année
 • Sommeil et entraînements ombrés derrière les graphiques du jour, pour qu’un pic ait une explication
 • Chaque entraînement avec fréquence cardiaque, vitesse et altitude dans un graphique, pauses retirées, et son parcours si vous l’autorisez
-• Les phases de sommeil, à côté de la fréquence cardiaque, de la fréquence respiratoire, de la SpO₂ et de la VFC de la nuit
-• Une vue des cycles : tous les cycles d’une année, alignés sur le premier jour, sans prédiction
+• Les phases de sommeil, à côté du pouls, de la respiration, de la SpO₂ et de la VFC de la nuit
+• Une vue des cycles : tous les cycles d’une année, alignés sur le premier jour, aussi en calendrier et en vignette, sans prédiction
 • Des flèches de tendance : la dernière semaine comparée à votre moyenne sur 30 jours
 • Des séries : jours d’affilée à atteindre votre objectif ou à être actif, et la plus longue de l’année
 • Comment chaque mesure a été prise : glycémie à jeun ou après un repas, tension assis ou au poignet
-• Vignettes réorganisables par glisser, unités métriques ou impériales, glycémie en mmol/L ou mg/dL
+• Vignettes réorganisables par glisser, unités métriques ou impériales, glycémie en mmol/L ou mg/dL, graphiques décrits pour les lecteurs d’écran
 • Sauvegarde du tableau de bord et des paramètres dans un fichier, pour un nouveau téléphone
 
 VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 
 Cette application n’a aucune autorisation Internet. Android lui-même l’empêche d’établir la moindre connexion réseau. Pas de compte, pas de serveur, pas d’analyse, pas de publicité, pas de suivi.
 
-Elle est en lecture seule : elle affiche vos données de santé sans pouvoir les modifier ni les supprimer. Rien n’est écrit sur le stockage sauf si vous l’exportez vous-même. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
+Elle est en lecture seule : elle ne peut ni modifier ni supprimer vos données. Rien n’est enregistré sauf ce que vous exportez. Les parcours ne sont lus que si vous l’autorisez, et dessinés sans carte.
 
 VOUS CHOISISSEZ CE QUE VOUS PARTAGEZ
 
@@ -28,24 +28,26 @@ Les autorisations sont demandées type par type, et rien n’est présélectionn
 
 DES TOTAUX JUSTES
 
-Quand plusieurs applis enregistrent la même chose — un téléphone et une montre qui comptent les pas —, cette application utilise l’agrégation de Santé Connect pour supprimer les doublons : les totaux journaliers sont justes, et elle signale quand plusieurs applis ont contribué.
+Quand un téléphone et une montre comptent tous deux les pas, l’agrégation de Santé Connect supprime les doublons : les totaux journaliers sont justes.
 
-Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. Là où l’application affiche les chiffres d’une séance, elle indique clairement qu’ils sont rapprochés par l’heure.
+Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. L’application les rapproche par l’heure et le dit.
 
 PRO — ACHAT UNIQUE, SANS ABONNEMENT
 
-Tout ce qui précède est gratuit et le restera. Pro est un achat intégré unique qui débloque :
+Tout ce qui précède est gratuit et le restera. Pro, un achat unique, débloque :
 
 • L’export CSV de tout type de données : chaque enregistrement avec son appli source, ou les totaux journaliers dédoublonnés. L’appli n’en garde aucune copie.
-• Des rapports PDF pour votre médecin : tension du matin et du soir, poids, fréquence cardiaque au repos et glycémie, sur la période de votre choix. Ou les quatre en un seul rapport.
+• Des rapports PDF : les valeurs quotidiennes de tout chiffre, et pour votre médecin la tension du matin et du soir, le poids, la fréquence cardiaque au repos et la glycémie, pour toute période, séparés ou réunis.
 • Des vignettes plus grandes — la semaine, quatre semaines ou l’année en chiffre ou en graphique, ou la nuit dernière et vos derniers entraînements avec la courbe de votre choix.
-• L’année en calendrier, une nuance par jour — sous chaque graphique annuel et en vignette.
-• Plusieurs vignettes pour un même chiffre, et une couleur pour chacune.
-• Une vignette des évolutions de la semaine, le poids avec la composition corporelle, et deux chiffres comparés sur un même axe du temps.
-• Les parcours d’entraînement en fichiers GPX.
+• L’année en calendrier, une nuance par jour, avec la moyenne de chaque jour de la semaine.
+• Les évolutions de la semaine sur des bandes colorées : à quel point elle était inhabituelle.
+• Ce mois-ci à côté du même mois de l’année précédente.
+• Le rythme du sommeil : la régularité de vos heures de coucher et de lever.
+• Un type d’entraînement sur l’année : vitesse ou allure, et fréquence cardiaque.
+• Plusieurs vignettes par chiffre, des couleurs de vignette, la composition corporelle, deux chiffres sur un même axe du temps, les parcours en fichiers GPX.
 • Toutes les futures fonctions Pro, sans frais supplémentaires.
 
-Les achats passent par Google Play et vous suivent sur un nouveau téléphone.
+Les achats suivent votre compte Google sur un nouveau téléphone.
 
 OPEN SOURCE
 
