@@ -368,6 +368,7 @@
     <string name="cycle_open_body">Bir yılın tüm döngüleri yan yana, 1. güne hizalanmış</string>
     <string name="cycle_empty_body">Bu yıl adet veya akış kaydedilmedi; bu yüzden hizalanacak döngü yok.</string>
     <string name="cycle_legend">Gölgeli: kanama, renk koyulaştıkça daha yoğun. Alttaki nokta: lekelenme. Üçgen: ovulasyon testi, pozitifse dolu. Çentik: mukus gözlemi. Çizgi: bazal sıcaklık.</string>
+    <string name="cycle_calendar_legend">Gölgeli: kanama, koyu olan daha yoğundur. Nokta: lekelenme. Üçgen: ovülasyon testi, pozitifse dolu, yüksekse daha açık.</string>
     <string name="cycle_not_granted">Gösterilmiyor, erişime izin verilmedi: %1$s</string>
     <string name="cycle_stat_length">Medyan döngü</string>
     <string name="cycle_stat_range">En kısadan en uzuna</string>

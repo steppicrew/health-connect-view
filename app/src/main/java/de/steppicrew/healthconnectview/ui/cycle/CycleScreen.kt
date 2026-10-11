@@ -41,6 +41,8 @@ import androidx.health.connect.client.records.MenstruationFlowRecord
 import androidx.health.connect.client.records.OvulationTestRecord
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.ui.components.YearHeatmapGrid
+import de.steppicrew.healthconnectview.health.YearHeatmap
 import de.steppicrew.healthconnectview.health.Cycle
 import de.steppicrew.healthconnectview.health.CycleDay
 import de.steppicrew.healthconnectview.health.CycleStats
@@ -159,6 +161,58 @@ private fun CycleContent(data: CycleData) {
         items(data.cycles, key = { it.start.toString() }) { cycle ->
             CycleRow(cycle, columns, scale)
         }
+        item(key = "calendar") { CycleCalendar(data) }
+    }
+}
+
+/**
+ * The year as a calendar, weeks as columns, as the heatmap under a type's year (step 84): what
+ * the aligned rows cannot show -- the seasons, and the weeks nothing was logged. Bleeding is
+ * shaded by flow as in the rows, spotting is a dot, a positive or high ovulation test a
+ * triangle. The legend beneath says it in words, and a screen reader is read the same.
+ */
+@Composable
+private fun CycleCalendar(data: CycleData) {
+    val empty = MaterialTheme.colorScheme.surfaceVariant
+    val test = MaterialTheme.colorScheme.tertiary
+    val legend = stringResource(R.string.cycle_calendar_legend)
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Text(
+            text = stringResource(R.string.tile_face_calendar),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+        YearHeatmapGrid(
+            heatmap = YearHeatmap(first = data.first, last = data.last, values = emptyMap(), low = 0.0, high = 0.0),
+            colorOf = { day ->
+                data.days[day]?.takeIf { it.bleeding }?.let { lerp(empty, BLEEDING, flowStrength(it.flow)) }
+            },
+            selected = null,
+            onSelect = null,
+            description = legend,
+            marks = { day, topLeft, cell ->
+                val mark = data.days[day] ?: return@YearHeatmapGrid
+                val centre = Offset(topLeft.x + cell / 2, topLeft.y + cell / 2)
+                if (mark.spotting) drawCircle(BLEEDING, radius = cell * CALENDAR_DOT, center = centre)
+                val result = mark.ovulationTest
+                if (result == OvulationTestRecord.RESULT_POSITIVE || result == OvulationTestRecord.RESULT_HIGH) {
+                    val half = cell * CALENDAR_TRIANGLE
+                    val triangle = Path().apply {
+                        moveTo(centre.x - half, centre.y - half * 0.8f)
+                        lineTo(centre.x + half, centre.y - half * 0.8f)
+                        lineTo(centre.x, centre.y + half * 0.8f)
+                        close()
+                    }
+                    drawPath(triangle, if (result == OvulationTestRecord.RESULT_POSITIVE) test else test.copy(alpha = 0.5f))
+                }
+            },
+        )
+        Text(
+            text = legend,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp),
+        )
     }
 }
 
@@ -353,3 +407,5 @@ internal const val MAX_COLUMNS = 45
 private const val CELL_GAP = 0.15f
 private const val BAND_HEIGHT = 0.5f
 private const val MARK_SIZE = 0.22f
+private const val CALENDAR_DOT = 0.2f
+private const val CALENDAR_TRIANGLE = 0.38f

@@ -363,6 +363,7 @@
     <string name="cycle_open_body">一年中的所有週期並排顯示，以第 1 天對齊</string>
     <string name="cycle_empty_body">今年沒有記錄經期或經血量，因此沒有可對齊的週期。</string>
     <string name="cycle_legend">陰影：出血，顏色越深量越多。下方圓點：點狀出血。三角形：排卵測試，陽性時為實心。刻線：黏液觀察。曲線：基礎體溫。</string>
+    <string name="cycle_calendar_legend">陰影：出血，顏色越深越多。圓點：點狀出血。三角：排卵測試，陽性為實心，偏高為淺色。</string>
     <string name="cycle_not_granted">因未獲允許存取而未顯示：%1$s</string>
     <string name="cycle_stat_length">週期中位數</string>
     <string name="cycle_stat_range">最短至最長</string>

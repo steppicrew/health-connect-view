@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -64,6 +65,8 @@ fun YearHeatmapGrid(
     onSelect: ((LocalDate) -> Unit)?,
     description: String,
     modifier: Modifier = Modifier,
+    /** Drawn over a day's square, given its top left and size: the cycle calendar's marks. */
+    marks: (DrawScope.(day: LocalDate, topLeft: Offset, cell: Float) -> Unit)? = null,
 ) {
     val firstDay = remember { WeekFields.of(Locale.getDefault()).firstDayOfWeek }
     val today = remember { LocalDate.now() }
@@ -124,6 +127,7 @@ fun YearHeatmapGrid(
                         size = Size(cell, cell),
                         cornerRadius = CornerRadius(cell * CORNER),
                     )
+                    marks?.invoke(this, day, Offset(x, y), cell)
                     if (day == selected) {
                         drawRoundRect(ring, Offset(x, y), Size(cell, cell), CornerRadius(cell * CORNER), style = Stroke(gap * 1.5f))
                     }

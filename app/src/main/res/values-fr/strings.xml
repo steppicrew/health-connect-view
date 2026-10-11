@@ -373,6 +373,7 @@
     <string name="cycle_open_body">Tous les cycles d’une année côte à côte, alignés sur le jour 1</string>
     <string name="cycle_empty_body">Aucunes règles ni aucun flux n’ont été enregistrés cette année, il n’y a donc pas de cycle à aligner.</string>
     <string name="cycle_legend">Zone ombrée : saignements, plus de couleur signifie plus abondant. Point en dessous : spotting. Triangle : test d’ovulation, plein s’il est positif. Trait : observation de la glaire. Ligne : température basale.</string>
+    <string name="cycle_calendar_legend">Ombré : saignement, plus foncé quand il est plus abondant. Point : spotting. Triangle : test d’ovulation, plein s’il est positif, plus clair s’il est élevé.</string>
     <string name="cycle_not_granted">Non affiché, accès non autorisé : %1$s</string>
     <string name="cycle_stat_length">Cycle médian</string>
     <string name="cycle_stat_range">Du plus court au plus long</string>
