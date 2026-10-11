@@ -469,6 +469,12 @@
         <item quantity="other">From %1$d nights</item>
     </plurals>
     <string name="chart_show_rolling_mean">Show 4-week mean</string>
+    <string name="chart_compare_year">Compare with a year earlier</string>
+    <string name="legend_previous_year">A year earlier</string>
+    <string name="chart_previous_year_reading">Reading the same days a year earlier…</string>
+    <string name="chart_previous_year_total">A year earlier: %1$s</string>
+    <string name="chart_previous_year_none">Nothing recorded on the same days a year earlier.</string>
+    <string name="chart_previous_year_partial">Only part of those days has data.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Choose what to show</string>

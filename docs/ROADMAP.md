@@ -598,7 +598,7 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 Before the next release after 1.4.1, from the owner, 11.10.2026:
 
 - [ ] **Step 86** -- one date for dashboard and detail views, and history ending on it.
-- [ ] **Name the new Pro parts** -- the weekday rhythm (85) and sleep rhythm (79) in
+- [ ] **Name the new Pro parts** -- the weekday rhythm (85), sleep rhythm (79) and year comparison (78) in
   `pro_body`, `pro_owned_body` and the listing's Pro part, every language, under 4,000.
 
 Before the next release after 1.3.0, from the owner, 10.10.2026:
@@ -745,7 +745,14 @@ doctor report and the year heatmap; the rest unranked.
     Offered only where menstruation is recorded. Describes, never predicts: no "next period
     in N days", no fertile window -- that is a medical claim from someone else's data.
 77. [ ] **What a larger insights tile shows** (step 40's open note).
-78. [ ] **Compare periods** (Pro) -- this month over the same month last year on one chart.
+78. [x] **Compare periods** (Pro) -- this month over the same month last year on one chart.
+    Built 11.10.2026, seen on the emulator: "Mit dem Vorjahr vergleichen" under the chart of a
+    week, four weeks or a year, kept while stepping, off by default -- it is a second read.
+    The same loader reads the window a year back (52 weeks, 13 four-week windows, or one
+    calendar year, so weekdays and weekly buckets line up) and its points are moved onto this
+    window's days: lighter bars beside the bars, or a lighter line on the same scale, read by
+    touch. Beneath, the earlier window's own figure, said to cover only part of the days where
+    it has fewer. Not for a single day or workouts' count and time pair.
 79. [x] **Sleep regularity** (Pro) -- the spread of bedtimes and wake times and the usual
     bedtime, from the nights alone (`night()`); a description, never a score. Built
     11.10.2026, seen on the emulator: "Schlafrhythmus" under the chart of a week, four weeks

@@ -29,6 +29,7 @@ import de.steppicrew.healthconnectview.ui.components.ExportKind
 import de.steppicrew.healthconnectview.util.appLabelFor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -205,6 +206,14 @@ data class TileDetailData(
     val heatmap: YearHeatmap? = null,
     /** True until [heatmap] has been read, found or not. */
     val heatmapPending: Boolean = false,
+    /**
+     * The same window a year earlier, moved onto this one's days, while the comparison is on;
+     * null until read, empty where nothing was recorded then. See [TileDetailViewModel.setComparing].
+     */
+    val previousYear: List<Point>? = null,
+    /** The year-earlier window's own figure, as [total] is this one's. */
+    val previousTotal: Double? = null,
+    val previousSecondaryTotal: Double? = null,
     /** Whether this window has a heatmap at all, read or locked: a type's year. */
     val heatmapOffered: Boolean = false,
     /**
@@ -789,6 +798,62 @@ class TileDetailViewModel(
     /** The load in flight, cancelled when a newer one starts. */
     private var loadJob: Job? = null
 
+    private val _comparing = MutableStateFlow(saved.get<Boolean>(KEY_COMPARE) ?: false)
+
+    /** Whether the chart is set against the same window a year earlier; kept while stepping. */
+    val comparing: StateFlow<Boolean> = _comparing.asStateFlow()
+
+    /** The year-earlier read in flight when the comparison was switched on over a shown window. */
+    private var compareJob: Job? = null
+
+    fun setComparing(on: Boolean) {
+        _comparing.value = on
+        saved[KEY_COMPARE] = on
+        compareJob?.cancel()
+        if (!on) {
+            _state.update { current ->
+                (current as? UiState.Data)?.let { UiState.Data(it.value.copy(previousYear = null, previousTotal = null, previousSecondaryTotal = null)) } ?: current
+            }
+            return
+        }
+        val spec = RecordRegistry.specOrNull(typeName ?: return) ?: return
+        val span = _span.value
+        val offset = _offset.value
+        compareJob = viewModelScope.launch { showPreviousYear(spec, span, offset) }
+    }
+
+    /**
+     * The same window a year earlier, read as the chart was -- the same loader, so the two
+     * cannot disagree about what a day is -- and moved forward onto this window's days: 52
+     * weeks or 13 four-week windows back, so each weekday lies over its own, or one calendar
+     * year, whose weekly buckets start on the window's first day as this year's do.
+     */
+    private suspend fun showPreviousYear(spec: RecordTypeSpec<*>, span: Span, offset: Int) {
+        if (!comparesYear(span)) return
+        val back = offset + yearSteps(span)
+        val capped = span.needsHistoryPermission(back) && !_historyGranted.value
+        val started = System.currentTimeMillis()
+        val earlier = runCatching {
+            TileChartLoader(repository, dashboardStore)
+                .chart(spec, span, back, capped, selectedSource, deferExtras = true, withStreak = false)
+        }.getOrNull()
+        currentCoroutineContext().ensureActive()
+        val shift = Duration.between(windowStart(span, back), windowStart(span, offset))
+        // Counts and timing only, never a reading.
+        Log.d(TAG, "year earlier: ${earlier?.points?.size ?: 0} points in ${System.currentTimeMillis() - started} ms")
+        _state.update { current ->
+            (current as? UiState.Data)?.let {
+                UiState.Data(
+                    it.value.copy(
+                        previousYear = earlier?.points.orEmpty().map { point -> point.copy(time = point.time.plus(shift)) },
+                        previousTotal = earlier?.total,
+                        previousSecondaryTotal = earlier?.secondaryTotal,
+                    ),
+                )
+            } ?: current
+        }
+    }
+
     /**
      * Reloads, replacing any load still running. With the list read after the chart is shown,
      * swiping on through years while one loads would otherwise let the older load finish last
@@ -805,6 +870,7 @@ class TileDetailViewModel(
         saved[KEY_DATE] = _span.value.startDate(_offset.value).toString()
 
         loadJob?.cancel()
+        compareJob?.cancel()
         loadJob = viewModelScope.launch {
             _state.update { UiState.Loading }
             _latestBefore.value = null
@@ -860,6 +926,7 @@ class TileDetailViewModel(
                             } ?: current
                         }
                     }
+                    if (!empty && _comparing.value) showPreviousYear(spec, span, offset)
                     if (!empty && data.heatmapPending) {
                         val heatmap = if (data.dayValues.isNotEmpty()) {
                             yearHeatmap(data.dayValues, span.startDate(offset), span.endDate(offset).minusDays(1), fromZero = countsFromZero(spec))
@@ -1178,6 +1245,7 @@ class TileDetailViewModel(
         const val KEY_TYPE = "shownType"
         const val KEY_SPAN = "shownSpan"
         const val KEY_DATE = "shownDate"
+        const val KEY_COMPARE = "comparing"
 
         /** How far back [latestBefore] looks: far enough for a reading taken once a year. */
         val LATEST_LOOKBACK: Duration = Duration.ofDays(3650)
@@ -1206,5 +1274,20 @@ internal fun marksTraining(spec: RecordTypeSpec<*>, span: Span): Boolean =
  * gave daily values -- nights, workouts, daily means. Not for the cycle types, which have no
  * figure to shade.
  */
+/** A window that has a year earlier to set beside it: across days, not a single day's hours. */
+internal fun comparesYear(span: Span): Boolean = span != Span.DAY
+
+/** How many windows back a year is: whole weeks for the week spans, so weekdays line up. */
+internal fun yearSteps(span: Span): Int = when (span) {
+    Span.DAY -> WEEKS_PER_YEAR * DAYS_PER_WEEK
+    Span.WEEK -> WEEKS_PER_YEAR
+    Span.MONTH -> WEEKS_PER_YEAR / WEEKS_PER_MONTH
+    Span.YEAR -> 1
+}
+
+private const val WEEKS_PER_YEAR = 52
+private const val DAYS_PER_WEEK = 7
+private const val WEEKS_PER_MONTH = 4
+
 internal fun showsHeatmap(spec: RecordTypeSpec<*>, span: Span, dayValues: Map<LocalDate, Double>): Boolean =
     span == Span.YEAR && (dayValues.isNotEmpty() || spec.aggregate != null && spec.tile.form != TileSpec.Form.SESSIONS)

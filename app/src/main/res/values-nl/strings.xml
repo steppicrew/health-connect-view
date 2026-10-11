@@ -438,6 +438,12 @@
         <item quantity="other">Uit %1$d nachten</item>
     </plurals>
     <string name="chart_show_rolling_mean">4-weeks gemiddelde tonen</string>
+    <string name="chart_compare_year">Vergelijken met een jaar eerder</string>
+    <string name="legend_previous_year">Een jaar eerder</string>
+    <string name="chart_previous_year_reading">Dezelfde dagen een jaar eerder worden gelezen…</string>
+    <string name="chart_previous_year_total">Een jaar eerder: %1$s</string>
+    <string name="chart_previous_year_none">Op dezelfde dagen een jaar eerder is niets vastgelegd.</string>
+    <string name="chart_previous_year_partial">Maar een deel van die dagen heeft gegevens.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Kies wat je wilt zien</string>

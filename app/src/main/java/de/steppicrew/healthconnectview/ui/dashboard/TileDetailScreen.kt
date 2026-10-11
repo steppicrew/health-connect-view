@@ -8,6 +8,7 @@ import de.steppicrew.healthconnectview.health.YearHeatmap
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.activity.compose.LocalActivity
+import de.steppicrew.healthconnectview.ui.components.OverlayLine
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -230,6 +231,7 @@ fun TileDetailScreen(
     val listState = rememberLazyListState()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val comparing by viewModel.comparing.collectAsStateWithLifecycle()
     // Another window is another page, so it opens at the top; a return to the same one does
     // not. Saved like the list's position, so a restored screen does not count as a change.
     var listWindow by rememberSaveable { mutableStateOf("") }
@@ -335,6 +337,7 @@ fun TileDetailScreen(
                 LocalHistoryAccess provides HistoryAccess(historyGranted, onOpenPermissions),
                 LocalSourceCompare provides SourceCompare(coverage, viewModel::compareSources, viewModel::selectSource),
                 LocalSourceDefault provides SourceDefaultAction(sourceDefault, viewModel::useDefaultSource),
+                LocalYearCompare provides YearCompare(comparing, viewModel::setComparing),
                 LocalDayJump provides DayJump(
                     shown = span.startDate(offset).takeIf { span == Span.DAY },
                     onShow = viewModel::showDay,
@@ -664,6 +667,11 @@ private class DayJump(val shown: LocalDate?, val onShow: (LocalDate) -> Unit)
 
 private val LocalDayJump = staticCompositionLocalOf { DayJump(shown = null, onShow = {}) }
 
+/** Whether the chart is set against the same window a year earlier, and how to switch it. */
+private class YearCompare(val on: Boolean, val onChange: (Boolean) -> Unit)
+
+private val LocalYearCompare = staticCompositionLocalOf { YearCompare(on = false, onChange = {}) }
+
 /** The source comparison's state, how to start it, and how to pick the app it names. */
 private class SourceCompare(
     val load: CoverageLoad?,
@@ -861,6 +869,24 @@ private fun DayPartRow(label: String, average: PartAverage?) {
     }
 }
 
+/**
+ * A window's figure as the headline writes it. A session type's total is a duration in hours,
+ * and a quarter-hour session read as a bare "0,25" -- a fraction of nothing. Everything else
+ * keeps the number, with its unit appended: "1.792" alone was equally unlabelled, just less
+ * obviously so.
+ */
+@Composable
+private fun totalText(data: TileDetailData, total: Double, secondary: Double?): String =
+    if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
+        Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
+    } else {
+        // A change is signed, as in the record list: "+0,01 °C" says above the
+        // wearer's baseline where "0,01 ± °C" read like a tolerance.
+        (if (data.spec.quantity == Quantity.TEMPERATURE_CHANGE && total > 0) "+" else "") +
+            pressureText(total, secondary, data.spec.valueDecimals) +
+            (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
+    }
+
 /** "Steps_2026-09-20_2026-09-26": type and the window's first and last day. */
 @Composable
 private fun SpanSummary(
@@ -909,15 +935,7 @@ private fun SpanSummary(
                 // read as a bare "0,25" -- a fraction of nothing. Everything else keeps the
                 // number, with its unit appended: "1.792" alone was equally unlabelled, just
                 // less obviously so.
-                text = if (data.spec.tile.form == TileSpec.Form.SESSIONS) {
-                    Formatting.duration(Duration.ofMinutes((total * MINUTES_PER_HOUR).toLong()))
-                } else {
-                    // A change is signed, as in the record list: "+0,01 °C" says above the
-                    // wearer's baseline where "0,01 ± °C" read like a tolerance.
-                    (if (data.spec.quantity == Quantity.TEMPERATURE_CHANGE && total > 0) "+" else "") +
-                        pressureText(total, data.secondaryTotal, data.spec.valueDecimals) +
-                        (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
-                },
+                text = totalText(data, total, data.secondaryTotal),
                 style = MaterialTheme.typography.headlineMedium,
             )
             data.secondaryTotal?.let { second ->
@@ -993,9 +1011,13 @@ private fun SpanSummary(
             // not looking for their own level.
             val showMean by remember(store) { store.settings.map { it.showRollingMean } }
                 .collectAsStateWithLifecycle(initialValue = false)
+            val compare = LocalYearCompare.current
+            val comparable = data.extent == null && !data.sessionCounts
+            val compareUnlocked = unlocked(Feature.YEAR_COMPARE)
             val shown = data.copy(
                 nightPoints = if (showNights) data.nightPoints else emptyList(),
                 baseline = if (showMean) data.baseline else emptyList(),
+                previousYear = data.previousYear.takeIf { compare.on && comparable && compareUnlocked },
                 // The wearer's usual range replaces the day's spread where the type has one:
                 // two bands behind one line would be two answers to "is this normal".
                 rangeBand = data.usualBand.ifEmpty { data.rangeBand },
@@ -1052,6 +1074,13 @@ private fun SpanSummary(
                 ChartToggle(showMean, R.string.chart_show_rolling_mean) {
                     scope.launch { store.setShowRollingMean(it) }
                 }
+            }
+            if (comparable) {
+                val activity = LocalActivity.current
+                ChartToggle(compare.on && compareUnlocked, R.string.chart_compare_year, locked = !compareUnlocked) {
+                    if (compareUnlocked) compare.onChange(it) else activity?.let(AppEntitlements.current::buy)
+                }
+                if (compare.on && compareUnlocked) YearEarlierLine(data)
             }
 
             // The bands are context; naming them is what turns a shaded region into
@@ -1368,6 +1397,7 @@ private fun ChartLegend(data: TileDetailData) {
             data.goal != null,
             data.nightPoints.isNotEmpty(),
             data.baseline.isNotEmpty(),
+            !data.previousYear.isNullOrEmpty(),
         ).count { it }
     if (entries < 2 && !bandShown) return
 
@@ -1438,6 +1468,9 @@ private fun ChartLegend(data: TileDetailData) {
         }
         if (data.baseline.isNotEmpty()) {
             LegendEntry(color = MaterialTheme.colorScheme.onSurfaceVariant, label = R.string.legend_rolling_mean)
+        }
+        if (!data.previousYear.isNullOrEmpty()) {
+            LegendEntry(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = PREVIOUS_YEAR_ALPHA), label = R.string.legend_previous_year)
         }
         if (data.goal != null) {
             LegendEntry(color = MaterialTheme.colorScheme.tertiary, label = R.string.legend_goal)
@@ -1548,6 +1581,36 @@ private fun TrainingNightsSection(split: TrainingNights, @StringRes unitRes: Int
     }
 }
 
+/**
+ * The year-earlier window over this one, on its scale since it is the same quantity: lighter
+ * bars beside each bar, or a lighter line under the line. Read by touch like any overlay.
+ */
+@Composable
+private fun previousYearOverlay(data: TileDetailData): List<OverlayLine> {
+    // Within this window's own buckets: a year's last, one-day bucket of last year has no
+    // bar beside it yet today, and drawn on its own it stood past the plot's edge.
+    val first = data.points.firstOrNull()?.time ?: return emptyList()
+    val last = data.points.last().time
+    val points = data.previousYear?.filter { it.time in first..last }?.takeIf { it.isNotEmpty() } ?: return emptyList()
+    val label = stringResource(R.string.legend_previous_year)
+    val unit = data.spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    val sessions = data.spec.tile.form == TileSpec.Form.SESSIONS
+    return listOf(
+        OverlayLine(
+            points = points,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = PREVIOUS_YEAR_ALPHA),
+            format = { v ->
+                "$label " + if (sessions) Formatting.duration(Duration.ofMinutes((v * MINUTES_PER_HOUR).toLong()))
+                else Formatting.number(v, data.spec.valueDecimals) + unit
+            },
+            sharesScale = true,
+            bars = data.bars,
+        ),
+    )
+}
+
+private const val PREVIOUS_YEAR_ALPHA = 0.7f
+
 private val HALF_DAY: Duration = Duration.ofHours(12)
 private const val TRAINING_ALPHA = 0.7f
 
@@ -1609,6 +1672,7 @@ internal fun DataLineChart(
         },
         scatter = data.nightPoints,
         baseline = data.baseline,
+        overlays = previousYearOverlay(data),
         // Each training day centred on its point, as the day's value sits at its start.
         strip = trainingColor().let { color ->
             data.trainingDays.map { day ->
@@ -1733,7 +1797,7 @@ private fun HrvStanding.labelRes(): Int = when (this) {
 /** One swatch and its name; a round swatch for a mark drawn as dots. */
 /** A remembered on/off for an optional mark on the chart, the whole row tappable. */
 @Composable
-private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Boolean) -> Unit) {
+private fun ChartToggle(checked: Boolean, @StringRes label: Int, locked: Boolean = false, onChange: (Boolean) -> Unit) {
     Row(
         verticalAlignment = Alignment.Top,
         modifier = Modifier
@@ -1748,8 +1812,9 @@ private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Bool
         )
         // The box has no touch target of its own here -- the row is the target -- so nothing
         // keeps the label off it but this gap, as beside the export dialog's radio buttons.
+        // Without Pro, named as every Pro part is, and a tap opens the purchase.
         Text(
-            text = stringResource(label),
+            text = if (locked) stringResource(R.string.export_premium, stringResource(label)) else stringResource(label),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(
                 start = 12.dp,
@@ -1757,6 +1822,30 @@ private fun ChartToggle(checked: Boolean, @StringRes label: Int, onChange: (Bool
             ),
         )
     }
+}
+
+/**
+ * The year-earlier window's own figure under the chart, as the headline gives this one's, so
+ * the comparison has a number and not only two shapes; or that it is being read, or that
+ * nothing was recorded then.
+ */
+@Composable
+private fun YearEarlierLine(data: TileDetailData) {
+    val previous = data.previousYear
+    val total = data.previousTotal
+    Text(
+        text = when {
+            previous == null -> stringResource(R.string.chart_previous_year_reading)
+            total != null -> stringResource(R.string.chart_previous_year_total, totalText(data, total, data.previousSecondaryTotal)) +
+                // A sum over fewer days is no comparison; say so rather than let it read as one.
+                if (previous.size < data.points.size) " " + stringResource(R.string.chart_previous_year_partial) else ""
+            previous.isEmpty() -> stringResource(R.string.chart_previous_year_none)
+            else -> stringResource(R.string.legend_previous_year)
+        },
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = TOGGLE_SIZE.dp + 12.dp),
+    )
 }
 
 @Composable

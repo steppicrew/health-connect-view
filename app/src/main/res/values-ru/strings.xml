@@ -460,6 +460,12 @@
         <item quantity="other">За %1$d ночи</item>
     </plurals>
     <string name="chart_show_rolling_mean">Показать среднее за 4 недели</string>
+    <string name="chart_compare_year">Сравнить с прошлым годом</string>
+    <string name="legend_previous_year">Год назад</string>
+    <string name="chart_previous_year_reading">Чтение тех же дней год назад…</string>
+    <string name="chart_previous_year_total">Год назад: %1$s</string>
+    <string name="chart_previous_year_none">В те же дни год назад ничего не записано.</string>
+    <string name="chart_previous_year_partial">Данные есть только за часть этих дней.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Выберите, что показывать</string>

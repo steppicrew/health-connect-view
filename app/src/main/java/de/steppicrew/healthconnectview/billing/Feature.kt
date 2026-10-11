@@ -48,4 +48,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** When the nights of a week, four weeks or a year began and ended, and how much that varied. */
     SLEEP_REGULARITY(isPremium = true),
+
+    /** A week, four weeks or a year set against the same window a year earlier, on one chart. */
+    YEAR_COMPARE(isPremium = true),
 }
