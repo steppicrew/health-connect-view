@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,9 +38,11 @@ import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.registry.ValueZones
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
@@ -196,9 +200,62 @@ fun HeatmapLegend(heatmap: YearHeatmap, spec: RecordTypeSpec<*>, modifier: Modif
     }
 }
 
+/**
+ * A bar per weekday, the locale's first day first as in the grid's rows: each weekday's mean
+ * ([means]), shaded as a day of that value would be. Heights run from the calendar's own
+ * start -- zero for a count, the floor or the lowest day for a level -- and carry no scale, so
+ * the tile keeps the legend's as its one; the description reads the means out.
+ */
+@Composable
+fun WeekdayRhythm(heatmap: YearHeatmap, means: Map<DayOfWeek, Double>, spec: RecordTypeSpec<*>, modifier: Modifier = Modifier) {
+    val firstDay = remember { WeekFields.of(Locale.getDefault()).firstDayOfWeek }
+    val order = remember(firstDay) { (0L until DAYS_PER_WEEK).map { firstDay.plus(it) } }
+    val full = remember(firstDay) { order.associateWith { it.getDisplayName(TextStyle.FULL, Locale.getDefault()) } }
+    val narrow = remember(firstDay) { order.associateWith { it.getDisplayName(TextStyle.NARROW, Locale.getDefault()) } }
+    val shades = heatmapShades()
+    val value = heatmapValue(spec)
+    val top = means.values.maxOrNull() ?: return
+    val span = top - heatmap.low
+    val description = order.mapNotNull { day ->
+        means[day]?.let { full.getValue(day) + " " + value(it) }
+    }.joinToString(", ")
+    Row(
+        modifier
+            .fillMaxWidth()
+            .semantics(mergeDescendants = true) { contentDescription = description },
+    ) {
+        order.forEach { day ->
+            val mean = means[day]
+            Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(Modifier.height(RHYTHM_HEIGHT.dp).fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+                    if (mean != null) {
+                        val share = if (span > 0) ((mean - heatmap.low) / span).toFloat() else 1f
+                        Box(
+                            Modifier
+                                .fillMaxWidth(RHYTHM_BAR_WIDTH)
+                                .fillMaxHeight(share.coerceIn(RHYTHM_MIN_SHARE, 1f))
+                                .background(shades[heatmap.step(mean)], RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)),
+                        )
+                    }
+                }
+                Text(
+                    narrow.getValue(day),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
 private val SHADE_ALPHAS = listOf(0.2f, 0.4f, 0.6f, 0.8f, 1f)
 private const val DAYS_PER_WEEK = 7
 private const val GAP = 1.5f
 private const val LABEL_HEIGHT = 14
 private const val CORNER = 0.2f
 private const val MINUTES_PER_HOUR = 60.0
+private const val RHYTHM_HEIGHT = 32
+private const val RHYTHM_BAR_WIDTH = 0.4f
+
+/** The lowest weekday still a sliver: no bar at all read as nothing recorded. */
+private const val RHYTHM_MIN_SHARE = 0.06f
