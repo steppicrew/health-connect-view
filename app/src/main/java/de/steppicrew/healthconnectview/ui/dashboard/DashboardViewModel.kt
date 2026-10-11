@@ -190,6 +190,16 @@ data class TileData(
     val sessionDuration: Duration get() = sessions.totalDuration()
 
     /**
+     * Sleep across a window, per recorded night credited to the morning it ended, as the
+     * detail screen's headline: a 4-week tile read "192h 0m" above a screen saying 6h 53m.
+     */
+    val nightlyDuration: Duration
+        get() {
+            val nights = sessions.groupBy { it.end.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate() }.size
+            return if (nights == 0) Duration.ZERO else sessionDuration.dividedBy(nights.toLong())
+        }
+
+    /**
      * The workout a tap opens directly: the one drawn as a curve, or the day's only workout.
      * Several on a timeline go to the day's list instead, since the tile names none of them.
      */
