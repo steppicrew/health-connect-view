@@ -230,12 +230,12 @@ fun TileDetailScreen(
     // coming back from a workout must land where it was left, not at the top.
     val listState = rememberLazyListState()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val end by viewModel.end.collectAsStateWithLifecycle()
     val comparing by viewModel.comparing.collectAsStateWithLifecycle()
     // Another window is another page, so it opens at the top; a return to the same one does
     // not. Saved like the list's position, so a restored screen does not count as a change.
     var listWindow by rememberSaveable { mutableStateOf("") }
-    val window = "${span.name}/$offset"
+    val window = "${span.name}/$end"
     LaunchedEffect(window) {
         if (listWindow.isNotEmpty() && listWindow != window) listState.scrollToItem(0)
         listWindow = window
@@ -291,14 +291,14 @@ fun TileDetailScreen(
                             typeName = typeName,
                             load = viewModel::compareCandidates,
                             onPick = { second ->
-                                onCompare(typeName, second, span, span.endDate(offset).minusDays(1).toString())
+                                onCompare(typeName, second, span, end.toString())
                             },
                         )
                     }
                     spec?.let { current ->
                         ExportAction(
                             typeName = current.type.simpleName.orEmpty().removeSuffix("Record"),
-                            shown = ExportPeriod(span.startDate(offset), span.endDate(offset).minusDays(1)),
+                            shown = ExportPeriod(span.startDate(0, end), end),
                             historyGranted = historyGranted,
                             // Not for sessions: Health Connect's daily sleep total cuts nights at
                             // midnight, while the app credits a night to the morning it ended --
@@ -319,16 +319,16 @@ fun TileDetailScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .swipeToStep(offset > 0, viewModel::stepBack, viewModel::stepForward),
+                .swipeToStep(end.isBefore(LocalDate.now()), viewModel::stepBack, viewModel::stepForward),
         ) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan)
             WindowStepper(
-                label = windowLabel(span, offset),
-                canStepForward = offset > 0,
+                label = windowLabel(span, 0, end),
+                canStepForward = end.isBefore(LocalDate.now()),
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
                 onNow = viewModel::stepToNow,
-                shownDate = span.startDate(offset),
+                shownDate = end,
                 onPickDate = viewModel::showDate,
             )
 
@@ -339,7 +339,7 @@ fun TileDetailScreen(
                 LocalSourceDefault provides SourceDefaultAction(sourceDefault, viewModel::useDefaultSource),
                 LocalYearCompare provides YearCompare(comparing, viewModel::setComparing),
                 LocalDayJump provides DayJump(
-                    shown = span.startDate(offset).takeIf { span == Span.DAY },
+                    shown = end.takeIf { span == Span.DAY },
                     onShow = viewModel::showDay,
                 ),
             ) {
@@ -393,7 +393,7 @@ fun TileDetailScreen(
                         is UiState.Data -> SpanContent(
                             listState = listState,
                             data = current.value,
-                            period = windowLabel(span, offset),
+                            period = windowLabel(span, 0, end),
                             onSelectSource = viewModel::selectSource,
                             onOpenSession = onOpenSession,
                             loadCurve = viewModel::curveFor,

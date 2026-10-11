@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.compare
 
+import java.time.LocalDate
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -67,7 +68,7 @@ fun CompareScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val types by viewModel.types.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
-    val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val end by viewModel.end.collectAsStateWithLifecycle()
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     var picking by rememberSaveable { mutableStateOf(false) }
     OnResume { viewModel.onResume() }
@@ -98,13 +99,13 @@ fun CompareScreen(
         Column(Modifier.padding(padding).fillMaxSize()) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan)
             WindowStepper(
-                label = windowLabel(span, offset),
-                canStepForward = offset > 0,
+                label = windowLabel(span, 0, end),
+                canStepForward = end.isBefore(LocalDate.now()),
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
                 onNow = viewModel::stepToNow,
             )
-            val historyNeeded = !historyGranted && span.needsHistoryPermission(offset)
+            val historyNeeded = !historyGranted && span.needsHistoryPermission(0, end)
             when (val current = state) {
                 UiState.Loading -> LoadingView()
                 UiState.NoPermission -> MessageView(
@@ -126,7 +127,7 @@ fun CompareScreen(
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
-                is UiState.Data -> Charts(current.value, windowLabel(span, offset), historyNeeded, onOpenPermissions)
+                is UiState.Data -> Charts(current.value, windowLabel(span, 0, end), historyNeeded, onOpenPermissions)
             }
         }
     }

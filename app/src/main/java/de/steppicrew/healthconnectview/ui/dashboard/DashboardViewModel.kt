@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.SharedDate
 import de.steppicrew.healthconnectview.health.readsHeatmap
 import de.steppicrew.healthconnectview.health.calendarHeadline
 import de.steppicrew.healthconnectview.health.readHeatmap
@@ -256,10 +257,11 @@ class DashboardViewModel(
 
     private val _state = MutableStateFlow(
         DashboardUiState(
-            date = saved.get<String>(KEY_DATE)
-                ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
-                ?.takeUnless { it.isAfter(LocalDate.now()) }
-                ?: LocalDate.now(),
+            // After the process was killed the saved day comes back, to the whole app.
+            date = run {
+                saved.get<String>(KEY_DATE)?.let { runCatching { LocalDate.parse(it) }.getOrNull() }?.let(SharedDate::set)
+                SharedDate.current
+            },
         ),
     )
     val state: StateFlow<DashboardUiState> = _state.asStateFlow()
@@ -534,9 +536,14 @@ class DashboardViewModel(
         showDate(_state.value.date.plusDays(1))
     }
 
-    /** Opens any day up to today; a later one is today. */
+    /**
+     * Opens any day up to today; a later one is today. The day is the app's (see [SharedDate]),
+     * so a detail screen opened next ends its windows on it, and a day picked there comes back
+     * here through the same call.
+     */
     fun showDate(date: LocalDate) {
-        val shown = minOf(date, LocalDate.now())
+        SharedDate.set(date)
+        val shown = SharedDate.current
         if (shown == _state.value.date) return
         saved[KEY_DATE] = shown.toString()
         _state.update { it.copy(date = shown) }
@@ -737,9 +744,8 @@ class DashboardViewModel(
             // Curves only where there is room for them and a window to draw: a 2x2 tile over
             // more than a day. A 2x1 row is too short for a curve beside its name and number.
             if (tile.height < 2 || tile.span == Span.DAY) return day.copy(bodyReadings = readings)
-            val offset = tile.span.offsetOf(date)
-            val start = windowStart(tile.span, offset)
-            val end = windowEnd(tile.span, offset)
+            val start = windowStart(tile.span, 0, date)
+            val end = windowEnd(tile.span, 0, date)
             val curves = (listOf(WEIGHT_TYPE) + BODY_PARTS).mapNotNull { typeName ->
                 val spec = RecordRegistry.specOrNull(typeName) ?: return@mapNotNull null
                 try {
@@ -759,15 +765,16 @@ class DashboardViewModel(
         // floor under a running tally -- and the chart comes from the detail screen's loader,
         // so the tile draws exactly the chart its tap opens.
         val day = if (tile.span == Span.DAY) loadDay(placeholder, date) else null
-        val offset = tile.span.offsetOf(date)
+        // The window ends on the day shown, as the detail screen's does: a year is the 365
+        // days back from it.
         val source = day?.source ?: resolveSource(
             placeholder,
-            TimeRangeFilter.between(windowStart(tile.span, offset), windowEnd(tile.span, offset)),
+            TimeRangeFilter.between(windowStart(tile.span, 0, date), windowEnd(tile.span, 0, date)),
         )
-        val capped = tile.span.needsHistoryPermission(offset) && !historyGranted
+        val capped = tile.span.needsHistoryPermission(0, date) && !historyGranted
         val reads = Reads()
         val chart = reads.attempt {
-            TileChartLoader(repository, store).chart(placeholder.spec, tile.span, offset, capped, source, withStreak = false)
+            TileChartLoader(repository, store, today = date).chart(placeholder.spec, tile.span, 0, capped, source, withStreak = false)
         }
 
         // The chosen readings over the day's sessions: its night -- the longest sleep, not a
@@ -820,11 +827,10 @@ class DashboardViewModel(
      */
     private suspend fun loadCalendar(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
         val tile = placeholder.tile
-        val offset = Span.YEAR.offsetOf(date)
         val (first, last) = if (tile.calendarYear) {
             date.withDayOfYear(1) to date.withDayOfYear(1).plusYears(1).minusDays(1)
         } else {
-            Span.YEAR.startDate(offset) to Span.YEAR.endDate(offset).minusDays(1)
+            Span.YEAR.startDate(0, date) to date
         }
         val source = resolveSource(
             placeholder,

@@ -91,11 +91,24 @@ class SpanTest {
 
     @Test
     fun `only short recent windows avoid needing history permission`() {
-        assertFalse(Span.DAY.needsHistoryPermission(0, today))
-        assertFalse(Span.WEEK.needsHistoryPermission(0, today))
-        assertTrue(Span.YEAR.needsHistoryPermission(0, today))
+        assertFalse(Span.DAY.needsHistoryPermission(0, today, now = today))
+        assertFalse(Span.WEEK.needsHistoryPermission(0, today, now = today))
+        assertTrue(Span.YEAR.needsHistoryPermission(0, today, now = today))
         // Stepping a short span far enough back also crosses the 30-day line.
-        assertTrue(Span.WEEK.needsHistoryPermission(6, today))
+        assertTrue(Span.WEEK.needsHistoryPermission(6, today, now = today))
+        // A week ending on a day picked six weeks back: the platform's 30 days run from the
+        // real today, not from the day the window ends on.
+        assertTrue(Span.WEEK.needsHistoryPermission(0, today.minusWeeks(6), now = today))
+    }
+
+    @Test
+    fun `stepping a window ending on any day tiles the calendar`() {
+        val end = LocalDate.of(2026, 8, 29)
+        assertEquals(LocalDate.of(2026, 8, 22), Span.WEEK.previousEnd(end))
+        assertEquals(LocalDate.of(2025, 8, 29), Span.YEAR.previousEnd(end))
+        assertEquals(LocalDate.of(2026, 9, 26), Span.MONTH.nextEnd(end, now = LocalDate.of(2026, 10, 11)))
+        // Never past today.
+        assertEquals(LocalDate.of(2026, 9, 1), Span.WEEK.nextEnd(end, now = LocalDate.of(2026, 9, 1)))
     }
 
     @Test
