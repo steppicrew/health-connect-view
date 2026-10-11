@@ -5,6 +5,7 @@ import de.steppicrew.healthconnectview.dashboard.DashboardJson
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.dashboard.facesFor
+import de.steppicrew.healthconnectview.dashboard.offersMean
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.TileSpec
 import org.junit.Assert.assertEquals
@@ -265,6 +266,15 @@ class DashboardConfigTest {
             listOf(Tile("StepsRecord", width = 2, height = 2, span = Span.YEAR, face = TileFace.CALENDAR, calendarYear = true)),
         )
         assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+    }
+
+    @Test
+    fun `a heart rate tile may draw its mean, a running total not, and it round-trips`() {
+        assertTrue(offersMean("HeartRateRecord"))
+        assertTrue(!offersMean("StepsRecord"))
+        val stored = DashboardConfig(listOf(Tile("HeartRateRecord", width = 2, height = 1, face = TileFace.BOTH, mean = true)))
+        assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+        assertEquals(true, stored.withOptions("HeartRateRecord", Span.WEEK, TileFace.BOTH, mean = true).tiles.single().mean)
     }
 
     @Test

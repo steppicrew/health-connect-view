@@ -75,6 +75,7 @@
     <string name="tile_calendar_this_year">Ten rok</string>
     <string name="tile_options_companion">Dodatkowa krzywa</string>
     <string name="tile_companion_none">Brak</string>
+    <string name="tile_options_mean">Średnia jako linia przerywana</string>
     <string name="tile_title_span_capped">%1$s · %2$s, tylko ostatnie 30 dni</string>
     <string name="tile_size">Rozmiar %1$d × %2$d</string>
     <string name="tile_remove">Usuń</string>

@@ -71,6 +71,12 @@ data class Tile(
      * left blank) rather than the last 365 days. Stored whatever the face, like [span].
      */
     val calendarYear: Boolean = false,
+    /**
+     * The window's mean as a dashed line across the tile's chart, with its figure beneath the
+     * number -- the owner's request, 11.10.2026. Offered where [offersMean]; stored whatever
+     * the face, like [span].
+     */
+    val mean: Boolean = false,
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -215,8 +221,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         face: TileFace,
         companion: String? = null,
         calendarYear: Boolean = false,
+        mean: Boolean = false,
     ): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.id == id) it.copy(span = span, face = face, companion = companion, calendarYear = calendarYear) else it },
+        tiles.map {
+            if (it.id == id) it.copy(span = span, face = face, companion = companion, calendarYear = calendarYear, mean = mean) else it
+        },
     )
 
     /** Sets one tile's colour. */
@@ -270,6 +279,14 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
  * the combined weight tile, step 64 of the roadmap. Elsewhere the tile already has its context
  * (workouts behind heart rate) or draws bars a line would clash with.
  */
+/**
+ * Whether a tile of the type may draw its window's mean: a curve of readings, where a level
+ * through the ups and downs says something -- heart rate. Not a running total, whose mean
+ * would sit under a line that only climbs.
+ */
+fun offersMean(typeName: String): Boolean =
+    RecordRegistry.specOrNull(typeName)?.tile?.form == TileSpec.Form.CURVE
+
 fun companionsOf(typeName: String): List<String> = when (typeName) {
     "SleepSessionRecord" -> listOf(
         "HeartRateRecord",

@@ -34,6 +34,7 @@ internal object DashboardJson {
                     if (tile.color != TileColor.DEFAULT) put(FIELD_COLOR, tile.color.name)
                     tile.companion?.let { put(FIELD_COMPANION, it) }
                     if (tile.calendarYear) put(FIELD_CALENDAR_YEAR, true)
+                    if (tile.mean) put(FIELD_MEAN, true)
                 },
             )
         }
@@ -70,6 +71,7 @@ internal object DashboardJson {
                 // A curve this version does not offer for the type is dropped, not drawn.
                 companion = item.optString(FIELD_COMPANION).takeIf { it in companionsOf(typeName) },
                 calendarYear = item.optBoolean(FIELD_CALENDAR_YEAR, false),
+                mean = item.optBoolean(FIELD_MEAN, false),
             )
         }
         return DashboardConfig(tiles)
@@ -86,4 +88,5 @@ internal object DashboardJson {
     private const val FIELD_COLOR = "color"
     private const val FIELD_COMPANION = "with"
     private const val FIELD_CALENDAR_YEAR = "calendarYear"
+    private const val FIELD_MEAN = "mean"
 }

@@ -72,6 +72,7 @@
     <string name="tile_calendar_this_year">올해</string>
     <string name="tile_options_companion">추가 곡선</string>
     <string name="tile_companion_none">없음</string>
+    <string name="tile_options_mean">평균을 점선으로 표시</string>
     <string name="tile_title_span_capped">%1$s · %2$s, 최근 30일만</string>
     <string name="tile_size">크기 %1$d × %2$d</string>
     <string name="tile_remove">삭제</string>

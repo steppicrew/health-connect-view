@@ -36,8 +36,11 @@ fun TileOptionsDialog(
     currentSpan: Span,
     currentFace: TileFace,
     onDismiss: () -> Unit,
-    /** The window, the face, the second curve, and whether a calendar covers the calendar year. */
-    onSave: (Span, TileFace, String?, Boolean) -> Unit,
+    /**
+     * The window, the face, the second curve, whether a calendar covers the calendar year, and
+     * whether the chart draws its mean.
+     */
+    onSave: (Span, TileFace, String?, Boolean, Boolean) -> Unit,
     /** The curves the type may draw beside its own, by type name; none offers no choice. */
     companions: List<String> = emptyList(),
     currentCompanion: String? = null,
@@ -46,11 +49,15 @@ fun TileOptionsDialog(
     /** Whether the body face draws a window: on a 2x2 tile, not on a 2x1 one. */
     bodyHasWindow: Boolean = false,
     currentCalendarYear: Boolean = false,
+    /** Whether the type may draw its window's mean; see [offersMean]. */
+    meanOffered: Boolean = false,
+    currentMean: Boolean = false,
 ) {
     var span by remember { mutableStateOf(currentSpan) }
     var calendarYear by remember { mutableStateOf(currentCalendarYear) }
     var face by remember { mutableStateOf(currentFace) }
     var companion by remember { mutableStateOf(currentCompanion) }
+    var mean by remember { mutableStateOf(currentMean) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -131,12 +138,21 @@ fun TileOptionsDialog(
                         }
                     }
                 }
+                // A line on the chart, so only where a chart is drawn.
+                if (meanOffered && face != TileFace.VALUE && face != TileFace.CALENDAR) {
+                    FilterChip(
+                        selected = mean,
+                        onClick = { mean = !mean },
+                        label = { Text(stringResource(R.string.tile_options_mean)) },
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onSave(if (face == TileFace.CALENDAR) Span.YEAR else span, face, companion, calendarYear)
+                    onSave(if (face == TileFace.CALENDAR) Span.YEAR else span, face, companion, calendarYear, mean)
                     onDismiss()
                 },
             ) {

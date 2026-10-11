@@ -74,6 +74,7 @@
     <string name="tile_calendar_this_year">Quest’anno</string>
     <string name="tile_options_companion">Curva aggiuntiva</string>
     <string name="tile_companion_none">Nessuna</string>
+    <string name="tile_options_mean">Media come linea tratteggiata</string>
     <string name="tile_title_span_capped">%1$s · %2$s, solo ultimi 30 giorni</string>
     <string name="tile_size">Dimensione %1$d × %2$d</string>
     <string name="tile_remove">Rimuovi</string>
