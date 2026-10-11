@@ -1634,6 +1634,7 @@ internal fun DataLineChart(
     interactive: Boolean = true,
     fillHeight: Boolean = false,
     compactAxis: Boolean = false,
+    sessionIcons: Boolean = true,
     onVisibleRange: ((ClosedRange<Instant>?) -> Unit)? = null,
     /**
      * The time axis, where it must match another chart's -- a comparison. Not written into
@@ -1672,6 +1673,7 @@ internal fun DataLineChart(
         interactive = interactive,
         fillHeight = fillHeight,
         compactAxis = compactAxis,
+        sessionIcons = sessionIcons,
         // Only the departures are coloured: a week inside its range keeps the line's own
         // colour, so an orange stretch is the one thing that stands out.
         pointColors = data.pointStandings.map { standing ->
