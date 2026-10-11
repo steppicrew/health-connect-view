@@ -347,7 +347,7 @@ fun LineChart(
         AxisScale.of(
             low = dataLow,
             high = dataHigh,
-            targetSteps = if (compactAxis) GUIDE_INTERVALS / 2 else GUIDE_INTERVALS,
+            targetSteps = GUIDE_INTERVALS,
             integral = integral,
             includeZero = bars,
         )
@@ -802,7 +802,12 @@ fun LineChart(
             // than inferred from the endpoints. The count follows from the round step rather
             // than being fixed: four intervals is what the scale aims for, and it lands on
             // three or five where that is what keeps the ends round.
-            val guides = scale.guides
+            // A compact plot fits its range as finely as a full one and leaves out every other
+            // line. Asking the scale for half the intervals instead doubled the step, and an
+            // HRV of 30-90 ms then rounded down to a plot from 0 to 100.
+            val guides = scale.guides.let { all ->
+                if (compactAxis && all.size % 2 == 1) all.filterIndexed { i, _ -> i % 2 == 0 } else all
+            }
             guides.forEach { guide ->
                 val y = yFor(guide)
                 drawLine(
