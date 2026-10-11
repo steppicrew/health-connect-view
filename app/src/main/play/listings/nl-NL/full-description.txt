@@ -9,11 +9,11 @@ WAT DE APP DOET
 • Slaap en trainingen gearceerd achter de dagkrommen, zodat een piek of dal een verklaring heeft
 • Elke training met hartslag, snelheid en hoogte in één grafiek, pauzes herkend en weggelaten, en de route als je dat toestaat
 • Slaapfasen voor elke nacht die je horloge vastlegt, naast de hartslag, ademhalingsfrequentie, SpO₂ en HRV van die nacht
-• Een cyclusoverzicht: alle cycli van een jaar naast elkaar, uitgelijnd op dag één, zonder voorspellingen
+• Een cyclusoverzicht: alle cycli van een jaar naast elkaar, uitgelijnd op dag één, ook als kalender en tegel, zonder voorspellingen
 • Trendpijlen: de laatste week tegenover je 30-daags gemiddelde
 • Reeksen: hoeveel dagen op rij je je doel haalde of actief was, en de langste van het jaar
 • Hoe elke meting is gedaan: bloedglucose nuchter of na een maaltijd, bloeddruk zittend of aan de pols
-• Tegels ordenen door te slepen, metrische of imperiale eenheden, bloedglucose in mmol/L of mg/dL
+• Tegels ordenen door te slepen, metrische of imperiale eenheden, bloedglucose in mmol/L of mg/dL, grafieken beschreven voor schermlezers
 • Je dashboard en instellingen als bestand bewaren en op een nieuwe telefoon terugzetten
 
 JE GEGEVENS BLIJVEN OP JE TELEFOON
@@ -28,24 +28,26 @@ Toestemmingen worden per gegevenstype gevraagd en niets is vooraf geselecteerd. 
 
 KLOPPENDE TOTALEN
 
-Als meerdere apps hetzelfde vastleggen — een telefoon en een horloge die allebei stappen tellen — overlappen hun registraties. Deze app gebruikt de eigen aggregatie van Health Connect om dubbele gegevens te verwijderen, zodat dagtotalen kloppen in plaats van dubbel te tellen, en vertelt je wanneer meer dan één app heeft bijgedragen.
+Als meerdere apps hetzelfde vastleggen — een telefoon en een horloge die allebei stappen tellen — overlappen hun registraties. Deze app gebruikt de eigen aggregatie van Health Connect om dubbele gegevens te verwijderen, zodat dagtotalen niet dubbel tellen.
 
-Health Connect koppelt een training niet aan de metingen die erbij horen. Waar deze app de cijfers van een sessie toont, zegt hij duidelijk dat ze op tijd zijn gekoppeld.
+Health Connect koppelt een training niet aan de metingen die erbij horen. Deze app koppelt ze op tijd en zegt dat erbij.
 
 PRO — EENMALIGE AANKOOP, GEEN ABONNEMENT
 
-Alles hierboven is gratis en blijft gratis. Pro is één in-app-aankoop die ontgrendelt:
+Alles hierboven is gratis en blijft gratis. Pro, één aankoop, ontgrendelt:
 
-• CSV-export van elk gegevenstype: elke registratie met de bron-app, of de ontdubbelde dagtotalen van Health Connect. Jij kiest waar het bestand komt; de app houdt geen kopie.
-• PDF-rapporten voor je arts: bloeddruk met ochtend- en avondgemiddelden, gewicht per week, rusthartslag tegenover het 4-weeks gemiddelde, bloedglucose per maaltijd en doelbereik. Of alle vier in één rapport.
+• CSV-export van elk gegevenstype: elke registratie met de bron-app, of de ontdubbelde dagtotalen. De app houdt geen kopie.
+• PDF-rapporten: de dagwaarden van elk cijfer, en voor je arts bloeddruk met ochtend- en avondgemiddelden, gewicht, rusthartslag en bloedglucose, voor elke periode, los of alles in één.
 • Grotere tegels — de week, vier weken of het jaar als getal, grafiek of beide, of de slaapfasen van afgelopen nacht en je laatste trainingen met een curve naar keuze.
-• Het jaar als kalender, één tint per dag — onder elke jaargrafiek en als tegel.
-• Meerdere tegels voor hetzelfde cijfer en een eigen kleur per tegel.
-• Een tegel met wat er deze week veranderde, gewicht met lichaamssamenstelling, en twee cijfers vergeleken op één tijdas.
-• Trainingsroutes als GPX-bestanden.
+• Het jaar als kalender, één tint per dag, met het gemiddelde van elke weekdag.
+• Wat er deze week veranderde, op gekleurde stroken die tonen hoe ongewoon de week was.
+• Deze maand naast dezelfde maand een jaar eerder.
+• Slaapritme: hoe regelmatig je naar bed gaat en opstaat.
+• Eén soort training over het jaar: snelheid of tempo en hartslag.
+• Meerdere tegels per cijfer, tegelkleuren, lichaamssamenstelling, twee cijfers op één tijdas, routes als GPX-bestanden.
 • Elke toekomstige Pro-functie, zonder extra kosten.
 
-Aankopen worden volledig door Google Play afgehandeld en gaan mee naar een nieuwe telefoon.
+Aankopen gaan met je Google-account mee naar een nieuwe telefoon.
 
 OPEN SOURCE
 
