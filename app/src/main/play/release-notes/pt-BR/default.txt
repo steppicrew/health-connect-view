@@ -1,3 +1,1 @@
-1.4.1 — Blocos grandes de treinos: o número abre a lista do dia, a curva o seu treino e, com dois treinos, cada curva abre o seu.
-
-1.4.0 — O ano como calendário, um tom por dia, abaixo dos gráficos anuais e como bloco (Pro). Um só PDF para seu médico com pressão, peso, frequência cardíaca em repouso e glicemia (Pro). Fases do sono na exportação CSV. Um ano de calorias carrega em um segundo. Um bloco novo aparece onde você está olhando.
+1.5.0 — Mudanças desta semana em blocos grandes com faixas coloridas e tipos à sua escolha (Pro). Este mês ao lado do mesmo mês do ano passado, ritmo do sono, um tipo de treino ao longo do ano, barras por dia da semana no bloco de calendário e um relatório em PDF para cada tipo (Pro). Nutrientes além da energia, bloco e calendário do ciclo, uma só data para todo o app, gráficos para leitores de tela.

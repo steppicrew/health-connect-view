@@ -1,3 +1,1 @@
-1.4.1 — Riquadri grandi degli allenamenti: il numero apre l’elenco del giorno, la curva il suo allenamento e, con due allenamenti, ogni curva apre il proprio.
-
-1.4.0 — L’anno come calendario, una tonalità per giorno, sotto i grafici annuali e come riquadro (Pro). Un unico PDF per il tuo medico con pressione, peso, frequenza cardiaca a riposo e glicemia (Pro). Fasi del sonno nell’esportazione CSV. Un anno di calorie si carica in un secondo. Un nuovo riquadro compare dove stai guardando.
+1.5.0 — Cambiamenti della settimana in riquadri grandi con strisce colorate e tipi a scelta (Pro). Questo mese accanto allo stesso mese dell’anno scorso, ritmo del sonno, un tipo di allenamento nell’anno, barre per giorno della settimana sul riquadro calendario e un report PDF per ogni tipo (Pro). Nutrienti oltre all’energia, riquadro e calendario del ciclo, un’unica data per tutta l’app, grafici per gli screen reader.
