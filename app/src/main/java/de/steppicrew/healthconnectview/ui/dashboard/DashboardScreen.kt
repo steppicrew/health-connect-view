@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.SharedDate
 import androidx.compose.foundation.shape.RoundedCornerShape
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
 import de.steppicrew.healthconnectview.ui.components.WeekdayRhythm
@@ -192,6 +193,9 @@ fun DashboardScreen(
     onOpenSession: (Session) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    // A day picked or stepped to on a detail screen is the dashboard's day on return.
+    val sharedDate by SharedDate.date.collectAsStateWithLifecycle()
+    LaunchedEffect(sharedDate) { viewModel.showDate(sharedDate) }
     val activity = LocalActivity.current
     // The state flow itself rather than has(): it starts from what is already known, so an
     // owner's large tiles do not open as single cells and then jump.

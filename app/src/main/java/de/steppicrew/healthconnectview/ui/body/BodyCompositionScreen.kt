@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.body
 
+import java.time.LocalDate
+import de.steppicrew.healthconnectview.ui.SharedDate
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,7 +65,7 @@ fun BodyCompositionScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val span by viewModel.span.collectAsStateWithLifecycle()
-    val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val end by viewModel.end.collectAsStateWithLifecycle()
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) { viewModel.start() }
     OnResume { viewModel.onResume() }
@@ -86,13 +88,13 @@ fun BodyCompositionScreen(
         Column(Modifier.padding(padding).fillMaxSize()) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan, spans = SPANS)
             WindowStepper(
-                label = windowLabel(span, offset),
-                canStepForward = offset > 0,
+                label = windowLabel(span, 0, end),
+                canStepForward = end.isBefore(LocalDate.now()),
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
                 onNow = viewModel::stepToNow,
             )
-            val historyNeeded = !historyGranted && span.needsHistoryPermission(offset)
+            val historyNeeded = !historyGranted && span.needsHistoryPermission(0, end)
             when (val current = state) {
                 UiState.Loading -> LoadingView()
                 UiState.NoPermission -> MessageView(
@@ -114,7 +116,7 @@ fun BodyCompositionScreen(
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
-                is UiState.Data -> Parts(current.value, windowLabel(span, offset), historyNeeded, onOpenPermissions)
+                is UiState.Data -> Parts(current.value, windowLabel(span, 0, end), historyNeeded, onOpenPermissions)
             }
         }
     }

@@ -789,7 +789,7 @@ doctor report and the year heatmap; the rest unranked.
     count), shaded as a day of that mean, weekday initials beneath in the grid's order. Days
     without a workout count as none, else two Sunday rides made Sunday the longest; under four
     weeks of days, no bars. Not for blood pressure, which is graded rather than shaded.
-86. [ ] **The chosen date is shared, and history ends on it** -- the owner, 11.10.2026, for
+86. [x] **The chosen date is shared, and history ends on it** -- the owner, 11.10.2026, for
     the next release. A date picked in a detail view carries back to the dashboard, and the
     dashboard's date into every detail view, as one date for the whole app rather than one
     per screen. Every window that looks back treats that date as today: a year tile shows the
@@ -801,6 +801,22 @@ doctor report and the year heatmap; the rest unranked.
     permissions change. Today's figure is never cached, since it is still growing. The owner,
     11.10.2026: build it without the cache first and time stepping a day back on the phone
     with a dashboard of year tiles; add the cache only if that is too slow.
+    Built 11.10.2026 without the cache: `SharedDate`, one in-memory date, today on a cold start.
+    The dashboard, the type screen and the comparison end every window on it (the loader takes
+    it as its today), so a year is the 365 days back from it, and stepping a window moves the
+    date by that window -- a week back from 29.08 ends on 22.08 -- for the whole app; changing
+    span keeps the date. What still grows goes by the real clock: the open tally only where a
+    window reaches the real today, and the 30-day history line runs back from the real today.
+    Seen on the emulator: a week opened on 29.08, stepped back, and the dashboard's day, week
+    tile and calendar on 22.08 after Back. Measured on the phone (debug build, 36 tiles, two of
+    them year calendars): 4.6 s for the whole dashboard, which is what a day step reads -- as
+    it did before, since the dashboard always re-read every tile for a new day. The body
+    composition and cycle screens end on it too (seen on the emulator: both on 29.08). The
+    insights tile does not: it says "this week" and stays on it. **The cache stays out** -- the
+    owner, 11.10.2026: without it is fine for now, and it keeps the rule that nothing is
+    saved. Should a day step become too slow, offer the cache as a setting, off by default and
+    described plainly (numbers held in memory while the app is open, never written to
+    storage), so each person decides.
 87. [x] **No session icons on a tile's chart** -- the owner, 11.10.2026: steps or heart rate
     on a tile keep sleep and workouts shaded behind the chart, but the icons above the bands
     take height the chart could use. Detail screens keep them. Built: `LineChart(sessionIcons)`,

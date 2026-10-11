@@ -120,8 +120,21 @@ enum class Span(@param:StringRes val labelRes: Int) {
      * READ_HEALTH_DATA_HISTORY. Without it Health Connect silently returns only the last 30
      * days, which looks exactly like having no older data.
      */
-    fun needsHistoryPermission(offset: Int, today: LocalDate = LocalDate.now()): Boolean =
-        startDate(offset, today).isBefore(today.minusDays(HISTORY_FREE_DAYS))
+    fun needsHistoryPermission(
+        offset: Int,
+        today: LocalDate = LocalDate.now(),
+        /** The real today: the platform's 30 days run back from it, wherever the window ends. */
+        now: LocalDate = LocalDate.now(),
+    ): Boolean = startDate(offset, today).isBefore(now.minusDays(HISTORY_FREE_DAYS))
+
+    /**
+     * The day a window one step back ends on, for a window ending on [today]: the day before
+     * its start, so the windows tile the calendar without overlap.
+     */
+    fun previousEnd(today: LocalDate): LocalDate = startDate(0, today).minusDays(1)
+
+    /** The day a window one step forward ends on, never past [now]. */
+    fun nextEnd(today: LocalDate, now: LocalDate = LocalDate.now()): LocalDate = minOf(today.plus(period), now)
 
     /**
      * How many steps back the window holding [date] sits; 0 for the current one.

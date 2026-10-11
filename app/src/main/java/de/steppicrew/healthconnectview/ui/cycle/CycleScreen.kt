@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.cycle
 
+import java.time.LocalDate
+import de.steppicrew.healthconnectview.ui.SharedDate
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,7 +74,7 @@ fun CycleScreen(
     fixture: Boolean = false,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val offset by viewModel.offset.collectAsStateWithLifecycle()
+    val end by viewModel.end.collectAsStateWithLifecycle()
 
     // Also the first load. Access can change in system settings while the app is away, and a
     // read attempted while backgrounded is refused, so a resume must read again either way.
@@ -97,11 +99,11 @@ fun CycleScreen(
         Column(
             Modifier
                 .padding(padding)
-                .swipeToStep(offset > 0, viewModel::stepBack, viewModel::stepForward),
+                .swipeToStep(end.isBefore(LocalDate.now()), viewModel::stepBack, viewModel::stepForward),
         ) {
             WindowStepper(
-                label = windowLabel(Span.YEAR, offset),
-                canStepForward = offset > 0,
+                label = windowLabel(Span.YEAR, 0, end),
+                canStepForward = end.isBefore(LocalDate.now()),
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
                 onNow = viewModel::stepToNow,

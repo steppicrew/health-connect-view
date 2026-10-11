@@ -181,9 +181,9 @@ private const val SWIPE_THRESHOLD_DP = 64
  * therefore no clue which day had nothing in it.
  */
 @Composable
-fun windowLabel(span: Span, offset: Int): String {
-    val start = span.startDate(offset)
-    val end = span.endDate(offset).minusDays(1)
+fun windowLabel(span: Span, offset: Int, today: LocalDate = LocalDate.now()): String {
+    val start = span.startDate(offset, today)
+    val end = span.endDate(offset, today).minusDays(1)
     return if (start == end) {
         formatDate(start)
     } else {

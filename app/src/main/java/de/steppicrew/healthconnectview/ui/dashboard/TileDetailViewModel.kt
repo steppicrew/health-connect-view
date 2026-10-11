@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.SharedDate
 import de.steppicrew.healthconnectview.health.countsFromZero
 import de.steppicrew.healthconnectview.health.readHeatmap
 import java.time.Period
@@ -375,8 +376,8 @@ class TileDetailViewModel(
      * the write reports its own failure.
      */
     /** The types a comparison may set beside this one: those with data in the window shown. */
-    suspend fun compareCandidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, _offset.value) {
-        repository.comparableTypes(_span.value, _offset.value)
+    suspend fun compareCandidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, shownEnd) {
+        repository.comparableTypes(_span.value, shownEnd)
     }
 
     private val candidateCache = CandidateCache()
@@ -567,9 +568,15 @@ class TileDetailViewModel(
     private val _span = MutableStateFlow(Span.DAY)
     val span: StateFlow<Span> = _span.asStateFlow()
 
-    /** Steps back from the present; 0 is the current window. Never negative. */
-    private val _offset = MutableStateFlow(0)
-    val offset: StateFlow<Int> = _offset.asStateFlow()
+    /**
+     * The day the window on screen ends on, set from the app's shared date at each reload, so
+     * a load keeps one window however the date moves while it runs. Stepping moves the shared
+     * date (see [SharedDate]), which the dashboard and every other window then end on too.
+     */
+    private var shownEnd: LocalDate = SharedDate.current
+
+    /** The day the windows end on, for the screen's label and stepper. */
+    val end: StateFlow<LocalDate> = SharedDate.date
 
     private var typeName: String? = null
     private var selectedSource: String? = null
@@ -664,7 +671,7 @@ class TileDetailViewModel(
         // Back from a workout or a record re-runs the screen's effect with the same route. The
         // window and its data are still here; reading them again blanked the list to a
         // spinner and threw the scroll position away with it.
-        if (typeName == this.typeName && _state.value is UiState.Data) return
+        if (typeName == this.typeName && _state.value is UiState.Data && shownEnd == SharedDate.current) return
         if (typeName != this.typeName) {
             coverageJob?.cancel()
             _coverage.value = null
@@ -676,11 +683,11 @@ class TileDetailViewModel(
         val restored = saved.get<String>(KEY_TYPE) == typeName
         val wantedSpan = if (restored) saved.get<String>(KEY_SPAN).orEmpty() else span
         val wantedDate = if (restored) saved.get<String>(KEY_DATE).orEmpty() else date
-        // Span first: the offset is counted in the span's own periods, so it cannot be
-        // derived before the span is known.
-        val chosenSpan = Span.entries.firstOrNull { it.name.equals(wantedSpan, ignoreCase = true) }
-        chosenSpan?.let { _span.value = it }
-        _offset.update { offsetForDate(wantedDate, chosenSpan ?: _span.value) }
+        Span.entries.firstOrNull { it.name.equals(wantedSpan, ignoreCase = true) }?.let { _span.value = it }
+        // The route's date is the screen it came from, which shows the shared date already;
+        // a restore after the process was killed brings the date back to the whole app.
+        runCatching { LocalDate.parse(wantedDate) }.getOrNull()?.let(SharedDate::set)
+        shownEnd = SharedDate.current
         viewModelScope.launch {
             selectedSource = resolveSource(typeName)
             refreshSourceDefault(typeName)
@@ -705,28 +712,24 @@ class TileDetailViewModel(
         val writers = runCatching {
             repository.recordsIn(
                 spec,
-                windowStart(_span.value, _offset.value),
-                windowEnd(_span.value, _offset.value),
+                windowStart(_span.value, 0, shownEnd),
+                windowEnd(_span.value, 0, shownEnd),
             ).map { spec.originOf(it) }
                 .toSet()
         }.getOrDefault(emptySet())
         return sourceStore.effective(typeName, selections, preferred, writers)
     }
 
-    /** The window holding [date], or the current one when it is empty or unparseable. */
-    private fun offsetForDate(date: String, span: Span = _span.value): Int =
-        runCatching { LocalDate.parse(date) }.getOrNull()?.let(span::offsetOf) ?: 0
-
-    /** Opens the window of the current span that holds [date]. */
+    /** Opens the window of the current span ending on [date], for the whole app. */
     fun showDate(date: LocalDate) {
-        _offset.value = _span.value.offsetOf(date)
+        SharedDate.set(date)
         reload()
     }
 
     /** Opens one day, whatever span is shown: the day a record was set, from its note. */
     fun showDay(date: LocalDate) {
         _span.value = Span.DAY
-        _offset.value = Span.DAY.offsetOf(date)
+        SharedDate.set(date)
         reload()
     }
 
@@ -746,33 +749,33 @@ class TileDetailViewModel(
         time.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate()
     }.getOrNull()
 
-    /** Changing span resets the offset: "three weeks ago" has no meaning as "three years ago". */
+    /** A new span ends on the same day: the date is the app's, not the span's. */
     fun setSpan(span: Span) {
         _span.update { span }
-        _offset.update { 0 }
         reload()
     }
 
+    /** The window before, ending the day before this one starts. */
     fun stepBack() {
-        _offset.update { it + 1 }
+        SharedDate.set(_span.value.previousEnd(shownEnd))
         reload()
     }
 
     /** Stepping forward past the current window would show an empty future. */
     /** Back to the window holding today. */
     fun stepToNow() {
-        if (_offset.value == 0) return
-        _offset.value = 0
+        if (!canStepForward) return
+        SharedDate.set(LocalDate.now())
         reload()
     }
 
     fun stepForward() {
-        if (_offset.value == 0) return
-        _offset.update { (it - 1).coerceAtLeast(0) }
+        if (!canStepForward) return
+        SharedDate.set(_span.value.nextEnd(shownEnd))
         reload()
     }
 
-    val canStepForward: Boolean get() = _offset.value > 0
+    val canStepForward: Boolean get() = shownEnd.isBefore(LocalDate.now())
 
     private val _refreshing = MutableStateFlow(false)
 
@@ -818,8 +821,7 @@ class TileDetailViewModel(
         }
         val spec = RecordRegistry.specOrNull(typeName ?: return) ?: return
         val span = _span.value
-        val offset = _offset.value
-        compareJob = viewModelScope.launch { showPreviousYear(spec, span, offset) }
+        compareJob = viewModelScope.launch { showPreviousYear(spec, span, 0) }
     }
 
     /**
@@ -831,14 +833,14 @@ class TileDetailViewModel(
     private suspend fun showPreviousYear(spec: RecordTypeSpec<*>, span: Span, offset: Int) {
         if (!comparesYear(span)) return
         val back = offset + yearSteps(span)
-        val capped = span.needsHistoryPermission(back) && !_historyGranted.value
+        val capped = span.needsHistoryPermission(back, shownEnd) && !_historyGranted.value
         val started = System.currentTimeMillis()
         val earlier = runCatching {
-            TileChartLoader(repository, dashboardStore)
+            TileChartLoader(repository, dashboardStore, today = shownEnd)
                 .chart(spec, span, back, capped, selectedSource, deferExtras = true, withStreak = false)
         }.getOrNull()
         currentCoroutineContext().ensureActive()
-        val shift = Duration.between(windowStart(span, back), windowStart(span, offset))
+        val shift = Duration.between(windowStart(span, back, shownEnd), windowStart(span, offset, shownEnd))
         // Counts and timing only, never a reading.
         Log.d(TAG, "year earlier: ${earlier?.points?.size ?: 0} points in ${System.currentTimeMillis() - started} ms")
         _state.update { current ->
@@ -867,7 +869,8 @@ class TileDetailViewModel(
 
         typeName?.let { saved[KEY_TYPE] = it }
         saved[KEY_SPAN] = _span.value.name
-        saved[KEY_DATE] = _span.value.startDate(_offset.value).toString()
+        shownEnd = SharedDate.current
+        saved[KEY_DATE] = shownEnd.toString()
 
         loadJob?.cancel()
         compareJob?.cancel()
@@ -884,8 +887,8 @@ class TileDetailViewModel(
             _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted
             historyKnown = true
             val span = _span.value
-            val offset = _offset.value
-            val capped = span.needsHistoryPermission(offset) &&
+            val offset = 0
+            val capped = span.needsHistoryPermission(offset, shownEnd) &&
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
             val loadStarted = System.currentTimeMillis()
@@ -915,7 +918,7 @@ class TileDetailViewModel(
                     // most single days of it would otherwise never show its record.
                     _emptyRecord.value = data.record.takeIf { empty }
                     _state.update { if (empty) UiState.Empty else UiState.Data(data) }
-                    if (empty) _latestBefore.value = latestBefore(spec, windowStart(span, offset))
+                    if (empty) _latestBefore.value = latestBefore(spec, windowStart(span, offset, shownEnd))
                     if (!empty && spec.type == RestingHeartRateRecord::class && marksTraining(spec, span)) {
                         val split = trainingNightsFor(span, offset, data.trainingDays)
                         ensureActive()
@@ -929,7 +932,7 @@ class TileDetailViewModel(
                     if (!empty && _comparing.value) showPreviousYear(spec, span, offset)
                     if (!empty && data.heatmapPending) {
                         val heatmap = if (data.dayValues.isNotEmpty()) {
-                            yearHeatmap(data.dayValues, span.startDate(offset), span.endDate(offset).minusDays(1), fromZero = countsFromZero(spec))
+                            yearHeatmap(data.dayValues, span.startDate(offset, shownEnd), span.endDate(offset, shownEnd).minusDays(1), fromZero = countsFromZero(spec))
                         } else {
                             heatmapFor(spec, span, offset, selectedSource)
                         }
@@ -1031,10 +1034,10 @@ class TileDetailViewModel(
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
-        val windowStart = windowStart(span, offset)
-        val windowEnd = windowEnd(span, offset)
+        val windowStart = windowStart(span, offset, shownEnd)
+        val windowEnd = windowEnd(span, offset, shownEnd)
 
-        val loader = TileChartLoader(repository, dashboardStore)
+        val loader = TileChartLoader(repository, dashboardStore, today = shownEnd)
         val chart = loader
             .chart(spec, span, offset, historyCapped, source, deferExtras = true) { _progress.value = it }
 
@@ -1069,7 +1072,7 @@ class TileDetailViewModel(
         // calories, only to name its apps, took 20 s on the phone.
         val aggregateOriginsRead = chart.aggregateOrigins?.let { known -> async { known } } ?: metric?.let { aggregate ->
             async {
-                runCatching { repository.contributingApps(aggregate, span.localFilter(offset)) }
+                runCatching { repository.contributingApps(aggregate, span.localFilter(offset, shownEnd)) }
                     .getOrDefault(emptySet())
             }
         }
@@ -1079,8 +1082,8 @@ class TileDetailViewModel(
         val dayPartsRead = if (spec.type == BloodPressureRecord::class) {
             async {
                 val (from, to) = dayPartWindow(
-                    span.startDate(offset),
-                    span.endDate(offset).minusDays(1),
+                    span.startDate(offset, shownEnd),
+                    span.endDate(offset, shownEnd).minusDays(1),
                     HealthRepository.DEFAULT_ZONE,
                 )
                 runCatching {
@@ -1203,8 +1206,8 @@ class TileDetailViewModel(
     private suspend fun heatmapFor(spec: RecordTypeSpec<*>, span: Span, offset: Int, source: String?): YearHeatmap? =
         repository.readHeatmap(
             spec,
-            span.startDate(offset),
-            span.endDate(offset).minusDays(1),
+            span.startDate(offset, shownEnd),
+            span.endDate(offset, shownEnd).minusDays(1),
             source?.let { setOf(DataOrigin(it)) } ?: emptySet(),
         )
 
@@ -1213,7 +1216,7 @@ class TileDetailViewModel(
         val started = System.currentTimeMillis()
         val nights = nightsByMorning(
             runCatching {
-                repository.sessionsIn(windowStart(span, offset), windowEnd(span, offset), setOf(Session.Kind.SLEEP))
+                repository.sessionsIn(windowStart(span, offset, shownEnd), windowEnd(span, offset, shownEnd), setOf(Session.Kind.SLEEP))
             }.getOrDefault(emptyList()),
             zone,
         )

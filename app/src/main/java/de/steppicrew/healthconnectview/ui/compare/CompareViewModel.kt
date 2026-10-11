@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.compare
 
+import de.steppicrew.healthconnectview.ui.SharedDate
 import android.app.Application
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
@@ -58,8 +59,8 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
     private val _span = MutableStateFlow(Span.MONTH)
     val span: StateFlow<Span> = _span.asStateFlow()
 
-    private val _offset = MutableStateFlow(0)
-    val offset: StateFlow<Int> = _offset.asStateFlow()
+    /** The day the window ends on: the app's shared date, which stepping here moves too. */
+    val end: StateFlow<LocalDate> = SharedDate.date
 
     private val _historyGranted = MutableStateFlow(true)
     val historyGranted: StateFlow<Boolean> = _historyGranted.asStateFlow()
@@ -71,7 +72,7 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         if (_types.value != null) return
         _types.value = first to second
         Span.entries.firstOrNull { it.name.equals(span, ignoreCase = true) }?.let { _span.value = it }
-        runCatching { LocalDate.parse(date) }.getOrNull()?.let { _offset.value = _span.value.offsetOf(it) }
+        runCatching { LocalDate.parse(date) }.getOrNull()?.let(SharedDate::set)
         reload()
     }
 
@@ -93,32 +94,32 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         if (_types.value != null && _state.value !is UiState.Loading) reload()
     }
 
+    /** A new span ends on the same day: the date is the app's, not the span's. */
     fun setSpan(span: Span) {
         _span.value = span
-        _offset.value = 0
         reload()
     }
 
     fun stepBack() {
-        _offset.value += 1
+        SharedDate.set(_span.value.previousEnd(SharedDate.current))
         reload()
     }
 
     fun stepForward() {
-        if (_offset.value == 0) return
-        _offset.value -= 1
+        if (!SharedDate.current.isBefore(LocalDate.now())) return
+        SharedDate.set(_span.value.nextEnd(SharedDate.current))
         reload()
     }
 
     fun stepToNow() {
-        if (_offset.value == 0) return
-        _offset.value = 0
+        if (!SharedDate.current.isBefore(LocalDate.now())) return
+        SharedDate.set(LocalDate.now())
         reload()
     }
 
     /** The types with data in the window shown, read once per window. */
-    suspend fun candidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, _offset.value) {
-        repository.comparableTypes(_span.value, _offset.value)
+    suspend fun candidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, SharedDate.current) {
+        repository.comparableTypes(_span.value, SharedDate.current)
     }
 
     private val candidateCache = CandidateCache()
@@ -129,7 +130,7 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         loadJob = viewModelScope.launch {
             _state.value = UiState.Loading
             _state.value = try {
-                load(firstName, secondName, _span.value, _offset.value)
+                load(firstName, secondName, _span.value, SharedDate.current)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -138,30 +139,30 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    private suspend fun load(firstName: String, secondName: String, span: Span, offset: Int): UiState<Compared> {
+    private suspend fun load(firstName: String, secondName: String, span: Span, end: LocalDate): UiState<Compared> {
         val first = RecordRegistry.specOrNull(firstName) ?: return UiState.Error("Unknown type")
         val second = RecordRegistry.specOrNull(secondName) ?: return UiState.Error("Unknown type")
         val granted = repository.grantedPermissions()
         if (first.permission !in granted || second.permission !in granted) return UiState.NoPermission
         _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted
-        val capped = span.needsHistoryPermission(offset) && RecordRegistry.HISTORY_PERMISSION !in granted
+        val capped = span.needsHistoryPermission(0, end) && RecordRegistry.HISTORY_PERMISSION !in granted
 
         // One after the other: Health Connect serves an app's requests largely in turn, so
         // reading both at once only made the first wait for the second.
-        val loader = TileChartLoader(repository, dashboardStore)
-        val firstData = loader.chart(first, span, offset, capped, sourceFor(first, span, offset), deferExtras = true)
-        val secondData = loader.chart(second, span, offset, capped, sourceFor(second, span, offset), deferExtras = true)
+        val loader = TileChartLoader(repository, dashboardStore, today = end)
+        val firstData = loader.chart(first, span, 0, capped, sourceFor(first, span, end), deferExtras = true)
+        val secondData = loader.chart(second, span, 0, capped, sourceFor(second, span, end), deferExtras = true)
         if (firstData.isBlank() && secondData.isBlank()) return UiState.Empty
-        return UiState.Data(Compared(firstData, secondData, sharedExtent(span, offset, firstData, secondData)))
+        return UiState.Data(Compared(firstData, secondData, sharedExtent(span, end, firstData, secondData)))
     }
 
-    private suspend fun sourceFor(spec: RecordTypeSpec<*>, span: Span, offset: Int): String? {
+    private suspend fun sourceFor(spec: RecordTypeSpec<*>, span: Span, end: LocalDate): String? {
         val zone = HealthRepository.DEFAULT_ZONE
         return sourceStore.openingSource(
             repository,
             spec,
-            span.startDate(offset).atStartOfDay(zone).toInstant(),
-            span.endDate(offset).atStartOfDay(zone).toInstant(),
+            span.startDate(0, end).atStartOfDay(zone).toInstant(),
+            span.endDate(0, end).atStartOfDay(zone).toInstant(),
         )
     }
 }
@@ -176,10 +177,10 @@ private fun TileDetailData.isBlank(): Boolean = points.isEmpty() && total == nul
  * is, and a line's points must sit above the bars beneath them -- so the axis runs half a
  * bucket early: a point stamped at a day's start lands in the middle of that day's slot.
  */
-internal fun sharedExtent(span: Span, offset: Int, first: TileDetailData, second: TileDetailData): ClosedRange<Instant> {
+internal fun sharedExtent(span: Span, last: LocalDate, first: TileDetailData, second: TileDetailData): ClosedRange<Instant> {
     val zone = HealthRepository.DEFAULT_ZONE
-    val start = span.startDate(offset).atStartOfDay(zone).toInstant()
-    val end = span.endDate(offset).atStartOfDay(zone).toInstant()
+    val start = span.startDate(0, last).atStartOfDay(zone).toInstant()
+    val end = span.endDate(0, last).atStartOfDay(zone).toInstant()
     val bucket = span.bucket ?: return listOfNotNull(first.extent, second.extent, start..end).let { ranges ->
         ranges.minOf { it.start }..ranges.maxOf { it.endInclusive }
     }
@@ -197,14 +198,14 @@ internal fun sharedExtent(span: Span, offset: Int, first: TileDetailData, second
  * window, since a night is kept by its end and begins the evening before. A probe that fails
  * keeps its type: better one empty chart than a type missing from the list for no reason.
  */
-suspend fun HealthRepository.comparableTypes(span: Span, offset: Int): List<RecordTypeSpec<*>> {
+suspend fun HealthRepository.comparableTypes(span: Span, end: LocalDate): List<RecordTypeSpec<*>> {
     val granted = runCatching { grantedPermissions() }.getOrDefault(emptySet())
     val zone = HealthRepository.DEFAULT_ZONE
     val records = TimeRangeFilter.between(
-        span.startDate(offset).minusDays(1).atStartOfDay(zone).toInstant(),
-        span.endDate(offset).atStartOfDay(zone).toInstant(),
+        span.startDate(0, end).minusDays(1).atStartOfDay(zone).toInstant(),
+        span.endDate(0, end).atStartOfDay(zone).toInstant(),
     )
-    val local = span.localFilter(offset)
+    val local = span.localFilter(0, end)
     val gate = Semaphore(MAX_CONCURRENT_PROBES)
     return coroutineScope {
         RecordRegistry.all
@@ -249,13 +250,13 @@ private const val MAX_CONCURRENT_PROBES = 6
  * in memory only, and a list of types -- no reading.
  */
 class CandidateCache {
-    private var key: Pair<Span, Int>? = null
+    private var key: Pair<Span, LocalDate>? = null
     private var value: List<RecordTypeSpec<*>>? = null
 
-    suspend fun get(span: Span, offset: Int, load: suspend () -> List<RecordTypeSpec<*>>): List<RecordTypeSpec<*>> {
-        value?.takeIf { key == span to offset }?.let { return it }
+    suspend fun get(span: Span, end: LocalDate, load: suspend () -> List<RecordTypeSpec<*>>): List<RecordTypeSpec<*>> {
+        value?.takeIf { key == span to end }?.let { return it }
         return load().also {
-            key = span to offset
+            key = span to end
             value = it
         }
     }

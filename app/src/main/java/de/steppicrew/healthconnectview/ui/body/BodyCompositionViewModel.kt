@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.body
 
+import de.steppicrew.healthconnectview.ui.SharedDate
 import android.app.Application
 import androidx.annotation.StringRes
 import androidx.health.connect.client.records.BodyFatRecord
@@ -71,8 +72,8 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
     private val _span = MutableStateFlow(Span.MONTH)
     val span: StateFlow<Span> = _span.asStateFlow()
 
-    private val _offset = MutableStateFlow(0)
-    val offset: StateFlow<Int> = _offset.asStateFlow()
+    /** The day the window ends on: the app's shared date, which stepping here moves too. */
+    val end: StateFlow<LocalDate> = SharedDate.date
 
     private val _historyGranted = MutableStateFlow(true)
     val historyGranted: StateFlow<Boolean> = _historyGranted.asStateFlow()
@@ -91,26 +92,26 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
         if (started && _state.value !is UiState.Loading) reload()
     }
 
+    /** A new span ends on the same day: the date is the app's, not the span's. */
     fun setSpan(span: Span) {
         _span.value = span
-        _offset.value = 0
         reload()
     }
 
     fun stepBack() {
-        _offset.value += 1
+        SharedDate.set(_span.value.previousEnd(SharedDate.current))
         reload()
     }
 
     fun stepForward() {
-        if (_offset.value == 0) return
-        _offset.value -= 1
+        if (!SharedDate.current.isBefore(LocalDate.now())) return
+        SharedDate.set(_span.value.nextEnd(SharedDate.current))
         reload()
     }
 
     fun stepToNow() {
-        if (_offset.value == 0) return
-        _offset.value = 0
+        if (!SharedDate.current.isBefore(LocalDate.now())) return
+        SharedDate.set(LocalDate.now())
         reload()
     }
 
@@ -119,7 +120,7 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
         loadJob = viewModelScope.launch {
             _state.value = UiState.Loading
             _state.value = try {
-                load(_span.value, _offset.value)
+                load(_span.value, SharedDate.current)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -128,7 +129,7 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
-    private suspend fun load(span: Span, offset: Int): UiState<BodyComposition> {
+    private suspend fun load(span: Span, end: LocalDate): UiState<BodyComposition> {
         val granted = repository.grantedPermissions()
         _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted
         val specs = TYPES.mapNotNull { RecordRegistry.specOrNull(it.simpleName.orEmpty()) }
@@ -137,12 +138,12 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
 
         val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
         val preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
-        val first = span.startDate(offset)
+        val first = span.startDate(0, end)
         val weekly = span == Span.YEAR
 
         // In parallel: five paged reads one after another kept the screen waiting ten seconds.
         val daily = coroutineScope {
-            specs.map { spec -> async { spec.type to dailyMeans(spec, span, offset, selections, preferred) } }
+            specs.map { spec -> async { spec.type to dailyMeans(spec, span, end, selections, preferred) } }
                 .awaitAll()
                 .toMap()
         }
@@ -166,7 +167,7 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
         )
         if (parts.isEmpty()) return UiState.Empty
         val zone = HealthRepository.DEFAULT_ZONE
-        val extent = first.atStartOfDay(zone).toInstant()..span.endDate(offset).atStartOfDay(zone).toInstant()
+        val extent = first.atStartOfDay(zone).toInstant()..span.endDate(0, end).atStartOfDay(zone).toInstant()
         return UiState.Data(BodyComposition(parts, extent, weekly))
     }
 
@@ -174,11 +175,11 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
     private suspend fun dailyMeans(
         spec: RecordTypeSpec<*>,
         span: Span,
-        offset: Int,
+        end: LocalDate,
         selections: Map<String, String>,
         preferred: String?,
     ): Map<LocalDate, Double> {
-        val records: List<Record> = repository.readForChart(spec.type, span.instantFilter(offset))
+        val records: List<Record> = repository.readForChart(spec.type, span.instantFilter(0, end))
         val typeName = spec.type.simpleName.orEmpty()
         val writers = records.map { spec.originOf(it) }.toSet()
         val source = sourceStore.effective(typeName, selections, preferred, writers)
