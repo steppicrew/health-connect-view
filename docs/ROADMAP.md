@@ -780,8 +780,13 @@ doctor report and the year heatmap; the rest unranked.
     its median and the times holding the middle half of the nights. Times are read around
     their circular mean, so 23:30 and 00:30 are an hour apart and a night worker's 09:00 is as
     regular as 23:00. Five nights at least. Without Pro a padlocked title.
-80. [ ] **Charts described for screen readers** -- "Schritte, 4 Wochen, Mittel 8.200,
-    steigend" from the trend numbers that exist.
+80. [x] **Charts described for screen readers** -- "Schritte, 4 Wochen, Mittel 8.200,
+    steigend" from the trend numbers that exist. Built 11.10.2026 for the detail and compare
+    charts, read back from the emulator's accessibility tree: "Herzfrequenz, 10.10.2026.
+    Durchschnitt 80 bpm. Niedrigster Wert 49 bpm, höchster 139 bpm. Trend: etwa wie
+    üblich". Only numbers the screen shows: the trend where the screen has one (a day), no
+    "steigend" made up for a window, and no range for blood pressure, whose points hold only
+    the systolic value. A dashboard tile already reads its title and figure.
 81. [ ] **The same workout over time** (Pro) -- pace and heart rate for one activity type
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.

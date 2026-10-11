@@ -93,6 +93,7 @@
     <string name="trend_title_up">Tren: di atas biasanya</string>
     <string name="trend_title_flat">Tren: seperti biasanya</string>
     <string name="trend_title_down">Tren: di bawah biasanya</string>
+    <string name="chart_description_range">Nilai terendah %1$s, tertinggi %2$s</string>
     <string name="trend_numbers">Rata-rata 7 hari terakhir %1$s, rata-rata 30 hari %2$s.</string>
     <string name="trend_rule">Membandingkan 7 hari sebelum hari ini dengan 30 hari sebelumnya, bukan hari ini dengan kemarin. Hari ini tidak dihitung karena mungkin belum selesai. Hari tanpa catatan dilewati. Selisih yang lebih kecil dari variasi normal antarhari dianggap setara.</string>
     <string name="explanation_show">Tampilkan penjelasan</string>

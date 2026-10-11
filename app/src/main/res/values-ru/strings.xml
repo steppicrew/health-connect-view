@@ -96,6 +96,7 @@
     <string name="trend_title_up">Тенденция: выше обычного</string>
     <string name="trend_title_flat">Тенденция: как обычно</string>
     <string name="trend_title_down">Тенденция: ниже обычного</string>
+    <string name="chart_description_range">Минимальное значение %1$s, максимальное %2$s</string>
     <string name="trend_numbers">Среднее за последние 7 дней %1$s, среднее за 30 дней %2$s.</string>
     <string name="trend_rule">Сравнивает 7 дней до этого дня с 30 днями перед ними, а не этот день со вчерашним. Этот день не учитывается, так как он может быть ещё не окончен. Дни без записей пропускаются. Различия меньше обычных колебаний от дня ко дню считаются одинаковым уровнем.</string>
     <string name="explanation_show">Показать пояснение</string>

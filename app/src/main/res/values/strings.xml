@@ -96,6 +96,7 @@
     <string name="trend_title_up">Trend: above your usual</string>
     <string name="trend_title_flat">Trend: about your usual</string>
     <string name="trend_title_down">Trend: below your usual</string>
+    <string name="chart_description_range">Lowest value %1$s, highest %2$s</string>
     <string name="trend_numbers">Last 7 days average %1$s, 30-day average %2$s.</string>
     <string name="trend_rule">Compares the 7 days before this day with the 30 days before it, not this day with yesterday. This day does not count, since it may not be over. Days with nothing recorded are left out. Differences smaller than normal day-to-day variation count as level.</string>
     <string name="explanation_show">Show explanation</string>

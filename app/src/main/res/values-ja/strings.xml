@@ -93,6 +93,7 @@
     <string name="trend_title_up">傾向: いつもより高め</string>
     <string name="trend_title_flat">傾向: いつもどおり</string>
     <string name="trend_title_down">傾向: いつもより低め</string>
+    <string name="chart_description_range">最低値 %1$s、最高値 %2$s</string>
     <string name="trend_numbers">過去 7 日間の平均 %1$s、30 日平均 %2$s。</string>
     <string name="trend_rule">この日と前日ではなく、この日より前の 7 日間とさらにその前の 30 日間を比較します。この日はまだ終わっていない可能性があるため含めません。記録のない日は除外します。日々の通常の変動より小さい差は同程度とみなします。</string>
     <string name="explanation_show">説明を表示</string>

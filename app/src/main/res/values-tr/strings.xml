@@ -94,6 +94,7 @@
     <string name="trend_title_up">Eğilim: olağan düzeyinizin üzerinde</string>
     <string name="trend_title_flat">Eğilim: olağan düzeyinizde</string>
     <string name="trend_title_down">Eğilim: olağan düzeyinizin altında</string>
+    <string name="chart_description_range">En düşük değer %1$s, en yüksek %2$s</string>
     <string name="trend_numbers">Son 7 gün ortalaması %1$s, 30 günlük ortalama %2$s.</string>
     <string name="trend_rule">Bu günü dünle değil, bu günden önceki 7 günü onlardan önceki 30 günle karşılaştırır. Bu gün henüz bitmemiş olabileceği için sayılmaz. Kayıt olmayan günler dışarıda bırakılır. Günden güne normal dalgalanmadan küçük farklar aynı düzey sayılır.</string>
     <string name="explanation_show">Açıklamayı göster</string>

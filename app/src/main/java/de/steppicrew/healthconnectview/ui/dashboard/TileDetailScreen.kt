@@ -887,6 +887,52 @@ private fun totalText(data: TileDetailData, total: Double, secondary: Double?): 
             (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
     }
 
+/** What the headline figure is. A mean is not a total: "Total 129 mmHg" read as blood pressures added up. */
+@StringRes
+private fun headlineLabel(data: TileDetailData): Int = when {
+    // HRV's figure is computed, and says which: a night, or a week of them.
+    data.hrv != null && data.extent == null -> R.string.hrv_week_label
+    data.hrv != null -> R.string.hrv_night_label
+    data.perNight -> R.string.span_per_night
+    // One value a day: a day of it has nothing to average.
+    data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
+    data.spec.isAveraged || data.dailyFromReadings -> R.string.span_average
+    // The readings' own mean, where the type has no aggregate; see the loader.
+    data.spec.aggregate == null && data.spec.tile.occasional -> R.string.span_average
+    else -> R.string.span_total
+}
+
+/**
+ * The chart in words, for a screen reader (step 80): which type over which window, its figure,
+ * the lowest and highest point, and the trend where the screen has one -- "Schritte, 4 Wochen.
+ * Gesamt 231.000 Schritte. Niedrigster Wert 3.100 Schritte, höchster 14.800 Schritte." The
+ * numbers the screen already shows, nothing worked out anew. No range for a pair of values,
+ * whose points hold only the first of each.
+ */
+@Composable
+internal fun chartDescription(data: TileDetailData, period: String): String {
+    val parts = mutableListOf(stringResource(data.spec.displayNameRes) + ", " + period)
+    data.total?.let { total -> parts += stringResource(headlineLabel(data)) + " " + totalText(data, total, data.secondaryTotal) }
+    val values = data.points.map { it.value }
+    if (values.isNotEmpty() && data.secondaryPoints.isEmpty()) {
+        parts += stringResource(
+            R.string.chart_description_range,
+            totalText(data, values.min(), null),
+            totalText(data, values.max(), null),
+        )
+    }
+    data.trend?.let { trend ->
+        parts += stringResource(
+            when (trend.direction) {
+                Trend.UP -> R.string.trend_title_up
+                Trend.FLAT -> R.string.trend_title_flat
+                Trend.DOWN -> R.string.trend_title_down
+            },
+        )
+    }
+    return parts.joinToString(". ")
+}
+
 /** "Steps_2026-09-20_2026-09-26": type and the window's first and last day. */
 @Composable
 private fun SpanSummary(
@@ -912,21 +958,7 @@ private fun SpanSummary(
 
         data.total?.let { total ->
             Text(
-                // A mean is not a total: "Total 129 mmHg" read as blood pressures added up.
-                text = stringResource(
-                    when {
-                        // HRV's figure is computed, and says which: a night, or a week of them.
-                        data.hrv != null && data.extent == null -> R.string.hrv_week_label
-                        data.hrv != null -> R.string.hrv_night_label
-                        data.perNight -> R.string.span_per_night
-                        // One value a day: a day of it has nothing to average.
-                        data.spec.tile.dailyValue && data.extent != null -> R.string.span_daily_value
-                        data.spec.isAveraged || data.dailyFromReadings -> R.string.span_average
-                        // The readings' own mean, where the type has no aggregate; see the loader.
-                        data.spec.aggregate == null && data.spec.tile.occasional -> R.string.span_average
-                        else -> R.string.span_total
-                    },
-                ),
+                text = stringResource(headlineLabel(data)),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1717,10 +1749,11 @@ internal fun ExpandableDataChart(
 ) {
     if (data.points.isEmpty()) return
     val title = chartTitle(stringResource(data.spec.displayNameRes), data.spec.displayUnitRes, period)
+    val description = chartDescription(data, period)
     ExpandableChart(title) { expanded, onExpand ->
         DataLineChart(
             data,
-            if (expanded) Modifier.fillMaxSize() else modifier,
+            (if (expanded) Modifier.fillMaxSize() else modifier).semantics { contentDescription = description },
             onVisibleRange = if (expanded) null else onVisibleRange,
             axis = axis,
             fillHeight = expanded,

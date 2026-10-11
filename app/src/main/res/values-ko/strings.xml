@@ -93,6 +93,7 @@
     <string name="trend_title_up">추세: 평소보다 높음</string>
     <string name="trend_title_flat">추세: 평소와 비슷함</string>
     <string name="trend_title_down">추세: 평소보다 낮음</string>
+    <string name="chart_description_range">최저값 %1$s, 최고값 %2$s</string>
     <string name="trend_numbers">최근 7일 평균 %1$s, 30일 평균 %2$s.</string>
     <string name="trend_rule">이 날과 어제를 비교하는 것이 아니라, 이 날 이전 7일과 그보다 앞선 30일을 비교합니다. 이 날은 아직 끝나지 않았을 수 있으므로 포함하지 않습니다. 기록이 없는 날은 제외합니다. 평소의 하루 간 변동보다 작은 차이는 비슷한 것으로 봅니다.</string>
     <string name="explanation_show">설명 보기</string>
