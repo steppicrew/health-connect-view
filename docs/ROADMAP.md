@@ -603,7 +603,11 @@ The owner's list of 09.10.2026, accepted whole and in this order:
     over a week or four; across a year whole durations ("Zeit mit Pausen"), since reading
     every workout's movement there is hundreds of reads.
 
-Before the next release after 1.4.1, from the owner, 11.10.2026:
+Before the next release after 1.4.1, from the owner, 11.10.2026 -- all done, **1.5.0 (code 23)
+live on production 11.10.2026**, listing text and the new 8 screenshots in 18 languages
+verified against the repo via the Play API. The full shot run hit Health Connect's read limit
+near its end (tr-TR, zh-CN, zh-TW showed "0 records" and no sources while the charts were
+fine); those three were retaken after a pause. Check every language's detail shots for that.
 
 - [x] **Step 86** -- one date for dashboard and detail views, and history ending on it.
 - [x] **Name the new Pro parts** -- the weekday rhythm (85), sleep rhythm (79) and year comparison (78) in
