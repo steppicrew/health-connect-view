@@ -4,16 +4,16 @@ FITUR
 
 • Dasbor angka yang penting bagi Anda, hari demi hari
 • Semua jenis data yang didukung Health Connect, dari langkah dan tidur hingga tekanan darah dan VO₂ maks
-• Catatan satu per satu dengan waktu tepat, nilai, satuan, dan aplikasi yang menulisnya
+• Setiap catatan dengan waktu, nilai, dan aplikasi yang menulisnya
 • Diagram per hari, minggu, empat minggu, atau tahun
 • Tidur dan latihan diarsir di balik diagram harian, agar puncak atau penurunan punya penjelasan
 • Setiap latihan dengan detak jantung, kecepatan, dan ketinggian dalam satu grafik, jeda dikenali dan tidak dihitung, serta rutenya jika Anda mengizinkan
-• Tahap tidur untuk setiap malam yang dicatat jam Anda, di samping detak jantung, laju pernapasan, SpO₂, dan HRV malam itu
-• Ringkasan siklus: semua siklus setahun berdampingan, disejajarkan pada hari pertama, tanpa prediksi
+• Tahap tidur setiap malam, di samping detak jantung, laju pernapasan, SpO₂, dan HRV malam itu
+• Ringkasan siklus: semua siklus setahun berdampingan, disejajarkan pada hari pertama, juga sebagai kalender dan kartu, tanpa prediksi
 • Panah tren: minggu terakhir dibandingkan rata-rata 30 hari Anda
 • Rangkaian: berapa hari berturut-turut target tercapai atau Anda aktif, dan yang terpanjang tahun ini
 • Cara setiap pengukuran dilakukan: glukosa saat puasa atau setelah makan, tekanan darah duduk atau di pergelangan
-• Kartu yang bisa diatur dengan menyeret, satuan metrik atau imperial, glukosa dalam mmol/L atau mg/dL
+• Kartu yang bisa diatur dengan menyeret, satuan metrik atau imperial, glukosa dalam mmol/L atau mg/dL, diagram yang dijelaskan untuk pembaca layar
 • Cadangan dasbor dan setelan ke file untuk dipulihkan di ponsel baru
 
 DATA ANDA TETAP DI PONSEL ANDA
@@ -28,24 +28,26 @@ Izin diminta per jenis data, dan tidak ada yang dipilih secara default. Izinkan 
 
 TOTAL YANG TEPAT
 
-Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali, serta memberi tahu Anda jika lebih dari satu aplikasi berkontribusi.
+Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali.
 
-Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Saat menampilkan angka sebuah sesi, aplikasi menyatakan dengan jelas bahwa angka itu dicocokkan berdasarkan waktu.
+Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Aplikasi mencocokkannya berdasarkan waktu dan menyatakannya dengan jelas.
 
 PRO — SEKALI BELI, TANPA LANGGANAN
 
-Semua yang di atas gratis dan akan tetap gratis. Pro adalah satu pembelian dalam aplikasi yang membuka:
+Semua yang di atas gratis dan akan tetap gratis. Pro, sekali beli, membuka:
 
 • Ekspor CSV untuk jenis data apa pun: setiap catatan dengan aplikasi sumbernya, atau total harian tanpa duplikat. Aplikasi tidak menyimpan salinan.
-• Laporan PDF untuk dokter Anda: tekanan darah dengan rata-rata pagi dan malam, berat badan per minggu, detak jantung istirahat terhadap rata-rata empat minggu, glukosa menurut waktu makan dan rentang target. Atau keempatnya dalam satu laporan.
+• Laporan PDF: nilai harian angka apa pun, dan untuk dokter Anda tekanan darah dengan rata-rata pagi dan malam, berat badan, detak jantung istirahat, dan glukosa, untuk periode apa pun, terpisah atau dalam satu laporan.
 • Kartu lebih besar — minggu, empat minggu, atau tahun sebagai angka, diagram, atau keduanya, atau tahap tidur semalam dan latihan terakhir Anda dengan kurva pilihan Anda.
-• Setahun sebagai kalender, satu warna per hari — di bawah setiap diagram tahunan dan sebagai kartu.
-• Beberapa kartu untuk angka yang sama, dan warna sendiri untuk setiap kartu.
-• Kartu berisi perubahan minggu ini, berat badan dengan komposisi tubuh, dan dua angka yang dibandingkan pada satu sumbu waktu.
-• Rute latihan sebagai file GPX.
+• Setahun sebagai kalender, satu warna per hari, dengan rata-rata setiap hari dalam seminggu.
+• Perubahan minggu ini pada pita berwarna yang menunjukkan seberapa tidak biasa minggu itu.
+• Bulan ini di samping bulan yang sama tahun lalu.
+• Ritme tidur: seberapa teratur jam tidur dan bangun Anda.
+• Satu jenis latihan selama setahun: kecepatan atau pace, dan detak jantung.
+• Beberapa kartu per angka, warna kartu, komposisi tubuh, dua angka pada satu sumbu waktu, rute sebagai file GPX.
 • Semua fitur Pro mendatang, tanpa biaya tambahan.
 
-Pembelian lewat Google Play dan ikut pindah ke ponsel baru Anda.
+Pembelian ikut pindah bersama akun Google Anda ke ponsel baru.
 
 OPEN SOURCE
 
