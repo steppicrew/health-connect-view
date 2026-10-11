@@ -19,6 +19,7 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.BloodGlucoseRecord
 import androidx.health.connect.client.records.MealType
+import androidx.health.connect.client.records.NutritionRecord
 import androidx.health.connect.client.units.BloodGlucose
 import androidx.health.connect.client.records.metadata.Device
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -505,10 +506,58 @@ private val SEEDED_WORKOUTS = listOf(
         // binder transaction limit.
         records.chunked(BATCH_SIZE).forEach { client.insertRecords(it) }
 
+        // Meals likewise on their own: WRITE_NUTRITION is granted separately, and a batch
+        // holding a type without its permission fails whole.
+        runCatching {
+            client.deleteRecords(NutritionRecord::class, fixtureWindow)
+            meals(today, now, zone, random).chunked(BATCH_SIZE).forEach { client.insertRecords(it) }
+        }.onFailure { Log.w("SampleDataSeeder", "meal seed skipped: ${it.javaClass.simpleName}") }
+
         // After the main fixture and allowed to fail on its own: the cycle write permissions
         // are granted separately, and missing them must not cost the rest of the seed.
         runCatching { CycleSeeder.seed(client) }
             .onFailure { Log.w("SampleDataSeeder", "cycle seed skipped: ${it.javaClass.simpleName}") }
+    }
+
+    /**
+     * Three meals a day over the detailed month, with the nutrients a food diary lists: some
+     * meals without fibre or caffeine, so a nutrient's mean counts fewer days than another's.
+     */
+    private fun meals(today: Instant, now: Instant, zone: ZoneId, random: Random): List<NutritionRecord> = buildList {
+        for (dayOffset in 0 until DAYS) {
+            val dayStart = today.minus(dayOffset.toLong(), ChronoUnit.DAYS)
+            val offset = zone.rules.getOffset(dayStart)
+            listOf(
+                Triple(7.5, "Muesli", MealType.MEAL_TYPE_BREAKFAST),
+                Triple(12.75, "Pasta", MealType.MEAL_TYPE_LUNCH),
+                Triple(19.0, "Salad and bread", MealType.MEAL_TYPE_DINNER),
+            ).forEachIndexed { index, (hour, name, type) ->
+                val start = dayStart.plus((hour * 60).toLong(), ChronoUnit.MINUTES)
+                val end = start.plus(20, ChronoUnit.MINUTES)
+                if (end.isAfter(now)) return@forEachIndexed
+                val scale = 1 + random.nextInt(-15, 16) / 100.0
+                add(
+                    NutritionRecord(
+                        startTime = start,
+                        startZoneOffset = offset,
+                        endTime = end,
+                        endZoneOffset = offset,
+                        name = name,
+                        mealType = type,
+                        energy = Energy.kilocalories(650.0 * scale),
+                        protein = Mass.grams(25.0 * scale),
+                        totalCarbohydrate = Mass.grams(80.0 * scale),
+                        sugar = Mass.grams(18.0 * scale),
+                        totalFat = Mass.grams(22.0 * scale),
+                        saturatedFat = Mass.grams(7.0 * scale),
+                        dietaryFiber = if (index == 1 && dayOffset % 3 == 0) null else Mass.grams(8.0 * scale),
+                        sodium = Mass.grams(0.8 * scale),
+                        caffeine = if (index == 0) Mass.grams(0.095) else null,
+                        metadata = Metadata.activelyRecorded(Device(type = Device.TYPE_PHONE)),
+                    ),
+                )
+            }
+        }
     }
 
     /**
