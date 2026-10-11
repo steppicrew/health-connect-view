@@ -437,6 +437,17 @@
         <item quantity="many">Moyenne de %1$d nuits</item>
         <item quantity="other">Moyenne de %1$d nuits</item>
     </plurals>
+    <string name="sleep_regularity_title">Rythme du sommeil</string>
+    <string name="sleep_regularity_start">Début du sommeil</string>
+    <string name="sleep_regularity_end">Réveil</string>
+    <string name="sleep_regularity_middle">La moitié des nuits : %1$s–%2$s</string>
+    <string name="sleep_regularity_note">L\'heure médiane des nuits, et les heures entre lesquelles la moitié centrale d\'entre elles a commencé ou fini. La bande est plus foncée aux heures où vous dormiez le plus souvent. Elle décrit votre rythme sans le noter.</string>
+    <string name="sleep_regularity_locked">Quand vos nuits commencent et finissent d\'habitude, et combien cela varie.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">Sur %1$d nuit</item>
+        <item quantity="many">Sur %1$d nuits</item>
+        <item quantity="other">Sur %1$d nuits</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Afficher la moyenne sur 4 semaines</string>
 
     <!-- Permissions screen -->

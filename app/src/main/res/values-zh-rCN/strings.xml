@@ -417,6 +417,15 @@
     <plurals name="training_nights_count">
         <item quantity="other">%1$d 晚的平均值</item>
     </plurals>
+    <string name="sleep_regularity_title">睡眠节律</string>
+    <string name="sleep_regularity_start">入睡</string>
+    <string name="sleep_regularity_end">醒来</string>
+    <string name="sleep_regularity_middle">半数夜晚：%1$s–%2$s</string>
+    <string name="sleep_regularity_note">各晚的中位时间，以及中间一半夜晚开始或结束的时间范围。在更多夜晚处于睡眠的时段，色带更深。它描述您的节律，不做评分。</string>
+    <string name="sleep_regularity_locked">您的夜晚通常何时开始和结束，以及变化有多大。</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="other">基于 %1$d 晚</item>
+    </plurals>
     <string name="chart_show_rolling_mean">显示 4 周平均值</string>
 
     <!-- Permissions screen -->

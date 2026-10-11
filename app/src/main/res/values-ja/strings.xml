@@ -417,6 +417,15 @@
     <plurals name="training_nights_count">
         <item quantity="other">%1$d 夜の平均</item>
     </plurals>
+    <string name="sleep_regularity_title">睡眠のリズム</string>
+    <string name="sleep_regularity_start">睡眠開始</string>
+    <string name="sleep_regularity_end">起床</string>
+    <string name="sleep_regularity_middle">半数の夜：%1$s～%2$s</string>
+    <string name="sleep_regularity_note">夜の中央の時刻と、中央の半数の夜が始まった・終わった時刻の範囲です。帯は、多くの夜で眠っていた時間帯ほど濃くなります。リズムを示すもので、評価ではありません。</string>
+    <string name="sleep_regularity_locked">夜がふだんいつ始まり、いつ終わるか、そしてそのばらつき。</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="other">%1$d 夜から</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 週間平均を表示</string>
 
     <!-- Permissions screen -->

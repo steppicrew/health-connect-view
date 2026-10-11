@@ -458,6 +458,16 @@
         <item quantity="one">Mean of %1$d night</item>
         <item quantity="other">Mean of %1$d nights</item>
     </plurals>
+    <string name="sleep_regularity_title">Sleep rhythm</string>
+    <string name="sleep_regularity_start">Sleep start</string>
+    <string name="sleep_regularity_end">Wake-up</string>
+    <string name="sleep_regularity_middle">Half the nights %1$s–%2$s</string>
+    <string name="sleep_regularity_note">The middle time of the nights, and the times between which the middle half of them began or ended. The strip is darker at the times you were asleep on more nights. It describes your rhythm and does not rate it.</string>
+    <string name="sleep_regularity_locked">When your nights usually begin and end, and how much that varies.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">From %1$d night</item>
+        <item quantity="other">From %1$d nights</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Show 4-week mean</string>
 
     <!-- Permissions screen -->

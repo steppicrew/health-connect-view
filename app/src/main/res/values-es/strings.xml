@@ -437,6 +437,17 @@
         <item quantity="many">Media de %1$d noches</item>
         <item quantity="other">Media de %1$d noches</item>
     </plurals>
+    <string name="sleep_regularity_title">Ritmo de sueño</string>
+    <string name="sleep_regularity_start">Inicio del sueño</string>
+    <string name="sleep_regularity_end">Despertar</string>
+    <string name="sleep_regularity_middle">La mitad de las noches: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">La hora mediana de las noches y las horas entre las que empezó o terminó la mitad central de ellas. La franja es más oscura a las horas en que dormiste más noches. Describe tu ritmo, no lo puntúa.</string>
+    <string name="sleep_regularity_locked">Cuándo suelen empezar y terminar tus noches, y cuánto varía.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">De %1$d noche</item>
+        <item quantity="many">De %1$d noches</item>
+        <item quantity="other">De %1$d noches</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Mostrar media de 4 semanas</string>
 
     <!-- Permissions screen -->

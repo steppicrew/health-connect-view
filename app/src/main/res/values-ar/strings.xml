@@ -467,6 +467,20 @@
         <item quantity="many">متوسط %1$d ليلة</item>
         <item quantity="other">متوسط %1$d ليلة</item>
     </plurals>
+    <string name="sleep_regularity_title">إيقاع النوم</string>
+    <string name="sleep_regularity_start">بداية النوم</string>
+    <string name="sleep_regularity_end">الاستيقاظ</string>
+    <string name="sleep_regularity_middle">نصف الليالي: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">الوقت الأوسط لليالي، والأوقات التي بدأ أو انتهى بينها النصف الأوسط منها. يكون الشريط أغمق في الأوقات التي نمت فيها في عدد أكبر من الليالي. إنه يصف إيقاعك ولا يقيّمه.</string>
+    <string name="sleep_regularity_locked">متى تبدأ لياليك وتنتهي عادةً، ومدى تغيّر ذلك.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="zero">من %1$d ليلة</item>
+        <item quantity="one">من ليلة واحدة</item>
+        <item quantity="two">من ليلتين</item>
+        <item quantity="few">من %1$d ليالٍ</item>
+        <item quantity="many">من %1$d ليلة</item>
+        <item quantity="other">من %1$d ليلة</item>
+    </plurals>
     <string name="chart_show_rolling_mean">إظهار متوسط 4 أسابيع</string>
 
     <!-- Permissions screen -->

@@ -427,6 +427,16 @@
         <item quantity="one">Gemiddelde van %1$d nacht</item>
         <item quantity="other">Gemiddelde van %1$d nachten</item>
     </plurals>
+    <string name="sleep_regularity_title">Slaapritme</string>
+    <string name="sleep_regularity_start">Begin van de slaap</string>
+    <string name="sleep_regularity_end">Wakker worden</string>
+    <string name="sleep_regularity_middle">De helft van de nachten: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">De middelste tijd van de nachten, en de tijden waartussen de middelste helft ervan begon of eindigde. De strook is donkerder op de tijden waarop je in meer nachten sliep. Het beschrijft je ritme en geeft er geen oordeel over.</string>
+    <string name="sleep_regularity_locked">Wanneer je nachten meestal beginnen en eindigen, en hoeveel dat wisselt.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">Uit %1$d nacht</item>
+        <item quantity="other">Uit %1$d nachten</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4-weeks gemiddelde tonen</string>
 
     <!-- Permissions screen -->

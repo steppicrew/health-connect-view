@@ -112,6 +112,8 @@ import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.health.DayPartSplit
 import de.steppicrew.healthconnectview.health.TrainingNights
+import de.steppicrew.healthconnectview.health.nightsByMorning
+import de.steppicrew.healthconnectview.health.sleepRegularity
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
@@ -1109,7 +1111,17 @@ private fun SpanSummary(
             when {
                 heatmap != null -> HeatmapSection(heatmap, data.spec)
                 data.heatmapPending -> Reserved { HeatmapSection(standInHeatmap(today), data.spec) }
-                !heatmapUnlocked() -> LockedHeatmap()
+                !unlocked(Feature.YEAR_HEATMAP) -> LockedSection(R.string.heatmap_title, R.string.heatmap_locked)
+            }
+        }
+        // From the nights the chart already holds: nothing more to read.
+        if (data.perNight) {
+            val zone = HealthRepository.DEFAULT_ZONE
+            val regularity = remember(data.sessions) { sleepRegularity(nightsByMorning(data.sessions, zone), zone) }
+            when {
+                regularity == null -> Unit
+                unlocked(Feature.SLEEP_REGULARITY) -> SleepRegularitySection(regularity)
+                else -> LockedSection(R.string.sleep_regularity_title, R.string.sleep_regularity_locked)
             }
         }
         val nights = data.trainingNights
@@ -1159,9 +1171,9 @@ private fun Reserved(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun heatmapUnlocked(): Boolean {
+private fun unlocked(feature: Feature): Boolean {
     val pro by AppEntitlements.current.pro.collectAsStateWithLifecycle()
-    return pro.allows(Feature.YEAR_HEATMAP)
+    return pro.allows(feature)
 }
 
 /** An empty year the size of a real one, for the place held while it is read. */
@@ -1238,9 +1250,9 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
     }
 }
 
-/** The heatmap's place without Pro: what it is, and the way to it. */
+/** A Pro section's place without Pro: what it is, and the way to it. */
 @Composable
-private fun LockedHeatmap() {
+private fun LockedSection(@StringRes title: Int, @StringRes body: Int) {
     val activity = LocalActivity.current
     InfoGroup(Modifier.clickable { activity?.let(AppEntitlements.current::buy) }) {
         Row(verticalAlignment = Alignment.Top) {
@@ -1250,13 +1262,13 @@ private fun LockedHeatmap() {
                 modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 20.dp)).size(20.dp),
             )
             Text(
-                stringResource(R.string.export_premium, stringResource(R.string.heatmap_title)),
+                stringResource(R.string.export_premium, stringResource(title)),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 20.dp)),
             )
         }
         Text(
-            text = stringResource(R.string.heatmap_locked),
+            text = stringResource(body),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp),

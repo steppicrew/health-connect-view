@@ -447,6 +447,18 @@
         <item quantity="many">Среднее за %1$d ночей</item>
         <item quantity="other">Среднее за %1$d ночи</item>
     </plurals>
+    <string name="sleep_regularity_title">Ритм сна</string>
+    <string name="sleep_regularity_start">Начало сна</string>
+    <string name="sleep_regularity_end">Пробуждение</string>
+    <string name="sleep_regularity_middle">Половина ночей: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">Срединное время ночей и время, между которым начиналась или заканчивалась средняя половина из них. Полоса темнее в те часы, когда вы спали в большее число ночей. Это описание вашего ритма, а не оценка.</string>
+    <string name="sleep_regularity_locked">Когда обычно начинаются и заканчиваются ваши ночи и насколько это меняется.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">За %1$d ночь</item>
+        <item quantity="few">За %1$d ночи</item>
+        <item quantity="many">За %1$d ночей</item>
+        <item quantity="other">За %1$d ночи</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Показать среднее за 4 недели</string>
 
     <!-- Permissions screen -->

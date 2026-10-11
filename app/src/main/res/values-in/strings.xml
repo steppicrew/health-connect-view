@@ -417,6 +417,15 @@
     <plurals name="training_nights_count">
         <item quantity="other">Rata-rata dari %1$d malam</item>
     </plurals>
+    <string name="sleep_regularity_title">Ritme tidur</string>
+    <string name="sleep_regularity_start">Mulai tidur</string>
+    <string name="sleep_regularity_end">Bangun</string>
+    <string name="sleep_regularity_middle">Separuh malam: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">Waktu tengah dari malam-malam tersebut, dan rentang waktu saat separuh malam di tengahnya dimulai atau berakhir. Strip lebih gelap pada jam ketika Anda tidur di lebih banyak malam. Ini menggambarkan ritme Anda, bukan menilainya.</string>
+    <string name="sleep_regularity_locked">Kapan malam Anda biasanya dimulai dan berakhir, dan seberapa besar variasinya.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="other">Dari %1$d malam</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Tampilkan rata-rata 4 minggu</string>
 
     <!-- Permissions screen -->

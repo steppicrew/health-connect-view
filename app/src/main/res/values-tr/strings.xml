@@ -427,6 +427,16 @@
         <item quantity="one">%1$d gecenin ortalaması</item>
         <item quantity="other">%1$d gecenin ortalaması</item>
     </plurals>
+    <string name="sleep_regularity_title">Uyku ritmi</string>
+    <string name="sleep_regularity_start">Uyku başlangıcı</string>
+    <string name="sleep_regularity_end">Uyanma</string>
+    <string name="sleep_regularity_middle">Gecelerin yarısı: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">Gecelerin ortanca saati ve ortadaki yarısının başladığı ya da bittiği saat aralığı. Şerit, daha çok gece uyuduğunuz saatlerde daha koyudur. Ritminizi tanımlar, puanlamaz.</string>
+    <string name="sleep_regularity_locked">Gecelerinizin genellikle ne zaman başlayıp bittiği ve bunun ne kadar değiştiği.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">%1$d geceden</item>
+        <item quantity="other">%1$d geceden</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 haftalık ortalamayı göster</string>
 
     <!-- Permissions screen -->
