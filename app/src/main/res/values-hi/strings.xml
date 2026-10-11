@@ -94,6 +94,7 @@
     <string name="trend_title_up">रुझान: आम तौर से ज़्यादा</string>
     <string name="trend_title_flat">रुझान: आम तौर जितना</string>
     <string name="trend_title_down">रुझान: आम तौर से कम</string>
+    <string name="chart_description_range">सबसे कम मान %1$s, सबसे अधिक %2$s</string>
     <string name="trend_numbers">पिछले 7 दिन का औसत %1$s, 30 दिन का औसत %2$s।</string>
     <string name="trend_rule">इस दिन की तुलना कल से नहीं की जाती, बल्कि इस दिन से पहले के 7 दिनों की तुलना उनसे पहले के 30 दिनों से की जाती है। यह दिन नहीं गिना जाता, क्योंकि हो सकता है यह अभी खत्म न हुआ हो। जिन दिनों कुछ रिकॉर्ड नहीं हुआ, वे छोड़ दिए जाते हैं। रोज़ के सामान्य उतार-चढ़ाव से छोटे अंतर को बराबर माना जाता है।</string>
     <string name="explanation_show">जानकारी दिखाएं</string>

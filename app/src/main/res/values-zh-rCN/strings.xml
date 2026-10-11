@@ -93,6 +93,7 @@
     <string name="trend_title_up">趋势：高于平常</string>
     <string name="trend_title_flat">趋势：与平常相当</string>
     <string name="trend_title_down">趋势：低于平常</string>
+    <string name="chart_description_range">最低值 %1$s，最高值 %2$s</string>
     <string name="trend_numbers">最近 7 天平均值 %1$s，30 天平均值 %2$s。</string>
     <string name="trend_rule">比较的是这一天之前的 7 天与再之前的 30 天，而不是这一天与昨天。这一天可能尚未结束，因此不计入。没有记录的日子会被排除。小于正常日常波动的差异视为持平。</string>
     <string name="explanation_show">显示说明</string>

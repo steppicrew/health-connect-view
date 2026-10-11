@@ -94,6 +94,7 @@
     <string name="trend_title_up">Trend: boven je gebruikelijke niveau</string>
     <string name="trend_title_flat">Trend: rond je gebruikelijke niveau</string>
     <string name="trend_title_down">Trend: onder je gebruikelijke niveau</string>
+    <string name="chart_description_range">Laagste waarde %1$s, hoogste %2$s</string>
     <string name="trend_numbers">Gemiddelde laatste 7 dagen %1$s, 30-daags gemiddelde %2$s.</string>
     <string name="trend_rule">Vergelijkt de 7 dagen vóór deze dag met de 30 dagen daarvoor, niet deze dag met gisteren. Deze dag telt niet mee, omdat hij misschien nog niet voorbij is. Dagen zonder registraties worden overgeslagen. Verschillen kleiner dan de normale schommeling van dag tot dag gelden als gelijk.</string>
     <string name="explanation_show">Uitleg tonen</string>

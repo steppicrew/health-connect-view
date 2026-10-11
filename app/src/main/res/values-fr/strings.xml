@@ -95,6 +95,7 @@
     <string name="trend_title_up">Tendance : au-dessus de l’habitude</string>
     <string name="trend_title_flat">Tendance : comme d’habitude</string>
     <string name="trend_title_down">Tendance : en dessous de l’habitude</string>
+    <string name="chart_description_range">Valeur la plus basse %1$s, la plus haute %2$s</string>
     <string name="trend_numbers">Moyenne des 7 derniers jours %1$s, moyenne sur 30 jours %2$s.</string>
     <string name="trend_rule">Compare les 7 jours précédant ce jour aux 30 jours qui les précèdent, et non ce jour à la veille. Ce jour ne compte pas, car il n’est peut-être pas terminé. Les jours sans enregistrement sont ignorés. Les écarts inférieurs à la variation normale d’un jour à l’autre comptent comme stables.</string>
     <string name="explanation_show">Afficher l’explication</string>

@@ -98,6 +98,7 @@
     <string name="trend_title_up">الاتجاه: أعلى من المعتاد</string>
     <string name="trend_title_flat">الاتجاه: كالمعتاد تقريبًا</string>
     <string name="trend_title_down">الاتجاه: أقل من المعتاد</string>
+    <string name="chart_description_range">أدنى قيمة %1$s، وأعلى قيمة %2$s</string>
     <string name="trend_numbers">متوسط آخر 7 أيام %1$s، ومتوسط 30 يومًا %2$s.</string>
     <string name="trend_rule">يقارن الأيام السبعة السابقة لهذا اليوم بالأيام الثلاثين التي سبقتها، وليس هذا اليوم بالأمس. لا يُحتسب هذا اليوم لأنه قد لا يكون انتهى بعد. تُستبعد الأيام التي لم يُسجَّل فيها شيء. تُعدّ الفروق الأصغر من التقلّب اليومي المعتاد مستوى ثابتًا.</string>
     <string name="explanation_show">إظهار الشرح</string>

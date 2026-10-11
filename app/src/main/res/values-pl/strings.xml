@@ -96,6 +96,7 @@
     <string name="trend_title_up">Trend: powyżej zwykłego poziomu</string>
     <string name="trend_title_flat">Trend: na zwykłym poziomie</string>
     <string name="trend_title_down">Trend: poniżej zwykłego poziomu</string>
+    <string name="chart_description_range">Najniższa wartość %1$s, najwyższa %2$s</string>
     <string name="trend_numbers">Średnia z ostatnich 7 dni %1$s, średnia z 30 dni %2$s.</string>
     <string name="trend_rule">Porównuje 7 dni przed tym dniem z 30 dniami wcześniej, a nie ten dzień z wczorajszym. Ten dzień się nie liczy, bo może się jeszcze nie skończyć. Dni bez zapisów są pomijane. Różnice mniejsze niż zwykłe wahania z dnia na dzień liczą się jako stały poziom.</string>
     <string name="explanation_show">Pokaż wyjaśnienie</string>

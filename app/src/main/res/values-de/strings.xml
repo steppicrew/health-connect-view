@@ -94,6 +94,7 @@
     <string name="trend_title_up">Trend: über dem Üblichen</string>
     <string name="trend_title_flat">Trend: etwa wie üblich</string>
     <string name="trend_title_down">Trend: unter dem Üblichen</string>
+    <string name="chart_description_range">Niedrigster Wert %1$s, höchster %2$s</string>
     <string name="trend_numbers">Schnitt der letzten 7 Tage %1$s, Schnitt der 30 Tage %2$s.</string>
     <string name="trend_rule">Verglichen werden die 7 Tage vor diesem Tag mit den 30 Tagen davor, nicht dieser Tag mit gestern. Dieser Tag zählt nicht mit, weil er noch nicht vorbei sein kann. Tage ohne Aufzeichnung bleiben außen vor. Unterschiede kleiner als die normale Schwankung von Tag zu Tag gelten als gleich.</string>
     <string name="explanation_show">Erklärung anzeigen</string>
