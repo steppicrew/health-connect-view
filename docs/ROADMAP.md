@@ -119,9 +119,17 @@ open items below and `FEATURE-IDEAS.md`.
     Seen on the emulator: list rows, record screen, both PDFs. Noticed on the way, not fixed:
     glucose in mg/dL shows a decimal ("91,8 mg/dL"), and the blood pressure chart's caption
     says "Tagessummen" for what are daily means.
-23. [ ] **Nutrition beyond energy.** Protein, carbohydrate, fat, sugar, fibre, sodium and
+23. [x] **Nutrition beyond energy.** Protein, carbohydrate, fat, sugar, fibre, sodium and
     caffeine have aggregates; only energy is shown. No nutrition data on the phone, so this
-    waits for someone who logs food, or the emulator.
+    waits for someone who logs food, or the emulator. Built 11.10.2026, free, seen on the
+    emulator with seeded meals: "Nährstoffe" under the nutrition chart, eight nutrients in
+    label order from one daily-bucketed aggregate of the window (never summed from records).
+    A day shows totals; several days lead with the mean per day *recorded* for that nutrient,
+    the total and its days beneath, so an unlogged day is not read as nothing eaten. No
+    targets: what a day should hold depends on the person. How it is made is behind the "i".
+    Each meal's record screen lists its name and nutrients. Not on the dashboard and not in
+    the store text, which has no room; the release notes can carry it. Unverified on real
+    data: nobody on the phone logs food.
 24. [ ] **Laps, segments, notes, planned sessions.** Exposed on exercise sessions, filled by no
     app on the phone. Lowest priority; revisit if a writer that fills them turns up.
 25. [x] **Mindfulness sessions** -- built 27.09.2026. The reason for leaving it out was wrong:
