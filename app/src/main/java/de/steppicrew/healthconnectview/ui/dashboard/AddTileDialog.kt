@@ -44,6 +44,8 @@ fun AddTileDialog(
     /** Whether the insights tile may be offered: not while one is pinned. */
     insightsOffered: Boolean = false,
     insightsUnlocked: Boolean = false,
+    /** Whether the cycle tile may be offered: a period recorded, and none pinned. */
+    cycleOffered: Boolean = false,
 ) {
     val (pinned, fresh) = candidates.partition { it.pinned }
     AlertDialog(
@@ -62,7 +64,16 @@ fun AddTileDialog(
                         }
                     }
                 }
-                if (fresh.isEmpty() && !insightsOffered) {
+                // Beside it the other tile that is no type's, where there are cycles to show.
+                if (cycleOffered) {
+                    item(key = "cycle") {
+                        NamedRow(stringResource(R.string.cycle_tile_title), locked = false) {
+                            onAdd(Tile.CYCLE)
+                            onDismiss()
+                        }
+                    }
+                }
+                if (fresh.isEmpty() && !insightsOffered && !cycleOffered) {
                     item(key = "all-pinned") {
                         Text(
                             text = stringResource(R.string.dashboard_add_none),

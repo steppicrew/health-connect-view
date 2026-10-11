@@ -366,6 +366,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Циклы</string>
+    <string name="cycle_tile_title">Цикл</string>
+    <string name="cycle_tile_day">День %1$d</string>
+    <string name="cycle_tile_usual">обычно %1$s</string>
+    <string name="cycle_tile_none">За последний год менструации не записаны</string>
+    <string name="cycle_tile_since">с %1$s</string>
     <string name="cycle_open">Обзор циклов</string>
     <string name="cycle_open_body">Все циклы за год рядом, выровненные по первому дню</string>
     <string name="cycle_empty_body">В этом году не записано ни менструаций, ни выделений, поэтому выравнивать нечего.</string>

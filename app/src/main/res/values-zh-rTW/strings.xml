@@ -351,6 +351,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">週期</string>
+    <string name="cycle_tile_title">週期</string>
+    <string name="cycle_tile_day">第 %1$d 天</string>
+    <string name="cycle_tile_usual">通常 %1$s</string>
+    <string name="cycle_tile_none">過去一年沒有記錄經期</string>
+    <string name="cycle_tile_since">自 %1$s 起</string>
     <string name="cycle_open">週期總覽</string>
     <string name="cycle_open_body">一年中的所有週期並排顯示，以第 1 天對齊</string>
     <string name="cycle_empty_body">今年沒有記錄經期或經血量，因此沒有可對齊的週期。</string>

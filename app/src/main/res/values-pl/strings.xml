@@ -366,6 +366,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Cykle</string>
+    <string name="cycle_tile_title">Cykl</string>
+    <string name="cycle_tile_day">Dzień %1$d</string>
+    <string name="cycle_tile_usual">zwykle %1$s</string>
+    <string name="cycle_tile_none">Brak zapisanej miesiączki w ostatnim roku</string>
+    <string name="cycle_tile_since">od %1$s</string>
     <string name="cycle_open">Przegląd cykli</string>
     <string name="cycle_open_body">Wszystkie cykle z roku obok siebie, wyrównane do dnia 1</string>
     <string name="cycle_empty_body">W tym roku nie zapisano miesiączki ani krwawienia, więc nie ma cyklu do wyrównania.</string>

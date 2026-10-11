@@ -9,6 +9,7 @@ import androidx.health.connect.client.units.Temperature
 import de.steppicrew.healthconnectview.health.CycleDay
 import de.steppicrew.healthconnectview.health.CycleRecords
 import de.steppicrew.healthconnectview.health.buildCycles
+import de.steppicrew.healthconnectview.health.cycleNow
 import de.steppicrew.healthconnectview.health.cycleStats
 import de.steppicrew.healthconnectview.health.mergeCycleDays
 import org.junit.Assert.assertEquals
@@ -140,5 +141,33 @@ class CyclesTest {
         val days = mergeCycleDays(CycleRecords(temperatures = listOf(reading(9, 36.9), reading(6, 36.4))), zone)
 
         assertEquals(36.4, days.getValue(jan1).temperature!!, 1e-9)
+    }
+
+    @Test
+    fun `the tile counts the day of the running cycle and the usual length before it`() {
+        val days = bleeding(jan1, jan1.plusDays(28), jan1.plusDays(57), jan1.plusDays(85))
+        val now = cycleNow(days, jan1.plusDays(96))!!
+
+        assertEquals(12, now.day)
+        assertEquals(jan1.plusDays(85), now.start)
+        assertEquals(listOf(jan1.plusDays(85), jan1.plusDays(57), jan1.plusDays(28), jan1), now.cycles.map { it.start })
+        assertEquals(28, now.stats!!.medianLength)
+    }
+
+    @Test
+    fun `a past date sees nothing after it`() {
+        val days = bleeding(jan1, jan1.plusDays(28))
+        val now = cycleNow(days, jan1.plusDays(20))!!
+
+        assertEquals(21, now.day)
+        assertEquals(1, now.cycles.size)
+        assertNull(now.cycles.single().length)
+        assertNull(now.stats)
+    }
+
+    @Test
+    fun `no period in the year is no cycle`() {
+        assertNull(cycleNow(bleeding(jan1), jan1.plusDays(400)))
+        assertNull(cycleNow(emptyMap(), jan1))
     }
 }

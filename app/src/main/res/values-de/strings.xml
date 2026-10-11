@@ -356,6 +356,11 @@
 
     <!-- Zyklusübersicht -->
     <string name="cycle_title">Zyklen</string>
+    <string name="cycle_tile_title">Zyklus</string>
+    <string name="cycle_tile_day">Tag %1$d</string>
+    <string name="cycle_tile_usual">meist %1$s</string>
+    <string name="cycle_tile_none">Keine Periode im letzten Jahr erfasst</string>
+    <string name="cycle_tile_since">seit %1$s</string>
     <string name="cycle_open">Zyklusübersicht</string>
     <string name="cycle_open_body">Alle Zyklen eines Jahres untereinander, ausgerichtet an Tag 1</string>
     <string name="cycle_empty_body">In diesem Jahr wurde keine Periode oder Blutung erfasst, daher gibt es keinen Zyklus zum Ausrichten.</string>

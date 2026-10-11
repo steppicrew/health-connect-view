@@ -356,6 +356,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Cycli</string>
+    <string name="cycle_tile_title">Cyclus</string>
+    <string name="cycle_tile_day">Dag %1$d</string>
+    <string name="cycle_tile_usual">meestal %1$s</string>
+    <string name="cycle_tile_none">Geen menstruatie vastgelegd in het afgelopen jaar</string>
+    <string name="cycle_tile_since">sinds %1$s</string>
     <string name="cycle_open">Cyclusoverzicht</string>
     <string name="cycle_open_body">Alle cycli van een jaar naast elkaar, uitgelijnd op dag 1</string>
     <string name="cycle_empty_body">In dit jaar is geen menstruatie of bloeding geregistreerd, dus er is geen cyclus om uit te lijnen.</string>

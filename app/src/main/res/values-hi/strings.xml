@@ -356,6 +356,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">चक्र</string>
+    <string name="cycle_tile_title">चक्र</string>
+    <string name="cycle_tile_day">दिन %1$d</string>
+    <string name="cycle_tile_usual">आमतौर पर %1$s</string>
+    <string name="cycle_tile_none">पिछले वर्ष में कोई माहवारी दर्ज नहीं</string>
+    <string name="cycle_tile_since">%1$s से</string>
     <string name="cycle_open">चक्र की खास जानकारी</string>
     <string name="cycle_open_body">एक साल के सभी चक्र साथ-साथ, पहले दिन पर एक सीध में</string>
     <string name="cycle_empty_body">इस साल कोई पीरियड या फ़्लो रिकॉर्ड नहीं हुआ, इसलिए सीध में लाने के लिए कोई चक्र नहीं है।</string>

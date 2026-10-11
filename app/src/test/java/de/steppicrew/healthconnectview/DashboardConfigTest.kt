@@ -249,6 +249,17 @@ class DashboardConfigTest {
     }
 
     @Test
+    fun `the cycle tile survives sanitising once, and round-trips`() {
+        val stored = DashboardConfig(
+            listOf(Tile(Tile.CYCLE, width = 2), Tile(Tile.INSIGHTS), Tile(Tile.CYCLE, id = "Cycle#2")),
+        )
+        val clean = stored.sanitised()
+        assertEquals(listOf(Tile.CYCLE, Tile.INSIGHTS), clean.tiles.map { it.typeName })
+        assertEquals(2, clean.tiles.single { it.isCycle }.width)
+        assertEquals(clean, DashboardJson.decode(DashboardJson.encode(clean)).sanitised())
+    }
+
+    @Test
     fun `only weight offers the body face, and it round-trips`() {
         assertTrue(TileFace.BODY in facesFor("WeightRecord"))
         assertEquals(listOf(TileFace.VALUE, TileFace.CHART, TileFace.BOTH, TileFace.CALENDAR), facesFor("StepsRecord"))

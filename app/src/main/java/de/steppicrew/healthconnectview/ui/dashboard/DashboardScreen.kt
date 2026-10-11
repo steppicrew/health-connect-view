@@ -142,6 +142,7 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.ui.components.SourceMark
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.registry.TileSpec
 import de.steppicrew.healthconnectview.util.appLabelFor
 import de.steppicrew.healthconnectview.ui.components.AppIcon
@@ -192,6 +193,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     /** The insights tile's full list. */
     onOpenInsights: () -> Unit = {},
+    onOpenCycle: () -> Unit = {},
     /** The body composition screen, which a weight tile's body face opens. */
     onOpenBody: () -> Unit = {},
     /** One workout's screen, which a workout tile showing a single workout opens. */
@@ -230,6 +232,9 @@ fun DashboardScreen(
     // tiles were still being arranged. Leaving the mode is what Back means here.
     BackHandler(enabled = editing) { editing = false }
     var addingTile by remember { mutableStateOf(false) }
+    val cycleRecorded by viewModel.cycleRecorded.collectAsStateWithLifecycle()
+    // Looked up as the picker opens: the cycle tile is offered where a period was recorded.
+    LaunchedEffect(addingTile) { if (addingTile) viewModel.checkCycleRecorded() }
 
     if (addingTile) {
         AddTileDialog(
@@ -240,6 +245,7 @@ fun DashboardScreen(
             onBuy = { activity?.let(AppEntitlements.current::buy) },
             insightsOffered = !viewModel.hasInsightsTile,
             insightsUnlocked = pro.allows(Feature.INSIGHTS),
+            cycleOffered = cycleRecorded && !viewModel.hasCycleTile,
         )
     }
 
@@ -414,7 +420,7 @@ fun DashboardScreen(
                     modifier = Modifier.padding(padding),
                 )
     
-                state.tiles.isEmpty() && state.insights == null -> MessageView(
+                state.tiles.isEmpty() && state.insights == null && state.cycle == null -> MessageView(
                     icon = Icons.AutoMirrored.Filled.List,
                     title = stringResource(R.string.dashboard_empty_title),
                     body = stringResource(R.string.dashboard_empty_body),
@@ -423,7 +429,7 @@ fun DashboardScreen(
     
                 // Distinct from "no tiles": the dashboard is configured, but nothing on it may be
                 // read yet. Sending the user to the type list would be a dead end.
-                state.insights == null && state.tiles.none { it.granted } -> MessageView(
+                state.insights == null && state.cycle == null && state.tiles.none { it.granted } -> MessageView(
                     icon = Icons.Default.Lock,
                     title = stringResource(R.string.detail_no_permission_title),
                     body = stringResource(R.string.detail_no_permission_body),
@@ -433,8 +439,9 @@ fun DashboardScreen(
                 else -> {
                     // Every tile in the stored order, the insights tile among the types'; during a
                     // drag, in the order the drag has reached.
-                    val entries = remember(state.tiles, state.insights, state.layout) {
-                        val all = state.tiles.map(GridEntry::Type) + listOfNotNull(state.insights?.let(GridEntry::Insights))
+                    val entries = remember(state.tiles, state.insights, state.cycle, state.layout) {
+                        val all = state.tiles.map(GridEntry::Type) +
+                            listOfNotNull(state.insights?.let(GridEntry::Insights), state.cycle?.let(GridEntry::Cycle))
                         val position = state.layout.withIndex().associate { (index, id) -> id to index }
                         all.sortedBy { position[it.id] ?: Int.MAX_VALUE }
                     }
@@ -486,9 +493,33 @@ fun DashboardScreen(
                                         shownTiles.associate { it.id to drawnSize(it) },
                                     )
                                 }
-                                if (entry is GridEntry.Insights) {
-                                    InsightsTileCard(
-                                        data = entry.data,
+                                if (entry is GridEntry.Cycle) {
+                                    SharedTileCard(
+                                        tile = entry.data.tile,
+                                        title = stringResource(R.string.cycle_tile_title),
+                                        caption = entry.data.now?.let { now ->
+                                            stringResource(R.string.cycle_tile_since, Formatting.dayAndMonth(now.start.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(), HealthRepository.DEFAULT_ZONE))
+                                        }.orEmpty(),
+                                        modifier = placed,
+                                        editing = editing,
+                                        onDragStart = startDrag,
+                                        onDrag = drag::drag,
+                                        onDragEnd = { drag.end()?.let(viewModel::reorder) },
+                                        onClick = { if (!editing) onOpenCycle() },
+                                        onLongClick = { editing = true },
+                                        onMoveUp = { viewModel.moveTile(id, forward = false) },
+                                        onMoveDown = { viewModel.moveTile(id, forward = true) },
+                                        onRemove = { viewModel.removeTile(id) },
+                                        resizable = resizable,
+                                        onResize = {
+                                            if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
+                                        },
+                                    ) { width, height -> CycleTileBody(entry.data, width, height) }
+                                } else if (entry is GridEntry.Insights) {
+                                    SharedTileCard(
+                                        tile = entry.data.tile,
+                                        title = stringResource(R.string.insights_tile_title),
+                                        caption = stringResource(R.string.insights_tile_caption),
                                         modifier = placed,
                                         editing = editing,
                                         onDragStart = startDrag,
@@ -506,11 +537,13 @@ fun DashboardScreen(
                                         onMoveDown = { viewModel.moveTile(id, forward = true) },
                                         onRemove = { viewModel.removeTile(id) },
                                         resizable = resizable,
-                                        onSetPicks = { editingPicksFor = entry.data },
+                                        // Which types, in which order: Pro like the tile, so offered only with it.
+                                        canSetOptions = !entry.data.locked,
+                                        onSetOptions = { editingPicksFor = entry.data },
                                         onResize = {
                                             if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
                                         },
-                                    )
+                                    ) { width, height -> InsightsTileBody(entry.data, width, height) }
                                 } else {
                                     val tile = (entry as GridEntry.Type).data
                                     // Without Pro drawn in the theme's colour, the chosen one kept, as
@@ -779,14 +812,15 @@ private fun TileCard(
 }
 
 /**
- * The insights tile: the week's most unusual moves, or the types chosen for it ([Tile.picks]),
- * as many as fit, each as an arrow, the type's name and how far it moved -- on a wide tile with
- * its strip between. A tap opens the whole list.
+ * The frame of a tile that is no type's -- the insights and the cycle tile: a title, the body,
+ * a caption, and in edit mode the drag handle and the controls that apply to it.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun InsightsTileCard(
-    data: InsightsTileData,
+private fun SharedTileCard(
+    tile: Tile,
+    title: String,
+    caption: String,
     modifier: Modifier,
     editing: Boolean,
     onDragStart: () -> Unit,
@@ -800,12 +834,14 @@ private fun InsightsTileCard(
     /** Whether larger sizes are unlocked; drawn at one cell without, as type tiles are. */
     resizable: Boolean = false,
     onResize: () -> Unit = {},
-    /** Opens the choice of types the tile shows. */
-    onSetPicks: () -> Unit = {},
+    /** Whether the tile has options of its own, and what opens them. */
+    canSetOptions: Boolean = false,
+    onSetOptions: () -> Unit = {},
+    body: @Composable (width: Int, height: Int) -> Unit,
 ) {
     val moveUp = stringResource(R.string.tile_move_up)
-    val width = if (resizable) data.tile.width else 1
-    val height = if (resizable) data.tile.height else 1
+    val width = if (resizable) tile.width else 1
+    val height = if (resizable) tile.height else 1
     val moveDown = stringResource(R.string.tile_move_down)
     Card(
         modifier = modifier
@@ -827,7 +863,7 @@ private fun InsightsTileCard(
         Column(Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
             Row(verticalAlignment = Alignment.Top) {
                 Text(
-                    text = stringResource(R.string.insights_tile_title),
+                    text = title,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
@@ -838,13 +874,12 @@ private fun InsightsTileCard(
             Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                 if (editing) {
                     Box(Modifier.matchParentSize().alpha(EDITING_CONTENT_ALPHA), contentAlignment = Alignment.Center) {
-                        InsightsTileBody(data, width, height)
+                        body(width, height)
                     }
                     TileEditControls(
                         canSetGoal = false,
                         canSetZones = false,
-                        // Which types, in which order: Pro like the tile, so offered only with it.
-                        canSetOptions = !data.locked,
+                        canSetOptions = canSetOptions,
                         resizable = resizable,
                         width = width,
                         height = height,
@@ -854,15 +889,15 @@ private fun InsightsTileCard(
                         onRemove = onRemove,
                         onSetGoal = {},
                         onSetZones = {},
-                        onSetOptions = onSetPicks,
+                        onSetOptions = onSetOptions,
                         canSetColor = false,
                     )
                 } else {
-                    InsightsTileBody(data, width, height)
+                    body(width, height)
                 }
             }
             Text(
-                text = stringResource(R.string.insights_tile_caption),
+                text = caption,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
@@ -1684,7 +1719,7 @@ private fun LockedTile(onGrantAccess: () -> Unit) {
 
 /** A tile whose read is still running: small, so a full dashboard does not spin loudly. */
 @Composable
-private fun TileLoading() {
+internal fun TileLoading() {
     val label = stringResource(R.string.tile_loading)
     CircularProgressIndicator(
         modifier = Modifier
@@ -1697,7 +1732,7 @@ private fun TileLoading() {
 
 /** A tile whose read threw; the next return to the app reads it again. */
 @Composable
-private fun TileFailed() {
+internal fun TileFailed() {
     Text(
         text = stringResource(R.string.tile_failed),
         style = MaterialTheme.typography.labelSmall,
@@ -1856,7 +1891,7 @@ private const val EDITING_CONTENT_ALPHA = 0.3f
 private const val LIFTED_SCALE = 1.04f
 private const val LIFTED_ELEVATION = 8
 
-/** One cell of the grid: a type's tile, or the insights tile that belongs to none. */
+/** One cell of the grid: a type's tile, or the insights or cycle tile that belongs to none. */
 private sealed interface GridEntry {
     val tile: Tile
     val id: String get() = tile.id
@@ -1866,6 +1901,10 @@ private sealed interface GridEntry {
     }
 
     data class Insights(val data: InsightsTileData) : GridEntry {
+        override val tile: Tile get() = data.tile
+    }
+
+    data class Cycle(val data: CycleTileData) : GridEntry {
         override val tile: Tile get() = data.tile
     }
 }

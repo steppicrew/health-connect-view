@@ -86,8 +86,11 @@ data class Tile(
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
-    /** The one tile that is not a type: what moved this week, across all of them. */
+    /** A tile that is not a type: what moved this week, across all of them. */
     val isInsights: Boolean get() = typeName == INSIGHTS
+
+    /** A tile that is not a type: the running cycle, from the menstruation types together. */
+    val isCycle: Boolean get() = typeName == CYCLE
 
     /** The next size in [SIZES], wrapping; an unknown stored size starts over at 1x1. */
     fun nextSize(): Tile {
@@ -107,6 +110,9 @@ data class Tile(
     companion object {
         /** No record class has this simple name, so it cannot collide with a type's tile. */
         const val INSIGHTS = "Insights"
+
+        /** Nor this one. */
+        const val CYCLE = "Cycle"
     }
 }
 
@@ -166,15 +172,16 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
     /**
      * Drops tiles whose type no longer exists, so a removed type cannot break the screen, and
-     * any insights tile after the first;
+     * any insights or cycle tile after the first;
      * gives a repeated id a fresh one, and each type's goal and zones to all its tiles, so a
      * hand-edited or merged layout cannot break the rules the edits keep.
      */
     fun sanitised(): DashboardConfig {
-        // One insights tile at most: a second would show the same list.
+        // One insights tile and one cycle tile at most: a second would show the same.
         val insightsAt = tiles.indexOfFirst { it.isInsights }
+        val cycleAt = tiles.indexOfFirst { it.isCycle }
         val known = tiles.withIndex()
-            .filter { (index, tile) -> tile.spec != null || index == insightsAt }
+            .filter { (index, tile) -> tile.spec != null || index == insightsAt || index == cycleAt }
             .map { (_, tile) -> tile }
         val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
         val seen = mutableSetOf<String>()

@@ -376,6 +376,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">الدورات</string>
+    <string name="cycle_tile_title">الدورة</string>
+    <string name="cycle_tile_day">اليوم %1$d</string>
+    <string name="cycle_tile_usual">عادةً %1$s</string>
+    <string name="cycle_tile_none">لم تُسجَّل دورة شهرية في العام الماضي</string>
+    <string name="cycle_tile_since">منذ %1$s</string>
     <string name="cycle_open">نظرة عامة على الدورات</string>
     <string name="cycle_open_body">كل دورات العام جنبًا إلى جنب، بمحاذاة اليوم الأول</string>
     <string name="cycle_empty_body">لم تُسجَّل أي دورة شهرية أو تدفّق في هذا العام، لذا لا توجد دورة لمحاذاتها.</string>

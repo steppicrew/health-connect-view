@@ -351,6 +351,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Siklus</string>
+    <string name="cycle_tile_title">Siklus</string>
+    <string name="cycle_tile_day">Hari ke-%1$d</string>
+    <string name="cycle_tile_usual">biasanya %1$s</string>
+    <string name="cycle_tile_none">Tidak ada menstruasi tercatat dalam setahun terakhir</string>
+    <string name="cycle_tile_since">sejak %1$s</string>
     <string name="cycle_open">Ringkasan siklus</string>
     <string name="cycle_open_body">Semua siklus dalam setahun berdampingan, disejajarkan pada hari ke-1</string>
     <string name="cycle_empty_body">Tidak ada menstruasi atau aliran yang tercatat tahun ini, jadi tidak ada siklus untuk disejajarkan.</string>

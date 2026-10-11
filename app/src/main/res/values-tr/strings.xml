@@ -356,6 +356,11 @@
 
     <!-- Cycle overview -->
     <string name="cycle_title">Döngüler</string>
+    <string name="cycle_tile_title">Döngü</string>
+    <string name="cycle_tile_day">%1$d. gün</string>
+    <string name="cycle_tile_usual">genellikle %1$s</string>
+    <string name="cycle_tile_none">Son bir yılda kayıtlı adet yok</string>
+    <string name="cycle_tile_since">%1$s tarihinden beri</string>
     <string name="cycle_open">Döngü özeti</string>
     <string name="cycle_open_body">Bir yılın tüm döngüleri yan yana, 1. güne hizalanmış</string>
     <string name="cycle_empty_body">Bu yıl adet veya akış kaydedilmedi; bu yüzden hizalanacak döngü yok.</string>
