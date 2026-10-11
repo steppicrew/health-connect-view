@@ -189,6 +189,12 @@ fun LineChart(
      */
     compactAxis: Boolean = false,
     /**
+     * The icons above the session bands. Off on a dashboard tile, where the bands alone say
+     * when and the icons took height the chart needed -- the owner's call, 11.10.2026; a tap
+     * opens the detail screen, which names them.
+     */
+    sessionIcons: Boolean = true,
+    /**
      * A colour per point, overriding [zones] where set; null keeps the point's usual colour.
      *
      * For a yardstick that moves along the series rather than fixed bands: HRV's usual range
@@ -1217,7 +1223,7 @@ fun LineChart(
         // Suppressed under bars, where every bar already *is* a session: an icon per day then
         // names what the chart is made of rather than pointing at anything, and four weeks of
         // them run together into a band of their own.
-        if (sessions.isNotEmpty() && timeExtent != null && !bars) {
+        if (sessionIcons && sessions.isNotEmpty() && timeExtent != null && !bars) {
             SessionAxisIcons(sessions = sessions, extent = timeExtent, zoom = zoom, pan = pan)
         }
 

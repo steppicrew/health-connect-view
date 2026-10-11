@@ -1283,7 +1283,7 @@ private fun TileChart(
         // A session type's day has no series; its sessions on the timeline are the chart.
         SessionTimeline(sessions = chart.sessions, extent = extent, fillHeight = true, modifier = modifier)
     } else {
-        DataLineChart(chart, modifier, interactive = false, fillHeight = true, compactAxis = compactAxis)
+        DataLineChart(chart, modifier, interactive = false, fillHeight = true, compactAxis = compactAxis, sessionIcons = false)
     }
 }
 
