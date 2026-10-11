@@ -800,7 +800,6 @@
     <string name="insights_open_body">Die letzten 7 Tage jedes Typs gegen sein 30-Tage-Mittel</string>
     <string name="insight_above">Letzte 7 Tage %1$s über dem 30-Tage-Mittel</string>
     <string name="insight_below">Letzte 7 Tage %1$s unter dem 30-Tage-Mittel</string>
-    <string name="insights_level">Auf dem Niveau des 30-Tage-Mittels: %1$s</string>
     <string name="insights_none">Nichts sticht heraus: Jeder Typ mit genug Daten liegt auf dem Niveau seines 30-Tage-Mittels.</string>
     <string name="insights_empty">Noch nicht genug Daten: Eine Veränderung braucht Aufzeichnungen an mindestens 15 der letzten 30 Tage.</string>
     <string name="insights_rule">Vergleicht die 7 Tage vor heute mit den 30 Tagen davor. Geordnet danach, wie weit sich ein Typ gemessen an seiner üblichen Schwankung von Tag zu Tag bewegt hat. Eine Veränderung ist eine Lage, keine Bewertung: Ob nach oben gut ist, hängt vom Typ und von Ihnen ab.</string>
@@ -809,6 +808,9 @@
     <string name="insights_tile_caption">Letzte 7 gegen 30 Tage</string>
     <string name="insights_tile_level">Alles auf üblichem Niveau</string>
     <string name="insights_tile_few">Noch zu wenig Daten</string>
+    <string name="insights_pick_title">Auf dieser Kachel</string>
+    <string name="insights_pick_auto">Die größten Veränderungen zuerst</string>
+    <string name="insights_pick_own">Eigene Auswahl in dieser Reihenfolge</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d weitere</item>
         <item quantity="other">+%1$d weitere</item>

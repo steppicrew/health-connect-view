@@ -775,7 +775,6 @@
     <string name="insights_open_body">7 hari terakhir setiap jenis dibandingkan rata-rata 30 harinya</string>
     <string name="insight_above">7 hari terakhir %1$s di atas rata-rata 30 hari</string>
     <string name="insight_below">7 hari terakhir %1$s di bawah rata-rata 30 hari</string>
-    <string name="insights_level">Setara rata-rata 30 hari: %1$s</string>
     <string name="insights_none">Tidak ada yang menonjol: setiap jenis dengan data cukup setara dengan rata-rata 30 harinya.</string>
     <string name="insights_empty">Data belum cukup: perubahan memerlukan catatan pada setidaknya 15 dari 30 hari terakhir.</string>
     <string name="insights_rule">Membandingkan 7 hari sebelum hari ini dengan 30 hari sebelumnya. Diurutkan menurut seberapa jauh setiap jenis bergerak dibandingkan variasi hariannya yang biasa. Perubahan adalah posisi, bukan penilaian: apakah naik itu baik bergantung pada jenisnya dan pada Anda.</string>
@@ -784,6 +783,9 @@
     <string name="insights_tile_caption">7 hari terakhir vs 30</string>
     <string name="insights_tile_level">Semua di tingkat biasanya</string>
     <string name="insights_tile_few">Data masih sedikit</string>
+    <string name="insights_pick_title">Di petak ini</string>
+    <string name="insights_pick_auto">Perubahan terbesar dulu</string>
+    <string name="insights_pick_own">Pilihan saya, dengan urutan ini</string>
     <plurals name="insights_tile_more">
         <item quantity="other">+%1$d lainnya</item>
     </plurals>

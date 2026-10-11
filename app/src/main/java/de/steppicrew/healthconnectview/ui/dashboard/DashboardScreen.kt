@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.layout.SubcomposeLayout
 import de.steppicrew.healthconnectview.ui.SharedDate
 import androidx.compose.foundation.shape.RoundedCornerShape
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
@@ -207,6 +209,7 @@ fun DashboardScreen(
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
+    var editingPicksFor by remember { mutableStateOf<InsightsTileData?>(null) }
     var editing by remember { mutableStateOf(false) }
     val scroll = rememberScrollState()
     val drag = remember(scroll) { TileDragState(scroll) }
@@ -272,6 +275,14 @@ fun DashboardScreen(
         )
     }
 
+    editingPicksFor?.let { editing ->
+        InsightPicksDialog(
+            candidates = editing.insights.orEmpty().map { it.spec.type.simpleName.orEmpty() },
+            current = editing.tile.picks,
+            onDismiss = { editingPicksFor = null },
+            onSave = { viewModel.setInsightPicks(editing.tile.id, it) },
+        )
+    }
     editingOptionsFor?.let { editing ->
         TileOptionsDialog(
             displayName = stringResource(editing.spec.displayNameRes),
@@ -492,6 +503,7 @@ fun DashboardScreen(
                                         onMoveDown = { viewModel.moveTile(id, forward = true) },
                                         onRemove = { viewModel.removeTile(id) },
                                         resizable = resizable,
+                                        onSetPicks = { editingPicksFor = entry.data },
                                         onResize = {
                                             if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
                                         },
@@ -764,9 +776,9 @@ private fun TileCard(
 }
 
 /**
- * The insights tile: the week's most unusual moves, up to [INSIGHT_ROWS] of them, each as an
- * arrow, the type's name and how far it moved. A tap opens the whole list. One cell only for
- * now; what a larger face should show is still to be decided.
+ * The insights tile: the week's most unusual moves, or the types chosen for it ([Tile.picks]),
+ * as many as fit, each as an arrow, the type's name and how far it moved -- on a wide tile with
+ * its strip between. A tap opens the whole list.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -785,6 +797,8 @@ private fun InsightsTileCard(
     /** Whether larger sizes are unlocked; drawn at one cell without, as type tiles are. */
     resizable: Boolean = false,
     onResize: () -> Unit = {},
+    /** Opens the choice of types the tile shows. */
+    onSetPicks: () -> Unit = {},
 ) {
     val moveUp = stringResource(R.string.tile_move_up)
     val width = if (resizable) data.tile.width else 1
@@ -826,7 +840,8 @@ private fun InsightsTileCard(
                     TileEditControls(
                         canSetGoal = false,
                         canSetZones = false,
-                        canSetOptions = false,
+                        // Which types, in which order: Pro like the tile, so offered only with it.
+                        canSetOptions = !data.locked,
                         resizable = resizable,
                         width = width,
                         height = height,
@@ -836,7 +851,7 @@ private fun InsightsTileCard(
                         onRemove = onRemove,
                         onSetGoal = {},
                         onSetZones = {},
-                        onSetOptions = {},
+                        onSetOptions = onSetPicks,
                         canSetColor = false,
                     )
                 } else {
@@ -861,28 +876,85 @@ private fun InsightsTileBody(data: InsightsTileData, width: Int = 1, height: Int
     // A wide tile sets each change on a strip of its usual range: how unusual the week was for
     // that type, which is what the list is ordered by -- the owner, 11.10.2026.
     val wide = width > 1
-    val rows = if (height > 1) INSIGHT_ROWS_TALL else INSIGHT_ROWS
     when {
         data.locked -> LockableIcon(Icons.Default.Insights, stringResource(R.string.settings_pro), locked = true)
         insights == null -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
         insights.isEmpty() -> Text(stringResource(R.string.insights_tile_few), style = MaterialTheme.typography.bodySmall, color = muted)
-        // A level week on a wide tile still shows the types nearest their edge, each inside
-        // its band: "all level" says nothing about how close a type came.
-        insights.notable().isEmpty() && wide -> Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.insights_tile_level), style = MaterialTheme.typography.bodyMedium)
-            insights.sortedByDescending { it.trend.weight }.take(rows - 1).forEach { InsightRow(it, strip = true) }
-        }
-        insights.notable().isEmpty() -> Text(stringResource(R.string.insights_tile_level), style = MaterialTheme.typography.bodyMedium)
-        else -> Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        else -> {
+            val picks = data.tile.picks
             val notable = insights.notable()
-            notable.take(rows).forEach { InsightRow(it, strip = wide) }
-            val more = notable.size - rows
-            if (more > 0) {
-                Text(
-                    text = pluralStringResource(R.plurals.insights_tile_more, more, more),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = muted,
-                )
+            // Chosen types in their order, moved or not; else the week's largest changes. A level
+            // week on a wide tile still shows the types nearest their edge, each in its band:
+            // "all level" says nothing about how close a type came.
+            val level = picks.isEmpty() && notable.isEmpty()
+            val shown = when {
+                picks.isNotEmpty() -> picks.mapNotNull { name -> insights.firstOrNull { it.spec.type.simpleName == name } }
+                level && wide -> insights.sortedByDescending { it.trend.weight }
+                else -> notable
+            }
+            if (level && !wide) {
+                Text(stringResource(R.string.insights_tile_level), style = MaterialTheme.typography.bodyMedium)
+                return
+            }
+            InsightRows(shown, header = if (level) stringResource(R.string.insights_tile_level) else null, strip = wide)
+        }
+    }
+}
+
+/**
+ * As many rows as the tile's height holds at the reader's font size, the last giving way to
+ * "+N weitere" where there are more: a fixed count either left half a 2x1 tile empty or, with
+ * large text, ran out of it. The rows are measured, not estimated from the line height: the
+ * icon and the strip make a row taller than its text.
+ */
+@Composable
+private fun InsightRows(shown: List<Insight>, header: String?, strip: Boolean) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val headerStyle = MaterialTheme.typography.bodyMedium
+    val moreStyle = MaterialTheme.typography.labelSmall
+    SubcomposeLayout(Modifier.fillMaxSize()) { constraints ->
+        val width = constraints.maxWidth
+        val loose = Constraints(maxWidth = width, maxHeight = constraints.maxHeight)
+        val gap = INSIGHT_GAP.dp.roundToPx()
+        val headerPlaced = header?.let {
+            subcompose("header") { Text(it, style = headerStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                .single().measure(loose)
+        }
+        val rows = shown.mapIndexed { index, insight ->
+            subcompose(index) { InsightRow(insight, strip) }.single().measure(loose)
+        }
+        fun moreLine(count: Int) = subcompose("more$count") {
+            Text(
+                text = pluralStringResource(R.plurals.insights_tile_more, count, count),
+                style = moreStyle,
+                color = muted,
+            )
+        }.single().measure(loose)
+        var used = headerPlaced?.let { it.height + gap } ?: 0
+        var count = 0
+        while (count < rows.size && used + rows[count].height <= constraints.maxHeight) {
+            used += rows[count].height + gap
+            count++
+        }
+        // Room for the "+N" line, given up by the last row if need be.
+        val more = if (count < rows.size) {
+            var line = moreLine(rows.size - count)
+            while (count > 0 && used + line.height > constraints.maxHeight) {
+                count--
+                used -= rows[count].height + gap
+                line = moreLine(rows.size - count)
+            }
+            line
+        } else {
+            null
+        }
+        val placed = listOfNotNull(headerPlaced) + rows.take(count) + listOfNotNull(more)
+        val total = placed.sumOf { it.height } + gap * (placed.size - 1).coerceAtLeast(0)
+        layout(width, constraints.maxHeight) {
+            var y = ((constraints.maxHeight - total) / 2).coerceAtLeast(0)
+            placed.forEach {
+                it.place(0, y)
+                y += it.height + gap
             }
         }
     }
@@ -922,11 +994,8 @@ private fun InsightRow(insight: Insight, strip: Boolean) {
     }
 }
 
-/** Rows on a single-cell insights tile: three fit under the title at the smallest phone width. */
-private const val INSIGHT_ROWS = 3
-
-/** Rows on a 2x2 insights tile: seven filled barely two thirds of it on the emulator. */
-private const val INSIGHT_ROWS_TALL = 9
+/** Between the insights tile's rows: tight, since every line is another type shown. */
+private const val INSIGHT_GAP = 2
 
 /** The strip's height, to set it on the row's line; see [InsightStrip]. */
 private const val INSIGHT_STRIP = 12

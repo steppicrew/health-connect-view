@@ -834,7 +834,6 @@
     <string name="insights_open_body">Every type\'s last 7 days against its 30-day average</string>
     <string name="insight_above">Last 7 days %1$s above the 30-day average</string>
     <string name="insight_below">Last 7 days %1$s below the 30-day average</string>
-    <string name="insights_level">Level with the 30-day average: %1$s</string>
     <string name="insights_none">Nothing stands out: every type with enough data is level with its 30-day average.</string>
     <string name="insights_empty">Not enough data yet: a change needs at least 15 of the last 30 days recorded.</string>
     <string name="insights_rule">Compares the 7 days before today with the 30 days before it. Ranked by how far each type moved against its ordinary day-to-day variation. A change is a position, not a verdict: whether up is good depends on the type and on you.</string>
@@ -843,6 +842,9 @@
     <string name="insights_tile_caption">Last 7 days against 30</string>
     <string name="insights_tile_level">All at their usual level</string>
     <string name="insights_tile_few">Too little data yet</string>
+    <string name="insights_pick_title">Shown on this tile</string>
+    <string name="insights_pick_auto">The largest changes first</string>
+    <string name="insights_pick_own">My choice, in this order</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d more</item>
         <item quantity="other">+%1$d more</item>

@@ -850,7 +850,6 @@
     <string name="insights_open_body">Ostatnie 7 dni każdego typu wobec jego średniej z 30 dni</string>
     <string name="insight_above">Ostatnie 7 dni: %1$s powyżej średniej z 30 dni</string>
     <string name="insight_below">Ostatnie 7 dni: %1$s poniżej średniej z 30 dni</string>
-    <string name="insights_level">Na poziomie średniej z 30 dni: %1$s</string>
     <string name="insights_none">Nic się nie wyróżnia: każdy typ z wystarczającą ilością danych jest na poziomie swojej średniej z 30 dni.</string>
     <string name="insights_empty">Za mało danych: zmiana wymaga zapisów z co najmniej 15 z ostatnich 30 dni.</string>
     <string name="insights_rule">Porównuje 7 dni przed dzisiejszym dniem z 30 dniami wcześniej. Kolejność według tego, jak bardzo dany typ się zmienił w stosunku do zwykłych wahań z dnia na dzień. Zmiana to położenie, nie ocena: to, czy wzrost jest dobry, zależy od typu i od Ciebie.</string>
@@ -859,6 +858,9 @@
     <string name="insights_tile_caption">Ostatnie 7 dni wobec 30</string>
     <string name="insights_tile_level">Wszystko na zwykłym poziomie</string>
     <string name="insights_tile_few">Za mało danych</string>
+    <string name="insights_pick_title">Na tym kafelku</string>
+    <string name="insights_pick_auto">Największe zmiany najpierw</string>
+    <string name="insights_pick_own">Własny wybór, w tej kolejności</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d kolejny</item>
         <item quantity="few">+%1$d kolejne</item>

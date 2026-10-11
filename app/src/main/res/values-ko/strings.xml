@@ -775,7 +775,6 @@
     <string name="insights_open_body">각 유형의 최근 7일과 30일 평균 비교</string>
     <string name="insight_above">최근 7일이 30일 평균보다 %1$s 높음</string>
     <string name="insight_below">최근 7일이 30일 평균보다 %1$s 낮음</string>
-    <string name="insights_level">30일 평균과 같은 수준: %1$s</string>
     <string name="insights_none">눈에 띄는 변화가 없습니다. 데이터가 충분한 모든 유형이 30일 평균과 같은 수준입니다.</string>
     <string name="insights_empty">아직 데이터가 부족합니다. 변화를 보려면 최근 30일 중 15일 이상의 기록이 필요합니다.</string>
     <string name="insights_rule">오늘 이전 7일을 그 전 30일과 비교합니다. 각 유형이 평소의 일별 변동에 비해 얼마나 움직였는지에 따라 정렬합니다. 변화는 위치일 뿐 평가가 아닙니다. 올라가는 것이 좋은지는 유형과 사용자에 따라 다릅니다.</string>
@@ -784,6 +783,9 @@
     <string name="insights_tile_caption">최근 7일 대 30일</string>
     <string name="insights_tile_level">모두 평소 수준</string>
     <string name="insights_tile_few">아직 데이터가 부족합니다</string>
+    <string name="insights_pick_title">이 타일에 표시</string>
+    <string name="insights_pick_auto">변화가 큰 순서대로</string>
+    <string name="insights_pick_own">직접 선택, 이 순서대로</string>
     <plurals name="insights_tile_more">
         <item quantity="other">외 %1$d개</item>
     </plurals>
