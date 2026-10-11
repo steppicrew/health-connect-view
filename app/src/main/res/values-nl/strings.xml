@@ -368,6 +368,7 @@
     <string name="cycle_open_body">Alle cycli van een jaar naast elkaar, uitgelijnd op dag 1</string>
     <string name="cycle_empty_body">In dit jaar is geen menstruatie of bloeding geregistreerd, dus er is geen cyclus om uit te lijnen.</string>
     <string name="cycle_legend">Gearceerd: bloeding, meer kleur is heviger. Stip eronder: spotting. Driehoek: ovulatietest, gevuld als die positief is. Streepje: observatie van slijm. Lijn: basale temperatuur.</string>
+    <string name="cycle_calendar_legend">Gearceerd: bloeding, donkerder is heviger. Stip: spotting. Driehoek: ovulatietest, gevuld bij positief, lichter bij hoog.</string>
     <string name="cycle_not_granted">Niet getoond, toegang niet toegestaan: %1$s</string>
     <string name="cycle_stat_length">Mediane cyclus</string>
     <string name="cycle_stat_range">Kortste tot langste</string>

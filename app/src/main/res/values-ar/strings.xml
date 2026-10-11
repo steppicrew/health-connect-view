@@ -388,6 +388,7 @@
     <string name="cycle_open_body">كل دورات العام جنبًا إلى جنب، بمحاذاة اليوم الأول</string>
     <string name="cycle_empty_body">لم تُسجَّل أي دورة شهرية أو تدفّق في هذا العام، لذا لا توجد دورة لمحاذاتها.</string>
     <string name="cycle_legend">المنطقة المظلّلة: النزيف، وكلما زاد اللون كان أغزر. النقطة في الأسفل: تبقيع. المثلث: اختبار الإباضة، مُعبّأ إذا كان إيجابيًا. العلامة: ملاحظة المخاط. الخط: درجة الحرارة الأساسية.</string>
+    <string name="cycle_calendar_legend">المظلل: النزيف، والأغمق أغزر. النقطة: تبقيع. المثلث: اختبار الإباضة، مملوء إذا كان إيجابيًا وأفتح إذا كان مرتفعًا.</string>
     <string name="cycle_not_granted">غير معروض، لم يُسمح بالوصول: %1$s</string>
     <string name="cycle_stat_length">الدورة الوسيطة</string>
     <string name="cycle_stat_range">من الأقصر إلى الأطول</string>

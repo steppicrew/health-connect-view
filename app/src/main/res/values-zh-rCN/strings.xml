@@ -363,6 +363,7 @@
     <string name="cycle_open_body">一年中的所有周期并排显示，以第 1 天对齐</string>
     <string name="cycle_empty_body">今年没有记录经期或经量，因此没有可对齐的周期。</string>
     <string name="cycle_legend">阴影：出血，颜色越深越多。下方圆点：点滴出血。三角形：排卵测试，阳性时为实心。刻线：黏液观察。曲线：基础体温。</string>
+    <string name="cycle_calendar_legend">阴影：出血，颜色越深越多。圆点：点滴出血。三角：排卵测试，阳性为实心，偏高为浅色。</string>
     <string name="cycle_not_granted">因未获允许访问而未显示：%1$s</string>
     <string name="cycle_stat_length">周期中位数</string>
     <string name="cycle_stat_range">最短至最长</string>

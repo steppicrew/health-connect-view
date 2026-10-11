@@ -13,6 +13,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.health.Cycle
+import de.steppicrew.healthconnectview.health.CycleDay
 import de.steppicrew.healthconnectview.health.CycleRecords
 import de.steppicrew.healthconnectview.health.CycleStats
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -41,6 +42,10 @@ data class CycleData(
     val notGranted: List<Int>,
     /** Same meaning as on the type detail screen: older data exists but may not be read. */
     val historyCapped: Boolean,
+    /** Every recorded day, merged, and the year's first and last day, for the calendar. */
+    val days: Map<LocalDate, CycleDay> = emptyMap(),
+    val first: LocalDate = LocalDate.now(),
+    val last: LocalDate = LocalDate.now(),
 )
 
 class CycleViewModel(application: Application) : AndroidViewModel(application) {
@@ -158,12 +163,21 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
         val today = LocalDate.now(zone)
         val start = SPAN.startDate(0, last)
         val end = SPAN.endDate(0, last)
+        val days = mergeCycleDays(records, zone)
         val cycles = buildCycles(
-            days = mergeCycleDays(records, zone),
+            days = days,
             window = start..end.minusDays(1),
             lastDay = minOf(end.plusDays(MARGIN_DAYS), today),
         )
-        return CycleData(cycles = cycles, stats = cycleStats(cycles), notGranted = notGranted, historyCapped = capped)
+        return CycleData(
+            cycles = cycles,
+            stats = cycleStats(cycles),
+            notGranted = notGranted,
+            historyCapped = capped,
+            days = days,
+            first = start,
+            last = minOf(end.minusDays(1), today),
+        )
     }
 
     private fun permissionOf(type: KClass<out Record>): String = RecordRegistry.spec(type).permission

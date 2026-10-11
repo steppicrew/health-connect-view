@@ -363,6 +363,7 @@
     <string name="cycle_open_body">1 年間のすべての周期を、1 日目にそろえて並べて表示</string>
     <string name="cycle_empty_body">この年は生理も経血も記録されていないため、そろえる周期がありません。</string>
     <string name="cycle_legend">網掛け: 出血（色が濃いほど多い）。下の点: 少量の出血。三角: 排卵検査（陽性は塗りつぶし）。目盛り: 粘液の観察。線: 基礎体温。</string>
+    <string name="cycle_calendar_legend">網掛け：出血（濃いほど多い）。点：不正出血。三角：排卵検査（陽性は塗りつぶし、高値は薄い色）。</string>
     <string name="cycle_not_granted">アクセスが許可されていないため非表示: %1$s</string>
     <string name="cycle_stat_length">周期の中央値</string>
     <string name="cycle_stat_range">最短〜最長</string>

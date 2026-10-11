@@ -373,6 +373,7 @@
     <string name="cycle_open_body">Tutti i cicli di un anno affiancati, allineati sul giorno 1</string>
     <string name="cycle_empty_body">In quest’anno non sono state registrate mestruazioni né flusso, quindi non ci sono cicli da allineare.</string>
     <string name="cycle_legend">Area ombreggiata: sanguinamento, più colore significa più abbondante. Punto sotto: spotting. Triangolo: test di ovulazione, pieno se positivo. Tacca: osservazione del muco. Linea: temperatura basale.</string>
+    <string name="cycle_calendar_legend">Ombreggiato: sanguinamento, più scuro se più abbondante. Punto: spotting. Triangolo: test di ovulazione, pieno se positivo, più chiaro se alto.</string>
     <string name="cycle_not_granted">Non mostrato, accesso non consentito: %1$s</string>
     <string name="cycle_stat_length">Ciclo mediano</string>
     <string name="cycle_stat_range">Dal più breve al più lungo</string>

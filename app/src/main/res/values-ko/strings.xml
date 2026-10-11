@@ -363,6 +363,7 @@
     <string name="cycle_open_body">한 해의 모든 주기를 1일째에 맞춰 나란히 표시</string>
     <string name="cycle_empty_body">올해는 생리나 생리량이 기록되지 않아 맞출 주기가 없습니다.</string>
     <string name="cycle_legend">음영: 출혈, 색이 진할수록 양이 많음. 아래 점: 소량 출혈. 삼각형: 배란 테스트, 양성이면 채워짐. 눈금: 점액 관찰. 선: 기초 체온.</string>
+    <string name="cycle_calendar_legend">음영: 출혈, 진할수록 많음. 점: 부정 출혈. 삼각형: 배란 검사, 양성이면 채움, 높음이면 연하게.</string>
     <string name="cycle_not_granted">액세스가 허용되지 않아 표시하지 않음: %1$s</string>
     <string name="cycle_stat_length">주기 중앙값</string>
     <string name="cycle_stat_range">최단–최장</string>

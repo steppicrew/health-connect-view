@@ -363,6 +363,7 @@
     <string name="cycle_open_body">Semua siklus dalam setahun berdampingan, disejajarkan pada hari ke-1</string>
     <string name="cycle_empty_body">Tidak ada menstruasi atau aliran yang tercatat tahun ini, jadi tidak ada siklus untuk disejajarkan.</string>
     <string name="cycle_legend">Arsiran: perdarahan, makin pekat makin deras. Titik di bawah: flek. Segitiga: tes ovulasi, terisi jika positif. Garis kecil: pengamatan lendir. Garis: suhu basal.</string>
+    <string name="cycle_calendar_legend">Diarsir: perdarahan, lebih gelap berarti lebih banyak. Titik: bercak. Segitiga: tes ovulasi, terisi jika positif, lebih terang jika tinggi.</string>
     <string name="cycle_not_granted">Tidak ditampilkan, akses tidak diizinkan: %1$s</string>
     <string name="cycle_stat_length">Median siklus</string>
     <string name="cycle_stat_range">Terpendek hingga terpanjang</string>

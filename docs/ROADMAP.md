@@ -790,6 +790,10 @@ doctor report and the year heatmap; the rest unranked.
 81. [ ] **The same workout over time** (Pro) -- pace and heart rate for one activity type
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.
+    The owner's pick, 11.10.2026: a section on the workouts screen under the kind chips -- with
+    a kind chosen, two small charts over the window, one dot per workout: average speed (or
+    pace) and average heart rate, captioned with what was matched ("34 Einheiten: Rad,
+    Heimtrainer").
 82. [x] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
     Built 11.10.2026 as the report of every type with daily totals, for any period the export
     dialog offers ("Letzter Monat" among them), seen in the emulator's print preview: "Schritte
@@ -810,9 +814,15 @@ doctor report and the year heatmap; the rest unranked.
     sleep, the hours trained); below it the detail screen's legend with real values ("0 ...
     >= 3h 46m") -- "Weniger ... Mehr" said nothing, the owner found. The read moved to `health/HeatmapRead.kt`, shared with
     the detail screen.
-84. [ ] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
+84. [x] **A cycle calendar** -- the owner asked, 10.10.2026, whether step 74 covers the cycle:
     not yet, its types have no figure to shade. Flow days by strength, spotting and a
     positive ovulation test marked, in the cycle overview's year; plan before building.
+    The owner's pick, 11.10.2026: the year as the calendar heatmap draws it, weeks as columns,
+    under the overview's rows -- bleeding shaded by flow, a dot for spotting, a triangle for a
+    positive ovulation test. Built 11.10.2026, seen on the emulator: "Kalender" closes the
+    overview, the year the stepper shows, drawn by the type calendar's own grid (which gained
+    a hook for marks); a high test is the lighter triangle, as in the rows. No taps: the rows
+    above are where a cycle is read.
 85. [x] **A weekday rhythm on the 2x2 calendar tile** -- the owner's pick, 10.10.2026, for the
     room a 2x2 calendar leaves: seven small bars Mo-So, the year's mean per weekday ("Sundays
     are long sleep"), from the days the calendar already read. Unlabelled, so the tile keeps

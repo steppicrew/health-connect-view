@@ -378,6 +378,7 @@
     <string name="cycle_open_body">Wszystkie cykle z roku obok siebie, wyrównane do dnia 1</string>
     <string name="cycle_empty_body">W tym roku nie zapisano miesiączki ani krwawienia, więc nie ma cyklu do wyrównania.</string>
     <string name="cycle_legend">Zacieniowane: krwawienie, więcej koloru oznacza obfitsze. Kropka poniżej: plamienie. Trójkąt: test owulacyjny, wypełniony, gdy pozytywny. Kreska: obserwacja śluzu. Linia: temperatura podstawowa.</string>
+    <string name="cycle_calendar_legend">Zacieniowane: krwawienie, ciemniejsze to obfitsze. Kropka: plamienie. Trójkąt: test owulacyjny, wypełniony przy wyniku dodatnim, jaśniejszy przy wysokim.</string>
     <string name="cycle_not_granted">Nie pokazano, brak zgody na dostęp: %1$s</string>
     <string name="cycle_stat_length">Mediana cyklu</string>
     <string name="cycle_stat_range">Od najkrótszego do najdłuższego</string>
