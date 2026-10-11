@@ -147,6 +147,8 @@
     <string name="report_footer">Gradi secondo la classificazione della Società Europea dell’Ipertensione per le misurazioni in ambulatorio; a casa, 135/85 e oltre conta già come elevata. Un’indicazione, non una diagnosi.</string>
     <string name="report_page">Pagina %1$d di %2$d</string>
     <string name="report_footer_general">Calcolato da questa app dalle misurazioni di Connessione Salute. Un’indicazione, non una diagnosi.</string>
+    <string name="report_daily_title">%1$s – valori giornalieri</string>
+    <string name="report_daily_caption">Valori giornalieri come Connessione Salute li combina tra le tue app; un giorno senza dati resta vuoto.</string>
     <string name="report_one_writer">Dove più app hanno salvato le stesse misurazioni, quelle di ogni giorno provengono dall’app che ne ha di più quel giorno.</string>
     <string name="report_course">Andamento</string>
     <string name="report_by_week">Per settimana</string>

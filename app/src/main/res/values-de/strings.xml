@@ -146,6 +146,8 @@
     <string name="report_footer">Einstufung nach der Europäischen Hypertonie-Gesellschaft (ESH) für Messungen in der Praxis; zu Hause gilt schon ab 135/85 als erhöht. Eine Orientierung, keine Diagnose.</string>
     <string name="report_page">Seite %1$d von %2$d</string>
     <string name="report_footer_general">Von dieser App aus den Messungen in Health Connect berechnet. Eine Orientierung, keine Diagnose.</string>
+    <string name="report_daily_title">%1$s – Tageswerte</string>
+    <string name="report_daily_caption">Tageswerte, wie Health Connect sie über Ihre Apps zusammenfasst; ein Tag ohne Daten bleibt leer.</string>
     <string name="report_one_writer">Haben mehrere Apps dieselben Messungen gespeichert, stammen die eines Tages von der App mit den meisten an diesem Tag.</string>
     <string name="report_course">Verlauf</string>
     <string name="report_by_week">Nach Wochen</string>

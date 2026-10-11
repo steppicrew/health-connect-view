@@ -146,6 +146,8 @@
     <string name="report_footer">Muayenehanede yapılan ölçümler için Avrupa Hipertansiyon Derneği sınıflandırmasına göre derecelendirme; evde 135/85 ve üzeri zaten yüksek sayılır. Bir yol gösterici, tanı değil.</string>
     <string name="report_page">Sayfa %1$d / %2$d</string>
     <string name="report_footer_general">Bu uygulama tarafından Health Connect’teki ölçümlerden hesaplandı. Bir yol gösterici, tanı değil.</string>
+    <string name="report_daily_title">%1$s – günlük değerler</string>
+    <string name="report_daily_caption">Health Connect\'in uygulamalarınızdan birleştirdiği günlük değerler; verisi olmayan gün boş kalır.</string>
     <string name="report_one_writer">Birden fazla uygulama aynı ölçümleri kaydettiyse, her günün ölçümleri o gün en çok ölçümü olan uygulamadan alınır.</string>
     <string name="report_course">Seyir</string>
     <string name="report_by_week">Haftaya göre</string>

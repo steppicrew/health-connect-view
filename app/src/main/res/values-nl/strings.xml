@@ -146,6 +146,8 @@
     <string name="report_footer">Graden volgens de indeling van de European Society of Hypertension voor metingen in de praktijk; thuis geldt 135/85 en hoger al als verhoogd. Een richtlijn, geen diagnose.</string>
     <string name="report_page">Pagina %1$d van %2$d</string>
     <string name="report_footer_general">Berekend door deze app uit de metingen in Health Connect. Een richtlijn, geen diagnose.</string>
+    <string name="report_daily_title">%1$s – dagwaarden</string>
+    <string name="report_daily_caption">Dagwaarden zoals Health Connect ze over je apps samenvoegt; een dag zonder gegevens blijft leeg.</string>
     <string name="report_one_writer">Waar meerdere apps dezelfde metingen hebben opgeslagen, komen die van elke dag van de app met de meeste metingen op die dag.</string>
     <string name="report_course">Verloop</string>
     <string name="report_by_week">Per week</string>

@@ -790,7 +790,15 @@ doctor report and the year heatmap; the rest unranked.
 81. [ ] **The same workout over time** (Pro) -- pace and heart rate for one activity type
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.
-82. [ ] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
+82. [x] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
+    Built 11.10.2026 as the report of every type with daily totals, for any period the export
+    dialog offers ("Letzter Monat" among them), seen in the emulator's print preview: "Schritte
+    -- Tageswerte", the period's figure (a sum, or a mean for an averaged type), the days'
+    mean, the lowest and highest day with their dates, days with data out of days, a chart of
+    the days, and every day in a table -- by week from its Monday past two months. An empty
+    day stays in the table as "–". Health Connect's deduplicated daily totals, as the daily
+    CSV; not for sessions, for the same reason. The four types with a log of their own keep
+    it, and only they offer the combined report for a doctor.
 83. [x] **The calendar as a face of a large year tile** -- the owner's idea, 10.10.2026, built
     the same day and seen on the emulator. "Kalender" beside value, chart and both on a 2x1
     or 2x2 tile (Pro for the size and for the calendar), over "Letzte 365 Tage" or "Dieses

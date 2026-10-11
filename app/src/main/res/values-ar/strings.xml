@@ -150,6 +150,8 @@
     <string name="report_footer">الدرجات وفق تصنيف الجمعية الأوروبية لارتفاع ضغط الدم للقراءات في العيادة؛ أما في المنزل فيُعدّ 135/85 فما فوق مرتفعًا بالفعل. هذا دليل استرشادي، وليس تشخيصًا.</string>
     <string name="report_page">الصفحة %1$d من %2$d</string>
     <string name="report_footer_general">حسبه هذا التطبيق من القراءات المسجّلة في Health Connect. هذا دليل استرشادي، وليس تشخيصًا.</string>
+    <string name="report_daily_title">%1$s – القيم اليومية</string>
+    <string name="report_daily_caption">القيم اليومية كما يجمعها Health Connect من تطبيقاتك؛ ويبقى اليوم الذي لا بيانات له فارغًا.</string>
     <string name="report_one_writer">عندما تحفظ عدة تطبيقات القراءات نفسها، تؤخذ قراءات كل يوم من التطبيق الذي سجّل أكبر عدد منها في ذلك اليوم.</string>
     <string name="report_course">المسار</string>
     <string name="report_by_week">حسب الأسبوع</string>

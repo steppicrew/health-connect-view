@@ -9,7 +9,10 @@ import androidx.health.connect.client.records.BloodPressureRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.WeightRecord
+import de.steppicrew.healthconnectview.registry.TileSpec
+import de.steppicrew.healthconnectview.health.DailyReport
 import de.steppicrew.healthconnectview.health.DoctorReport
+import de.steppicrew.healthconnectview.health.dailyReport
 import de.steppicrew.healthconnectview.health.GlucoseReading
 import de.steppicrew.healthconnectview.health.GlucoseReport
 import de.steppicrew.healthconnectview.health.PressureReport
@@ -205,7 +208,34 @@ class Exporter(private val context: Context, private val repository: HealthRepos
             ReadingReportPdf(context).write(report, zone, source, out)
             report.readings.size
         }
-        else -> error("no report for ${spec.type.simpleName}")
+        else -> daily(spec, first, last, origins).let { report ->
+            DailyReportPdf(context).write(
+                report,
+                name = context.getString(spec.displayNameRes),
+                unit = spec.displayUnitRes?.let(context::getString),
+                decimals = spec.valueDecimals,
+                averaged = spec.isAveraged,
+                integral = spec.tile.integralValues,
+                zone = zone,
+                source = source,
+                out = out,
+            )
+            report.stats?.count ?: 0
+        }
+    }
+
+    /** [spec]'s daily totals for [first] through [last], in the unit shown. */
+    private suspend fun daily(spec: RecordTypeSpec<*>, first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): DailyReport {
+        val metric = requireNotNull(spec.aggregate) { "no report for ${spec.type.simpleName}" }
+        val values = repository.bucketedTotals(
+            metric,
+            TimeRangeFilter.between(first.atStartOfDay(), last.plusDays(1).atStartOfDay()),
+            Period.ofDays(1),
+            origins,
+        ).mapNotNull { bucket ->
+            bucket.result[metric]?.let { numericAggregate(it, metric) }?.let { bucket.startTime.toLocalDate() to spec.display(it) }
+        }.toMap()
+        return dailyReport(first, last, values, spec.isAveraged)
     }
 
     /**
@@ -310,6 +340,7 @@ class Exporter(private val context: Context, private val repository: HealthRepos
 
     /** Whether [writeReport] would have a reading, over the report's own window. */
     suspend fun hasReportData(spec: RecordTypeSpec<*>, first: LocalDate, last: LocalDate, origins: Set<DataOrigin>): Boolean {
+        if (spec.type !in REPORT_TYPES) return hasDailyTotals(spec, first, last.plusDays(1), origins)
         val range = if (spec.type == BloodPressureRecord::class) {
             val (start, end) = dayPartWindow(first, last, zone)
             TimeRangeFilter.between(start, end)
@@ -320,7 +351,15 @@ class Exporter(private val context: Context, private val repository: HealthRepos
     }
 
     companion object {
-        /** The types with a PDF report. */
+        /**
+         * Whether [spec] has a PDF report: its own log for the [REPORT_TYPES], else its daily
+         * totals where it has them -- not for sessions, whose daily total cuts a night at
+         * midnight while the app credits it to the morning it ended.
+         */
+        fun hasReport(spec: RecordTypeSpec<*>): Boolean =
+            spec.type in REPORT_TYPES || (spec.aggregate != null && spec.tile.form != TileSpec.Form.SESSIONS)
+
+        /** The types with a log of their own, and the four the combined report for a doctor holds. */
         val REPORT_TYPES: Set<KClass<out Record>> = setOf(
             BloodPressureRecord::class,
             WeightRecord::class,

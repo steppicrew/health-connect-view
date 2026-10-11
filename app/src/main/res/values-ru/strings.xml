@@ -148,6 +148,8 @@
     <string name="report_footer">Степени по классификации Европейского общества по артериальной гипертензии для измерений на приёме; дома уже 135/85 и выше считается повышенным. Ориентир, а не диагноз.</string>
     <string name="report_page">Страница %1$d из %2$d</string>
     <string name="report_footer_general">Рассчитано этим приложением по измерениям из Health Connect. Ориентир, а не диагноз.</string>
+    <string name="report_daily_title">%1$s – значения по дням</string>
+    <string name="report_daily_caption">Значения по дням в том виде, в каком Health Connect объединяет их из ваших приложений; день без данных остаётся пустым.</string>
     <string name="report_one_writer">Если одни и те же измерения сохранили несколько приложений, измерения каждого дня берутся из приложения, у которого их в этот день больше всего.</string>
     <string name="report_course">Динамика</string>
     <string name="report_by_week">По неделям</string>

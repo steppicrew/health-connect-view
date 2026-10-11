@@ -145,6 +145,8 @@
     <string name="report_footer">分類は、診察室での測定に対する欧州高血圧学会の分類に基づきます。家庭では 135/85 以上ですでに高値とみなされます。目安であり、診断ではありません。</string>
     <string name="report_page">%1$d / %2$d ページ</string>
     <string name="report_footer_general">このアプリがヘルスコネクトの測定値から算出しました。目安であり、診断ではありません。</string>
+    <string name="report_daily_title">%1$s – 日ごとの値</string>
+    <string name="report_daily_caption">ヘルスコネクトがアプリ全体からまとめた日ごとの値です。データのない日は空欄のままです。</string>
     <string name="report_one_writer">複数のアプリが同じ測定値を保存している場合、各日の測定値はその日に最も多く記録したアプリのものを使います。</string>
     <string name="report_course">推移</string>
     <string name="report_by_week">週別</string>

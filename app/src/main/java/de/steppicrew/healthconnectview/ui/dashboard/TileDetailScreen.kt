@@ -305,7 +305,8 @@ fun TileDetailScreen(
                             // a file would give a second answer to "how long did I sleep".
                             dailyAvailable = current.aggregate != null &&
                                 current.tile.form != TileSpec.Form.SESSIONS,
-                            reportAvailable = current.type in Exporter.REPORT_TYPES,
+                            reportAvailable = Exporter.hasReport(current),
+                            combinedAvailable = current.type in Exporter.REPORT_TYPES,
                             canExport = viewModel::canExport,
                             onExport = viewModel::export,
                             renderReport = viewModel::renderReport,

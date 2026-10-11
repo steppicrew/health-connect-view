@@ -58,8 +58,10 @@ fun ExportAction(
     shown: ExportPeriod,
     historyGranted: Boolean,
     dailyAvailable: Boolean,
-    /** Types with a PDF log for a doctor (`Exporter.REPORT_TYPES`). */
+    /** Types with a PDF report (`Exporter.hasReport`). */
     reportAvailable: Boolean,
+    /** Types the combined report for a doctor holds, which offer it (`Exporter.REPORT_TYPES`). */
+    combinedAvailable: Boolean = false,
     /**
      * Whether the file would hold anything; the dialog opens only if so. The flag, here and
      * below, is the combined report: all four report types in one PDF.
@@ -130,7 +132,7 @@ fun ExportAction(
             shown = shown,
             historyGranted = historyGranted,
             onDismiss = { choosing = null },
-            offerCombined = kind == ExportKind.REPORT || kind == ExportKind.PRINT,
+            offerCombined = combinedAvailable && (kind == ExportKind.REPORT || kind == ExportKind.PRINT),
             onConfirm = { period, combined ->
                 choosing = null
                 scope.launch {

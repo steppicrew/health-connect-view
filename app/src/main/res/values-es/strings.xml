@@ -147,6 +147,8 @@
     <string name="report_footer">Grados según la clasificación de la Sociedad Europea de Hipertensión para mediciones en consulta; en casa, 135/85 o más ya se considera elevada. Una orientación, no un diagnóstico.</string>
     <string name="report_page">Página %1$d de %2$d</string>
     <string name="report_footer_general">Calculado por esta aplicación a partir de las mediciones de Health Connect. Una orientación, no un diagnóstico.</string>
+    <string name="report_daily_title">%1$s – valores diarios</string>
+    <string name="report_daily_caption">Valores diarios tal como Health Connect los combina entre tus apps; un día sin datos queda vacío.</string>
     <string name="report_one_writer">Cuando varias aplicaciones guardaron las mismas mediciones, las de cada día proceden de la aplicación con más mediciones ese día.</string>
     <string name="report_course">Evolución</string>
     <string name="report_by_week">Por semana</string>

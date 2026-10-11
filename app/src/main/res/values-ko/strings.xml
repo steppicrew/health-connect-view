@@ -145,6 +145,8 @@
     <string name="report_footer">진료실 측정에 대한 유럽고혈압학회 분류에 따른 등급입니다. 가정에서는 135/85 이상이면 이미 높은 것으로 봅니다. 참고용이며 진단이 아닙니다.</string>
     <string name="report_page">%1$d/%2$d페이지</string>
     <string name="report_footer_general">이 앱이 헬스 커넥트의 측정값으로 계산했습니다. 참고용이며 진단이 아닙니다.</string>
+    <string name="report_daily_title">%1$s – 일별 값</string>
+    <string name="report_daily_caption">헬스 커넥트가 앱 전체에서 합친 일별 값입니다. 데이터가 없는 날은 비워 둡니다.</string>
     <string name="report_one_writer">여러 앱이 같은 측정값을 저장한 경우 각 날의 측정값은 그날 측정값이 가장 많은 앱에서 가져옵니다.</string>
     <string name="report_course">추이</string>
     <string name="report_by_week">주별</string>

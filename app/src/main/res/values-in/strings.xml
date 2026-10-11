@@ -145,6 +145,8 @@
     <string name="report_footer">Derajat menurut klasifikasi European Society of Hypertension untuk pengukuran di tempat praktik; di rumah, 135/85 ke atas sudah dianggap tinggi. Sebagai panduan, bukan diagnosis.</string>
     <string name="report_page">Halaman %1$d dari %2$d</string>
     <string name="report_footer_general">Dihitung oleh aplikasi ini dari hasil ukur di Health Connect. Sebagai panduan, bukan diagnosis.</string>
+    <string name="report_daily_title">%1$s – nilai harian</string>
+    <string name="report_daily_caption">Nilai harian sebagaimana Health Connect menggabungkannya dari aplikasi Anda; hari tanpa data tetap kosong.</string>
     <string name="report_one_writer">Jika beberapa aplikasi menyimpan hasil ukur yang sama, hasil ukur tiap hari diambil dari aplikasi yang paling banyak mencatat pada hari itu.</string>
     <string name="report_course">Perkembangan</string>
     <string name="report_by_week">Per minggu</string>
