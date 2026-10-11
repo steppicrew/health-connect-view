@@ -4,48 +4,50 @@ COSA FA
 
 • Una dashboard dei valori che ti interessano, giorno per giorno
 • Tutti i tipi di dati di Connessione Salute, da passi e sonno a pressione arteriosa e VO₂ max
-• Singole registrazioni con orario esatto, valore, unità e app che le ha scritte
+• Ogni registrazione con orario, valore e app che l’ha scritta
 • Grafici per giorno, settimana, quattro settimane o anno
 • Sonno e allenamenti ombreggiati dietro i grafici del giorno, così un picco ha una spiegazione
 • Ogni allenamento con frequenza cardiaca, velocità e altitudine in un grafico, le pause riconosciute ed escluse, e il suo percorso se lo consenti
-• Le fasi del sonno di ogni notte registrata dal tuo orologio, accanto a frequenza cardiaca, frequenza respiratoria, SpO₂ e HRV della notte
-• Una panoramica dei cicli: tutti i cicli di un anno affiancati, allineati sul giorno uno, senza previsioni
+• Le fasi del sonno di ogni notte, accanto a frequenza cardiaca e respiratoria, SpO₂ e HRV della notte
+• Una panoramica dei cicli: tutti i cicli di un anno affiancati, allineati sul giorno uno, anche come calendario e riquadro, senza previsioni
 • Frecce di tendenza: l’ultima settimana rispetto alla media di 30 giorni
 • Serie: giorni di fila con l’obiettivo raggiunto o di attività, e la più lunga dell’anno
 • Come è stata presa ogni misurazione: glicemia a digiuno o dopo un pasto, pressione da seduti o al polso
-• Riquadri da riordinare trascinandoli, unità metriche o imperiali, glicemia in mmol/L o mg/dL
+• Riquadri da riordinare trascinandoli, unità metriche o imperiali, glicemia in mmol/L o mg/dL, grafici descritti per gli screen reader
 • Backup di dashboard e impostazioni in un file, da ripristinare su un nuovo telefono
 
 I TUOI DATI RESTANO SUL TELEFONO
 
 Questa app non ha l’autorizzazione Internet. È Android stesso a impedirle qualsiasi connessione di rete. Nessun account, nessun server, nessuna analisi, nessuna pubblicità, nessun tracciamento.
 
-È in sola lettura: mostra i tuoi dati sanitari ma non può modificarli né eliminarli. Non scrive nulla in memoria a meno che tu non esporti, quindi disinstallarla rimuove tutto. I percorsi vengono letti solo se lo consenti e disegnati senza mappa.
+È in sola lettura: mostra i tuoi dati sanitari ma non può modificarli né eliminarli. Non salva nulla se non esporti tu, quindi disinstallarla rimuove tutto. I percorsi vengono letti solo se lo consenti e disegnati senza mappa.
 
 SCEGLI TU COSA CONDIVIDERE
 
-Le autorizzazioni vengono richieste un tipo di dati alla volta, e nulla è preselezionato. Consenti solo ciò che vuoi vedere e cambia idea quando vuoi nelle impostazioni di Connessione Salute.
+Le autorizzazioni vengono richieste un tipo alla volta, e nulla è preselezionato. Consenti solo ciò che vuoi vedere e cambia idea quando vuoi nelle impostazioni di Connessione Salute.
 
 TOTALI CORRETTI
 
-Quando più app registrano la stessa cosa — un telefono e un orologio che contano i passi — le registrazioni si sovrappongono. Questa app usa l’aggregazione di Connessione Salute per eliminare i duplicati, così i totali giornalieri sono corretti e non contati due volte, e ti dice quando ha contribuito più di un’app.
+Quando più app registrano la stessa cosa — un telefono e un orologio che contano i passi — le registrazioni si sovrappongono. Questa app usa l’aggregazione di Connessione Salute per eliminare i duplicati, così i totali giornalieri non sono contati due volte.
 
-Connessione Salute non collega un allenamento alle misurazioni prese durante. Dove l’app mostra i valori di una sessione, dice chiaramente che sono abbinati in base all’orario.
+Connessione Salute non collega un allenamento alle misurazioni prese durante. L’app li abbina in base all’orario e lo dice.
 
 PRO — ACQUISTO UNICO, NESSUN ABBONAMENTO
 
-Tutto quanto sopra è gratuito e lo resterà. Pro è un singolo acquisto in-app che sblocca:
+Tutto quanto sopra è gratuito e lo resterà. Pro, un acquisto unico, sblocca:
 
 • Esportazione CSV di qualsiasi tipo di dati: ogni registrazione con l’app di origine, o i totali giornalieri senza duplicati. L’app non ne tiene copia.
-• Report PDF per il tuo medico: pressione con medie di mattina e sera, peso per settimana, frequenza cardiaca a riposo rispetto alla media di quattro settimane, glicemia per pasto e intervallo obiettivo. Oppure tutti e quattro in un unico report.
+• Report PDF: i valori giornalieri di qualsiasi dato, e per il tuo medico pressione con medie di mattina e sera, peso, frequenza cardiaca a riposo e glicemia, per qualsiasi periodo, singoli o in uno.
 • Riquadri più grandi — la settimana, quattro settimane o l’anno come numero, grafico o entrambi, oppure le fasi del sonno della notte scorsa e i tuoi ultimi allenamenti con una curva a tua scelta.
-• L’anno come calendario, una tonalità per giorno — sotto ogni grafico annuale e come riquadro.
-• Più riquadri per lo stesso valore e un colore per ciascuno.
-• Un riquadro con i cambiamenti della settimana, il peso con la composizione corporea e due valori confrontati su un unico asse del tempo.
-• Percorsi degli allenamenti come file GPX.
+• L’anno come calendario, una tonalità per giorno, con la media di ogni giorno della settimana.
+• I cambiamenti della settimana su strisce colorate che mostrano quanto è stata insolita.
+• Questo mese accanto allo stesso mese dell’anno prima.
+• Ritmo del sonno: quanto sono regolari i tuoi orari di sonno e risveglio.
+• Un tipo di allenamento nell’arco dell’anno: velocità o passo e frequenza cardiaca.
+• Più riquadri per valore, colori dei riquadri, composizione corporea, due valori su un unico asse del tempo, percorsi come file GPX.
 • Tutte le future funzioni Pro, senza costi aggiuntivi.
 
-Gli acquisti passano da Google Play e ti seguono su un nuovo telefono.
+Gli acquisti seguono il tuo account Google su un nuovo telefono.
 
 OPEN SOURCE
 
