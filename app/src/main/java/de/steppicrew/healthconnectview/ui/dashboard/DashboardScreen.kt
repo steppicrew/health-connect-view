@@ -15,6 +15,7 @@ import de.steppicrew.healthconnectview.ui.components.SessionTimeline
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.dashboard.companionsOf
+import de.steppicrew.healthconnectview.dashboard.offersMean
 import de.steppicrew.healthconnectview.ui.components.firstLineInset
 import androidx.compose.material.icons.filled.Insights
 import de.steppicrew.healthconnectview.ui.insights.notable
@@ -277,8 +278,10 @@ fun DashboardScreen(
             bodyHasWindow = editing.tile.height > 1,
             onDismiss = { editingOptionsFor = null },
             currentCalendarYear = editing.tile.calendarYear,
-            onSave = { span, face, companion, calendarYear ->
-                viewModel.setOptions(editing.tile.id, span, face, companion, calendarYear)
+            meanOffered = offersMean(editing.tile.typeName),
+            currentMean = editing.tile.mean,
+            onSave = { span, face, companion, calendarYear, mean ->
+                viewModel.setOptions(editing.tile.id, span, face, companion, calendarYear, mean)
             },
         )
     }
@@ -1092,7 +1095,7 @@ private fun TileBody(
         data.heatmap != null && data.tile.face == TileFace.CALENDAR -> TileCalendar(data, data.heatmap)
 
         chart != null && data.tile.face == TileFace.CHART ->
-            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion(), workoutTap = workoutTap)
+            TileChart(chart, Modifier.fillMaxSize(), compactAxis = data.tile.height == 1, companion = data.companion(), workoutTap = workoutTap, mean = data.meanOf(chart))
 
         chart != null && data.tile.face == TileFace.BOTH -> TileValueAndChart(data, chart, onOpenDay, onLongClick, workoutTap)
 
@@ -1264,6 +1267,8 @@ private fun TileChart(
     /** The tile's second curve and its readings; see [Tile.companion]. */
     companion: Pair<SessionLine, List<Pair<Session, List<Point>>>>? = null,
     workoutTap: WorkoutTap? = null,
+    /** The window's mean, drawn as a dashed level across the chart; see [Tile.mean]. */
+    mean: Double? = null,
 ) {
     val extent = chart.extent
     // A day of sleep is last night, and a night with stages is drawn as them: the owner's
@@ -1285,7 +1290,13 @@ private fun TileChart(
         // A session type's day has no series; its sessions on the timeline are the chart.
         SessionTimeline(sessions = chart.sessions, extent = extent, fillHeight = true, modifier = modifier)
     } else {
-        DataLineChart(chart, modifier, interactive = false, fillHeight = true, compactAxis = compactAxis, sessionIcons = false)
+        // The detail chart's dashed reference line, here level at the window's mean.
+        val shown = if (mean != null && chart.points.size > 1) {
+            chart.copy(baseline = listOf(Point(chart.points.first().time, mean), Point(chart.points.last().time, mean)))
+        } else {
+            chart
+        }
+        DataLineChart(shown, modifier, interactive = false, fillHeight = true, compactAxis = compactAxis, sessionIcons = false)
     }
 }
 
@@ -1309,6 +1320,7 @@ private fun TileValueAndChart(
     val figureTap = onOpenDay?.let { Modifier.combinedClickable(onClick = it, onLongClick = onLongClick) } ?: Modifier
     // A session tile's figure as its single cell writes it: "6,22" was a night's hours as a
     // bare decimal, where the cell beside says "6h 13m".
+    val mean = data.meanOf(chart)
     @Composable
     fun Figure(stages: StageTotalsAt, inline: Boolean = false) =
         if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data, stages, inline) else TileValue(data)
@@ -1318,7 +1330,7 @@ private fun TileValueAndChart(
             Box(Modifier.fillMaxWidth().then(figureTap), contentAlignment = Alignment.Center) {
                 Figure(if (data.companion() != null) StageTotalsAt.ROW else StageTotalsAt.NONE, inline = true)
             }
-            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion(), workoutTap = workoutTap)
+            TileChart(chart, Modifier.fillMaxWidth().weight(1f).padding(top = 4.dp), companion = data.companion(), workoutTap = workoutTap, mean = mean)
         }
     } else {
         // The number as wide as it needs, up to half the tile, and the rest to the chart: a
@@ -1333,7 +1345,7 @@ private fun TileValueAndChart(
                 ) {
                     Figure(StageTotalsAt.COLUMN)
                 }
-                TileChart(chart, Modifier.weight(1f).fillMaxHeight(), compactAxis = true, companion = data.companion(), workoutTap = workoutTap)
+                TileChart(chart, Modifier.weight(1f).fillMaxHeight(), compactAxis = true, companion = data.companion(), workoutTap = workoutTap, mean = mean)
             }
         }
     }
@@ -1796,6 +1808,13 @@ private fun CompanionCurves(
         }
     }
 }
+
+/**
+ * The window's mean where the tile asks for it: the platform's own average over the window --
+ * the figure the tile already shows beside its chart, so the line needs no label of its own.
+ */
+private fun TileData.meanOf(chart: TileDetailData): Double? =
+    chart.total?.takeIf { tile.mean && offersMean(tile.typeName) }
 
 /** A tap that opens one workout, and the long press that starts arranging, as on the tile itself. */
 private class WorkoutTap(val open: (Session) -> Unit, val onLongClick: () -> Unit)

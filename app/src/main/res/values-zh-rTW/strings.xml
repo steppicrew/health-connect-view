@@ -72,6 +72,7 @@
     <string name="tile_calendar_this_year">今年</string>
     <string name="tile_options_companion">附加曲線</string>
     <string name="tile_companion_none">無</string>
+    <string name="tile_options_mean">以虛線顯示平均值</string>
     <string name="tile_title_span_capped">%1$s · %2$s，僅限最近 30 天</string>
     <string name="tile_size">大小 %1$d × %2$d</string>
     <string name="tile_remove">移除</string>

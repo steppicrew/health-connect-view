@@ -405,8 +405,15 @@ class DashboardViewModel(
     }
 
     /** Sets a large tile's window and face, and persists them. */
-    fun setOptions(id: String, span: Span, face: TileFace, companion: String? = null, calendarYear: Boolean = false) {
-        config = config.withOptions(id, span, face, companion, calendarYear)
+    fun setOptions(
+        id: String,
+        span: Span,
+        face: TileFace,
+        companion: String? = null,
+        calendarYear: Boolean = false,
+        mean: Boolean = false,
+    ) {
+        config = config.withOptions(id, span, face, companion, calendarYear, mean)
         viewModelScope.launch { store.save(config) }
         reload()
     }
