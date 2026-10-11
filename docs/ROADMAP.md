@@ -801,19 +801,28 @@ doctor report and the year heatmap; the rest unranked.
     permissions change. Today's figure is never cached, since it is still growing. The owner,
     11.10.2026: build it without the cache first and time stepping a day back on the phone
     with a dashboard of year tiles; add the cache only if that is too slow.
-87. [ ] **No session icons on a tile's chart** -- the owner, 11.10.2026: steps or heart rate
+87. [x] **No session icons on a tile's chart** -- the owner, 11.10.2026: steps or heart rate
     on a tile keep sleep and workouts shaded behind the chart, but the icons above the bands
-    take height the chart could use. Detail screens keep them.
-88. [ ] **HRV on a tile from its own low** -- the owner, 11.10.2026: the tile's chart starts at
+    take height the chart could use. Detail screens keep them. Built: `LineChart(sessionIcons)`,
+    off from `TileChart`.
+88. [x] **HRV on a tile from its own low** -- the owner, 11.10.2026: the tile's chart starts at
     zero, the detail chart at the values' own range; the tile should fit its range the same way.
-89. [ ] **A tighter value-and-chart tile** -- the owner, 11.10.2026: the left margin as narrow
+    Built: the cause was the one-row tile's compact axis, which asked the scale for two
+    intervals and so doubled the step -- 30-90 ms rounded to 0-100. The scale is now the detail
+    chart's, with every other gridline left out. Checked on the phone: a day's HRV draws 20-80.
+    Over four weeks both charts still reach 0, honestly: one night read 17 ms.
+89. [x] **A tighter value-and-chart tile** -- the owner, 11.10.2026: the left margin as narrow
     as the calendar face's, and the number's column (with any second line) only as wide as it
-    needs, the rest going to the chart.
+    needs, the rest going to the chart. Built: on a 2x1 tile the figure takes its own width, at
+    most half the tile, 12 dp from the chart; it was a fixed 35 %.
 90. [ ] **Larger "Veränderungen dieser Woche" tiles** (Pro) -- the owner, 11.10.2026: more to
     see at 2x1 and 2x2, e.g. each mover's week against its month as a small bar or sparkline.
     Plan the form first; overlaps step 77.
-91. [ ] **Heart rate tile with its mean** -- the owner, 11.10.2026: an optional dashed line at
-    the window's mean, as the detail chart's four-week mean is optional.
+91. [x] **Heart rate tile with its mean** -- the owner, 11.10.2026: an optional dashed line at
+    the window's mean, as the detail chart's four-week mean is optional. Built: `Tile.mean`, a
+    chip in the tile's options for curve types (heart rate), drawn as the chart's dashed
+    baseline at the window's platform average. That is the figure the tile already shows, so
+    the line has no label of its own.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
