@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.registry
 import java.text.NumberFormat
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -118,6 +119,12 @@ object Formatting {
             .withZone(zone)
             .format(instant)
 
+    /** A clock time given as minutes of the day, in the locale's own form: "23:10", "11:10 PM". */
+    fun clock(minutes: Int): String =
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+            .withLocale(Locale.getDefault())
+            .format(LocalTime.of(minutes / MINUTES_PER_HOUR % HOURS_PER_DAY, minutes % MINUTES_PER_HOUR))
+
     /** Day and month without a year, for an axis tick where the year is already established. */
     fun dayAndMonth(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
         DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
@@ -157,4 +164,6 @@ object Formatting {
 
     private const val METRES_PER_MILE = 1609.344
     private const val MAX_PACE_SECONDS = 60.0 * 60
+    private const val MINUTES_PER_HOUR = 60
+    private const val HOURS_PER_DAY = 24
 }

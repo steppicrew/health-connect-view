@@ -417,6 +417,15 @@
     <plurals name="training_nights_count">
         <item quantity="other">%1$d번의 밤 평균</item>
     </plurals>
+    <string name="sleep_regularity_title">수면 리듬</string>
+    <string name="sleep_regularity_start">수면 시작</string>
+    <string name="sleep_regularity_end">기상</string>
+    <string name="sleep_regularity_middle">절반의 밤: %1$s~%2$s</string>
+    <string name="sleep_regularity_note">밤들의 중앙 시각과, 가운데 절반의 밤이 시작되거나 끝난 시각의 범위입니다. 띠는 더 많은 밤에 잠들어 있던 시간대일수록 진합니다. 리듬을 설명할 뿐 점수를 매기지 않습니다.</string>
+    <string name="sleep_regularity_locked">밤이 보통 언제 시작되고 끝나는지, 그리고 얼마나 달라지는지.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="other">%1$d번의 밤 기준</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4주 평균 표시</string>
 
     <!-- Permissions screen -->

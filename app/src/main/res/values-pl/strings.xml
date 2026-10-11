@@ -447,6 +447,18 @@
         <item quantity="many">Średnia z %1$d nocy</item>
         <item quantity="other">Średnia z %1$d nocy</item>
     </plurals>
+    <string name="sleep_regularity_title">Rytm snu</string>
+    <string name="sleep_regularity_start">Początek snu</string>
+    <string name="sleep_regularity_end">Pobudka</string>
+    <string name="sleep_regularity_middle">Połowa nocy: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">Środkowa godzina nocy oraz godziny, między którymi zaczynała się lub kończyła środkowa połowa z nich. Pasek jest ciemniejszy w godzinach, w których sen przypadał na więcej nocy. Opisuje Twój rytm, nie ocenia go.</string>
+    <string name="sleep_regularity_locked">Kiedy Twoje noce zwykle się zaczynają i kończą, i jak bardzo to się zmienia.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">Z %1$d nocy</item>
+        <item quantity="few">Z %1$d nocy</item>
+        <item quantity="many">Z %1$d nocy</item>
+        <item quantity="other">Z %1$d nocy</item>
+    </plurals>
     <string name="chart_show_rolling_mean">Pokaż średnią 4-tygodniową</string>
 
     <!-- Permissions screen -->

@@ -427,6 +427,16 @@
         <item quantity="one">%1$d रात का औसत</item>
         <item quantity="other">%1$d रातों का औसत</item>
     </plurals>
+    <string name="sleep_regularity_title">नींद की लय</string>
+    <string name="sleep_regularity_start">नींद की शुरुआत</string>
+    <string name="sleep_regularity_end">जागना</string>
+    <string name="sleep_regularity_middle">आधी रातें: %1$s–%2$s</string>
+    <string name="sleep_regularity_note">रातों का मध्य समय, और वे समय जिनके बीच बीच वाली आधी रातें शुरू या खत्म हुईं। पट्टी उन समयों पर गहरी है जब आप ज़्यादा रातों में सोए थे। यह आपकी लय बताती है, उसे अंक नहीं देती।</string>
+    <string name="sleep_regularity_locked">आपकी रातें आमतौर पर कब शुरू और खत्म होती हैं, और यह कितना बदलता है।</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">%1$d रात से</item>
+        <item quantity="other">%1$d रातों से</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4 हफ़्ते का औसत दिखाएं</string>
 
     <!-- Permissions screen -->

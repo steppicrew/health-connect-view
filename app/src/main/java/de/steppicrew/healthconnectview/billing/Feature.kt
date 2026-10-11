@@ -45,4 +45,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** A year of daily values as a calendar, one shade per day, on a type's year. */
     YEAR_HEATMAP(isPremium = true),
+
+    /** When the nights of a week, four weeks or a year began and ended, and how much that varied. */
+    SLEEP_REGULARITY(isPremium = true),
 }

@@ -421,6 +421,16 @@
         <item quantity="one">Mittel aus %1$d Nacht</item>
         <item quantity="other">Mittel aus %1$d Nächten</item>
     </plurals>
+    <string name="sleep_regularity_title">Schlafrhythmus</string>
+    <string name="sleep_regularity_start">Schlafbeginn</string>
+    <string name="sleep_regularity_end">Aufwachen</string>
+    <string name="sleep_regularity_middle">Hälfte der Nächte %1$s–%2$s</string>
+    <string name="sleep_regularity_note">Die mittlere Zeit der Nächte und die Zeiten, zwischen denen die mittlere Hälfte von ihnen begann oder endete. Der Streifen ist dort dunkler, wo Sie in mehr Nächten geschlafen haben. Er beschreibt Ihren Rhythmus und bewertet ihn nicht.</string>
+    <string name="sleep_regularity_locked">Wann Ihre Nächte meist beginnen und enden, und wie sehr das schwankt.</string>
+    <plurals name="sleep_regularity_nights">
+        <item quantity="one">Aus %1$d Nacht</item>
+        <item quantity="other">Aus %1$d Nächten</item>
+    </plurals>
     <string name="chart_show_rolling_mean">4-Wochen-Mittel zeigen</string>
 
     <!-- Berechtigungen -->
