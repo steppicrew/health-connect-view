@@ -597,9 +597,18 @@ The owner's list of 09.10.2026, accepted whole and in this order:
 
 Before the next release after 1.4.1, from the owner, 11.10.2026:
 
-- [ ] **Step 86** -- one date for dashboard and detail views, and history ending on it.
+- [x] **Step 86** -- one date for dashboard and detail views, and history ending on it.
 - [ ] **Name the new Pro parts** -- the weekday rhythm (85), sleep rhythm (79) and year comparison (78) in
-  `pro_body`, `pro_owned_body` and the listing's Pro part, every language, under 4,000.
+  `pro_body`, `pro_owned_body` and the listing's Pro part, every language, under 4,000. Also,
+  the owner agreeing, 11.10.2026: the insights tile in larger sizes with a coloured strip per
+  type and a choice of types and order, and the dashed mean on a heart rate tile. Whether the
+  shared date belongs in the Pro text or the free part depends on where it is offered.
+- [ ] **More Pro screenshots, to show what it is for** -- the owner, 11.10.2026. Candidates:
+  the insights tile at 2x2 with its strips (one week outside the band, so the colours show),
+  a night's detail with the sleep rhythm, the weekday bars beside a calendar, and a year
+  against the last. Play takes at most eight phone screenshots and all eight are in use, so
+  a new shot replaces one or two Pro features share a shot; decide which free shot to drop.
+  From seeded data, added to `store-assets.sh`, all 18 languages, marked "Pro" like step 66.
 
 Before the next release after 1.3.0, from the owner, 10.10.2026:
 
