@@ -46,10 +46,10 @@ data class InsightsState(
 ) {
     val loading: Boolean get() = pending > 0
 
-    /** Above or below, the most unusual first. */
     /** Every type, the most unusual week first, the level ones after the moved ones. */
     val ranked: List<Insight> get() = notable + level.sortedByDescending { it.trend.weight }
 
+    /** Above or below, the most unusual first. */
     val notable: List<Insight> get() = insights.notable()
 
     val level: List<Insight>

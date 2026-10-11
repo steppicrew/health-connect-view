@@ -853,13 +853,13 @@
     <string name="insights_none">Nic się nie wyróżnia: każdy typ z wystarczającą ilością danych jest na poziomie swojej średniej z 30 dni.</string>
     <string name="insights_empty">Za mało danych: zmiana wymaga zapisów z co najmniej 15 z ostatnich 30 dni.</string>
     <string name="insights_rule">Porównuje 7 dni przed dzisiejszym dniem z 30 dniami wcześniej. Kolejność według tego, jak bardzo dany typ się zmienił w stosunku do zwykłych wahań z dnia na dzień. Zmiana to położenie, nie ocena: to, czy wzrost jest dobry, zależy od typu i od Ciebie.</string>
-    <string name="insights_strip">Pasek pod każdą zmianą: kreska to średnia z 30 dni, zacieniony obszar wokół niej to zakres, w którym tydzień wciąż uznaje się za stabilny, a kropka pokazuje, gdzie wypadło ostatnie 7 dni. Mierzone zwykłym wahaniem danego typu z dnia na dzień, więc kropka przy krawędzi to nietypowy tydzień dla tego typu.</string>
+    <string name="insights_strip">Pasek pod każdą zmianą: kreska to średnia z 30 dni, zielony obszar wokół niej to zakres, w którym tydzień wciąż uznaje się za stabilny, a kropka pokazuje, gdzie wypadło ostatnie 7 dni. Poza zielenią pasek przechodzi od żółtego do czerwonego, a kropka ma kolor miejsca, w którym leży. Mierzone zwykłym wahaniem danego typu z dnia na dzień, więc kropka przy krawędzi to nietypowy tydzień dla tego typu. Czerwony oznacza nietypowy, nie zły.</string>
     <string name="insights_tile_title">Zmiany w tym tygodniu</string>
     <string name="insights_tile_caption">Ostatnie 7 dni wobec 30</string>
     <string name="insights_tile_level">Wszystko na zwykłym poziomie</string>
     <string name="insights_tile_few">Za mało danych</string>
     <string name="insights_pick_title">Na tym kafelku</string>
-    <string name="insights_pick_auto">Największe zmiany najpierw</string>
+    <string name="insights_pick_auto">Najpierw najbardziej nietypowe tygodnie</string>
     <string name="insights_pick_own">Własny wybór, w tej kolejności</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d kolejny</item>

@@ -778,13 +778,13 @@
     <string name="insights_none">Tidak ada yang menonjol: setiap jenis dengan data cukup setara dengan rata-rata 30 harinya.</string>
     <string name="insights_empty">Data belum cukup: perubahan memerlukan catatan pada setidaknya 15 dari 30 hari terakhir.</string>
     <string name="insights_rule">Membandingkan 7 hari sebelum hari ini dengan 30 hari sebelumnya. Diurutkan menurut seberapa jauh setiap jenis bergerak dibandingkan variasi hariannya yang biasa. Perubahan adalah posisi, bukan penilaian: apakah naik itu baik bergantung pada jenisnya dan pada Anda.</string>
-    <string name="insights_strip">Strip di bawah setiap perubahan: tanda adalah rata-rata 30 hari, bagian yang diarsir di sekitarnya adalah rentang tempat seminggu masih dianggap stabil, dan titik menunjukkan posisi 7 hari terakhir. Diukur dengan variasi harian yang biasa untuk jenis itu, jadi titik di dekat tepi berarti minggu yang tidak biasa bagi jenis tersebut.</string>
+    <string name="insights_strip">Strip di bawah setiap perubahan: tanda adalah rata-rata 30 hari, bagian hijau di sekitarnya adalah rentang tempat seminggu masih dianggap stabil, dan titik menunjukkan posisi 7 hari terakhir. Di luar bagian hijau, strip berubah dari kuning ke merah, dan titik mengambil warna tempatnya berada. Diukur dengan variasi harian yang biasa untuk jenis itu, jadi titik di dekat tepi berarti minggu yang tidak biasa bagi jenis tersebut. Merah berarti tidak biasa, bukan buruk.</string>
     <string name="insights_tile_title">Perubahan minggu ini</string>
     <string name="insights_tile_caption">7 hari terakhir vs 30</string>
     <string name="insights_tile_level">Semua di tingkat biasanya</string>
     <string name="insights_tile_few">Data masih sedikit</string>
     <string name="insights_pick_title">Di petak ini</string>
-    <string name="insights_pick_auto">Perubahan terbesar dulu</string>
+    <string name="insights_pick_auto">Minggu paling tidak biasa dulu</string>
     <string name="insights_pick_own">Pilihan saya, dengan urutan ini</string>
     <plurals name="insights_tile_more">
         <item quantity="other">+%1$d lainnya</item>

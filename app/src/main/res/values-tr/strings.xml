@@ -803,13 +803,13 @@
     <string name="insights_none">Öne çıkan bir şey yok: yeterli verisi olan her tür 30 günlük ortalaması düzeyinde.</string>
     <string name="insights_empty">Henüz yeterli veri yok: bir değişiklik için son 30 günün en az 15\'inde kayıt gerekir.</string>
     <string name="insights_rule">Bugünden önceki 7 günü, ondan önceki 30 günle karşılaştırır. Her türün olağan günlük dalgalanmasına göre ne kadar değiştiğine göre sıralanır. Değişiklik bir konumdur, bir yargı değildir: artışın iyi olup olmadığı türe ve size bağlıdır.</string>
-    <string name="insights_strip">Her değişikliğin altındaki şerit: çizgi 30 günlük ortalamadır, çevresindeki gölgeli alan bir haftanın hâlâ sabit sayıldığı aralıktır, nokta ise son 7 günün nereye düştüğünü gösterir. Türün günden güne olağan dalgalanmasıyla ölçülür; kenara yakın bir nokta o tür için olağan dışı bir haftadır.</string>
+    <string name="insights_strip">Her değişikliğin altındaki şerit: çizgi 30 günlük ortalamadır, çevresindeki yeşil alan bir haftanın hâlâ sabit sayıldığı aralıktır, nokta ise son 7 günün nereye düştüğünü gösterir. Yeşilin ötesinde şerit sarıdan kırmızıya döner ve nokta bulunduğu yerin rengini alır. Türün günden güne olağan dalgalanmasıyla ölçülür; kenara yakın bir nokta o tür için olağan dışı bir haftadır. Kırmızı kötü değil, olağan dışı demektir.</string>
     <string name="insights_tile_title">Bu haftaki değişiklikler</string>
     <string name="insights_tile_caption">Son 7 gün, 30 güne karşı</string>
     <string name="insights_tile_level">Her şey olağan düzeyinde</string>
     <string name="insights_tile_few">Henüz veri az</string>
     <string name="insights_pick_title">Bu kutucukta</string>
-    <string name="insights_pick_auto">Önce en büyük değişiklikler</string>
+    <string name="insights_pick_auto">Önce en olağan dışı haftalar</string>
     <string name="insights_pick_own">Kendi seçimim, bu sırayla</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d tane daha</item>
