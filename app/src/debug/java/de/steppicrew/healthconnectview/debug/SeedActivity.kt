@@ -20,6 +20,7 @@ import org.json.JSONArray
  * default layout, or one of large, coloured tiles with their curves for the store's Pro
  * screenshots, which nobody can arrange by hand on an emulator run from a script. Either way
  * the "What's new" card is put away, so no screenshot shows it.
+ * A JSON array of tiles instead, as in [SHOWCASE], sets that layout: a tile the showcase lacks.
  *
  * Only ever logs its own status, never health values.
  */
@@ -32,15 +33,17 @@ class SeedActivity : ComponentActivity() {
                 if (dashboard == null) {
                     SampleDataSeeder.seed(this@SeedActivity)
                 } else {
-                    val config = when (dashboard) {
-                        "showcase" -> DashboardJson.decode(JSONArray(SHOWCASE))
+                    val config = when {
+                        dashboard == "showcase" -> DashboardJson.decode(JSONArray(SHOWCASE))
+                        // A layout of its own, for a tile the showcase does not have.
+                        dashboard.startsWith("[") -> DashboardJson.decode(JSONArray(dashboard))
                         else -> DashboardConfig.DEFAULT
                     }
                     DashboardStore(this@SeedActivity).save(config)
                     WhatsNewStore(this@SeedActivity).dismiss(Int.MAX_VALUE)
                 }
             }
-            val done = if (dashboard == null) "seeded" else "dashboard $dashboard"
+            val done = if (dashboard == null) "seeded" else "dashboard ${dashboard.take(LOG_NAME)}"
             Log.i(TAG, if (result.isSuccess) done else "failed: ${result.exceptionOrNull()}")
             finish()
         }
@@ -48,6 +51,7 @@ class SeedActivity : ComponentActivity() {
 
     private companion object {
         const val TAG = "SampleDataSeeder"
+        const val LOG_NAME = 20
 
         /**
          * What Pro adds, on one screen: a year of steps as a calendar, a night's stages under
