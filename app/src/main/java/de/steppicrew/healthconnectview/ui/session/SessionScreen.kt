@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.height
 import de.steppicrew.healthconnectview.health.AFTER_END
 import de.steppicrew.healthconnectview.health.Drift
 import de.steppicrew.healthconnectview.health.HeartZones
+import de.steppicrew.healthconnectview.ui.components.ExplanationState
+import de.steppicrew.healthconnectview.ui.components.InfoToggle
+import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 import de.steppicrew.healthconnectview.ui.components.DotText
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.Offset
@@ -233,22 +236,26 @@ private fun SessionContent(
         detail.heartZones?.let { zones ->
             // Among the figures, last, rather than under the five zones where it was missed:
             // the zones arrive after the rest, so a row added here moves nothing above it.
-            StatRow(stringResource(R.string.session_load), Formatting.number(zones.load.toDouble()), strong = true)
-            // How it is made, beside it: a number of no unit says nothing until it is explained.
-            Text(
-                text = stringResource(R.string.session_load_note, loadSum(zones)),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            // How it is made folds out beside it: a number of no unit needs the explanation.
+            val explanation = rememberExplanation("session_load")
+            StatRow(
+                stringResource(R.string.session_load),
+                Formatting.number(zones.load.toDouble()),
+                strong = true,
+                info = explanation,
             )
+            if (explanation.expanded == true) Note(stringResource(R.string.session_load_note, loadSum(zones)))
         }
         // Above the zones, which arrive after the rest of the page and so move nothing here.
         detail.drift?.let { drift ->
-            Section(stringResource(R.string.session_drift_title))
-            Halves(drift, detail.heartRateUnitRes)
+            val explanation = rememberExplanation("session_drift")
+            Section(stringResource(R.string.session_drift_title), explanation)
+            Halves(drift, detail.heartRateUnitRes, explained = explanation.expanded == true)
         }
         detail.heartZones?.let { zones ->
-            Section(stringResource(R.string.session_zones_title))
-            Zones(zones, detail.heartRateUnitRes)
+            val explanation = rememberExplanation("session_zones")
+            Section(stringResource(R.string.session_zones_title), explanation)
+            Zones(zones, detail.heartRateUnitRes, explained = explanation.expanded == true)
         }
 
         Text(
@@ -567,11 +574,11 @@ private fun Stats(detail: SessionDetail) {
 
 /**
  * Time in each heart-rate zone as one bar of five shades, deepening with effort, then a row per
- * zone with its beats and its time, and the load. The note under them says how both are made
- * and where the maximum comes from; no verdict.
+ * zone with its beats and its time. Where the maximum comes from folds out behind the title's
+ * "i" ([explained]); no verdict.
  */
 @Composable
-private fun Zones(zones: HeartZones, @StringRes unitRes: Int?) {
+private fun Zones(zones: HeartZones, @StringRes unitRes: Int?, explained: Boolean) {
     val unit = unitRes?.let { " " + stringResource(it) } ?: ""
     val total = zones.times.sumOf { it.toMillis() }
     if (total > 0) {
@@ -602,15 +609,14 @@ private fun Zones(zones: HeartZones, @StringRes unitRes: Int?) {
             swatch = ZONE_COLORS[index],
         )
     }
-    Text(
-        text = stringResource(
-            if (zones.maxFromSettings) R.string.session_zones_note_set else R.string.session_zones_note_data,
-            Formatting.number(zones.max.toDouble()) + unit,
-        ),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 4.dp),
-    )
+    if (explained) {
+        Note(
+            stringResource(
+                if (zones.maxFromSettings) R.string.session_zones_note_set else R.string.session_zones_note_data,
+                Formatting.number(zones.max.toDouble()) + unit,
+            ),
+        )
+    }
 }
 
 /**
@@ -630,10 +636,10 @@ private fun loadSum(zones: HeartZones): String {
 /**
  * Heart rate against speed in each half of the moving time, with heartbeats per kilometre (or
  * mile) as the one figure that compares them. No grade: a climb or a headwind raises it as
- * much as tiredness does, and the note says so.
+ * much as tiredness does, and the note behind the title's "i" ([explained]) says so.
  */
 @Composable
-private fun Halves(drift: Drift, heartRateUnitRes: Int?) {
+private fun Halves(drift: Drift, heartRateUnitRes: Int?, explained: Boolean) {
     val beatsUnit = heartRateUnitRes?.let { " " + stringResource(it) } ?: ""
     val speedUnit = Quantity.SPEED
     val distanceUnit = Quantity.DISTANCE
@@ -651,10 +657,17 @@ private fun Halves(drift: Drift, heartRateUnitRes: Int?) {
                 ),
             )
         }
+    if (explained) Note(stringResource(R.string.session_drift_note))
+}
+
+/** An explanation, folded out under the figures it explains. */
+@Composable
+private fun Note(text: String) {
     Text(
-        text = stringResource(R.string.session_drift_note),
+        text = text,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 4.dp),
     )
 }
 
@@ -674,10 +687,18 @@ private const val ZONE_BAR_HEIGHT = 20
 
 /**
  * One figure: its name, its value, and a smaller line under the value where there is one.
- * [strong] sets it in bold, for the one figure that sums up the session.
+ * [strong] sets it in bold, for the one figure that sums up the session; [info] puts the "i"
+ * of its explanation after the value.
  */
 @Composable
-private fun StatRow(label: String, value: String, detail: String? = null, swatch: Color? = null, strong: Boolean = false) {
+private fun StatRow(
+    label: String,
+    value: String,
+    detail: String? = null,
+    swatch: Color? = null,
+    strong: Boolean = false,
+    info: ExplanationState? = null,
+) {
     val weight = if (strong) FontWeight.Bold else null
     Row(
         modifier = Modifier
@@ -712,17 +733,25 @@ private fun StatRow(label: String, value: String, detail: String? = null, swatch
                 )
             }
         }
+        if (info != null) InfoToggle(info, firstLine = MaterialTheme.typography.bodyMedium)
     }
 }
 
+/** A divider and a title, with the "i" of the section's explanation where it has one. */
 @Composable
-private fun Section(title: String) {
+private fun Section(title: String, explanation: ExplanationState? = null) {
     HorizontalDivider(Modifier.padding(top = 16.dp))
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleSmall,
+    Row(
         modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
-    )
+        verticalAlignment = Alignment.Top,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.weight(1f),
+        )
+        if (explanation != null) InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+    }
 }
 
 private const val HEADER_ICON = 28
