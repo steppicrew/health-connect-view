@@ -165,12 +165,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
      * hand-edited or merged layout cannot break the rules the edits keep.
      */
     fun sanitised(): DashboardConfig {
-        // One insights tile at most, one cell: a second would show the same list, and a larger
-        // face is still to be designed.
+        // One insights tile at most: a second would show the same list.
         val insightsAt = tiles.indexOfFirst { it.isInsights }
         val known = tiles.withIndex()
             .filter { (index, tile) -> tile.spec != null || index == insightsAt }
-            .map { (_, tile) -> if (tile.isInsights) tile.copy(width = 1, height = 1) else tile }
+            .map { (_, tile) -> tile }
         val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
         val seen = mutableSetOf<String>()
         val fixed = known.map { tile ->

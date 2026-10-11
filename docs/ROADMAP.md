@@ -744,7 +744,7 @@ doctor report and the year heatmap; the rest unranked.
     the current cycle as a strip with the bleeding days marked; a tap opens the overview.
     Offered only where menstruation is recorded. Describes, never predicts: no "next period
     in N days", no fertile window -- that is a medical claim from someone else's data.
-77. [ ] **What a larger insights tile shows** (step 40's open note).
+77. [x] **What a larger insights tile shows** (step 40's open note). Built as step 90.
 78. [x] **Compare periods** (Pro) -- this month over the same month last year on one chart.
     Built 11.10.2026, seen on the emulator: "Mit dem Vorjahr vergleichen" under the chart of a
     week, four weeks or a year, kept while stepping, off by default -- it is a second read.
@@ -815,9 +815,17 @@ doctor report and the year heatmap; the rest unranked.
     as the calendar face's, and the number's column (with any second line) only as wide as it
     needs, the rest going to the chart. Built: on a 2x1 tile the figure takes its own width, at
     most half the tile, 12 dp from the chart; it was a fixed 35 %.
-90. [ ] **Larger "Veränderungen dieser Woche" tiles** (Pro) -- the owner, 11.10.2026: more to
+90. [x] **Larger "Veränderungen dieser Woche" tiles** (Pro) -- the owner, 11.10.2026: more to
     see at 2x1 and 2x2, e.g. each mover's week against its month as a small bar or sparkline.
-    Plan the form first; overlaps step 77.
+    Plan the form first; overlaps step 77. Built 11.10.2026 as position strips, the owner's
+    pick from four forms: the insights tile resizes like any other (3 rows at 2x1, 9 at 2x2),
+    and a wide one puts a strip in each row -- the 30-day mean as a mark, the band of +-0.5
+    day-to-day spreads where a week counts as level, a dot for the last 7 days, the strip
+    reaching 2.5 spreads, so the dot says how unusual the week was for that type, which is what
+    the list is ranked by. A level week on a wide tile still shows the types nearest their
+    edge under "Alles auf üblichem Niveau". The full list's cards carry the same strip, and
+    the list explains it once beneath the rule. Sparklines left for later: the trend keeps no
+    daily values.
 91. [x] **Heart rate tile with its mean** -- the owner, 11.10.2026: an optional dashed line at
     the window's mean, as the detail chart's four-week mean is optional. Built: `Tile.mean`, a
     chip in the tile's options for curve types (heart rate), drawn as the chart's dashed

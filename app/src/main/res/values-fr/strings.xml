@@ -829,6 +829,7 @@
     <string name="insights_none">Rien ne ressort : chaque type disposant d\'assez de données est au niveau de sa moyenne sur 30 jours.</string>
     <string name="insights_empty">Pas encore assez de données : une évolution demande des mesures sur au moins 15 des 30 derniers jours.</string>
     <string name="insights_rule">Compare les 7 jours précédant aujourd\'hui avec les 30 jours précédents. Classé selon l\'ampleur du changement par rapport à la variation habituelle d\'un jour à l\'autre. Une évolution est une position, pas un jugement : que la hausse soit bonne dépend du type et de vous.</string>
+    <string name="insights_strip">La bande sous chaque changement : le trait est la moyenne sur 30 jours, la zone ombrée autour la plage où une semaine compte encore comme stable, et le point l’endroit où se situent les 7 derniers jours. Elle est mesurée selon la variation habituelle du type d’un jour à l’autre : un point près du bord est une semaine inhabituelle pour ce type.</string>
     <string name="insights_tile_title">Évolutions de la semaine</string>
     <string name="insights_tile_caption">7 derniers jours contre 30</string>
     <string name="insights_tile_level">Tout à son niveau habituel</string>

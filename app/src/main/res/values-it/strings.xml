@@ -829,6 +829,7 @@
     <string name="insights_none">Niente spicca: ogni tipo con dati sufficienti è in linea con la sua media di 30 giorni.</string>
     <string name="insights_empty">Dati ancora insufficienti: un cambiamento richiede registrazioni in almeno 15 degli ultimi 30 giorni.</string>
     <string name="insights_rule">Confronta i 7 giorni prima di oggi con i 30 giorni precedenti. Ordinato in base a quanto si è mosso ogni tipo rispetto alla sua normale variazione da un giorno all\'altro. Un cambiamento è una posizione, non un giudizio: se salire sia un bene dipende dal tipo e da te.</string>
+    <string name="insights_strip">La striscia sotto ogni variazione: il segno è la media di 30 giorni, la zona ombreggiata intorno l’intervallo in cui una settimana conta ancora come stabile, e il punto dove sono caduti gli ultimi 7 giorni. È misurata sulla variazione abituale del tipo da un giorno all’altro, quindi un punto vicino al bordo è una settimana insolita per quel tipo.</string>
     <string name="insights_tile_title">Cambiamenti della settimana</string>
     <string name="insights_tile_caption">Ultimi 7 giorni contro 30</string>
     <string name="insights_tile_level">Tutto al solito livello</string>

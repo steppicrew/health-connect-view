@@ -227,7 +227,7 @@ class DashboardConfigTest {
     }
 
     @Test
-    fun `the insights tile survives sanitising, once and as one cell`() {
+    fun `the insights tile survives sanitising, once and at its size`() {
         val stored = DashboardConfig(
             listOf(
                 Tile("StepsRecord"),
@@ -239,7 +239,7 @@ class DashboardConfigTest {
         val clean = stored.sanitised()
         assertEquals(listOf("StepsRecord", Tile.INSIGHTS), clean.tiles.map { it.typeName })
         val insights = clean.tiles.single { it.isInsights }
-        assertEquals(1 to 1, insights.width to insights.height)
+        assertEquals(2 to 2, insights.width to insights.height)
     }
 
     @Test

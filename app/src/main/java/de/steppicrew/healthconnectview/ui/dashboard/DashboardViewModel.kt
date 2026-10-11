@@ -487,7 +487,14 @@ class DashboardViewModel(
         val before = config.tiles.firstOrNull { it.id == id }
         config = config.resized(id)
         val after = config.tiles.firstOrNull { it.id == id }
-        _state.update { it.copy(tiles = withCurrentLayout(it.tiles), layout = config.tiles.map(Tile::id)) }
+        _state.update { state ->
+            state.copy(
+                tiles = withCurrentLayout(state.tiles),
+                layout = config.tiles.map(Tile::id),
+                // The insights tile is kept apart from the type tiles, so its size is set here.
+                insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
+            )
+        }
         viewModelScope.launch { store.save(config) }
         // Except where the size decides *what* is shown: a tile growing into its stored week,
         // or shrinking back to the day, needs that window read.
