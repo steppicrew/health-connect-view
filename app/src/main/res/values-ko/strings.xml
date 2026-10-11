@@ -778,13 +778,13 @@
     <string name="insights_none">눈에 띄는 변화가 없습니다. 데이터가 충분한 모든 유형이 30일 평균과 같은 수준입니다.</string>
     <string name="insights_empty">아직 데이터가 부족합니다. 변화를 보려면 최근 30일 중 15일 이상의 기록이 필요합니다.</string>
     <string name="insights_rule">오늘 이전 7일을 그 전 30일과 비교합니다. 각 유형이 평소의 일별 변동에 비해 얼마나 움직였는지에 따라 정렬합니다. 변화는 위치일 뿐 평가가 아닙니다. 올라가는 것이 좋은지는 유형과 사용자에 따라 다릅니다.</string>
-    <string name="insights_strip">각 변화 아래의 막대: 표시선은 30일 평균, 그 주변의 음영 부분은 한 주가 여전히 평소 수준으로 간주되는 범위, 점은 최근 7일이 위치한 곳입니다. 해당 유형의 평소 일별 변동을 기준으로 하므로, 가장자리에 가까운 점은 그 유형에게 드문 한 주입니다.</string>
+    <string name="insights_strip">각 변화 아래의 막대: 표시선은 30일 평균, 그 주변의 초록 부분은 한 주가 여전히 평소 수준으로 간주되는 범위, 점은 최근 7일이 위치한 곳입니다. 초록 바깥에서는 막대가 노란색에서 빨간색으로 바뀌고, 점은 놓인 자리의 색을 띱니다. 해당 유형의 평소 일별 변동을 기준으로 하므로, 가장자리에 가까운 점은 그 유형에게 드문 한 주입니다. 빨간색은 드물다는 뜻이지 나쁘다는 뜻이 아닙니다.</string>
     <string name="insights_tile_title">이번 주의 변화</string>
     <string name="insights_tile_caption">최근 7일 대 30일</string>
     <string name="insights_tile_level">모두 평소 수준</string>
     <string name="insights_tile_few">아직 데이터가 부족합니다</string>
     <string name="insights_pick_title">이 타일에 표시</string>
-    <string name="insights_pick_auto">변화가 큰 순서대로</string>
+    <string name="insights_pick_auto">평소와 가장 다른 주 순서대로</string>
     <string name="insights_pick_own">직접 선택, 이 순서대로</string>
     <plurals name="insights_tile_more">
         <item quantity="other">외 %1$d개</item>

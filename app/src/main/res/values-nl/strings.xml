@@ -803,13 +803,13 @@
     <string name="insights_none">Niets valt op: elk type met genoeg gegevens ligt gelijk met zijn 30-daagse gemiddelde.</string>
     <string name="insights_empty">Nog niet genoeg gegevens: een verandering vraagt metingen op minstens 15 van de laatste 30 dagen.</string>
     <string name="insights_rule">Vergelijkt de 7 dagen vóór vandaag met de 30 dagen daarvoor. Gerangschikt naar hoe ver elk type bewoog tegenover zijn gewone schommeling van dag tot dag. Een verandering is een positie, geen oordeel: of omhoog goed is, hangt af van het type en van jou.</string>
-    <string name="insights_strip">De strook onder elke verandering: het streepje is het 30-daagse gemiddelde, het gearceerde deel eromheen het bereik waarin een week nog als gelijk geldt, en de stip waar de laatste 7 dagen lagen. Gemeten aan de gewone dag-tot-dagschommeling van het type, dus een stip bij de rand is een ongewone week voor dat type.</string>
+    <string name="insights_strip">De strook onder elke verandering: het streepje is het 30-daagse gemiddelde, het groene deel eromheen het bereik waarin een week nog als gelijk geldt, en de stip waar de laatste 7 dagen lagen. Voorbij het groen loopt de strook van geel naar rood, en de stip krijgt de kleur van de plek waar hij staat. Gemeten aan de gewone dag-tot-dagschommeling van het type, dus een stip bij de rand is een ongewone week voor dat type. Rood betekent ongewoon, niet slecht.</string>
     <string name="insights_tile_title">Veranderingen deze week</string>
     <string name="insights_tile_caption">Laatste 7 dagen tegen 30</string>
     <string name="insights_tile_level">Alles op het gewone niveau</string>
     <string name="insights_tile_few">Nog te weinig gegevens</string>
     <string name="insights_pick_title">Op deze tegel</string>
-    <string name="insights_pick_auto">Grootste veranderingen eerst</string>
+    <string name="insights_pick_auto">Meest ongewone weken eerst</string>
     <string name="insights_pick_own">Eigen keuze, in deze volgorde</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d andere</item>

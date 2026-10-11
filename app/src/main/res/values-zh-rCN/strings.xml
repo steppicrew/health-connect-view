@@ -778,13 +778,13 @@
     <string name="insights_none">没有突出的变化：每种数据充足的类型都与其 30 天平均值持平。</string>
     <string name="insights_empty">数据还不够：显示变化需要最近 30 天中至少 15 天有记录。</string>
     <string name="insights_rule">将今天之前的 7 天与再之前的 30 天进行比较。按每种类型相对于其平常的日间波动变化了多少排序。变化是一种位置，而不是评判：上升是否是好事，取决于类型和您自己。</string>
-    <string name="insights_strip">每项变化下方的条带：竖线是 30 天平均值，周围的阴影部分是一周仍算持平的范围，圆点表示最近 7 天所处的位置。以该类型平常的日间波动为尺度，因此靠近边缘的圆点表示对该类型而言不寻常的一周。</string>
+    <string name="insights_strip">每项变化下方的条带：竖线是 30 天平均值，周围的绿色部分是一周仍算持平的范围，圆点表示最近 7 天所处的位置。绿色之外，条带由黄渐变为红，圆点取其所在位置的颜色。以该类型平常的日间波动为尺度，因此靠近边缘的圆点表示对该类型而言不寻常的一周。红色表示不寻常，而不是不好。</string>
     <string name="insights_tile_title">本周变化</string>
     <string name="insights_tile_caption">最近 7 天对比 30 天</string>
     <string name="insights_tile_level">一切处于平常水平</string>
     <string name="insights_tile_few">数据还不够</string>
     <string name="insights_pick_title">在此卡片上显示</string>
-    <string name="insights_pick_auto">变化最大的优先</string>
+    <string name="insights_pick_auto">最不寻常的一周优先</string>
     <string name="insights_pick_own">自选，按此顺序</string>
     <plurals name="insights_tile_more">
         <item quantity="other">另有 %1$d 项</item>
