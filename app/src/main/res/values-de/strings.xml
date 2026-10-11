@@ -527,6 +527,15 @@
     <string name="workouts_by_kind">Trainings nach Art</string>
     <string name="workouts_none">Keine Trainings in den letzten 12 Monaten.</string>
     <string name="workouts_span_year">Trainings der letzten 12 Monate.</string>
+    <string name="workouts_trend_title">Verlauf über die 12 Monate</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d Training: %2$s</item>
+        <item quantity="other">%1$d Trainings: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Ø Geschwindigkeit (%1$s)</string>
+    <string name="workouts_trend_pace">Ø Pace (%1$s)</string>
+    <string name="workouts_trend_heart">Ø Herzfrequenz (%1$s)</string>
+    <string name="workouts_trend_note">Ein Punkt je Training. Geschwindigkeit über die ganze Dauer, Pausen eingerechnet. Distanz und Herzfrequenz sind die während des Trainings erfassten, über Ihre Apps zusammengefasst.</string>
     <string name="session_overlap_note">Das sind die Messwerte aus dem Zeitraum dieser Sitzung. Health Connect verknüpft Messwerte nicht mit Sitzungen, die Zuordnung erfolgt über die Zeit.</string>
     <string name="session_statistics">Was während dieser Sitzung aufgezeichnet wurde</string>
     <string name="session_details">Details</string>

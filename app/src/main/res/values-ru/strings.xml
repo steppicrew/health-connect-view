@@ -559,6 +559,17 @@
     <string name="workouts_by_kind">Тренировки по видам</string>
     <string name="workouts_none">Нет тренировок за последние 12 месяцев.</string>
     <string name="workouts_span_year">Тренировки за последние 12 месяцев.</string>
+    <string name="workouts_trend_title">Динамика за 12 месяцев</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d тренировка: %2$s</item>
+        <item quantity="few">%1$d тренировки: %2$s</item>
+        <item quantity="many">%1$d тренировок: %2$s</item>
+        <item quantity="other">%1$d тренировки: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Средняя скорость (%1$s)</string>
+    <string name="workouts_trend_pace">Средний темп (%1$s)</string>
+    <string name="workouts_trend_heart">Средний пульс (%1$s)</string>
+    <string name="workouts_trend_note">Одна точка на тренировку. Скорость за всю тренировку, с паузами. Дистанция и пульс — записанные во время тренировки, объединённые из ваших приложений.</string>
     <string name="session_overlap_note">Это измерения, сделанные во время этого сеанса. Health Connect не связывает измерения с сеансом, поэтому они сопоставлены по времени.</string>
     <string name="session_statistics">Что было записано во время этого сеанса</string>
     <string name="session_details">Подробнее</string>

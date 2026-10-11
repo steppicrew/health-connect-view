@@ -533,6 +533,15 @@
     <string name="workouts_by_kind">Trainingen per soort</string>
     <string name="workouts_none">Geen trainingen in de afgelopen 12 maanden.</string>
     <string name="workouts_span_year">Trainingen van de afgelopen 12 maanden.</string>
+    <string name="workouts_trend_title">Verloop over de 12 maanden</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d training: %2$s</item>
+        <item quantity="other">%1$d trainingen: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Gem. snelheid (%1$s)</string>
+    <string name="workouts_trend_pace">Gem. tempo (%1$s)</string>
+    <string name="workouts_trend_heart">Gem. hartslag (%1$s)</string>
+    <string name="workouts_trend_note">Eén stip per training. Snelheid over de hele duur, pauzes inbegrepen. Afstand en hartslag zijn die tijdens de training zijn vastgelegd, samengevoegd over je apps.</string>
     <string name="session_overlap_note">Dit zijn de metingen die tijdens deze sessie zijn gedaan. Health Connect koppelt metingen niet aan een sessie, dus ze worden op tijd gekoppeld.</string>
     <string name="session_statistics">Wat er tijdens deze sessie is geregistreerd</string>
     <string name="session_details">Details</string>

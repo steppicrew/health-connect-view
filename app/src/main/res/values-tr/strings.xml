@@ -533,6 +533,15 @@
     <string name="workouts_by_kind">Türe göre antrenmanlar</string>
     <string name="workouts_none">Son 12 ayda antrenman yok.</string>
     <string name="workouts_span_year">Son 12 ayın antrenmanları.</string>
+    <string name="workouts_trend_title">12 ay boyunca seyir</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d antrenman: %2$s</item>
+        <item quantity="other">%1$d antrenman: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Ort. hız (%1$s)</string>
+    <string name="workouts_trend_pace">Ort. tempo (%1$s)</string>
+    <string name="workouts_trend_heart">Ort. nabız (%1$s)</string>
+    <string name="workouts_trend_note">Her antrenman için bir nokta. Hız, molalar dahil tüm süre üzerinden. Mesafe ve nabız, antrenman sırasında kaydedilen ve uygulamalarınızdan birleştirilen değerlerdir.</string>
     <string name="session_overlap_note">Bunlar bu oturum sırasında alınan ölçümlerdir. Health Connect ölçümleri bir oturumla ilişkilendirmez; bu yüzden zamana göre eşleştirilirler.</string>
     <string name="session_statistics">Bu oturum sırasında kaydedilenler</string>
     <string name="session_details">Ayrıntılar</string>

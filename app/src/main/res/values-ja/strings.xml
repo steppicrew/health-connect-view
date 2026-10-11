@@ -520,6 +520,14 @@
     <string name="workouts_by_kind">種類別のワークアウト</string>
     <string name="workouts_none">過去12か月間のワークアウトはありません。</string>
     <string name="workouts_span_year">過去12か月間のワークアウトです。</string>
+    <string name="workouts_trend_title">12か月の推移</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="other">%1$d回のトレーニング：%2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">平均速度（%1$s）</string>
+    <string name="workouts_trend_pace">平均ペース（%1$s）</string>
+    <string name="workouts_trend_heart">平均心拍数（%1$s）</string>
+    <string name="workouts_trend_note">トレーニングごとに1つの点。速度は休憩を含む全体の時間で計算します。距離と心拍数はトレーニング中に記録されたもので、アプリ全体でまとめています。</string>
     <string name="session_overlap_note">このセッション中に測定された値です。ヘルスコネクトは測定値をセッションに関連付けないため、時刻で照合しています。</string>
     <string name="session_statistics">このセッション中に記録されたもの</string>
     <string name="session_details">詳細</string>

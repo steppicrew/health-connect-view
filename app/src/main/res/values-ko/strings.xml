@@ -520,6 +520,14 @@
     <string name="workouts_by_kind">종류별 운동</string>
     <string name="workouts_none">지난 12개월 동안 운동 기록이 없습니다.</string>
     <string name="workouts_span_year">지난 12개월 동안의 운동입니다.</string>
+    <string name="workouts_trend_title">12개월 동안의 추이</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="other">운동 %1$d회: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">평균 속도(%1$s)</string>
+    <string name="workouts_trend_pace">평균 페이스(%1$s)</string>
+    <string name="workouts_trend_heart">평균 심박수(%1$s)</string>
+    <string name="workouts_trend_note">운동마다 점 하나. 속도는 휴식을 포함한 전체 시간 기준입니다. 거리와 심박수는 운동 중 기록된 값을 앱 전체에서 합친 것입니다.</string>
     <string name="session_overlap_note">이 세션 동안 측정된 값입니다. 헬스 커넥트는 측정값을 세션과 연결하지 않으므로 시간으로 맞춥니다.</string>
     <string name="session_statistics">이 세션 동안 기록된 내용</string>
     <string name="session_details">세부정보</string>

@@ -65,7 +65,7 @@ fun labelFor(family: WorkoutFamily): Int = when (family) {
  * null for the rest, which are named by their kind or not at all rather than guessed.
  */
 @StringRes
-private fun exerciseNameRes(type: Int?): Int? = when (type) {
+internal fun exerciseNameRes(type: Int?): Int? = when (type) {
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> R.string.exercise_biking
     ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> R.string.exercise_biking_stationary
     ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> R.string.exercise_running
