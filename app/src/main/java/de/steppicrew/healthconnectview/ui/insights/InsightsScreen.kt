@@ -120,7 +120,14 @@ fun InsightsScreen(
                     text = stringResource(R.string.insights_rule),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 16.dp),
+                    modifier = Modifier.padding(top = 16.dp),
+                )
+                // The strips on the cards and the larger tile, read once here.
+                Text(
+                    text = stringResource(R.string.insights_strip),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
                 )
             }
         }
@@ -162,6 +169,7 @@ private fun InsightCard(insight: Insight, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                InsightStrip(trend, Modifier.padding(top = 8.dp))
             }
         }
     }

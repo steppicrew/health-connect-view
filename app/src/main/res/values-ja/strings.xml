@@ -779,6 +779,7 @@
     <string name="insights_none">目立った変化はありません。十分なデータがある種類はすべて30日間の平均と同程度です。</string>
     <string name="insights_empty">データがまだ足りません。変化を示すには、直近30日のうち15日以上の記録が必要です。</string>
     <string name="insights_rule">今日より前の7日間を、その前の30日間と比較します。各種類のふだんの日ごとの変動に対してどれだけ動いたかの順に並べています。変化は位置であり、評価ではありません。上がることが良いかどうかは、種類とご自身によります。</string>
+    <string name="insights_strip">各変化の下の帯：線は30日間の平均、その周りの網掛け部分は1週間がまだ横ばいとみなされる範囲、点は直近7日間の位置です。その種類の日々の通常の変動を基準にしているため、端に近い点はその種類にとって珍しい1週間です。</string>
     <string name="insights_tile_title">今週の変化</string>
     <string name="insights_tile_caption">直近7日間と30日間</string>
     <string name="insights_tile_level">すべていつもどおり</string>
