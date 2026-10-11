@@ -449,6 +449,12 @@
         <item quantity="other">Da %1$d notti</item>
     </plurals>
     <string name="chart_show_rolling_mean">Mostra media 4 settimane</string>
+    <string name="chart_compare_year">Confronta con un anno prima</string>
+    <string name="legend_previous_year">Un anno prima</string>
+    <string name="chart_previous_year_reading">Lettura degli stessi giorni di un anno prima…</string>
+    <string name="chart_previous_year_total">Un anno prima: %1$s</string>
+    <string name="chart_previous_year_none">Nulla registrato negli stessi giorni di un anno prima.</string>
+    <string name="chart_previous_year_partial">Solo una parte di quei giorni ha dati.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Scegli cosa mostrare</string>

@@ -427,6 +427,12 @@
         <item quantity="other">%1$d번의 밤 기준</item>
     </plurals>
     <string name="chart_show_rolling_mean">4주 평균 표시</string>
+    <string name="chart_compare_year">1년 전과 비교</string>
+    <string name="legend_previous_year">1년 전</string>
+    <string name="chart_previous_year_reading">1년 전 같은 날을 읽는 중…</string>
+    <string name="chart_previous_year_total">1년 전: %1$s</string>
+    <string name="chart_previous_year_none">1년 전 같은 날에는 기록이 없습니다.</string>
+    <string name="chart_previous_year_partial">그 기간 중 일부 날에만 데이터가 있습니다.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">표시할 항목 선택</string>

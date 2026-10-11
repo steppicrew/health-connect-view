@@ -427,6 +427,12 @@
         <item quantity="other">%1$d 夜から</item>
     </plurals>
     <string name="chart_show_rolling_mean">4 週間平均を表示</string>
+    <string name="chart_compare_year">1年前と比較</string>
+    <string name="legend_previous_year">1年前</string>
+    <string name="chart_previous_year_reading">1年前の同じ日を読み込んでいます…</string>
+    <string name="chart_previous_year_total">1年前：%1$s</string>
+    <string name="chart_previous_year_none">1年前の同じ日には記録がありません。</string>
+    <string name="chart_previous_year_partial">それらの日の一部にしかデータがありません。</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">表示するものを選択</string>

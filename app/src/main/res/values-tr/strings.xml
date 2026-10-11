@@ -438,6 +438,12 @@
         <item quantity="other">%1$d geceden</item>
     </plurals>
     <string name="chart_show_rolling_mean">4 haftalık ortalamayı göster</string>
+    <string name="chart_compare_year">Bir yıl öncesiyle karşılaştır</string>
+    <string name="legend_previous_year">Bir yıl önce</string>
+    <string name="chart_previous_year_reading">Bir yıl önceki aynı günler okunuyor…</string>
+    <string name="chart_previous_year_total">Bir yıl önce: %1$s</string>
+    <string name="chart_previous_year_none">Bir yıl önceki aynı günlerde kayıt yok.</string>
+    <string name="chart_previous_year_partial">Bu günlerin yalnızca bir kısmında veri var.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Neyin gösterileceğini seçin</string>

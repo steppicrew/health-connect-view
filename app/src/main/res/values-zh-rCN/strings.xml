@@ -427,6 +427,12 @@
         <item quantity="other">基于 %1$d 晚</item>
     </plurals>
     <string name="chart_show_rolling_mean">显示 4 周平均值</string>
+    <string name="chart_compare_year">与一年前比较</string>
+    <string name="legend_previous_year">一年前</string>
+    <string name="chart_previous_year_reading">正在读取一年前的同期数据…</string>
+    <string name="chart_previous_year_total">一年前：%1$s</string>
+    <string name="chart_previous_year_none">一年前的同期没有记录。</string>
+    <string name="chart_previous_year_partial">这些日子中只有一部分有数据。</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">选择要显示的内容</string>

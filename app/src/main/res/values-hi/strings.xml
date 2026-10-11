@@ -438,6 +438,12 @@
         <item quantity="other">%1$d रातों से</item>
     </plurals>
     <string name="chart_show_rolling_mean">4 हफ़्ते का औसत दिखाएं</string>
+    <string name="chart_compare_year">एक साल पहले से तुलना करें</string>
+    <string name="legend_previous_year">एक साल पहले</string>
+    <string name="chart_previous_year_reading">एक साल पहले के वही दिन पढ़े जा रहे हैं…</string>
+    <string name="chart_previous_year_total">एक साल पहले: %1$s</string>
+    <string name="chart_previous_year_none">एक साल पहले के उन्हीं दिनों में कुछ दर्ज नहीं है।</string>
+    <string name="chart_previous_year_partial">उन दिनों में से केवल कुछ का डेटा है।</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">चुनें कि क्या दिखाना है</string>

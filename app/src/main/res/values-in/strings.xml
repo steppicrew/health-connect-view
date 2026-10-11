@@ -427,6 +427,12 @@
         <item quantity="other">Dari %1$d malam</item>
     </plurals>
     <string name="chart_show_rolling_mean">Tampilkan rata-rata 4 minggu</string>
+    <string name="chart_compare_year">Bandingkan dengan setahun sebelumnya</string>
+    <string name="legend_previous_year">Setahun sebelumnya</string>
+    <string name="chart_previous_year_reading">Membaca hari yang sama setahun sebelumnya…</string>
+    <string name="chart_previous_year_total">Setahun sebelumnya: %1$s</string>
+    <string name="chart_previous_year_none">Tidak ada yang tercatat pada hari yang sama setahun sebelumnya.</string>
+    <string name="chart_previous_year_partial">Hanya sebagian dari hari-hari itu yang memiliki data.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">Pilih yang ditampilkan</string>

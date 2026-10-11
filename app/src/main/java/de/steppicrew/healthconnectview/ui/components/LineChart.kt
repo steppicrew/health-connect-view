@@ -685,8 +685,10 @@ fun LineChart(
                     val own = (value - scale.min) / ((scale.max - scale.min).takeIf { it > 0.0 } ?: 1.0)
                     yFor(minValue + own * span)
                 }
-                val xs = line.points.mapNotNull { xForTime(it.time.toEpochMilli()) }
-                val slot = xs.zipWithNext { a, b -> b - a }.filter { it > 0f }.minOrNull() ?: (size.width / BAR_LONE_DIVISOR)
+                // A lone bar takes the slot of the chart's own bars, or it filled a tenth of the plot.
+                fun slotOf(times: List<Point>) = times.mapNotNull { xForTime(it.time.toEpochMilli()) }
+                    .zipWithNext { a, b -> b - a }.filter { it > 0f }.minOrNull()
+                val slot = slotOf(line.points) ?: slotOf(points) ?: (size.width / BAR_LONE_DIVISOR)
                 val width = (slot * PAIRED_BAR_FRACTION).coerceAtLeast(1f)
                 val floor = yOf(0.0).coerceAtMost(size.height)
                 line.points.forEach { point ->

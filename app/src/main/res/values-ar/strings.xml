@@ -482,6 +482,12 @@
         <item quantity="other">من %1$d ليلة</item>
     </plurals>
     <string name="chart_show_rolling_mean">إظهار متوسط 4 أسابيع</string>
+    <string name="chart_compare_year">المقارنة مع قبل عام</string>
+    <string name="legend_previous_year">قبل عام</string>
+    <string name="chart_previous_year_reading">جارٍ قراءة الأيام نفسها قبل عام…</string>
+    <string name="chart_previous_year_total">قبل عام: %1$s</string>
+    <string name="chart_previous_year_none">لم يُسجَّل شيء في الأيام نفسها قبل عام.</string>
+    <string name="chart_previous_year_partial">تتوفر بيانات لجزء من تلك الأيام فقط.</string>
 
     <!-- Permissions screen -->
     <string name="permissions_title">اختيار ما يُعرض</string>
