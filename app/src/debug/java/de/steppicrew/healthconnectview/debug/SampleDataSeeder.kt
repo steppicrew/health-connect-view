@@ -158,7 +158,9 @@ private val SEEDED_WORKOUTS = listOf(
                             startZoneOffset = offset,
                             endTime = start.plus(5, ChronoUnit.MINUTES),
                             endZoneOffset = offset,
-                            count = (5 + random.nextInt(150)).toLong(),
+                            // The last week busier than the month, so the insights tile in
+                            // the Pro screenshot has a week off its usual level to colour.
+                            count = ((5 + random.nextInt(150)) * (if (dayOffset < 7) BUSY_WEEK else 1.0)).toLong(),
                             metadata = metadata(),
                         ),
                     )
@@ -559,6 +561,7 @@ private val SEEDED_WORKOUTS = listOf(
     private const val ACTIVITY_RECORDS_PER_DAY = 30
 
     private const val STEP_RECORDS_PER_DAY = 120
+    private const val BUSY_WEEK = 1.3
 
     /** Asleep, one heart-rate reading in this many moves. */
     private const val SLEEP_HOLD = 4

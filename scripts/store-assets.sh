@@ -91,10 +91,12 @@ label_pro() {
 # navigation drifts out of date the moment the UI changes.
 #
 # {name}:{route}:{layout}; an empty route means the dashboard. A layout, where given, is set
-# first by the debug seeder (`default` or `showcase`, see SeedActivity) and stays for the shots
-# after it: the second shows what Pro adds -- large, coloured tiles with their curves -- which
-# nobody can arrange by hand on a scripted emulator. Eight at most, Play's limit, and numbered
-# in order: release.sh uploads them sorted by name.
+# first by the debug seeder (`default`, `showcase` or `insights`, see SeedActivity) and stays
+# for the shots after it: the second shows what Pro adds -- large, coloured tiles with their
+# curves -- and the seventh what Pro tells you -- the week's changes on their strips and a year
+# with its weekday rhythm -- which nobody can arrange by hand on a scripted emulator. Blood
+# pressure gave up its place for it, the owner's choice, 11.10.2026. Eight at most, Play's
+# limit, and numbered in order: release.sh uploads them sorted by name.
 SHOT_ROUTES=(
     "1-dashboard::default"
     "2-dashboard-pro::showcase"
@@ -102,7 +104,7 @@ SHOT_ROUTES=(
     "4-activities:tile/ExerciseSessionRecord?date=DATE:"
     "5-sleep:tile/SleepSessionRecord?date=DATE:"
     "6-heart-rate:tile/HeartRateRecord?date=DATE:"
-    "7-blood-pressure:tile/BloodPressureRecord?date=DATE:"
+    "7-insights-pro::insights"
     "8-catalog:catalog:"
 )
 
