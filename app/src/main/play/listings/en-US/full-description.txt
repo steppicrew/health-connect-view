@@ -4,23 +4,23 @@ WHAT IT DOES
 
 • A dashboard of the figures you care about, one day at a time
 • Browse every data type Health Connect supports, from steps and sleep to blood pressure and VO₂ max
-• Individual records with exact timestamps, values, units and the app that wrote them
+• Every record with its exact time, value and the app that wrote it
 • Chart trends by day, week, four weeks or year
-• Sleep and workouts shaded behind the day's charts, so a peak or a trough has an explanation
+• Sleep and workouts shaded behind the day's charts, so a peak has an explanation
 • Each workout with its heart rate, speed and height in one chart, breaks found and left out, and its route if you allow it
 • Sleep stages for every night your watch records them, beside the night's heart rate, breath rate, SpO₂ and HRV
-• A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature — only what was recorded, nothing predicted
+• A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature, also as a calendar and a tile — only what was recorded, nothing predicted
 • Trend arrows on the dashboard, comparing the last week with your 30-day average
 • Streaks: how many days in a row you met your goal or were active, and the year's longest
 • How each reading was taken: blood glucose fasting or after a meal, blood pressure seated or at the wrist, and with which device
-• Arrange tiles by dragging, metric or imperial units, blood glucose in mmol/L or mg/dL
+• Arrange tiles by dragging, metric or imperial units, blood glucose in mmol/L or mg/dL, charts described for screen readers
 • Back up your dashboard and settings to a file and restore them on a new phone
 
 YOUR DATA STAYS ON YOUR PHONE
 
 This app has no internet permission. Not "we promise not to upload anything" — Android itself prevents it from making any network connection at all. There is no account, no server, no analytics, no advertising and no tracking.
 
-It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk unless you export it yourself, so uninstalling removes everything. Routes are read only if you allow it, and drawn without a map — a map would need the internet.
+It is read-only: it can display your health data but cannot change or delete it. Nothing is written to disk unless you export it yourself, so uninstalling removes everything. Routes are read only if you allow it, and drawn without a map.
 
 YOU CHOOSE WHAT TO SHARE
 
@@ -36,16 +36,18 @@ PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 
 Everything above is free and stays free. Pro is a single in-app purchase that unlocks:
 
-• CSV export — any data type as a spreadsheet: every record with its source app, or Health Connect's deduplicated daily totals. The app keeps no copy.
-• PDF reports for your doctor — blood pressure with morning and evening averages, every reading graded; weight by week; resting heart rate against its four-week mean; blood glucose by meal and target range. Any period, saved or printed. Or all four in one report.
-• Larger tiles — two cells wide or two by two, showing the week, four weeks or the year as a number, a chart or both, or last night's stages and your latest workouts with a curve of your choice.
-• The year as a calendar, one shade per day — under any year chart and as a tile.
-• Several tiles for the same figure, and a colour of your own for each tile.
-• A tile with what changed this week, weight with its body composition, and two figures compared on one time axis.
-• Workout routes as GPX files, to open in a map or training app.
+• CSV export — any data type as a spreadsheet: every record with its source app, or deduplicated daily totals. The app keeps no copy.
+• PDF reports — any figure's daily totals for any period, and for your doctor: blood pressure graded with morning and evening averages, weight, resting heart rate and blood glucose, alone or all in one.
+• Larger tiles — the week, four weeks or the year as a number, a chart or both, last night's stages, or your latest workouts with a curve of your choice.
+• The year as a calendar, one shade per day, with the average of each weekday.
+• What changed this week, on coloured strips that show how unusual it was.
+• This month beside the same month last year, on one chart.
+• Sleep rhythm: how regular your bedtimes and wake times are.
+• One kind of workout across the year: speed or pace and heart rate.
+• Several tiles per figure, tile colours, body composition, two figures on one time axis, routes as GPX files.
 • Every future Pro feature, with no further charge.
 
-Purchases go through Google Play and follow your Google account to a new phone.
+Purchases follow your Google account to a new phone.
 
 OPEN SOURCE
 
