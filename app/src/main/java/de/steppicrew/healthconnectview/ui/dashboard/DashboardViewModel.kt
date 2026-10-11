@@ -406,6 +406,14 @@ class DashboardViewModel(
         reload()
     }
 
+    /** Sets the insights tile's chosen types, in order; empty shows the largest changes. */
+    fun setInsightPicks(id: String, picks: List<String>) {
+        config = config.withPicks(id, picks)
+        val tile = config.tiles.firstOrNull { it.id == id }
+        _state.update { state -> state.copy(insights = state.insights?.let { shown -> tile?.let { shown.copy(tile = it) } ?: shown }) }
+        viewModelScope.launch { store.save(config) }
+    }
+
     /** Sets a large tile's window and face, and persists them. */
     fun setOptions(
         id: String,

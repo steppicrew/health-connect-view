@@ -825,7 +825,6 @@
     <string name="insights_open_body">Gli ultimi 7 giorni di ogni tipo rispetto alla sua media di 30 giorni</string>
     <string name="insight_above">Ultimi 7 giorni: %1$s sopra la media di 30 giorni</string>
     <string name="insight_below">Ultimi 7 giorni: %1$s sotto la media di 30 giorni</string>
-    <string name="insights_level">In linea con la media di 30 giorni: %1$s</string>
     <string name="insights_none">Niente spicca: ogni tipo con dati sufficienti è in linea con la sua media di 30 giorni.</string>
     <string name="insights_empty">Dati ancora insufficienti: un cambiamento richiede registrazioni in almeno 15 degli ultimi 30 giorni.</string>
     <string name="insights_rule">Confronta i 7 giorni prima di oggi con i 30 giorni precedenti. Ordinato in base a quanto si è mosso ogni tipo rispetto alla sua normale variazione da un giorno all\'altro. Un cambiamento è una posizione, non un giudizio: se salire sia un bene dipende dal tipo e da te.</string>
@@ -834,6 +833,9 @@
     <string name="insights_tile_caption">Ultimi 7 giorni contro 30</string>
     <string name="insights_tile_level">Tutto al solito livello</string>
     <string name="insights_tile_few">Ancora pochi dati</string>
+    <string name="insights_pick_title">Su questo riquadro</string>
+    <string name="insights_pick_auto">Prima le variazioni maggiori</string>
+    <string name="insights_pick_own">La mia scelta, in quest’ordine</string>
     <plurals name="insights_tile_more">
         <item quantity="one">+%1$d altro</item>
         <item quantity="many">+%1$d altri</item>

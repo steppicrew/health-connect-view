@@ -775,7 +775,6 @@
     <string name="insights_open_body">每種類型最近 7 天與其 30 天平均值的比較</string>
     <string name="insight_above">最近 7 天比 30 天平均值高 %1$s</string>
     <string name="insight_below">最近 7 天比 30 天平均值低 %1$s</string>
-    <string name="insights_level">與 30 天平均值持平：%1$s</string>
     <string name="insights_none">沒有突出的變化：每種資料充足的類型都與其 30 天平均值持平。</string>
     <string name="insights_empty">資料還不夠：顯示變化需要最近 30 天中至少 15 天有記錄。</string>
     <string name="insights_rule">將今天之前的 7 天與再之前的 30 天比較。依每種類型相對於其平常的日間波動變化了多少排序。變化是一種位置，而不是評判：上升是否是好事，取決於類型和您自己。</string>
@@ -784,6 +783,9 @@
     <string name="insights_tile_caption">最近 7 天對比 30 天</string>
     <string name="insights_tile_level">一切處於平常水準</string>
     <string name="insights_tile_few">資料還不夠</string>
+    <string name="insights_pick_title">在此資訊卡上顯示</string>
+    <string name="insights_pick_auto">變化最大的優先</string>
+    <string name="insights_pick_own">自選，依此順序</string>
     <plurals name="insights_tile_more">
         <item quantity="other">另有 %1$d 項</item>
     </plurals>

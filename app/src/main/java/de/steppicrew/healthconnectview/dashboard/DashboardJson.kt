@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.dashboard
 
+import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.ValueZones
 import org.json.JSONArray
@@ -35,6 +36,7 @@ internal object DashboardJson {
                     tile.companion?.let { put(FIELD_COMPANION, it) }
                     if (tile.calendarYear) put(FIELD_CALENDAR_YEAR, true)
                     if (tile.mean) put(FIELD_MEAN, true)
+                    if (tile.picks.isNotEmpty()) put(FIELD_PICKS, JSONArray().apply { tile.picks.forEach { put(it) } })
                 },
             )
         }
@@ -72,6 +74,9 @@ internal object DashboardJson {
                 companion = item.optString(FIELD_COMPANION).takeIf { it in companionsOf(typeName) },
                 calendarYear = item.optBoolean(FIELD_CALENDAR_YEAR, false),
                 mean = item.optBoolean(FIELD_MEAN, false),
+                picks = item.optJSONArray(FIELD_PICKS)?.let { stored ->
+                    (0 until stored.length()).mapNotNull { stored.optString(it).takeIf { name -> RecordRegistry.specOrNull(name) != null } }.distinct()
+                }.orEmpty(),
             )
         }
         return DashboardConfig(tiles)
@@ -89,4 +94,5 @@ internal object DashboardJson {
     private const val FIELD_COMPANION = "with"
     private const val FIELD_CALENDAR_YEAR = "calendarYear"
     private const val FIELD_MEAN = "mean"
+    private const val FIELD_PICKS = "picks"
 }

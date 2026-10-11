@@ -841,7 +841,12 @@ doctor report and the year heatmap; the rest unranked.
     the list is ranked by. A level week on a wide tile still shows the types nearest their
     edge under "Alles auf üblichem Niveau". The full list's cards carry the same strip, and
     the list explains it once beneath the rule. Sparklines left for later: the trend keeps no
-    daily values.
+    daily values. **Then** (the owner, 11.10.2026): the tile holds as many rows as its height
+    fits at the reader's font size -- measured, the last row giving way to "+N weitere" -- so a
+    2x1 shows four where it showed three; the full list shows every type the same way, the
+    level ones as cards with their strips too; and the tile's options choose between the
+    largest changes and the reader's own types in their own order (`Tile.picks`), shown whether
+    they moved or not. A chosen type without a week to compare is left off the tile.
 91. [x] **Heart rate tile with its mean** -- the owner, 11.10.2026: an optional dashed line at
     the window's mean, as the detail chart's four-week mean is optional. Built: `Tile.mean`, a
     chip in the tile's options for curve types (heart rate), drawn as the chart's dashed

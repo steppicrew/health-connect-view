@@ -278,6 +278,17 @@ class DashboardConfigTest {
     }
 
     @Test
+    fun `the insights tile's chosen types keep their order, and unknown ones are dropped`() {
+        val stored = DashboardConfig(listOf(Tile(Tile.INSIGHTS, width = 2, picks = listOf("WeightRecord", "StepsRecord"))))
+        assertEquals(stored, DashboardJson.decode(DashboardJson.encode(stored)).sanitised())
+        val edited = DashboardJson.decode(
+            org.json.JSONArray("""[{"type": "Insights", "picks": ["StepsRecord", "NoSuchRecord", "StepsRecord"]}]"""),
+        )
+        assertEquals(listOf("StepsRecord"), edited.tiles.single().picks)
+        assertEquals(emptyList<String>(), stored.withPicks(Tile.INSIGHTS, emptyList()).tiles.single().picks)
+    }
+
+    @Test
     fun `a new tile goes in front of the one named, or last`() {
         val tiles = DashboardConfig(listOf(Tile("StepsRecord"), Tile("WeightRecord"), Tile("HeartRateRecord")))
         assertEquals(

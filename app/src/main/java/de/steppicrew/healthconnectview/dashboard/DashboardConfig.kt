@@ -77,6 +77,12 @@ data class Tile(
      * the face, like [span].
      */
     val mean: Boolean = false,
+    /**
+     * The insights tile's own choice of types, by name, in the order shown; empty shows the
+     * week's largest changes first. Someone who follows three numbers keeps them in view
+     * whether they moved or not -- the owner's request, 11.10.2026.
+     */
+    val picks: List<String> = emptyList(),
 ) {
     val spec: RecordTypeSpec<*>? get() = RecordRegistry.specOrNull(typeName)
 
@@ -225,6 +231,11 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         tiles.map {
             if (it.id == id) it.copy(span = span, face = face, companion = companion, calendarYear = calendarYear, mean = mean) else it
         },
+    )
+
+    /** Sets the insights tile's chosen types, in order; empty goes back to the largest changes. */
+    fun withPicks(id: String, picks: List<String>): DashboardConfig = DashboardConfig(
+        tiles.map { if (it.id == id) it.copy(picks = picks) else it },
     )
 
     /** Sets one tile's colour. */

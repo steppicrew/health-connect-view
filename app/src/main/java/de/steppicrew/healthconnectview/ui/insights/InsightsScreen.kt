@@ -92,9 +92,6 @@ fun InsightsScreen(
                     )
                 }
             }
-            items(state.notable, key = { it.spec.type.simpleName.orEmpty() }) { insight ->
-                InsightCard(insight, onClick = { onOpenType(insight.spec.type.simpleName.orEmpty()) })
-            }
             if (!state.loading && state.notable.isEmpty()) {
                 item(key = "none") {
                     Text(
@@ -104,16 +101,10 @@ fun InsightsScreen(
                     )
                 }
             }
-            if (state.level.isNotEmpty()) {
-                item(key = "level") {
-                    val names = state.level.map { stringResource(it.spec.displayNameRes) }.sorted().joinToString(", ")
-                    Text(
-                        text = stringResource(R.string.insights_level, names),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 16.dp),
-                    )
-                }
+            // Every type the same way, the level ones too, each on its strip: the owner's
+            // request, 11.10.2026. A level type is still nearer one edge than the other.
+            items(state.ranked, key = { it.spec.type.simpleName.orEmpty() }) { insight ->
+                InsightCard(insight, onClick = { onOpenType(insight.spec.type.simpleName.orEmpty()) })
             }
             item(key = "rule") {
                 Text(
@@ -154,10 +145,11 @@ private fun InsightCard(insight: Insight, onClick: () -> Unit) {
             Column(Modifier.padding(top = firstLineTextInset(titleStyle, ICON_SIZE.dp))) {
                 Text(stringResource(spec.displayNameRes), style = titleStyle)
                 Text(
-                    text = stringResource(
-                        if (trend.direction == Trend.UP) R.string.insight_above else R.string.insight_below,
-                        amount,
-                    ),
+                    text = when (trend.direction) {
+                        Trend.UP -> stringResource(R.string.insight_above, amount)
+                        Trend.DOWN -> stringResource(R.string.insight_below, amount)
+                        Trend.FLAT -> stringResource(R.string.trend_flat)
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
