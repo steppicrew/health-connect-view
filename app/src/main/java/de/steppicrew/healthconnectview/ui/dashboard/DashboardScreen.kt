@@ -1539,12 +1539,23 @@ private fun SessionCount(
 
         // A night is asked "how long", never "how many": a large "1" above 6h 13m answered the
         // question nobody had. Workouts keep their count, which is the figure they are asked by.
+        // Across days a night's mean, said so, and no stages: one night's beneath a mean would
+        // read as the window's.
+        val window = data.shownSpan != Span.DAY
         if (sleep) {
             Text(
-                text = Formatting.duration(data.sessionDuration),
+                text = Formatting.duration(if (window) data.nightlyDuration else data.sessionDuration),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            if (window) {
+                Text(
+                    text = stringResource(R.string.span_per_night),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                return@Column
+            }
         } else {
             Text(
                 text = stringResource(R.string.sessions_count, data.sessions.size),
