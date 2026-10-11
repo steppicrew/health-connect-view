@@ -4,48 +4,50 @@ WAS SIE KANN
 
 • Ein Dashboard mit den Werten, die Sie interessieren, Tag für Tag
 • Alle Datentypen von Health Connect durchsuchen, von Schritten und Schlaf bis Blutdruck und VO₂max
-• Einzelne Datensätze mit genauen Zeitstempeln, Werten, Einheiten und der schreibenden App
+• Jeder Datensatz mit genauer Zeit, Wert und schreibender App
 • Trends nach Tag, Woche, vier Wochen oder Jahr als Diagramm
-• Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze oder ein Tief eine Erklärung hat
-• Jedes Training mit Herzfrequenz, Geschwindigkeit und Höhe in einem Diagramm, Pausen erkannt und herausgerechnet, und seine Route, wenn Sie sie freigeben
-• Schlafphasen für jede Nacht, in der Ihre Uhr sie erfasst, neben Herzfrequenz, Atemfrequenz, SpO₂ und HRV der Nacht
-• Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, mit Blutung, Ovulationstests und Temperatur — nur was erfasst wurde, keine Vorhersagen
+• Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze eine Erklärung hat
+• Jedes Training mit Herzfrequenz, Geschwindigkeit und Höhe in einem Diagramm, ohne Pausen, und seine Route, wenn Sie sie freigeben
+• Schlafphasen jeder Nacht, in der Ihre Uhr sie erfasst, neben Herzfrequenz, Atemfrequenz, SpO₂ und HRV der Nacht
+• Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, mit Blutung, Ovulationstests und Temperatur, auch als Kalender und Kachel — nur was erfasst wurde, keine Vorhersagen
 • Trendpfeile im Dashboard, die die letzte Woche mit Ihrem 30-Tage-Durchschnitt vergleichen
-• Serien: an wie vielen Tagen hintereinander Sie Ihr Ziel erreicht haben oder aktiv waren, und die längste des Jahres
-• Zu jeder Messung, wie sie entstand: Blutzucker nüchtern oder nach dem Essen, Blutdruck im Sitzen oder am Handgelenk, und mit welchem Gerät
-• Kacheln per Ziehen anordnen, Einheiten metrisch oder imperial, Blutzucker in mmol/L oder mg/dL
+• Serien: wie viele Tage in Folge Sie Ihr Ziel erreicht haben oder aktiv waren, und die längste des Jahres
+• Wie jede Messung entstand: Blutzucker nüchtern oder nach dem Essen, Blutdruck im Sitzen oder am Handgelenk, mit welchem Gerät
+• Kacheln per Ziehen anordnen, Einheiten metrisch oder imperial, Blutzucker in mmol/L oder mg/dL, Diagramme für Screenreader beschrieben
 • Dashboard und Einstellungen als Datei sichern und auf einem neuen Handy wiederherstellen
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
 Diese App hat keine Internet-Berechtigung. Android selbst verhindert jede Netzwerkverbindung. Es gibt kein Konto, keinen Server, keine Analyse, keine Werbung und kein Tracking.
 
-Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Nichts wird auf den Datenträger geschrieben, außer Sie exportieren es selbst. Routen werden nur gelesen, wenn Sie sie freigeben, und ohne Karte gezeichnet — für eine Karte müsste die App ins Internet.
+Sie hat ausschließlich Lesezugriff: Sie kann Ihre Gesundheitsdaten anzeigen, aber weder ändern noch löschen. Gespeichert wird nur, was Sie selbst exportieren. Routen werden nur gelesen, wenn Sie sie freigeben, und ohne Karte gezeichnet.
 
 SIE ENTSCHEIDEN, WAS SIE TEILEN
 
-Berechtigungen werden pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten; ändern können Sie das jederzeit in Health Connect.
+Berechtigungen werden pro Datentyp angefragt, nichts ist vorausgewählt. Geben Sie nur frei, was Sie sehen möchten, und ändern Sie es jederzeit in Health Connect.
 
 KORREKTE SUMMEN
 
 Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte —, überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, damit nichts doppelt zählt.
 
-Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Wo diese App Statistiken zu einer Sitzung zeigt, sagt sie klar, dass sie über die Zeit zugeordnet sind.
+Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Diese App ordnet sie über die Zeit zu und sagt das.
 
 PRO — EINMALKAUF, KEIN ABO
 
-Alles oben ist kostenlos und bleibt es. Pro ist ein einmaliger In-App-Kauf und schaltet frei:
+Alles oben ist kostenlos und bleibt es. Pro schaltet mit einem einmaligen Kauf frei:
 
 • CSV-Export — jeden Datentyp als Tabelle: alle Datensätze mit der schreibenden App oder die entdoppelten Tagessummen. Die App behält keine Kopie.
-• PDF-Berichte für Ihre Ärztin oder Ihren Arzt — Blutdruck morgens und abends, jede Messung eingestuft; Gewicht, Ruhepuls und Blutzucker. Zeitraum frei wählbar. Oder alle vier in einem Bericht.
-• Größere Kacheln — Woche, vier Wochen oder Jahr als Zahl, Diagramm oder beides, oder die Schlafphasen der letzten Nacht und Ihre letzten Trainings mit einer Kurve Ihrer Wahl.
-• Das Jahr als Kalender, eine Farbstufe pro Tag — unter jedem Jahresdiagramm und als Kachel.
-• Mehrere Kacheln für denselben Wert und eine eigene Farbe für jede Kachel.
-• Eine Kachel mit den Veränderungen dieser Woche, Gewicht mit Körperzusammensetzung und zwei Werte im Vergleich auf einer Zeitachse.
-• Trainingsrouten als GPX-Datei.
+• PDF-Berichte — die Tageswerte jedes Werts für jeden Zeitraum, und für Ihre Ärztin oder Ihren Arzt: Blutdruck morgens und abends, jede Messung eingestuft; Gewicht, Ruhepuls und Blutzucker, einzeln oder alle in einem.
+• Größere Kacheln — Woche, vier Wochen oder Jahr als Zahl, Diagramm oder beides, die Schlafphasen der letzten Nacht oder Ihre letzten Trainings mit einer Kurve Ihrer Wahl.
+• Das Jahr als Kalender, eine Farbstufe pro Tag, mit dem Mittel jedes Wochentags.
+• Die Veränderungen dieser Woche auf farbigen Streifen: wie ungewöhnlich sie war.
+• Dieser Monat neben demselben Monat des Vorjahres, in einem Diagramm.
+• Schlafrhythmus: wie regelmäßig Sie zu Bett gehen und aufstehen.
+• Eine Trainingsart über das Jahr: Geschwindigkeit oder Tempo und Herzfrequenz.
+• Mehrere Kacheln pro Wert, Kachelfarben, Körperzusammensetzung, zwei Werte auf einer Zeitachse, Routen als GPX-Datei.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
 
-Der Kauf läuft über Google Play und zieht mit Ihrem Konto auf ein neues Handy um.
+Der Kauf zieht mit Ihrem Google-Konto auf ein neues Handy um.
 
 OPEN SOURCE
 
