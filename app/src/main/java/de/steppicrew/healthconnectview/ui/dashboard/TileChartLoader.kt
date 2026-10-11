@@ -637,17 +637,19 @@ internal class TileChartLoader(
                     when {
                         dailyReadings != null -> dailyReadings.dailyMeans()
                         // Sleep's bars come from its sessions, so its weeks before the window do
-                        // too, credited like the bars to the morning each night ended on.
+                        // too, credited like the bars to the morning each night ended on. Night
+                        // by night inside the window as well: a year's bars are weekly means, and
+                        // one value a week left every day past the first four weeks too few.
                         sessionKind == Session.Kind.SLEEP -> {
                             val before = repository.sessionsIn(
                                 lookback.atStartOfDay(zone).toInstant(),
                                 first.atStartOfDay(zone).toInstant(),
                                 setOf(Session.Kind.SLEEP),
                             )
+                                .filter { it.end.atZone(zone).toLocalDate().isBefore(first) }
+                            (before + sessions)
                                 .groupBy { it.end.atZone(zone).toLocalDate() }
-                                .filterKeys { it.isBefore(first) }
                                 .mapValues { (_, nights) -> numericAggregate(nights.totalDuration()) ?: 0.0 }
-                            before + perDayPoints.associate { it.time.atZone(zone).toLocalDate() to it.value }
                         }
                         metric != null -> repository.bucketedTotals(
                             metric,
