@@ -68,6 +68,7 @@ fun WorkoutsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val family by viewModel.family.collectAsStateWithLifecycle()
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
+    val trend by viewModel.trend.collectAsStateWithLifecycle()
     OnResume { viewModel.onResume() }
 
     Scaffold(
@@ -111,6 +112,7 @@ fun WorkoutsScreen(
             is UiState.Data -> WorkoutList(
                 sessions = current.value,
                 family = family,
+                trend = trend,
                 historyGranted = historyGranted,
                 onSelect = viewModel::select,
                 onOpenSession = onOpenSession,
@@ -125,6 +127,7 @@ fun WorkoutsScreen(
 private fun WorkoutList(
     sessions: List<Session>,
     family: WorkoutFamily?,
+    trend: WorkoutTrend?,
     historyGranted: Boolean,
     onSelect: (WorkoutFamily?) -> Unit,
     onOpenSession: (Session) -> Unit,
@@ -169,6 +172,13 @@ private fun WorkoutList(
         }
 
         LazyColumn(Modifier.fillMaxSize()) {
+            // A kind's course above its workouts; for all of them together there is none.
+            if (trend != null && trend.family == shownFamily) {
+                item(key = "trend") {
+                    WorkoutTrendSection(trend)
+                    HorizontalDivider()
+                }
+            }
             items(shown, key = { it.recordId.ifEmpty { it.start.toString() } }) { session ->
                 WorkoutRow(session, onClick = { onOpenSession(session) })
                 HorizontalDivider()

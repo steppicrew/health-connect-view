@@ -559,6 +559,17 @@
     <string name="workouts_by_kind">Treningi według rodzaju</string>
     <string name="workouts_none">Brak treningów w ostatnich 12 miesiącach.</string>
     <string name="workouts_span_year">Treningi z ostatnich 12 miesięcy.</string>
+    <string name="workouts_trend_title">Przebieg w ciągu 12 miesięcy</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d trening: %2$s</item>
+        <item quantity="few">%1$d treningi: %2$s</item>
+        <item quantity="many">%1$d treningów: %2$s</item>
+        <item quantity="other">%1$d treningu: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Średnia prędkość (%1$s)</string>
+    <string name="workouts_trend_pace">Średnie tempo (%1$s)</string>
+    <string name="workouts_trend_heart">Średnie tętno (%1$s)</string>
+    <string name="workouts_trend_note">Jedna kropka na trening. Prędkość z całego czasu, z przerwami. Dystans i tętno to wartości zapisane podczas treningu, połączone ze wszystkich aplikacji.</string>
     <string name="session_overlap_note">To pomiary wykonane podczas tej sesji. Health Connect nie łączy pomiarów z sesją, więc są dopasowywane według czasu.</string>
     <string name="session_statistics">Co zapisano podczas tej sesji</string>
     <string name="session_details">Szczegóły</string>

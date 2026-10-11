@@ -533,6 +533,15 @@
     <string name="workouts_by_kind">प्रकार के अनुसार वर्कआउट</string>
     <string name="workouts_none">पिछले 12 महीनों में कोई वर्कआउट नहीं।</string>
     <string name="workouts_span_year">पिछले 12 महीनों के वर्कआउट।</string>
+    <string name="workouts_trend_title">12 महीनों का क्रम</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d वर्कआउट: %2$s</item>
+        <item quantity="other">%1$d वर्कआउट: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">औसत गति (%1$s)</string>
+    <string name="workouts_trend_pace">औसत पेस (%1$s)</string>
+    <string name="workouts_trend_heart">औसत हृदय गति (%1$s)</string>
+    <string name="workouts_trend_note">हर वर्कआउट का एक बिंदु। गति पूरे वर्कआउट पर, विराम सहित। दूरी और हृदय गति वर्कआउट के दौरान दर्ज, आपके ऐप्स से मिलाकर।</string>
     <string name="session_overlap_note">ये इस सेशन के दौरान ली गई रीडिंग हैं। Health Connect रीडिंग को किसी सेशन से नहीं जोड़ता, इसलिए इन्हें समय के हिसाब से मिलाया गया है।</string>
     <string name="session_statistics">इस सेशन के दौरान क्या रिकॉर्ड हुआ</string>
     <string name="session_details">विवरण</string>

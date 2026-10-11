@@ -520,6 +520,14 @@
     <string name="workouts_by_kind">依類型查看運動</string>
     <string name="workouts_none">過去 12 個月沒有運動記錄。</string>
     <string name="workouts_span_year">過去 12 個月的運動。</string>
+    <string name="workouts_trend_title">12 個月的變化</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="other">%1$d 次訓練：%2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">平均速度（%1$s）</string>
+    <string name="workouts_trend_pace">平均配速（%1$s）</string>
+    <string name="workouts_trend_heart">平均心率（%1$s）</string>
+    <string name="workouts_trend_note">每次訓練一個點。速度依整個訓練時長計算，包括暫停。距離和心率為訓練期間記錄的資料，彙整自您的各個應用程式。</string>
     <string name="session_overlap_note">這些是這次活動期間的測量值。Health Connect 不會將測量值與活動建立關聯，因此依時間比對。</string>
     <string name="session_statistics">這次活動期間記錄的內容</string>
     <string name="session_details">詳細資料</string>

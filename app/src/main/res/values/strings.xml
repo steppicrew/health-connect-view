@@ -565,6 +565,15 @@
     <string name="workouts_by_kind">Workouts by kind</string>
     <string name="workouts_none">No workouts in the last 12 months.</string>
     <string name="workouts_span_year">Workouts of the last 12 months.</string>
+    <string name="workouts_trend_title">Course over the 12 months</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d workout: %2$s</item>
+        <item quantity="other">%1$d workouts: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Avg. speed (%1$s)</string>
+    <string name="workouts_trend_pace">Avg. pace (%1$s)</string>
+    <string name="workouts_trend_heart">Avg. heart rate (%1$s)</string>
+    <string name="workouts_trend_note">One dot per workout. Speed over the whole workout, breaks included. Distance and heart rate are those recorded during the workout, combined across your apps.</string>
     <string name="session_overlap_note">These are the readings taken during this session. Health Connect does not tag readings with a session, so they are matched by time.</string>
     <string name="session_span" translatable="false">%1$s – %2$s</string>
     <string name="session_statistics">What was recorded during this session</string>

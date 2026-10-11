@@ -603,6 +603,9 @@ Before the next release after 1.4.1, from the owner, 11.10.2026:
   the owner agreeing, 11.10.2026: the insights tile in larger sizes with a coloured strip per
   type and a choice of types and order, and the dashed mean on a heart rate tile. Whether the
   shared date belongs in the Pro text or the free part depends on where it is offered.
+  Since then (11.10.2026): the PDF report for every type with daily totals (82) and a kind's
+  course over the year on the workouts screen (81), both Pro; the free part can name the cycle
+  tile (76), the cycle calendar (84) and charts read out to screen readers (80).
 - [x] **More Pro screenshots, to show what it is for** -- the owner, 11.10.2026: blood pressure
   gives up its place (`7-blood-pressure`) to `7-insights-pro`, a 2x1 insights tile filled with
   coloured strips above a 2x2 year of steps with its weekday bars (`SeedActivity -e dashboard
@@ -787,13 +790,18 @@ doctor report and the year heatmap; the rest unranked.
     üblich". Only numbers the screen shows: the trend where the screen has one (a day), no
     "steigend" made up for a window, and no range for blood pressure, whose points hold only
     the systolic value. A dashboard tile already reads its title and figure.
-81. [ ] **The same workout over time** (Pro) -- pace and heart rate for one activity type
+81. [x] **The same workout over time** (Pro) -- pace and heart rate for one activity type
     across weeks; writers disagree about activity types, so the grouping must say what it
     matched.
     The owner's pick, 11.10.2026: a section on the workouts screen under the kind chips -- with
     a kind chosen, two small charts over the window, one dot per workout: average speed (or
     pace) and average heart rate, captioned with what was matched ("34 Einheiten: Rad,
-    Heimtrainer").
+    Heimtrainer"). Built 11.10.2026, seen on the emulator for runs and rides: distance and mean heart
+    rate per workout from one aggregate request over its window, four at a time, read when a
+    kind is chosen and kept per kind. Speed is over the whole workout, breaks included -- the
+    moving time needs each workout's readings -- and the note says so; pace for running,
+    walking and hiking, faster up; heart rate for every kind. Dots alone, on a chart each.
+    Without Pro the section is a padlocked line that starts the purchase.
 82. [x] **Monthly summary PDF** (Pro) -- any metric for a month; overlaps with the CSV export.
     Built 11.10.2026 as the report of every type with daily totals, for any period the export
     dialog offers ("Letzter Monat" among them), seen in the emulator's print preview: "Schritte

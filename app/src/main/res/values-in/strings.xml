@@ -520,6 +520,14 @@
     <string name="workouts_by_kind">Latihan menurut jenis</string>
     <string name="workouts_none">Tidak ada latihan dalam 12 bulan terakhir.</string>
     <string name="workouts_span_year">Latihan dalam 12 bulan terakhir.</string>
+    <string name="workouts_trend_title">Perkembangan selama 12 bulan</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="other">%1$d latihan: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Kecepatan rata-rata (%1$s)</string>
+    <string name="workouts_trend_pace">Pace rata-rata (%1$s)</string>
+    <string name="workouts_trend_heart">Detak jantung rata-rata (%1$s)</string>
+    <string name="workouts_trend_note">Satu titik per latihan. Kecepatan selama seluruh latihan, termasuk jeda. Jarak dan detak jantung adalah yang tercatat selama latihan, digabung dari aplikasi Anda.</string>
     <string name="session_overlap_note">Ini adalah hasil ukur yang diambil selama sesi ini. Health Connect tidak mengaitkan hasil ukur dengan sesi, jadi hasil ukur dicocokkan berdasarkan waktu.</string>
     <string name="session_statistics">Yang dicatat selama sesi ini</string>
     <string name="session_details">Detail</string>

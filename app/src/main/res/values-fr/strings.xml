@@ -546,6 +546,16 @@
     <string name="workouts_by_kind">Entraînements par type</string>
     <string name="workouts_none">Aucun entraînement ces 12 derniers mois.</string>
     <string name="workouts_span_year">Entraînements des 12 derniers mois.</string>
+    <string name="workouts_trend_title">Évolution sur les 12 mois</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d séance : %2$s</item>
+        <item quantity="many">%1$d séances : %2$s</item>
+        <item quantity="other">%1$d séances : %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Vitesse moyenne (%1$s)</string>
+    <string name="workouts_trend_pace">Allure moyenne (%1$s)</string>
+    <string name="workouts_trend_heart">Fréquence cardiaque moyenne (%1$s)</string>
+    <string name="workouts_trend_note">Un point par séance. Vitesse sur toute la durée, pauses comprises. Distance et fréquence cardiaque sont celles enregistrées pendant la séance, regroupées à partir de vos applis.</string>
     <string name="session_overlap_note">Voici les mesures prises pendant cette séance. Santé Connect n’associe pas les mesures à une séance, elles sont donc rapprochées par l’heure.</string>
     <string name="session_statistics">Ce qui a été enregistré pendant cette séance</string>
     <string name="session_details">Détails</string>

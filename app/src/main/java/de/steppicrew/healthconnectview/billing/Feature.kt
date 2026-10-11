@@ -51,4 +51,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** A week, four weeks or a year set against the same window a year earlier, on one chart. */
     YEAR_COMPARE(isPremium = true),
+
+    /** One kind of workout's speed and heart rate across the year, a dot per workout. */
+    WORKOUT_TRENDS(isPremium = true),
 }

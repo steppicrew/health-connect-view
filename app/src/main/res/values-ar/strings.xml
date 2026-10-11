@@ -585,6 +585,19 @@
     <string name="workouts_by_kind">التمارين حسب النوع</string>
     <string name="workouts_none">لا توجد تمارين في آخر 12 شهرًا.</string>
     <string name="workouts_span_year">تمارين آخر 12 شهرًا.</string>
+    <string name="workouts_trend_title">المسار على مدى 12 شهرًا</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="zero">%1$d تمرين: %2$s</item>
+        <item quantity="one">تمرين واحد (%1$d): %2$s</item>
+        <item quantity="two">تمرينان (%1$d): %2$s</item>
+        <item quantity="few">%1$d تمارين: %2$s</item>
+        <item quantity="many">%1$d تمرينًا: %2$s</item>
+        <item quantity="other">%1$d تمرين: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">متوسط السرعة (%1$s)</string>
+    <string name="workouts_trend_pace">متوسط الوتيرة (%1$s)</string>
+    <string name="workouts_trend_heart">متوسط معدل ضربات القلب (%1$s)</string>
+    <string name="workouts_trend_note">نقطة لكل تمرين. السرعة على مدى التمرين كله، بما فيه فترات التوقف. المسافة ومعدل ضربات القلب هما المسجّلان أثناء التمرين، مجمّعين من تطبيقاتك.</string>
     <string name="session_overlap_note">هذه هي القراءات المأخوذة خلال هذه الجلسة. لا يربط Health Connect القراءات بجلسة، لذا تتم مطابقتها حسب الوقت.</string>
     <string name="session_statistics">ما سُجِّل خلال هذه الجلسة</string>
     <string name="session_details">التفاصيل</string>

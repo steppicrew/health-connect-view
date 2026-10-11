@@ -546,6 +546,16 @@
     <string name="workouts_by_kind">Treinos por tipo</string>
     <string name="workouts_none">Nenhum treino nos últimos 12 meses.</string>
     <string name="workouts_span_year">Treinos dos últimos 12 meses.</string>
+    <string name="workouts_trend_title">Evolução nos 12 meses</string>
+    <plurals name="workouts_trend_count">
+        <item quantity="one">%1$d treino: %2$s</item>
+        <item quantity="many">%1$d treinos: %2$s</item>
+        <item quantity="other">%1$d treinos: %2$s</item>
+    </plurals>
+    <string name="workouts_trend_speed">Velocidade média (%1$s)</string>
+    <string name="workouts_trend_pace">Ritmo médio (%1$s)</string>
+    <string name="workouts_trend_heart">Frequência cardíaca média (%1$s)</string>
+    <string name="workouts_trend_note">Um ponto por treino. Velocidade em toda a duração, pausas incluídas. Distância e frequência cardíaca são as registradas durante o treino, combinadas entre seus apps.</string>
     <string name="session_overlap_note">Estas são as medições feitas durante esta sessão. O Conexão Saúde não vincula medições a uma sessão, então elas são associadas pelo horário.</string>
     <string name="session_statistics">O que foi registrado durante esta sessão</string>
     <string name="session_details">Detalhes</string>
