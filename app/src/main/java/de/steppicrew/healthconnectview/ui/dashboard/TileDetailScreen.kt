@@ -1230,8 +1230,12 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
     }
     val zone = HealthRepository.DEFAULT_ZONE
     val title = stringResource(R.string.heatmap_title)
+    val explanation = rememberExplanation("heatmap")
     InfoGroup {
-        Text(title, style = MaterialTheme.typography.titleSmall)
+        Row(verticalAlignment = Alignment.Top) {
+            Text(title, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+        }
         YearHeatmapGrid(
             heatmap = heatmap,
             colorOf = colorOf,
@@ -1270,12 +1274,15 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
         } else {
             HeatmapLegend(heatmap, spec, Modifier.padding(top = 8.dp))
         }
-        Text(
-            text = stringResource(if (graded) R.string.heatmap_note_graded else R.string.heatmap_note),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 8.dp),
-        )
+        // How the grid is read, folded away once known; how to use it stays above.
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(if (graded) R.string.heatmap_note_graded else R.string.heatmap_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
     }
 }
 
