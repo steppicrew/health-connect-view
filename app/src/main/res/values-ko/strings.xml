@@ -724,7 +724,7 @@
     <string name="perm_info_resting_heart_rate">안정 시 심박수로, 하루에 값 하나입니다. 그날의 값과 추세, 선택적 4주 평균을 포함한 추이, 그리고 작성할 경우 PDF 보고서로 표시합니다.</string>
     <string name="perm_info_skin_temperature">피부 온도가 평소와 얼마나 다른지를 주로 밤에 웨어러블로 측정한 값입니다. 그 차이의 추이로 표시합니다.</string>
     <string name="perm_info_hydration">앱에 기록한 마신 양입니다. 일일 합계와 추이로 표시합니다.</string>
-    <string name="perm_info_nutrition">앱에 기록한 식사와 그 내용입니다. 현재는 에너지를 일일 합계와 추이로 표시합니다.</string>
+    <string name="perm_info_nutrition">앱에 기록한 식사와 그 내용입니다. 에너지를 일일 합계와 추이로 표시하고, 단백질, 탄수화물, 지방 등 기록된 영양소도 표시합니다.</string>
     <string name="perm_info_sleep">밤 수면: 언제 잤는지, 그리고 기기가 기록한다면 수면 단계. 단계를 포함한 각 밤, 선택적 4주 평균을 포함한 밤별 수면 시간의 추이, 그리고 심박 변이도 상태의 바탕이 되는 밤으로 표시합니다.</string>
     <string name="perm_info_cervical_mucus">주기 앱에 기록한 자궁경부 점액 관찰입니다. 주기 개요와 항목으로 표시합니다.</string>
     <string name="perm_info_intermenstrual_bleeding">주기 앱에 기록한 생리 사이의 소량 출혈입니다. 주기 개요와 항목으로 표시합니다.</string>
@@ -806,4 +806,19 @@
     <plurals name="insights_tile_more">
         <item quantity="other">외 %1$d개</item>
     </plurals>
+    <string name="field_meal">식사</string>
+    <string name="nutrients_title">영양소</string>
+    <string name="nutrient_fat">지방</string>
+    <string name="nutrient_saturated_fat">포화 지방</string>
+    <string name="nutrient_carbohydrate">탄수화물</string>
+    <string name="nutrient_sugar">당류</string>
+    <string name="nutrient_fiber">식이섬유</string>
+    <string name="nutrient_protein">단백질</string>
+    <string name="nutrient_sodium">나트륨</string>
+    <string name="nutrient_caffeine">카페인</string>
+    <string name="nutrient_per_day">하루 %1$s</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="other">%2$d일 동안 총 %1$s</item>
+    </plurals>
+    <string name="nutrients_note">헬스 커넥트의 합계이며 앱 간 중복을 제거했습니다. 평균은 해당 영양소가 기록된 날만 셉니다. 기록이 없는 날은 0으로 세지 않습니다.</string>
 </resources>

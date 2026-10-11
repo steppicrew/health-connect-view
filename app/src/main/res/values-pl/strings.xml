@@ -802,7 +802,7 @@
     <string name="perm_info_resting_heart_rate">Twoje tętno w spoczynku, jedna wartość dziennie. Pokazywane jako wartość dnia z trendem, w czasie z opcjonalną średnią 4-tygodniową i w raporcie PDF, jeśli go utworzysz.</string>
     <string name="perm_info_skin_temperature">O ile temperatura skóry różni się od zwykłej, mierzona przez urządzenie noszone, głównie w nocy. Pokazywana jako ta różnica w czasie.</string>
     <string name="perm_info_hydration">To, co wypiłeś, zapisane w aplikacji. Pokazywane jako suma dzienna i w czasie.</string>
-    <string name="perm_info_nutrition">Posiłki i ich skład, zapisane w aplikacji. Obecnie aplikacja pokazuje ich wartość energetyczną, jako sumę dzienną i w czasie.</string>
+    <string name="perm_info_nutrition">Posiłki i ich skład, zapisane w aplikacji. Aplikacja pokazuje ich wartość energetyczną, jako sumę dzienną i w czasie, a także białko, węglowodany, tłuszcz i pozostałe podane składniki.</string>
     <string name="perm_info_sleep">Twoje noce: kiedy spałeś i, jeśli urządzenie je zapisuje, fazy snu. Pokazywane jako każda noc z fazami, godziny snu na noc w czasie z opcjonalną średnią 4-tygodniową oraz jako noce, na których opiera się stan zmienności rytmu serca.</string>
     <string name="perm_info_cervical_mucus">Obserwacje śluzu szyjkowego, zapisane w aplikacji do śledzenia cyklu. Pokazywane w przeglądzie cykli i jako wpisy.</string>
     <string name="perm_info_intermenstrual_bleeding">Plamienia między miesiączkami, zapisane w aplikacji do śledzenia cyklu. Pokazywane w przeglądzie cykli i jako wpisy.</string>
@@ -887,4 +887,22 @@
         <item quantity="many">+%1$d kolejnych</item>
         <item quantity="other">+%1$d kolejnego</item>
     </plurals>
+    <string name="field_meal">Posiłek</string>
+    <string name="nutrients_title">Składniki odżywcze</string>
+    <string name="nutrient_fat">Tłuszcz</string>
+    <string name="nutrient_saturated_fat">Tłuszcze nasycone</string>
+    <string name="nutrient_carbohydrate">Węglowodany</string>
+    <string name="nutrient_sugar">Cukry</string>
+    <string name="nutrient_fiber">Błonnik</string>
+    <string name="nutrient_protein">Białko</string>
+    <string name="nutrient_sodium">Sód</string>
+    <string name="nutrient_caffeine">Kofeina</string>
+    <string name="nutrient_per_day">%1$s dziennie</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s łącznie, %2$d dzień</item>
+        <item quantity="few">%1$s łącznie, %2$d dni</item>
+        <item quantity="many">%1$s łącznie, %2$d dni</item>
+        <item quantity="other">%1$s łącznie, %2$d dnia</item>
+    </plurals>
+    <string name="nutrients_note">Sumy z Health Connect, bez duplikatów między aplikacjami. Średnia uwzględnia tylko dni, w których zapisano dany składnik; dzień bez wpisu nie liczy się jako zero.</string>
 </resources>

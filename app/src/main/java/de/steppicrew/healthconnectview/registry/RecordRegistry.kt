@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.registry
 
 import androidx.health.connect.client.permission.HealthPermission
+import de.steppicrew.healthconnectview.health.Nutrient
 import de.steppicrew.healthconnectview.health.RecordKind
 import de.steppicrew.healthconnectview.health.Session
 import androidx.health.connect.client.aggregate.AggregateMetric
@@ -610,6 +611,20 @@ object RecordRegistry {
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.energy?.inKilocalories ?: 0.0)) },
             summary = { it.energy?.let { e -> Formatting.number(e.inKilocalories) + " kcal" } ?: "—" },
+            // The meal's name as the app wrote it, then what it held, in label order. Units are
+            // symbols, the same in every language, as on the type's own total.
+            details = { meal ->
+                listOfNotNull(meal.name?.takeIf { it.isNotBlank() }?.let { Field(R.string.field_meal, it) }) +
+                    Nutrient.entries.mapNotNull { nutrient ->
+                        nutrient.ofRecord(meal)?.let { mass ->
+                            val value = nutrient.of(mass)
+                            Field(
+                                nutrient.labelRes,
+                                Formatting.number(value, if (value < 10) 1 else 0) + if (nutrient.milligrams) " mg" else " g",
+                            )
+                        }
+                    }
+            },
             aggregate = NutritionRecord.ENERGY_TOTAL,
         ),
         RecordTypeSpec(

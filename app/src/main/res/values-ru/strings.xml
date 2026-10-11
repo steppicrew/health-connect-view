@@ -802,7 +802,7 @@
     <string name="perm_info_resting_heart_rate">Ваш пульс в покое, одно значение в день. Показывается как значение дня с тенденцией, в динамике с необязательным средним за 4 недели и в отчёте PDF, если вы его создадите.</string>
     <string name="perm_info_skin_temperature">Насколько температура кожи отличается от обычной; измеряется носимым устройством, в основном ночью. Показывается как это отклонение в динамике.</string>
     <string name="perm_info_hydration">Выпитое, как записано в приложении. Показывается как итог за день и в динамике.</string>
-    <string name="perm_info_nutrition">Приёмы пищи и их состав, как записано в приложении. Сейчас приложение показывает их энергетическую ценность, как итог за день и в динамике.</string>
+    <string name="perm_info_nutrition">Приёмы пищи и их состав, как записано в приложении. Приложение показывает их энергетическую ценность, как итог за день и в динамике, а также белки, углеводы, жиры и другие указанные вещества.</string>
     <string name="perm_info_sleep">Ваши ночи: когда вы спали и, если устройство их записывает, фазы сна. Показываются как каждая ночь с фазами, часы сна за ночь в динамике с необязательным средним за 4 недели и как ночи, на которых основан статус вариабельности сердечного ритма.</string>
     <string name="perm_info_cervical_mucus">Наблюдения цервикальной слизи, записанные в приложении для отслеживания цикла. Показываются в обзоре циклов и как записи.</string>
     <string name="perm_info_intermenstrual_bleeding">Мажущие выделения между менструациями, записанные в приложении для отслеживания цикла. Показываются в обзоре циклов и как записи.</string>
@@ -887,4 +887,22 @@
         <item quantity="many">+%1$d ещё</item>
         <item quantity="other">+%1$d ещё</item>
     </plurals>
+    <string name="field_meal">Приём пищи</string>
+    <string name="nutrients_title">Нутриенты</string>
+    <string name="nutrient_fat">Жиры</string>
+    <string name="nutrient_saturated_fat">Насыщенные жиры</string>
+    <string name="nutrient_carbohydrate">Углеводы</string>
+    <string name="nutrient_sugar">Сахар</string>
+    <string name="nutrient_fiber">Клетчатка</string>
+    <string name="nutrient_protein">Белки</string>
+    <string name="nutrient_sodium">Натрий</string>
+    <string name="nutrient_caffeine">Кофеин</string>
+    <string name="nutrient_per_day">%1$s в день</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">всего %1$s за %2$d день</item>
+        <item quantity="few">всего %1$s за %2$d дня</item>
+        <item quantity="many">всего %1$s за %2$d дней</item>
+        <item quantity="other">всего %1$s за %2$d дня</item>
+    </plurals>
+    <string name="nutrients_note">Суммы из Health Connect без дубликатов между приложениями. Среднее учитывает только дни, когда вещество было записано; день без записи не считается нулём.</string>
 </resources>

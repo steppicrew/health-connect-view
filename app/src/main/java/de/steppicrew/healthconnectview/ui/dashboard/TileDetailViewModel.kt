@@ -53,10 +53,14 @@ import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.health.fullestWriter
 import de.steppicrew.healthconnectview.health.recordsIn
 import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.Nutrient
+import de.steppicrew.healthconnectview.health.NutrientTotal
+import de.steppicrew.healthconnectview.health.nutrientTotals
 import de.steppicrew.healthconnectview.health.PressureReading
 import de.steppicrew.healthconnectview.health.dayPartWindow
 import de.steppicrew.healthconnectview.health.splitByDayPart
 import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.NutritionRecord
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.StreakSummary
@@ -191,6 +195,8 @@ data class TileDetailData(
     val timeMoving: Boolean = true,
     /** Blood pressure only: the window's morning and evening averages, kept apart. */
     val dayParts: DayPartSplit? = null,
+    /** Nutrition only: the window's nutrients beyond energy; empty where none was recorded. */
+    val nutrients: List<NutrientTotal> = emptyList(),
     /**
      * True while the record list and the source picker are still being read. The chart is
      * shown first and these follow; see `loadData`.
@@ -1103,6 +1109,30 @@ class TileDetailViewModel(
             null
         }
 
+        // One request for every nutrient, a bucket per day: the deduplicated totals, and the
+        // days each was recorded on for its mean. Never summed from the records, which overlap
+        // where two apps log the same meal.
+        val nutrientsRead = if (spec.type == NutritionRecord::class) {
+            async {
+                runCatching {
+                    val first = Nutrient.entries.first()
+                    repository.bucketedTotals(
+                        first.metric,
+                        span.localFilter(offset, shownEnd),
+                        Period.ofDays(1),
+                        origins,
+                        also = Nutrient.metrics - first.metric,
+                    ).map { bucket ->
+                        Nutrient.entries.mapNotNull { nutrient ->
+                            bucket.result[nutrient.metric]?.let { nutrient to nutrient.of(it) }
+                        }.toMap()
+                    }.let(::nutrientTotals)
+                }.getOrDefault(emptyList())
+            }
+        } else {
+            null
+        }
+
         // Newest first, matching how the other list reads.
         val records = recordsRead.await()
 
@@ -1140,6 +1170,7 @@ class TileDetailViewModel(
             truncated = records.size >= HealthRepository.LIST_RECORDS,
             contributingApps = contributors,
             dayParts = dayPartsRead?.await()?.takeIf { it.morning != null || it.evening != null },
+            nutrients = nutrientsRead?.await().orEmpty(),
             listPending = false,
         )
         // The list is on screen before the extras: a streak reaching back a year took 12.5 s

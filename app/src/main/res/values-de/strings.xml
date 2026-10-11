@@ -744,7 +744,7 @@
     <string name="perm_info_resting_heart_rate">Ihr Puls in Ruhe, ein Wert pro Tag. Gezeigt als Tageswert mit Trend, im Verlauf mit einem wählbaren Vier-Wochen-Mittel und in einem PDF-Bericht, wenn Sie einen erstellen.</string>
     <string name="perm_info_skin_temperature">Wie Ihre Hauttemperatur von Ihrem üblichen Wert abweicht, von einer Uhr gemessen, meist nachts. Gezeigt als diese Abweichung im Verlauf.</string>
     <string name="perm_info_hydration">Was Sie getrunken haben, in einer App eingetragen. Gezeigt als Tagessumme und im Verlauf.</string>
-    <string name="perm_info_nutrition">Mahlzeiten und was sie enthielten, in einer App eingetragen. Die App zeigt derzeit ihre Energie, als Tagessumme und im Verlauf.</string>
+    <string name="perm_info_nutrition">Mahlzeiten und was sie enthielten, in einer App eingetragen. Die App zeigt ihre Energie, als Tagessumme und im Verlauf, dazu Eiweiß, Kohlenhydrate, Fett und die weiteren Nährstoffe, die sie angeben.</string>
     <string name="perm_info_sleep">Ihre Nächte: wann Sie geschlafen haben und, wo Ihr Gerät sie aufzeichnet, die Schlafphasen. Gezeigt als jede Nacht mit ihren Phasen, als Stunden pro Nacht im Verlauf mit einem wählbaren Vier-Wochen-Mittel und als die Nächte hinter dem Status der Herzfrequenzvariabilität.</string>
     <string name="perm_info_cervical_mucus">Beobachtungen des Zervixschleims, in einer Zyklus-App eingetragen. Gezeigt im Zyklusüberblick und als Einträge.</string>
     <string name="perm_info_intermenstrual_bleeding">Schmierblutungen zwischen den Perioden, in einer Zyklus-App eingetragen. Gezeigt im Zyklusüberblick und als Einträge.</string>
@@ -833,4 +833,20 @@
         <item quantity="one">+%1$d weitere</item>
         <item quantity="other">+%1$d weitere</item>
     </plurals>
+    <string name="field_meal">Mahlzeit</string>
+    <string name="nutrients_title">Nährstoffe</string>
+    <string name="nutrient_fat">Fett</string>
+    <string name="nutrient_saturated_fat">Gesättigte Fettsäuren</string>
+    <string name="nutrient_carbohydrate">Kohlenhydrate</string>
+    <string name="nutrient_sugar">Zucker</string>
+    <string name="nutrient_fiber">Ballaststoffe</string>
+    <string name="nutrient_protein">Eiweiß</string>
+    <string name="nutrient_sodium">Natrium</string>
+    <string name="nutrient_caffeine">Koffein</string>
+    <string name="nutrient_per_day">%1$s pro Tag</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s an %2$d Tag</item>
+        <item quantity="other">%1$s an %2$d Tagen</item>
+    </plurals>
+    <string name="nutrients_note">Summen aus Health Connect, über alle Apps entdoppelt. Das Mittel zählt nur die Tage, an denen der Nährstoff erfasst wurde; ein Tag ohne Eintrag zählt nicht als null.</string>
 </resources>
