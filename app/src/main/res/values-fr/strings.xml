@@ -776,7 +776,7 @@
     <string name="perm_info_resting_heart_rate">Votre fréquence cardiaque au repos, une valeur par jour. Affichée comme valeur du jour, avec sa tendance, dans le temps avec une moyenne facultative sur quatre semaines, et dans un rapport PDF si vous en créez un.</string>
     <string name="perm_info_skin_temperature">L’écart de votre température cutanée par rapport à l’habitude, mesuré par un objet connecté, surtout la nuit. Affiché comme cet écart dans le temps.</string>
     <string name="perm_info_hydration">Ce que vous avez bu, tel que saisi dans une application. Affiché en total journalier et dans le temps.</string>
-    <string name="perm_info_nutrition">Les repas et leur contenu, tels que saisis dans une application. L’application affiche pour l’instant leur énergie, en total journalier et dans le temps.</string>
+    <string name="perm_info_nutrition">Les repas et leur contenu, tels que saisis dans une application. L’application affiche leur énergie, en total journalier et dans le temps, ainsi que les protéines, glucides, lipides et autres nutriments indiqués.</string>
     <string name="perm_info_sleep">Vos nuits : quand vous avez dormi et, si votre appareil les enregistre, les phases de sommeil. Affichées nuit par nuit avec leurs phases, en heures par nuit dans le temps avec une moyenne facultative sur quatre semaines, et comme les nuits sur lesquelles repose l’état de la variabilité de la fréquence cardiaque.</string>
     <string name="perm_info_cervical_mucus">Les observations de glaire cervicale, saisies dans une application de suivi du cycle. Affichées dans la vue des cycles et comme entrées.</string>
     <string name="perm_info_intermenstrual_bleeding">Le spotting entre les règles, saisi dans une application de suivi du cycle. Affiché dans la vue des cycles et comme entrées.</string>
@@ -860,4 +860,21 @@
         <item quantity="many">+%1$d autres</item>
         <item quantity="other">+%1$d autres</item>
     </plurals>
+    <string name="field_meal">Repas</string>
+    <string name="nutrients_title">Nutriments</string>
+    <string name="nutrient_fat">Lipides</string>
+    <string name="nutrient_saturated_fat">Acides gras saturés</string>
+    <string name="nutrient_carbohydrate">Glucides</string>
+    <string name="nutrient_sugar">Sucres</string>
+    <string name="nutrient_fiber">Fibres</string>
+    <string name="nutrient_protein">Protéines</string>
+    <string name="nutrient_sodium">Sodium</string>
+    <string name="nutrient_caffeine">Caféine</string>
+    <string name="nutrient_per_day">%1$s par jour</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s sur %2$d jour</item>
+        <item quantity="many">%1$s sur %2$d jours</item>
+        <item quantity="other">%1$s sur %2$d jours</item>
+    </plurals>
+    <string name="nutrients_note">Totaux de Santé Connect, sans doublons entre les applications. La moyenne ne compte que les jours où le nutriment a été enregistré ; un jour sans saisie ne compte pas comme zéro.</string>
 </resources>

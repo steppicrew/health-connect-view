@@ -750,7 +750,7 @@
     <string name="perm_info_resting_heart_rate">आराम में आपकी धड़कन की दर, हर दिन एक वैल्यू। दिन की वैल्यू और उसके रुझान के साथ, वैकल्पिक 4 हफ़्ते के औसत के साथ समय के साथ, और अगर आप बनाएं तो PDF रिपोर्ट में दिखाई जाती है।</string>
     <string name="perm_info_skin_temperature">आपकी त्वचा का तापमान सामान्य से कितना अलग है, पहनने वाले डिवाइस से, ज़्यादातर रात में मापा जाता है। उसी अंतर के रूप में समय के साथ दिखाया जाता है।</string>
     <string name="perm_info_hydration">आपने क्या पिया, जैसा किसी ऐप में दर्ज किया गया। रोज़ के कुल और समय के साथ दिखाया जाता है।</string>
-    <string name="perm_info_nutrition">खाना और उसमें क्या था, जैसा किसी ऐप में दर्ज किया गया। फ़िलहाल यह ऐप उनकी ऊर्जा को रोज़ के कुल और समय के साथ दिखाता है।</string>
+    <string name="perm_info_nutrition">खाना और उसमें क्या था, जैसा किसी ऐप में दर्ज किया गया। यह ऐप उनकी ऊर्जा को रोज़ के कुल और समय के साथ दिखाता है, साथ ही प्रोटीन, कार्बोहाइड्रेट, वसा और दर्ज किए गए बाकी पोषक तत्व।</string>
     <string name="perm_info_sleep">आपकी रातें: आप कब सोए और, अगर आपका डिवाइस रिकॉर्ड करता है, तो नींद के चरण। हर रात उसके चरणों के साथ, वैकल्पिक 4 हफ़्ते के औसत के साथ समय के साथ हर रात के घंटे, और धड़कन की दर में बदलाव की स्थिति के पीछे की रातों के रूप में दिखाई जाती हैं।</string>
     <string name="perm_info_cervical_mucus">सर्वाइकल म्यूकस के अवलोकन, जैसा किसी चक्र ऐप में दर्ज किया गया। चक्र की खास जानकारी में और एंट्री के रूप में दिखाए जाते हैं।</string>
     <string name="perm_info_intermenstrual_bleeding">पीरियड के बीच स्पॉटिंग, जैसा किसी चक्र ऐप में दर्ज किया गया। चक्र की खास जानकारी में और एंट्री के रूप में दिखाई जाती है।</string>
@@ -833,4 +833,20 @@
         <item quantity="one">+%1$d और</item>
         <item quantity="other">+%1$d और</item>
     </plurals>
+    <string name="field_meal">भोजन</string>
+    <string name="nutrients_title">पोषक तत्व</string>
+    <string name="nutrient_fat">वसा</string>
+    <string name="nutrient_saturated_fat">संतृप्त वसा</string>
+    <string name="nutrient_carbohydrate">कार्बोहाइड्रेट</string>
+    <string name="nutrient_sugar">शर्करा</string>
+    <string name="nutrient_fiber">फ़ाइबर</string>
+    <string name="nutrient_protein">प्रोटीन</string>
+    <string name="nutrient_sodium">सोडियम</string>
+    <string name="nutrient_caffeine">कैफ़ीन</string>
+    <string name="nutrient_per_day">%1$s प्रति दिन</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%2$d दिन में कुल %1$s</item>
+        <item quantity="other">%2$d दिनों में कुल %1$s</item>
+    </plurals>
+    <string name="nutrients_note">Health Connect के कुल, सभी ऐप में डुप्लीकेट हटाकर। औसत में सिर्फ़ वे दिन गिने जाते हैं जिनमें यह पोषक तत्व दर्ज हुआ; बिना एंट्री वाला दिन शून्य नहीं गिना जाता।</string>
 </resources>

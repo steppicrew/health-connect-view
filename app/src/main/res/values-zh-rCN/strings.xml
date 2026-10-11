@@ -724,7 +724,7 @@
     <string name="perm_info_resting_heart_rate">您的静息心率，每天一个数值。以当天的数值及其趋势、带可选 4 周平均值的随时间变化以及（如果您创建）PDF 报告显示。</string>
     <string name="perm_info_skin_temperature">您的皮肤温度与平常的差值，由穿戴设备测量，主要在夜间。以该差值随时间变化的形式显示。</string>
     <string name="perm_info_hydration">在应用中记录的饮水量。以每日总计和随时间变化的形式显示。</string>
-    <string name="perm_info_nutrition">在应用中记录的餐食及其内容。目前此应用以每日总计和随时间变化的形式显示其能量。</string>
+    <string name="perm_info_nutrition">在应用中记录的餐食及其内容。此应用以每日总计和随时间变化的形式显示其能量，以及蛋白质、碳水化合物、脂肪和记录的其他营养素。</string>
     <string name="perm_info_sleep">您的夜间睡眠：何时入睡，以及设备记录的睡眠阶段（如果有）。以每晚及其阶段、带可选 4 周平均值的每晚睡眠时长随时间变化，以及作为心率变异性状态依据的夜晚显示。</string>
     <string name="perm_info_cervical_mucus">在周期应用中记录的宫颈黏液观察。在周期概览中以及作为条目显示。</string>
     <string name="perm_info_intermenstrual_bleeding">在周期应用中记录的两次经期之间的点滴出血。在周期概览中以及作为条目显示。</string>
@@ -806,4 +806,19 @@
     <plurals name="insights_tile_more">
         <item quantity="other">另有 %1$d 项</item>
     </plurals>
+    <string name="field_meal">餐食</string>
+    <string name="nutrients_title">营养素</string>
+    <string name="nutrient_fat">脂肪</string>
+    <string name="nutrient_saturated_fat">饱和脂肪</string>
+    <string name="nutrient_carbohydrate">碳水化合物</string>
+    <string name="nutrient_sugar">糖</string>
+    <string name="nutrient_fiber">膳食纤维</string>
+    <string name="nutrient_protein">蛋白质</string>
+    <string name="nutrient_sodium">钠</string>
+    <string name="nutrient_caffeine">咖啡因</string>
+    <string name="nutrient_per_day">每天 %1$s</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="other">%2$d 天共 %1$s</item>
+    </plurals>
+    <string name="nutrients_note">来自 Health Connect 的总计，已在应用之间去重。平均值只计算记录了该营养素的日子；没有记录的日子不算作零。</string>
 </resources>

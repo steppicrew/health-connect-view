@@ -724,7 +724,7 @@
     <string name="perm_info_resting_heart_rate">安静時の心拍数（1 日 1 つの値）。その日の値と傾向、任意の 4 週間平均付きの推移、作成した場合は PDF レポートで表示します。</string>
     <string name="perm_info_skin_temperature">皮膚温がいつもとどれだけ違うかを、主に夜間にウェアラブルで測定したもの。その差の推移で表示します。</string>
     <string name="perm_info_hydration">アプリに記録した飲み物。1 日の合計と推移で表示します。</string>
-    <string name="perm_info_nutrition">アプリに記録した食事とその内容。現在は、そのエネルギーを 1 日の合計と推移で表示します。</string>
+    <string name="perm_info_nutrition">アプリに記録した食事とその内容。エネルギーを 1 日の合計と推移で表示し、たんぱく質、炭水化物、脂質など記録された栄養素も表示します。</string>
     <string name="perm_info_sleep">夜の睡眠: いつ眠ったか、デバイスが記録していれば睡眠段階。各夜とその段階、任意の 4 週間平均付きの 1 夜あたりの睡眠時間の推移、心拍変動の状態の元になる夜として表示します。</string>
     <string name="perm_info_cervical_mucus">周期記録アプリに記録した子宮頸管粘液の観察。周期の概要と記録で表示します。</string>
     <string name="perm_info_intermenstrual_bleeding">周期記録アプリに記録した生理と生理の間の少量の出血。周期の概要と記録で表示します。</string>
@@ -806,4 +806,19 @@
     <plurals name="insights_tile_more">
         <item quantity="other">ほか%1$d件</item>
     </plurals>
+    <string name="field_meal">食事</string>
+    <string name="nutrients_title">栄養素</string>
+    <string name="nutrient_fat">脂質</string>
+    <string name="nutrient_saturated_fat">飽和脂肪酸</string>
+    <string name="nutrient_carbohydrate">炭水化物</string>
+    <string name="nutrient_sugar">糖質</string>
+    <string name="nutrient_fiber">食物繊維</string>
+    <string name="nutrient_protein">たんぱく質</string>
+    <string name="nutrient_sodium">ナトリウム</string>
+    <string name="nutrient_caffeine">カフェイン</string>
+    <string name="nutrient_per_day">1 日あたり %1$s</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="other">%2$d 日間で合計 %1$s</item>
+    </plurals>
+    <string name="nutrients_note">ヘルスコネクトの合計で、アプリ間の重複を除外しています。平均は、その栄養素が記録された日だけを数えます。記録のない日はゼロとして数えません。</string>
 </resources>

@@ -776,7 +776,7 @@
     <string name="perm_info_resting_heart_rate">Tu frecuencia cardíaca en reposo, un valor al día. Se muestra como el valor del día, con su tendencia, a lo largo del tiempo con una media opcional de cuatro semanas y en un informe PDF si lo creas.</string>
     <string name="perm_info_skin_temperature">Cuánto difiere la temperatura de tu piel de lo habitual, medida por un dispositivo ponible, sobre todo por la noche. Se muestra esa diferencia a lo largo del tiempo.</string>
     <string name="perm_info_hydration">Lo que bebiste, registrado en una aplicación. Se muestra como total diario y a lo largo del tiempo.</string>
-    <string name="perm_info_nutrition">Comidas y lo que contenían, registradas en una aplicación. Por ahora la aplicación muestra su energía, como total diario y a lo largo del tiempo.</string>
+    <string name="perm_info_nutrition">Comidas y lo que contenían, registradas en una aplicación. La aplicación muestra su energía, como total diario y a lo largo del tiempo, además de proteínas, hidratos de carbono, grasas y los demás nutrientes que indiquen.</string>
     <string name="perm_info_sleep">Tus noches: cuándo dormiste y, si tu dispositivo las registra, las fases del sueño. Se muestra cada noche con sus fases, las horas por noche a lo largo del tiempo con una media opcional de cuatro semanas, y las noches en las que se basa el estado de la variabilidad de la frecuencia cardíaca.</string>
     <string name="perm_info_cervical_mucus">Observaciones del moco cervical, registradas en una aplicación del ciclo. Se muestran en el resumen de ciclos y como entradas.</string>
     <string name="perm_info_intermenstrual_bleeding">Manchado entre menstruaciones, registrado en una aplicación del ciclo. Se muestra en el resumen de ciclos y como entradas.</string>
@@ -860,4 +860,21 @@
         <item quantity="many">+%1$d más</item>
         <item quantity="other">+%1$d más</item>
     </plurals>
+    <string name="field_meal">Comida</string>
+    <string name="nutrients_title">Nutrientes</string>
+    <string name="nutrient_fat">Grasas</string>
+    <string name="nutrient_saturated_fat">Grasas saturadas</string>
+    <string name="nutrient_carbohydrate">Hidratos de carbono</string>
+    <string name="nutrient_sugar">Azúcares</string>
+    <string name="nutrient_fiber">Fibra</string>
+    <string name="nutrient_protein">Proteínas</string>
+    <string name="nutrient_sodium">Sodio</string>
+    <string name="nutrient_caffeine">Cafeína</string>
+    <string name="nutrient_per_day">%1$s al día</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s en %2$d día</item>
+        <item quantity="many">%1$s en %2$d días</item>
+        <item quantity="other">%1$s en %2$d días</item>
+    </plurals>
+    <string name="nutrients_note">Totales de Health Connect, sin duplicados entre aplicaciones. La media solo cuenta los días en que se registró el nutriente; un día sin datos no cuenta como cero.</string>
 </resources>

@@ -750,7 +750,7 @@
     <string name="perm_info_resting_heart_rate">Je hartslag in rust, één waarde per dag. Getoond als de waarde van de dag, met de trend, in de tijd met een optioneel 4-weeks gemiddelde, en in een PDF-rapport als je er een maakt.</string>
     <string name="perm_info_skin_temperature">Hoeveel je huidtemperatuur afwijkt van normaal, gemeten door een wearable, meestal ’s nachts. Getoond als die afwijking in de tijd.</string>
     <string name="perm_info_hydration">Wat je hebt gedronken, zoals bijgehouden in een app. Getoond als dagtotaal en in de tijd.</string>
-    <string name="perm_info_nutrition">Maaltijden en wat erin zat, zoals bijgehouden in een app. De app toont nu hun energie, als dagtotaal en in de tijd.</string>
+    <string name="perm_info_nutrition">Maaltijden en wat erin zat, zoals bijgehouden in een app. De app toont hun energie, als dagtotaal en in de tijd, en daarnaast eiwit, koolhydraten, vet en de andere voedingsstoffen die ze vermelden.</string>
     <string name="perm_info_sleep">Je nachten: wanneer je sliep en, waar je apparaat die registreert, de slaapfasen. Getoond als elke nacht met zijn fasen, uren per nacht in de tijd met een optioneel 4-weeks gemiddelde, en als de nachten achter de status van de hartslagvariabiliteit.</string>
     <string name="perm_info_cervical_mucus">Observaties van baarmoederhalsslijm, bijgehouden in een cyclusapp. Getoond in het cyclusoverzicht en als invoer.</string>
     <string name="perm_info_intermenstrual_bleeding">Spotting tussen menstruaties, bijgehouden in een cyclusapp. Getoond in het cyclusoverzicht en als invoer.</string>
@@ -833,4 +833,20 @@
         <item quantity="one">+%1$d andere</item>
         <item quantity="other">+%1$d andere</item>
     </plurals>
+    <string name="field_meal">Maaltijd</string>
+    <string name="nutrients_title">Voedingsstoffen</string>
+    <string name="nutrient_fat">Vet</string>
+    <string name="nutrient_saturated_fat">Verzadigd vet</string>
+    <string name="nutrient_carbohydrate">Koolhydraten</string>
+    <string name="nutrient_sugar">Suikers</string>
+    <string name="nutrient_fiber">Vezels</string>
+    <string name="nutrient_protein">Eiwit</string>
+    <string name="nutrient_sodium">Natrium</string>
+    <string name="nutrient_caffeine">Cafeïne</string>
+    <string name="nutrient_per_day">%1$s per dag</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s op %2$d dag</item>
+        <item quantity="other">%1$s op %2$d dagen</item>
+    </plurals>
+    <string name="nutrients_note">Totalen uit Health Connect, ontdubbeld over alle apps. Het gemiddelde telt alleen de dagen waarop de voedingsstof is vastgelegd; een dag zonder invoer telt niet als nul.</string>
 </resources>

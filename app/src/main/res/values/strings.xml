@@ -784,7 +784,7 @@
     <string name="perm_info_resting_heart_rate">Your heart rate at rest, one value a day. Shown as the day\'s value, with its trend, over time with an optional four-week mean, and in a PDF report if you create one.</string>
     <string name="perm_info_skin_temperature">How your skin temperature differs from your usual, measured by a wearable, mostly at night. Shown as that difference over time.</string>
     <string name="perm_info_hydration">What you drank, as logged in an app. Shown as a daily total and over time.</string>
-    <string name="perm_info_nutrition">Meals and what they contained, as logged in an app. The app currently shows their energy, as a daily total and over time.</string>
+    <string name="perm_info_nutrition">Meals and what they contained, as logged in an app. The app shows their energy, as a daily total and over time, and protein, carbohydrate, fat and the other nutrients they list.</string>
     <string name="perm_info_sleep">Your nights: when you slept and, where your device records them, the sleep stages. Shown as each night with its stages, hours per night over time with an optional four-week mean, and as the nights behind the heart rate variability status.</string>
     <string name="perm_info_cervical_mucus">Observations of cervical mucus, as logged in a cycle app. Shown in the cycle overview and as entries.</string>
     <string name="perm_info_intermenstrual_bleeding">Spotting between periods, as logged in a cycle app. Shown in the cycle overview and as entries.</string>
@@ -867,4 +867,22 @@
         <item quantity="one">+%1$d more</item>
         <item quantity="other">+%1$d more</item>
     </plurals>
+    <string name="unit_g" translatable="false">g</string>
+    <string name="unit_mg" translatable="false">mg</string>
+    <string name="field_meal">Meal</string>
+    <string name="nutrients_title">Nutrients</string>
+    <string name="nutrient_fat">Fat</string>
+    <string name="nutrient_saturated_fat">Saturated fat</string>
+    <string name="nutrient_carbohydrate">Carbohydrate</string>
+    <string name="nutrient_sugar">Sugar</string>
+    <string name="nutrient_fiber">Fibre</string>
+    <string name="nutrient_protein">Protein</string>
+    <string name="nutrient_sodium">Sodium</string>
+    <string name="nutrient_caffeine">Caffeine</string>
+    <string name="nutrient_per_day">%1$s a day</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%1$s on %2$d day</item>
+        <item quantity="other">%1$s on %2$d days</item>
+    </plurals>
+    <string name="nutrients_note">Totals from Health Connect, with duplicates across apps removed. The mean counts only the days the nutrient was recorded on; a day without an entry does not count as zero.</string>
 </resources>

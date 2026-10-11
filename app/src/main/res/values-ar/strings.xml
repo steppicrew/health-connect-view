@@ -854,7 +854,7 @@
     <string name="perm_info_resting_heart_rate">معدل نبض قلبك أثناء الراحة، قيمة واحدة يوميًا. يُعرض كقيمة اليوم مع اتجاهها، وعلى مدار الوقت مع متوسط 4 أسابيع اختياري، وفي تقرير PDF إذا أنشأته.</string>
     <string name="perm_info_skin_temperature">مقدار اختلاف حرارة جلدك عن المعتاد، ويقيسه جهاز قابل للارتداء، غالبًا ليلًا. يُعرض كهذا الفرق على مدار الوقت.</string>
     <string name="perm_info_hydration">ما شربته، كما سُجِّل في تطبيق. يُعرض كإجمالي يومي وعلى مدار الوقت.</string>
-    <string name="perm_info_nutrition">الوجبات ومحتواها، كما سُجِّلت في تطبيق. يعرض التطبيق حاليًا طاقتها، كإجمالي يومي وعلى مدار الوقت.</string>
+    <string name="perm_info_nutrition">الوجبات ومحتواها، كما سُجِّلت في تطبيق. يعرض التطبيق طاقتها، كإجمالي يومي وعلى مدار الوقت، إلى جانب البروتين والكربوهيدرات والدهون وسائر العناصر المسجّلة.</string>
     <string name="perm_info_sleep">لياليك: متى نمت، ومراحل النوم إن كان جهازك يسجّلها. تُعرض كل ليلة بمراحلها، وساعات النوم لكل ليلة على مدار الوقت مع متوسط 4 أسابيع اختياري، وكالليالي التي تستند إليها حالة تقلّب معدل نبض القلب.</string>
     <string name="perm_info_cervical_mucus">ملاحظات مخاط عنق الرحم، كما سُجِّلت في تطبيق لتتبّع الدورة. تُعرض في النظرة العامة على الدورات وكإدخالات.</string>
     <string name="perm_info_intermenstrual_bleeding">التبقيع بين الدورات، كما سُجِّل في تطبيق لتتبّع الدورة. يُعرض في النظرة العامة على الدورات وكإدخالات.</string>
@@ -941,4 +941,24 @@
         <item quantity="many">+%1$d أخرى</item>
         <item quantity="other">+%1$d أخرى</item>
     </plurals>
+    <string name="field_meal">الوجبة</string>
+    <string name="nutrients_title">العناصر الغذائية</string>
+    <string name="nutrient_fat">الدهون</string>
+    <string name="nutrient_saturated_fat">الدهون المشبعة</string>
+    <string name="nutrient_carbohydrate">الكربوهيدرات</string>
+    <string name="nutrient_sugar">السكريات</string>
+    <string name="nutrient_fiber">الألياف</string>
+    <string name="nutrient_protein">البروتين</string>
+    <string name="nutrient_sodium">الصوديوم</string>
+    <string name="nutrient_caffeine">الكافيين</string>
+    <string name="nutrient_per_day">%1$s يوميًا</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="zero">%1$s في المجموع على مدى %2$d يوم</item>
+        <item quantity="one">%1$s في المجموع في %2$d يوم</item>
+        <item quantity="two">%1$s في المجموع على مدى %2$d يومين</item>
+        <item quantity="few">%1$s في المجموع على مدى %2$d أيام</item>
+        <item quantity="many">%1$s في المجموع على مدى %2$d يومًا</item>
+        <item quantity="other">%1$s في المجموع على مدى %2$d يوم</item>
+    </plurals>
+    <string name="nutrients_note">مجاميع من Health Connect بعد إزالة التكرار بين التطبيقات. لا يحسب المتوسط إلا الأيام التي سُجّل فيها العنصر؛ ولا يُعدّ اليوم بلا إدخال صفرًا.</string>
 </resources>

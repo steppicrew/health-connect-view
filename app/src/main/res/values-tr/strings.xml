@@ -750,7 +750,7 @@
     <string name="perm_info_resting_heart_rate">Dinlenme halindeki nabzınız, günde bir değer. Günün değeri olarak eğilimiyle, isteğe bağlı 4 haftalık ortalamayla zaman içinde ve oluşturursanız bir PDF raporunda gösterilir.</string>
     <string name="perm_info_skin_temperature">Cilt sıcaklığınızın olağan değerinizden ne kadar farklı olduğu, giyilebilir bir cihazla, çoğunlukla gece ölçülür. Bu fark zaman içinde gösterilir.</string>
     <string name="perm_info_hydration">Bir uygulamada kaydedildiği şekliyle içtikleriniz. Günlük toplam olarak ve zaman içinde gösterilir.</string>
-    <string name="perm_info_nutrition">Bir uygulamada kaydedildiği şekliyle öğünler ve içerikleri. Uygulama şu anda bunların enerjisini günlük toplam olarak ve zaman içinde gösterir.</string>
+    <string name="perm_info_nutrition">Bir uygulamada kaydedildiği şekliyle öğünler ve içerikleri. Uygulama bunların enerjisini günlük toplam olarak ve zaman içinde, ayrıca protein, karbonhidrat, yağ ve belirtilen diğer besin öğelerini gösterir.</string>
     <string name="perm_info_sleep">Geceleriniz: ne zaman uyuduğunuz ve cihazınız kaydediyorsa uyku evreleri. Evreleriyle her gece, isteğe bağlı 4 haftalık ortalamayla zaman içinde gece başına saat ve kalp atış hızı değişkenliği durumunun dayandığı geceler olarak gösterilir.</string>
     <string name="perm_info_cervical_mucus">Bir döngü uygulamasında kaydedilen servikal mukus gözlemleri. Döngü özetinde ve girişler olarak gösterilir.</string>
     <string name="perm_info_intermenstrual_bleeding">Bir döngü uygulamasında kaydedilen, adetler arasındaki lekelenme. Döngü özetinde ve girişler olarak gösterilir.</string>
@@ -833,4 +833,20 @@
         <item quantity="one">+%1$d tane daha</item>
         <item quantity="other">+%1$d tane daha</item>
     </plurals>
+    <string name="field_meal">Öğün</string>
+    <string name="nutrients_title">Besin öğeleri</string>
+    <string name="nutrient_fat">Yağ</string>
+    <string name="nutrient_saturated_fat">Doymuş yağ</string>
+    <string name="nutrient_carbohydrate">Karbonhidrat</string>
+    <string name="nutrient_sugar">Şeker</string>
+    <string name="nutrient_fiber">Lif</string>
+    <string name="nutrient_protein">Protein</string>
+    <string name="nutrient_sodium">Sodyum</string>
+    <string name="nutrient_caffeine">Kafein</string>
+    <string name="nutrient_per_day">günde %1$s</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="one">%2$d günde toplam %1$s</item>
+        <item quantity="other">%2$d günde toplam %1$s</item>
+    </plurals>
+    <string name="nutrients_note">Health Connect toplamları, uygulamalar arasında tekilleştirilmiş. Ortalama yalnızca besin öğesinin kaydedildiği günleri sayar; kaydı olmayan bir gün sıfır sayılmaz.</string>
 </resources>

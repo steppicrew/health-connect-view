@@ -112,6 +112,7 @@ import de.steppicrew.healthconnectview.export.ExportPeriod
 import de.steppicrew.healthconnectview.export.ExportResult
 import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.health.DayPartSplit
+import de.steppicrew.healthconnectview.health.NutrientTotal
 import de.steppicrew.healthconnectview.health.TrainingNights
 import de.steppicrew.healthconnectview.health.nightsByMorning
 import de.steppicrew.healthconnectview.health.sleepRegularity
@@ -839,6 +840,71 @@ private fun DayPartsSection(split: DayPartSplit) {
     }
 }
 
+/**
+ * What the meals of the window held beyond energy: each nutrient's total on a day; over
+ * several, its mean per day recorded, with the total beneath. Totals only, no targets: what a day
+ * should hold depends on the person. How the figures are made is behind the "i".
+ */
+@Composable
+private fun NutrientsSection(nutrients: List<NutrientTotal>) {
+    val explanation = rememberExplanation("nutrients")
+    InfoGroup {
+        Row(verticalAlignment = Alignment.Top) {
+            Text(
+                text = stringResource(R.string.nutrients_title),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
+        }
+        nutrients.forEach { row ->
+            val unit = stringResource(if (row.nutrient.milligrams) R.string.unit_mg else R.string.unit_g)
+            Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.Top) {
+                Text(
+                    text = stringResource(row.nutrient.labelRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                // Over several days the day's mean leads: four weeks' 1,820 g of fat says little
+                // until it is a day's 65 g. The total follows, with the days it covers.
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = if (row.days > 1) {
+                            stringResource(R.string.nutrient_per_day, nutrientAmount(row.perDay) + " " + unit)
+                        } else {
+                            nutrientAmount(row.total) + " " + unit
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    if (row.days > 1) {
+                        Text(
+                            text = pluralStringResource(
+                                R.plurals.nutrients_total_days,
+                                row.days,
+                                nutrientAmount(row.total) + " " + unit,
+                                row.days,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.nutrients_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+    }
+}
+
+/** Whole grams or milligrams, with a decimal below ten, where 2.4 g of salt would read as 2. */
+private fun nutrientAmount(value: Double): String = Formatting.number(value, if (value < 10) 1 else 0)
+
 @Composable
 private fun DayPartRow(label: String, average: PartAverage?) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
@@ -1160,6 +1226,9 @@ private fun SpanSummary(
                 )
             }
         }
+
+        // Under the chart for the same reason: read with the list, after the chart is drawn.
+        if (data.nutrients.isNotEmpty()) NutrientsSection(data.nutrients)
 
         // Under the chart, not beside the total: they are read after it (a streak reaching
         // back a year took 12.5 s), and arriving above it pushed the chart a quarter of the

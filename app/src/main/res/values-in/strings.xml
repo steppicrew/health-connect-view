@@ -724,7 +724,7 @@
     <string name="perm_info_resting_heart_rate">Detak jantung Anda saat istirahat, satu nilai per hari. Ditampilkan sebagai nilai hari itu dengan trennya, dari waktu ke waktu dengan rata-rata empat minggu opsional, dan dalam laporan PDF jika Anda membuatnya.</string>
     <string name="perm_info_skin_temperature">Seberapa berbeda suhu kulit Anda dari biasanya, diukur oleh perangkat wearable, sebagian besar pada malam hari. Ditampilkan sebagai selisih itu dari waktu ke waktu.</string>
     <string name="perm_info_hydration">Yang Anda minum, sebagaimana dicatat di aplikasi. Ditampilkan sebagai total harian dan dari waktu ke waktu.</string>
-    <string name="perm_info_nutrition">Makanan dan kandungannya, sebagaimana dicatat di aplikasi. Saat ini aplikasi menampilkan energinya, sebagai total harian dan dari waktu ke waktu.</string>
+    <string name="perm_info_nutrition">Makanan dan kandungannya, sebagaimana dicatat di aplikasi. Aplikasi menampilkan energinya, sebagai total harian dan dari waktu ke waktu, serta protein, karbohidrat, lemak, dan nutrisi lain yang dicatat.</string>
     <string name="perm_info_sleep">Malam-malam Anda: kapan Anda tidur dan, jika perangkat Anda mencatatnya, tahap tidur. Ditampilkan sebagai tiap malam dengan tahapnya, jam per malam dari waktu ke waktu dengan rata-rata empat minggu opsional, dan sebagai malam yang menjadi dasar status variabilitas detak jantung.</string>
     <string name="perm_info_cervical_mucus">Pengamatan lendir serviks, sebagaimana dicatat di aplikasi siklus. Ditampilkan di ringkasan siklus dan sebagai entri.</string>
     <string name="perm_info_intermenstrual_bleeding">Flek di antara menstruasi, sebagaimana dicatat di aplikasi siklus. Ditampilkan di ringkasan siklus dan sebagai entri.</string>
@@ -806,4 +806,19 @@
     <plurals name="insights_tile_more">
         <item quantity="other">+%1$d lainnya</item>
     </plurals>
+    <string name="field_meal">Makanan</string>
+    <string name="nutrients_title">Nutrisi</string>
+    <string name="nutrient_fat">Lemak</string>
+    <string name="nutrient_saturated_fat">Lemak jenuh</string>
+    <string name="nutrient_carbohydrate">Karbohidrat</string>
+    <string name="nutrient_sugar">Gula</string>
+    <string name="nutrient_fiber">Serat</string>
+    <string name="nutrient_protein">Protein</string>
+    <string name="nutrient_sodium">Natrium</string>
+    <string name="nutrient_caffeine">Kafein</string>
+    <string name="nutrient_per_day">%1$s per hari</string>
+    <plurals name="nutrients_total_days">
+        <item quantity="other">total %1$s dalam %2$d hari</item>
+    </plurals>
+    <string name="nutrients_note">Total dari Health Connect, tanpa duplikat antar-aplikasi. Rata-rata hanya menghitung hari ketika nutrisi itu dicatat; hari tanpa catatan tidak dihitung sebagai nol.</string>
 </resources>
