@@ -124,6 +124,9 @@ import androidx.compose.ui.semantics.stateDescription
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.dashboard.SIZES
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -883,13 +886,14 @@ private fun InsightsTileBody(data: InsightsTileData, width: Int = 1, height: Int
         else -> {
             val picks = data.tile.picks
             val notable = insights.notable()
-            // Chosen types in their order, moved or not; else the week's largest changes. A level
-            // week on a wide tile still shows the types nearest their edge, each in its band:
-            // "all level" says nothing about how close a type came.
+            // Chosen types in their order, moved or not; else the week's most unusual changes. A
+            // wide tile fills the rows the changes leave free with the level types nearest their
+            // edge, each in its band -- one change above empty rows looked unfinished, the owner
+            // found -- and "all level" says nothing about how close a type came.
             val level = picks.isEmpty() && notable.isEmpty()
             val shown = when {
                 picks.isNotEmpty() -> picks.mapNotNull { name -> insights.firstOrNull { it.spec.type.simpleName == name } }
-                level && wide -> insights.sortedByDescending { it.trend.weight }
+                wide -> notable + insights.filter { it !in notable }.sortedByDescending { it.trend.weight }
                 else -> notable
             }
             if (level && !wide) {
@@ -912,6 +916,13 @@ private fun InsightRows(shown: List<Insight>, header: String?, strip: Boolean) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val headerStyle = MaterialTheme.typography.bodyMedium
     val moreStyle = MaterialTheme.typography.labelSmall
+    // One width for every row's amount, the widest, so the strips beside them line up.
+    val amountStyle = MaterialTheme.typography.bodySmall
+    val measurer = rememberTextMeasurer()
+    val amounts = shown.map { insightAmount(it) }
+    val amountWidth = with(LocalDensity.current) {
+        (amounts.maxOfOrNull { measurer.measure(it, amountStyle).size.width } ?: 0).toDp()
+    }
     SubcomposeLayout(Modifier.fillMaxSize()) { constraints ->
         val width = constraints.maxWidth
         val loose = Constraints(maxWidth = width, maxHeight = constraints.maxHeight)
@@ -921,7 +932,7 @@ private fun InsightRows(shown: List<Insight>, header: String?, strip: Boolean) {
                 .single().measure(loose)
         }
         val rows = shown.mapIndexed { index, insight ->
-            subcompose(index) { InsightRow(insight, strip) }.single().measure(loose)
+            subcompose(index) { InsightRow(insight, strip, amounts[index], amountWidth) }.single().measure(loose)
         }
         fun moreLine(count: Int) = subcompose("more$count") {
             Text(
@@ -962,7 +973,7 @@ private fun InsightRows(shown: List<Insight>, header: String?, strip: Boolean) {
 
 /** One type on the insights tile: arrow, name, on a wide tile its strip, and how far it moved. */
 @Composable
-private fun InsightRow(insight: Insight, strip: Boolean) {
+private fun InsightRow(insight: Insight, strip: Boolean, amount: String, amountWidth: Dp) {
     val style = MaterialTheme.typography.bodySmall
     Row(verticalAlignment = Alignment.Top) {
         Icon(
@@ -986,10 +997,11 @@ private fun InsightRow(insight: Insight, strip: Boolean) {
             )
         }
         Text(
-            text = insightAmount(insight),
+            text = amount,
             style = style,
             maxLines = 1,
-            modifier = Modifier.padding(start = 4.dp),
+            textAlign = TextAlign.End,
+            modifier = Modifier.padding(start = 4.dp).width(amountWidth),
         )
     }
 }
