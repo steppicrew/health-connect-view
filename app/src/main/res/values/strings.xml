@@ -148,6 +148,8 @@
     <string name="report_footer">Grades after the European Society of Hypertension classification for readings at a practice; at home, 135/85 and above already counts as raised. A guide, not a diagnosis.</string>
     <string name="report_page">Page %1$d of %2$d</string>
     <string name="report_footer_general">Calculated by this app from the readings in Health Connect. A guide, not a diagnosis.</string>
+    <string name="report_daily_title">%1$s – daily values</string>
+    <string name="report_daily_caption">Daily values as Health Connect combines them across your apps; a day without data stays empty.</string>
     <string name="report_one_writer">Where several apps stored the same readings, each day\'s come from the app with the most of them that day.</string>
     <string name="report_course">Course</string>
     <string name="report_by_week">By week</string>

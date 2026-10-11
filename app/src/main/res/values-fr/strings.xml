@@ -147,6 +147,8 @@
     <string name="report_footer">Grades selon la classification de la Société européenne d’hypertension pour les mesures au cabinet ; à domicile, 135/85 et plus compte déjà comme élevé. Un repère, pas un diagnostic.</string>
     <string name="report_page">Page %1$d sur %2$d</string>
     <string name="report_footer_general">Calculé par cette application à partir des mesures de Santé Connect. Un repère, pas un diagnostic.</string>
+    <string name="report_daily_title">%1$s – valeurs quotidiennes</string>
+    <string name="report_daily_caption">Valeurs quotidiennes telles que Santé Connect les regroupe à partir de vos applis ; un jour sans données reste vide.</string>
     <string name="report_one_writer">Quand plusieurs applications ont enregistré les mêmes mesures, celles de chaque jour proviennent de l’application qui en a le plus ce jour-là.</string>
     <string name="report_course">Évolution</string>
     <string name="report_by_week">Par semaine</string>

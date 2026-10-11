@@ -147,6 +147,8 @@
     <string name="report_footer">Graus segundo a classificação da Sociedade Europeia de Hipertensão para medições no consultório; em casa, 135/85 ou mais já conta como elevada. Uma orientação, não um diagnóstico.</string>
     <string name="report_page">Página %1$d de %2$d</string>
     <string name="report_footer_general">Calculado por este app a partir das medições do Conexão Saúde. Uma orientação, não um diagnóstico.</string>
+    <string name="report_daily_title">%1$s – valores diários</string>
+    <string name="report_daily_caption">Valores diários como a Conexão Saúde os combina entre seus apps; um dia sem dados fica vazio.</string>
     <string name="report_one_writer">Onde vários apps gravaram as mesmas medições, as de cada dia vêm do app com mais medições naquele dia.</string>
     <string name="report_course">Evolução</string>
     <string name="report_by_week">Por semana</string>

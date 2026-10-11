@@ -146,6 +146,8 @@
     <string name="report_footer">ग्रेड, क्लिनिक में ली गई रीडिंग के लिए यूरोपियन सोसाइटी ऑफ़ हाइपरटेंशन के वर्गीकरण के मुताबिक हैं; घर पर 135/85 और उससे ज़्यादा को पहले से ही बढ़ा हुआ माना जाता है। यह एक संकेत है, निदान नहीं।</string>
     <string name="report_page">पेज %1$d / %2$d</string>
     <string name="report_footer_general">इस ऐप ने Health Connect की रीडिंग से कैलकुलेट किया। यह एक संकेत है, निदान नहीं।</string>
+    <string name="report_daily_title">%1$s – दैनिक मान</string>
+    <string name="report_daily_caption">दैनिक मान, जैसे Health Connect उन्हें आपके ऐप्स से मिलाता है; बिना डेटा वाला दिन खाली रहता है।</string>
     <string name="report_one_writer">जहां कई ऐप ने एक जैसी रीडिंग सेव की हैं, वहां हर दिन की रीडिंग उस ऐप से ली जाती हैं जिसकी उस दिन सबसे ज़्यादा रीडिंग हैं।</string>
     <string name="report_course">बदलाव</string>
     <string name="report_by_week">हफ़्ते के हिसाब से</string>

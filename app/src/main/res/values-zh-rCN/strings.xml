@@ -145,6 +145,8 @@
     <string name="report_footer">分级依据欧洲高血压学会针对诊室测量的分类；在家测量时，135/85 及以上即视为偏高。仅供参考，不是诊断。</string>
     <string name="report_page">第 %1$d 页，共 %2$d 页</string>
     <string name="report_footer_general">由此应用根据 Health Connect 中的测量值计算。仅供参考，不是诊断。</string>
+    <string name="report_daily_title">%1$s – 每日数值</string>
+    <string name="report_daily_caption">每日数值按 Health Connect 汇总您各应用的数据得出；没有数据的日子留空。</string>
     <string name="report_one_writer">如果多个应用保存了相同的测量值，每天的测量值取自当天测量值最多的应用。</string>
     <string name="report_course">变化趋势</string>
     <string name="report_by_week">按周</string>

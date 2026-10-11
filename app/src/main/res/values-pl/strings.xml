@@ -148,6 +148,8 @@
     <string name="report_footer">Stopnie według klasyfikacji Europejskiego Towarzystwa Nadciśnienia Tętniczego dla pomiarów w gabinecie; w domu już 135/85 i więcej uznaje się za podwyższone. Wskazówka, nie diagnoza.</string>
     <string name="report_page">Strona %1$d z %2$d</string>
     <string name="report_footer_general">Obliczone przez tę aplikację na podstawie pomiarów z Health Connect. Wskazówka, nie diagnoza.</string>
+    <string name="report_daily_title">%1$s – wartości dzienne</string>
+    <string name="report_daily_caption">Wartości dzienne tak, jak Health Connect łączy je ze wszystkich aplikacji; dzień bez danych pozostaje pusty.</string>
     <string name="report_one_writer">Jeśli kilka aplikacji zapisało te same pomiary, pomiary z każdego dnia pochodzą z aplikacji, która miała ich tego dnia najwięcej.</string>
     <string name="report_course">Przebieg</string>
     <string name="report_by_week">Według tygodni</string>
