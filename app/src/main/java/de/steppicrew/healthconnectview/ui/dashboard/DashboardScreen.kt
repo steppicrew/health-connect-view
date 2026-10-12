@@ -107,6 +107,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.zIndex
@@ -133,6 +134,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import androidx.compose.foundation.background
+import java.text.NumberFormat
+import kotlin.math.floor
 import kotlin.math.roundToInt
 import androidx.compose.foundation.shape.CircleShape
 import de.steppicrew.healthconnectview.registry.ValueZones
@@ -1273,7 +1276,10 @@ private fun TileBody(
 
         data.spec.tile.form == TileSpec.Form.RING && progress != null ->
             ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
-                TileValue(data, large)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TileValue(data, large)
+                    GoalShare(data)
+                }
             }
 
         data.spec.tile.form == TileSpec.Form.CURVE && zones != null && data.curve.size > 1 ->
@@ -1489,7 +1495,15 @@ private fun TileValueAndChart(
     val mean = data.meanOf(chart)
     @Composable
     fun Figure(stages: StageTotalsAt, inline: Boolean = false) =
-        if (data.spec.tile.form == TileSpec.Form.SESSIONS) SessionCount(data, stages, inline) else TileValue(data)
+        when {
+            data.spec.tile.form == TileSpec.Form.SESSIONS -> SessionCount(data, stages, inline)
+            data.spec.tile.form == TileSpec.Form.RING && data.progress != null ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TileValue(data)
+                    GoalShare(data)
+                }
+            else -> TileValue(data)
+        }
     if (data.tile.height > 1) {
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // The stage chart names its own stages; a curve over the strip does not.
@@ -1837,6 +1851,28 @@ private fun TileValue(data: TileData, large: Boolean = false) {
         )
     }
 }
+
+/**
+ * "107 % of\n2,990": how far the day got against its goal, printed because a ring past its
+ * goal cannot say by how much on its own, and an adaptive goal is not one the user typed.
+ * Rounded down, so a day short of its goal never reads 100 %.
+ */
+@Composable
+private fun GoalShare(data: TileData) {
+    val goal = data.dayGoal ?: return
+    val progress = data.progress ?: return
+    val percent = NumberFormat.getPercentInstance(LocalConfiguration.current.locales[0])
+        .apply { maximumFractionDigits = 0 }
+        .format(floor(progress * PERCENT) / PERCENT)
+    Text(
+        text = stringResource(R.string.tile_goal_share, percent, Formatting.number(goal, data.spec.valueDecimals)),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+    )
+}
+
+private const val PERCENT = 100.0
 
 /** "128/82" for a pair, whole numbers as a cuff shows them; the plain number otherwise. */
 private fun tileValueText(value: Double, secondary: Double?, decimals: Int? = null): String =

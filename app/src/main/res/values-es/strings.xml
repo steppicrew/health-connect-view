@@ -286,6 +286,7 @@
     <string name="goal_adaptive">Objetivo adaptativo</string>
     <string name="goal_start_hint">Valor inicial</string>
     <string name="goal_floor_hint">Límite inferior (opcional)</string>
+    <string name="tile_goal_share">%1$s de\n%2$s</string>
     <string name="goal_reset">Usar el predeterminado</string>
     <string name="action_save">Guardar</string>
     <string name="action_cancel">Cancelar</string>

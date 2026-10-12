@@ -224,18 +224,28 @@ data class TileData(
             return drawn.singleOrNull() ?: sessions.filter { it.kind == Session.Kind.EXERCISE }.singleOrNull()
         }
 
-    /** Fraction of the goal, for a ring. Null when there is no goal or nothing to show. */
+    /**
+     * The shown day's goal, in the shown unit, for a ring. Null on a week or a year, since a
+     * goal is per day -- a week's steps against a daily 5,000 would always read full -- and
+     * where there is none. Goals are stored metric; an adaptive goal is null until the day's
+     * own is known, rather than standing in for it with the starting goal.
+     */
+    val dayGoal: Double?
+        get() {
+            if (shownSpan != Span.DAY) return null
+            val goal = if (tile.goalRule != null) adaptiveGoal else tile.effectiveGoal?.let(spec::display)
+            return goal?.takeIf { it > 0.0 }
+        }
+
+    /**
+     * Fraction of [dayGoal], for a ring; above 1 where the goal was beaten, so 180 % reads
+     * differently from 107 %. Null when there is no goal or nothing to show.
+     */
     val progress: Float?
         get() {
-            // A goal is per day: a week's steps against a daily 5,000 would always read full.
-            if (shownSpan != Span.DAY) return null
-            // Goals are stored metric; the value is in the shown unit. An adaptive goal draws no
-            // ring until the day's own is known, rather than one against the starting goal.
-            val goal = (if (tile.goalRule != null) adaptiveGoal else tile.effectiveGoal?.let(spec::display))
-                ?: return null
+            val goal = dayGoal ?: return null
             val current = value ?: return null
-            if (goal <= 0.0) return null
-            return (current / goal).toFloat().coerceIn(0f, 1f)
+            return (current / goal).toFloat().coerceAtLeast(0f)
         }
 }
 

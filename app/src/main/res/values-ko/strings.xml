@@ -276,6 +276,7 @@
     <string name="goal_adaptive">자동 조정 목표</string>
     <string name="goal_start_hint">시작 값</string>
     <string name="goal_floor_hint">하한(선택 사항)</string>
+    <string name="tile_goal_share">목표 %2$s의\n%1$s</string>
     <string name="goal_reset">기본값 사용</string>
     <string name="action_save">저장</string>
     <string name="action_cancel">취소</string>

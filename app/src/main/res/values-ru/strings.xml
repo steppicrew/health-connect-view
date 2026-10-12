@@ -291,6 +291,7 @@
     <string name="goal_adaptive">Адаптивная цель</string>
     <string name="goal_start_hint">Начальное значение</string>
     <string name="goal_floor_hint">Нижний предел (необязательно)</string>
+    <string name="tile_goal_share">%1$s от\n%2$s</string>
     <string name="goal_reset">По умолчанию</string>
     <string name="action_save">Сохранить</string>
     <string name="action_cancel">Отмена</string>

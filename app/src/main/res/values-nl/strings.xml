@@ -281,6 +281,7 @@
     <string name="goal_adaptive">Adaptief doel</string>
     <string name="goal_start_hint">Beginwaarde</string>
     <string name="goal_floor_hint">Ondergrens (optioneel)</string>
+    <string name="tile_goal_share">%1$s van\n%2$s</string>
     <string name="goal_reset">Standaard gebruiken</string>
     <string name="action_save">Opslaan</string>
     <string name="action_cancel">Annuleren</string>

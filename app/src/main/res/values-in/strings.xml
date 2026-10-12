@@ -276,6 +276,7 @@
     <string name="goal_adaptive">Target adaptif</string>
     <string name="goal_start_hint">Nilai awal</string>
     <string name="goal_floor_hint">Batas bawah (opsional)</string>
+    <string name="tile_goal_share">%1$s dari\n%2$s</string>
     <string name="goal_reset">Gunakan default</string>
     <string name="action_save">Simpan</string>
     <string name="action_cancel">Batal</string>
