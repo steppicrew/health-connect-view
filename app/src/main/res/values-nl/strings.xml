@@ -277,6 +277,10 @@
     </plurals>
     <string name="goal_title">Dagdoel</string>
     <string name="goal_hint">Doelwaarde</string>
+    <string name="goal_fixed">Vast doel</string>
+    <string name="goal_adaptive">Adaptief doel</string>
+    <string name="goal_start_hint">Beginwaarde</string>
+    <string name="goal_floor_hint">Ondergrens (optioneel)</string>
     <string name="goal_reset">Standaard gebruiken</string>
     <string name="action_save">Opslaan</string>
     <string name="action_cancel">Annuleren</string>

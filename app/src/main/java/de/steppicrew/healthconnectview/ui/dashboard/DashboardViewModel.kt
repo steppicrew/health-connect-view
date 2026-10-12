@@ -41,6 +41,7 @@ import de.steppicrew.healthconnectview.health.mergeCycleDays
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.currentStreak
+import de.steppicrew.healthconnectview.health.resolveGoal
 import de.steppicrew.healthconnectview.health.dailyActivities
 import de.steppicrew.healthconnectview.health.dailyTotalsOf
 import de.steppicrew.healthconnectview.health.Session
@@ -177,6 +178,11 @@ data class TileData(
      */
     val streak: Int = 0,
     /**
+     * The day's goal where it adapts ([Tile.goalRule]), in the shown unit; null until it has
+     * been replayed, read with the streak from the same year of daily totals.
+     */
+    val adaptiveGoal: Double? = null,
+    /**
      * A weight tile showing the body face: body fat, water and bone mass, each its latest
      * reading up to the shown day, in that order, those never measured left out. Null on every
      * other tile.
@@ -223,8 +229,10 @@ data class TileData(
         get() {
             // A goal is per day: a week's steps against a daily 5,000 would always read full.
             if (shownSpan != Span.DAY) return null
-            // Goals are stored metric; the value is in the shown unit.
-            val goal = tile.effectiveGoal?.let(spec::display) ?: return null
+            // Goals are stored metric; the value is in the shown unit. An adaptive goal draws no
+            // ring until the day's own is known, rather than one against the starting goal.
+            val goal = (if (tile.goalRule != null) adaptiveGoal else tile.effectiveGoal?.let(spec::display))
+                ?: return null
             val current = value ?: return null
             if (goal <= 0.0) return null
             return (current / goal).toFloat().coerceIn(0f, 1f)
@@ -421,11 +429,12 @@ class DashboardViewModel(
 
     /**
      * Changes a tile's goal and persists it. A goal of zero or less would make the ring
-     * meaningless, so it clears the override rather than storing an unusable value.
+     * meaningless, so it clears the override rather than storing an unusable value. An
+     * adaptive goal starts from it, kept above [floor] where one is given.
      */
-    fun setGoal(typeName: String, goal: Double?) {
+    fun setGoal(typeName: String, goal: Double?, adaptive: Boolean = false, floor: Double? = null) {
         val sanitised = goal?.takeIf { it > 0.0 }
-        config = config.withGoal(typeName, sanitised)
+        config = config.withGoal(typeName, sanitised, adaptive, floor?.takeIf { adaptive && it > 0.0 })
         viewModelScope.launch { store.save(config) }
         reload()
     }
@@ -729,7 +738,8 @@ class DashboardViewModel(
                     curve = carried.curve,
                     sessions = carried.sessions,
                     trend = carried.trend,
-                    streak = carried.streak.takeIf { carried.tile.effectiveGoal == placeholder.tile.effectiveGoal } ?: 0,
+                    streak = carried.streak.takeIf { carried.tile.goalKey == placeholder.tile.goalKey } ?: 0,
+                    adaptiveGoal = carried.adaptiveGoal.takeIf { carried.tile.goalKey == placeholder.tile.goalKey },
                     shownSpan = carried.shownSpan,
                     standing = carried.standing,
                     chart = carried.chart,
@@ -772,7 +782,8 @@ class DashboardViewModel(
             if (carried != null && carried.source == tile.source) {
                 tile.copy(
                     trend = carried.trend,
-                    streak = carried.streak.takeIf { carried.tile.effectiveGoal == tile.tile.effectiveGoal } ?: 0,
+                    streak = carried.streak.takeIf { carried.tile.goalKey == tile.tile.goalKey } ?: 0,
+                    adaptiveGoal = carried.adaptiveGoal.takeIf { carried.tile.goalKey == tile.tile.goalKey },
                 )
             } else {
                 tile
@@ -838,6 +849,33 @@ class DashboardViewModel(
      * only honest number available for them.
      */
     private suspend fun load(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
+        val data = loadTile(placeholder, date, historyGranted)
+        return adaptiveGoalOf(data, date)?.let { data.copy(adaptiveGoal = it) } ?: data
+    }
+
+    /**
+     * The day's adaptive goal, read with the tile's value rather than with its streak after
+     * every tile is in: a steps ring waited for the whole dashboard while a steps chart beside
+     * it drew the same goal at once (12.10.2026). The year it replays is the one the chart's
+     * goal line and the streak read too, so shared reads read it once for all three.
+     */
+    private suspend fun adaptiveGoalOf(data: TileData, date: LocalDate): Double? {
+        val rule = data.tile.goalRule ?: return null
+        if (!data.granted || data.spec.tile.form != TileSpec.Form.RING || data.shownSpan != Span.DAY) return null
+        val metric = data.spec.aggregate ?: return null
+        val fixed = data.tile.effectiveGoal?.let(data.spec::display)?.takeIf { it > 0.0 } ?: return null
+        val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        return try {
+            resolveGoal(fixed, rule, date, repository.dailyTotalsOf(metric, origins)).goal(date)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // The trends pass tries again; until then the tile shows its number without a ring.
+            null
+        }
+    }
+
+    private suspend fun loadTile(placeholder: TileData, date: LocalDate, historyGranted: Boolean): TileData {
         val tile = placeholder.tile
         if (showsBody(tile)) {
             val day = loadDay(placeholder, date)
@@ -1148,8 +1186,9 @@ class DashboardViewModel(
                             runCatching { repository.trendBefore(it, date, origins)?.direction }.getOrNull()
                         }
                     }
-                    val streak = gate.withPermit { runCatching { streakOf(data, date, origins) }.getOrNull() } ?: 0
-                    data.copy(trend = trend, streak = streak)
+                    val (streak, goal) = gate.withPermit { runCatching { streakOf(data, date, origins) }.getOrNull() }
+                        ?: (0 to data.adaptiveGoal)
+                    data.copy(trend = trend, streak = streak, adaptiveGoal = goal)
                 }
             }.awaitAll()
         }
@@ -1157,17 +1196,22 @@ class DashboardViewModel(
     /**
      * The tile's current run: for a ring, of days its goal was met, against the value the
      * ring shows; for the activities tile, of days with an activity. Zero for every other tile.
+     * Paired with the day's adaptive goal, where the ring's goal adapts: both come from the
+     * same daily totals, each day of the run judged against its own goal.
      */
-    private suspend fun streakOf(data: TileData, date: LocalDate, origins: Set<DataOrigin>): Int {
+    private suspend fun streakOf(data: TileData, date: LocalDate, origins: Set<DataOrigin>): Pair<Int, Double?> {
         val tile = data.spec.tile
         val metric = data.spec.aggregate
         val goal = data.tile.effectiveGoal?.let(data.spec::display)?.takeIf { it > 0.0 }
         return when {
-            tile.form == TileSpec.Form.RING && metric != null && goal != null ->
-                currentStreak(goal, date, data.value, repository.dailyTotalsOf(metric, origins))
+            tile.form == TileSpec.Form.RING && metric != null && goal != null -> {
+                val resolved = resolveGoal(goal, data.tile.goalRule, date, repository.dailyTotalsOf(metric, origins))
+                currentStreak(resolved.goal, date, data.value, resolved.daily) to
+                    resolved.goal(date).takeIf { data.tile.goalRule != null }
+            }
             tile.form == TileSpec.Form.SESSIONS && tile.sessionKind == Session.Kind.EXERCISE ->
-                currentStreak(1.0, date, data.sessions.size.toDouble(), repository.dailyActivities())
-            else -> 0
+                currentStreak(1.0, date, data.sessions.size.toDouble(), repository.dailyActivities()) to null
+            else -> 0 to null
         }
     }
 

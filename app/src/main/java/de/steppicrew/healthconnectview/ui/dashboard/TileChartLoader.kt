@@ -28,6 +28,8 @@ import de.steppicrew.healthconnectview.health.trendBefore
 import de.steppicrew.healthconnectview.health.dailyActivities
 import de.steppicrew.healthconnectview.health.dailyTotalsOf
 import de.steppicrew.healthconnectview.health.streakSummary
+import de.steppicrew.healthconnectview.health.resolveGoal
+import de.steppicrew.healthconnectview.health.ResolvedGoal
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.numericAggregate
 import de.steppicrew.healthconnectview.health.atLeast
@@ -458,7 +460,10 @@ internal class TileChartLoader(
             runCatching { repository.total(second, span.totalFilter(offset, today), origins) }.getOrNull()
         }
         stepDone() // the total
-        val goal = if (cumulative) goalFor(spec) else null
+        // The goal is read on a day's own window, where streaks are counted against it too; an
+        // adaptive goal is that day's, from the year of daily totals before it.
+        val resolvedGoal = if (span == Span.DAY) goalFor(spec, span.startDate(offset, today), origins) else null
+        val goal = resolvedGoal?.goal?.invoke(span.startDate(offset, today))?.takeIf { cumulative }
 
         // A counted quantity bucketed across days is a total per bucket, not a reading taken
         // at a moment, so it gets the mark bars carry: read by comparing heights from zero.
@@ -713,8 +718,8 @@ internal class TileChartLoader(
             val streak = runCatching {
                 when {
                     span != Span.DAY || !withStreak -> null
-                    goal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
-                        streakSummary(goal, span.startDate(offset, today), headlineTotal, repository.dailyTotalsOf(metric, origins))
+                    resolvedGoal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
+                        streakSummary(resolvedGoal.goal, span.startDate(offset, today), headlineTotal, resolvedGoal.daily)
                     sessionKind == Session.Kind.EXERCISE ->
                         streakSummary(1.0, span.startDate(offset, today), sessions.size.toDouble(), repository.dailyActivities())
                     else -> null
@@ -1220,13 +1225,17 @@ internal class TileChartLoader(
 
     /**
      * The user's goal for this type if they set one, else the type's default -- in the shown
-     * unit, since goals are stored metric and the chart is not.
+     * unit, since goals are stored metric and the chart is not. Where it adapts, each day's own,
+     * replayed up to [date] from the daily totals of [origins]; see [resolveGoal].
      */
-    private suspend fun goalFor(spec: RecordTypeSpec<*>): Double? {
-        val typeName = spec.type.simpleName ?: return spec.tile.defaultGoal?.let(spec::display)
+    private suspend fun goalFor(spec: RecordTypeSpec<*>, date: LocalDate, origins: Set<DataOrigin>): ResolvedGoal? {
+        val typeName = spec.type.simpleName
         val stored = runCatching { dashboardStore.config.first() }.getOrNull()
-        return (stored?.tiles?.firstOrNull { it.typeName == typeName }?.effectiveGoal ?: spec.tile.defaultGoal)
-            ?.let(spec::display)
+        val tile = stored?.tiles?.firstOrNull { it.typeName == typeName }
+        val fixed = (tile?.effectiveGoal ?: spec.tile.defaultGoal)?.let(spec::display) ?: return null
+        val metric = spec.aggregate ?: return ResolvedGoal({ fixed }) { _, _ -> { null } }
+        return runCatching { resolveGoal(fixed, tile?.goalRule, date, repository.dailyTotalsOf(metric, origins)) }
+            .getOrElse { ResolvedGoal({ fixed }, repository.dailyTotalsOf(metric, origins)) }
     }
 
 }

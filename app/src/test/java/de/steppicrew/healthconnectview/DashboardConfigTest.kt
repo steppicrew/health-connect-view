@@ -77,6 +77,22 @@ class DashboardConfigTest {
     }
 
     @Test
+    fun `an adaptive goal and its floor go with the type's goal`() {
+        val adaptive = config.withGoal("StepsRecord", 8_000.0, adaptive = true, floor = 5_000.0).adding("StepsRecord")
+        val steps = adaptive.tiles.filter { it.typeName == "StepsRecord" }
+
+        assertTrue(steps.all { it.adaptiveGoal && it.goalFloor == 5_000.0 })
+        assertEquals(5_000.0, steps.first().goalRule!!.floor!!, 0.0)
+        assertEquals(steps, DashboardJson.decode(DashboardJson.encode(adaptive)).tiles.filter { it.typeName == "StepsRecord" })
+    }
+
+    @Test
+    fun `only a type that offers it adapts`() {
+        val sleep = config.adding("SleepSessionRecord").withGoal("SleepSessionRecord", 8.0, adaptive = true)
+        assertNull(sleep.tiles.first { it.typeName == "SleepSessionRecord" }.goalRule)
+    }
+
+    @Test
     fun `a goal applies to every tile of its type`() {
         val updated = config.adding("StepsRecord").withGoal("StepsRecord", 6_000.0)
         assertEquals(listOf(6_000.0, null, null, 6_000.0), updated.tiles.map { it.goal })

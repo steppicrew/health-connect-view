@@ -282,6 +282,10 @@
     </plurals>
     <string name="goal_title">Meta diária</string>
     <string name="goal_hint">Valor da meta</string>
+    <string name="goal_fixed">Meta fixa</string>
+    <string name="goal_adaptive">Meta adaptativa</string>
+    <string name="goal_start_hint">Valor inicial</string>
+    <string name="goal_floor_hint">Limite mínimo (opcional)</string>
     <string name="goal_reset">Usar padrão</string>
     <string name="action_save">Salvar</string>
     <string name="action_cancel">Cancelar</string>

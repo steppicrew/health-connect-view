@@ -277,6 +277,10 @@
     </plurals>
     <string name="goal_title">Günlük hedef</string>
     <string name="goal_hint">Hedef değer</string>
+    <string name="goal_fixed">Sabit hedef</string>
+    <string name="goal_adaptive">Uyarlanabilir hedef</string>
+    <string name="goal_start_hint">Başlangıç değeri</string>
+    <string name="goal_floor_hint">Alt sınır (isteğe bağlı)</string>
     <string name="goal_reset">Varsayılanı kullan</string>
     <string name="action_save">Kaydet</string>
     <string name="action_cancel">İptal</string>

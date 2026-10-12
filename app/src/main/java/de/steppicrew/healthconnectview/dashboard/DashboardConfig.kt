@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.dashboard
 
+import de.steppicrew.healthconnectview.health.AdaptiveGoalRule
 import de.steppicrew.healthconnectview.health.readsHeatmap
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -34,6 +35,13 @@ data class Tile(
      * [DashboardConfig.sanitised] keep it so.
      */
     val goal: Double? = null,
+    /**
+     * The goal follows the days before it ([adaptiveGoals]), [effectiveGoal] being where the
+     * replay starts. Per type, like [goal]; only where [TileSpec.adaptiveRise] offers it.
+     */
+    val adaptiveGoal: Boolean = false,
+    /** The lowest an adaptive goal may fall to, stored metric like [goal]; null for none. */
+    val goalFloor: Double? = null,
     /**
      * Overrides the type's [TileSpec.defaultZones]; null means use the default. Per type,
      * like [goal].
@@ -100,6 +108,13 @@ data class Tile(
 
     /** The goal actually in force: the user's override, else the type's default. */
     val effectiveGoal: Double? get() = goal ?: spec?.tile?.defaultGoal
+
+    /** Everything that decides the goal: a streak or adaptive goal is kept only while it holds. */
+    val goalKey: Triple<Double?, Boolean, Double?> get() = Triple(effectiveGoal, adaptiveGoal, goalFloor)
+
+    /** The rule an adaptive goal follows, where it is chosen and the type offers one. */
+    val goalRule: AdaptiveGoalRule?
+        get() = spec?.tile?.adaptiveRise?.takeIf { adaptiveGoal }?.let { AdaptiveGoalRule(it, goalFloor) }
 
     /** The value bands actually in force: the user's override, else the type's default. */
     val effectiveZones: ValueZones? get() = zones ?: spec?.tile?.defaultZones
@@ -188,7 +203,7 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         val fixed = known.map { tile ->
             val lead = first.getValue(tile.typeName)
             val id = if (seen.add(tile.id)) tile.id else freeId(tile.typeName, seen).also { seen += it }
-            tile.copy(id = id, goal = lead.goal, zones = lead.zones)
+            tile.copy(id = id, goal = lead.goal, adaptiveGoal = lead.adaptiveGoal, goalFloor = lead.goalFloor, zones = lead.zones)
         }
         return DashboardConfig(fixed)
     }
@@ -207,6 +222,8 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         val tile = Tile(
             typeName = typeName,
             goal = sibling?.goal,
+            adaptiveGoal = sibling?.adaptiveGoal ?: false,
+            goalFloor = sibling?.goalFloor,
             zones = sibling?.zones,
             id = freeId(typeName, tiles.map { it.id }.toSet()),
         )
@@ -216,10 +233,16 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
     fun has(typeName: String): Boolean = tiles.any { it.typeName == typeName }
 
-    /** Sets the goal of every tile of a type; null clears it back to the type's default. */
-    fun withGoal(typeName: String, goal: Double?): DashboardConfig = DashboardConfig(
-        tiles.map { if (it.typeName == typeName) it.copy(goal = goal) else it },
-    )
+    /**
+     * Sets the goal of every tile of a type; null clears it back to the type's default. An
+     * adaptive goal starts from it and stays above [floor] where one is given.
+     */
+    fun withGoal(typeName: String, goal: Double?, adaptive: Boolean = false, floor: Double? = null): DashboardConfig =
+        DashboardConfig(
+            tiles.map {
+                if (it.typeName == typeName) it.copy(goal = goal, adaptiveGoal = adaptive, goalFloor = floor) else it
+            },
+        )
 
     /** Sets the value bands of every tile of a type; null restores the type's default. */
     fun withZones(typeName: String, zones: ValueZones?): DashboardConfig = DashboardConfig(

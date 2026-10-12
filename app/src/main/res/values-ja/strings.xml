@@ -272,6 +272,10 @@
     </plurals>
     <string name="goal_title">1 日の目標</string>
     <string name="goal_hint">目標値</string>
+    <string name="goal_fixed">固定の目標</string>
+    <string name="goal_adaptive">自動調整の目標</string>
+    <string name="goal_start_hint">開始値</string>
+    <string name="goal_floor_hint">下限（任意）</string>
     <string name="goal_reset">デフォルトを使用</string>
     <string name="action_save">保存</string>
     <string name="action_cancel">キャンセル</string>
