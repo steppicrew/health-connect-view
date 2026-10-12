@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.registry
 
+import androidx.annotation.StringRes
+import de.steppicrew.healthconnectview.R
 import java.text.NumberFormat
 import java.time.Duration
 import java.time.Instant
@@ -68,6 +70,31 @@ object Formatting {
 
     fun integer(value: Long, locale: Locale = Locale.getDefault()): String =
         NumberFormat.getInstance(locale).format(value)
+
+    /**
+     * Between a number and its unit symbol, "5 km", "110 %": narrow and never broken across a
+     * line, as German typesetting sets it (DIN 5008, Duden) -- the owner's choice, 12.10.2026,
+     * over the full space, which left a wide gap in small labels.
+     *
+     * A thin space held to the unit by a zero-width no-break space, rather than the narrow
+     * no-break space U+202F: Roboto draws that one as wide as a full space, and the phone's own
+     * font has none and falls back to it (measured 12.10.2026, 0.248 em, against 0.20 em
+     * thin). Not the word joiner U+2060 either, which that font draws 0.6 em wide.
+     */
+    const val UNIT_SPACE = "\u2009\uFEFF"
+
+    /** The space before the unit [unitRes]: [UNIT_SPACE], or a full one before a word, "5.138 Schritte". */
+    fun unitSpace(@StringRes unitRes: Int): String = if (unitRes in WORD_UNITS) " " else UNIT_SPACE
+
+    private val WORD_UNITS = setOf(R.string.unit_steps, R.string.unit_floors, R.string.unit_pushes, R.string.unit_rpm_breath)
+
+    /**
+     * [fraction] as a whole percentage the way the language writes it -- "8 %", "8%", "%8" --
+     * with any space in it the narrow [UNIT_SPACE].
+     */
+    fun percent(fraction: Double, locale: Locale = Locale.getDefault()): String =
+        NumberFormat.getPercentInstance(locale).apply { maximumFractionDigits = 0 }.format(fraction)
+            .replace("\u00A0", UNIT_SPACE).replace("\u202F", UNIT_SPACE).replace(" ", UNIT_SPACE)
 
     /**
      * Date and time to the minute. MEDIUM would add seconds, which are noise for a health
@@ -150,7 +177,7 @@ object Formatting {
     fun pace(metresPerSecond: Double, imperial: Boolean = Quantity.DISTANCE.alternateShown): String? {
         val metres = if (imperial) METRES_PER_MILE else 1000.0
         val seconds = (metres / metresPerSecond).takeIf { it.isFinite() && it < MAX_PACE_SECONDS } ?: return null
-        return minutes(seconds / 60) + " " + paceUnit(imperial)
+        return minutes(seconds / 60) + UNIT_SPACE + paceUnit(imperial)
     }
 
     /** The unit a [pace] is in: "min/km", or "min/mi" where distance shows in miles. */

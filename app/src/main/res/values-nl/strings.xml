@@ -242,8 +242,8 @@
     <string name="bp_part_evening">Avond</string>
     <string name="bp_part_none">Geen meting</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Gem. %1$s mmHg · %2$d meting</item>
-        <item quantity="other">Gem. %1$s mmHg · %2$d metingen</item>
+        <item quantity="one">Gem. %1$s\u2009\uFEFFmmHg · %2$d meting</item>
+        <item quantity="other">Gem. %1$s\u2009\uFEFFmmHg · %2$d metingen</item>
     </plurals>
     <string name="bp_parts_rule">Ochtend is van 4:00 tot 13:59, avond vanaf 14:00. Een meting na middernacht maar vóór 4:00 telt voor de avond ervoor. Dezelfde meting die door meerdere apps is opgeslagen, telt één keer.\n\nDe kleuren volgen de graden van de European Society of Hypertension voor metingen in de praktijk: laag onder 90/60, normaal onder 130/85, hoog-normaal tot 139/89, graad 1 vanaf 140/90, graad 2 vanaf 160/100. De hoogste van de twee waarden beslist. Thuis geldt 135/85 en hoger al als verhoogd. Een richtlijn, geen diagnose.</string>
     <string name="settings_pro">Pro</string>
@@ -791,8 +791,8 @@
     <string name="privacy_contact_body">De broncode is openbaar, dus elke bewering op deze pagina kan worden gecontroleerd. Meld problemen via de issuetracker van het project op GitHub. Vragen kun je ook mailen naar hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Nachtgemiddelde</string>
     <string name="hrv_week_label">Gemiddelde van de laatste 7 nachten</string>
-    <string name="hrv_week_mean">Gemiddelde van de laatste 7 nachten: %1$s ms</string>
-    <string name="hrv_usual">Gebruikelijk bereik %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Gemiddelde van de laatste 7 nachten: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Gebruikelijk bereik %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">binnen je gebruikelijke bereik</string>
     <string name="hrv_below">onder je gebruikelijke bereik</string>
     <string name="hrv_above">boven je gebruikelijke bereik</string>

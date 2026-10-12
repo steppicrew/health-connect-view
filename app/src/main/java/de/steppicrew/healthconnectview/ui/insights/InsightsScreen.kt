@@ -130,7 +130,7 @@ fun InsightsScreen(
 private fun InsightCard(insight: Insight, onClick: () -> Unit) {
     val spec = insight.spec
     val trend = insight.trend
-    val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
     val decimals = spec.insightDecimals
     val amount = insightAmount(insight)
     val titleStyle = MaterialTheme.typography.titleSmall
@@ -175,7 +175,7 @@ private fun InsightCard(insight: Insight, onClick: () -> Unit) {
 internal fun insightAmount(insight: Insight): String {
     val trend = insight.trend
     trend.percent?.let { return percent(abs(it)) }
-    val unit = insight.spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    val unit = insight.spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
     return Formatting.number(abs(trend.recent - trend.baseline), insight.spec.insightDecimals) + unit
 }
 
@@ -188,6 +188,6 @@ private val RecordTypeSpec<*>.insightDecimals: Int?
 
 /** "8 %", "8%" or "%8" as the language writes it, whole percent: a finer figure is noise here. */
 private fun percent(value: Double): String =
-    NumberFormat.getPercentInstance(Locale.getDefault()).apply { maximumFractionDigits = 0 }.format(value / 100.0)
+    Formatting.percent(value / 100.0)
 
 private const val ICON_SIZE = 24

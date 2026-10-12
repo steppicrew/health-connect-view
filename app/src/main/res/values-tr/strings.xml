@@ -242,8 +242,8 @@
     <string name="bp_part_evening">Akşam</string>
     <string name="bp_part_none">Ölçüm yok</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Ort. %1$s mmHg · %2$d ölçüm</item>
-        <item quantity="other">Ort. %1$s mmHg · %2$d ölçüm</item>
+        <item quantity="one">Ort. %1$s\u2009\uFEFFmmHg · %2$d ölçüm</item>
+        <item quantity="other">Ort. %1$s\u2009\uFEFFmmHg · %2$d ölçüm</item>
     </plurals>
     <string name="bp_parts_rule">Sabah 4:00 ile 13:59 arası, akşam 14:00’ten itibarendir. Gece yarısından sonra ama 4:00’ten önce yapılan bir ölçüm önceki akşama sayılır. Birden fazla uygulamanın kaydettiği aynı ölçüm bir kez sayılır.\n\nRenkler, muayenehanede yapılan ölçümler için Avrupa Hipertansiyon Derneği derecelerini izler: 90/60 altı düşük, 130/85 altı normal, 139/89’a kadar yüksek normal, 140/90’dan itibaren derece 1, 160/100’den itibaren derece 2. İki değerden yüksek olanı belirleyicidir. Evde 135/85 ve üzeri zaten yüksek sayılır. Bir yol gösterici, tanı değil.</string>
     <string name="settings_pro">Pro</string>
@@ -791,8 +791,8 @@
     <string name="privacy_contact_body">Kaynak kodu herkese açıktır; bu sayfadaki her iddia doğrulanabilir. Lütfen sorunları projenin GitHub’daki sorun takipçisi üzerinden bildirin. Sorularınızı hcview@steppicrew.de adresine e-postayla da gönderebilirsiniz.</string>
     <string name="hrv_night_label">Gece ortalaması</string>
     <string name="hrv_week_label">Son 7 gecenin ortalaması</string>
-    <string name="hrv_week_mean">Son 7 gecenin ortalaması: %1$s ms</string>
-    <string name="hrv_usual">Olağan aralık %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Son 7 gecenin ortalaması: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Olağan aralık %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">olağan aralığınızda</string>
     <string name="hrv_below">olağan aralığınızın altında</string>
     <string name="hrv_above">olağan aralığınızın üzerinde</string>

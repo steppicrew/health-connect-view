@@ -246,10 +246,10 @@
     <string name="bp_part_evening">Вечер</string>
     <string name="bp_part_none">Нет измерений</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Сред. %1$s mmHg · %2$d измерение</item>
-        <item quantity="few">Сред. %1$s mmHg · %2$d измерения</item>
-        <item quantity="many">Сред. %1$s mmHg · %2$d измерений</item>
-        <item quantity="other">Сред. %1$s mmHg · %2$d измерения</item>
+        <item quantity="one">Сред. %1$s\u2009\uFEFFmmHg · %2$d измерение</item>
+        <item quantity="few">Сред. %1$s\u2009\uFEFFmmHg · %2$d измерения</item>
+        <item quantity="many">Сред. %1$s\u2009\uFEFFmmHg · %2$d измерений</item>
+        <item quantity="other">Сред. %1$s\u2009\uFEFFmmHg · %2$d измерения</item>
     </plurals>
     <string name="bp_parts_rule">Утро — с 4:00 до 13:59, вечер — с 14:00. Измерение после полуночи, но до 4:00 относится к предыдущему вечеру. Одно и то же измерение, сохранённое несколькими приложениями, учитывается один раз.\n\nЦвета соответствуют степеням Европейского общества по артериальной гипертензии для измерений на приёме: низкое — ниже 90/60, нормальное — ниже 130/85, высокое нормальное — до 139/89, степень 1 — от 140/90, степень 2 — от 160/100. Решает большее из двух значений. Дома уже 135/85 и выше считается повышенным. Ориентир, а не диагноз.</string>
     <string name="settings_pro">Pro</string>
@@ -843,8 +843,8 @@
     <string name="privacy_contact_body">Исходный код открыт, поэтому каждое утверждение на этой странице можно проверить. Сообщайте о проблемах через трекер задач проекта на GitHub. Вопросы можно также отправить по электронной почте на hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Среднее за ночь</string>
     <string name="hrv_week_label">Среднее за последние 7 ночей</string>
-    <string name="hrv_week_mean">Среднее за последние 7 ночей: %1$s ms</string>
-    <string name="hrv_usual">Обычный диапазон %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Среднее за последние 7 ночей: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Обычный диапазон %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">в вашем обычном диапазоне</string>
     <string name="hrv_below">ниже вашего обычного диапазона</string>
     <string name="hrv_above">выше вашего обычного диапазона</string>

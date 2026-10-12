@@ -242,8 +242,8 @@
     <string name="bp_part_evening">Abends</string>
     <string name="bp_part_none">Keine Messung</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Ø %1$s mmHg · %2$d Messung</item>
-        <item quantity="other">Ø %1$s mmHg · %2$d Messungen</item>
+        <item quantity="one">Ø %1$s\u2009\uFEFFmmHg · %2$d Messung</item>
+        <item quantity="other">Ø %1$s\u2009\uFEFFmmHg · %2$d Messungen</item>
     </plurals>
     <string name="bp_parts_rule">Morgens zählt von 4:00 bis 13:59, abends ab 14:00. Eine Messung nach Mitternacht, aber vor 4:00 zählt zum Abend davor. Dieselbe Messung, von mehreren Apps gespeichert, zählt einmal.\n\nDie Farben folgen der Einteilung der Europäischen Hypertonie-Gesellschaft (ESH) für Messungen in der Praxis: niedrig unter 90/60, normal unter 130/85, hoch-normal bis 139/89, Grad 1 ab 140/90, Grad 2 ab 160/100. Der höhere der beiden Werte entscheidet. Zu Hause gilt schon ab 135/85 als erhöht. Eine Orientierung, keine Diagnose.</string>
     <string name="settings_pro">Pro</string>
@@ -791,8 +791,8 @@
     <string name="unit_floors">Etagen</string>
     <string name="hrv_night_label">Mittel der Nacht</string>
     <string name="hrv_week_label">Mittel der letzten 7 Nächte</string>
-    <string name="hrv_week_mean">Mittel der letzten 7 Nächte: %1$s ms</string>
-    <string name="hrv_usual">Übliche Spanne %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Mittel der letzten 7 Nächte: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Übliche Spanne %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">in Ihrem üblichen Bereich</string>
     <string name="hrv_below">unter Ihrem üblichen Bereich</string>
     <string name="hrv_above">über Ihrem üblichen Bereich</string>

@@ -240,7 +240,7 @@
     <string name="bp_part_evening">저녁</string>
     <string name="bp_part_none">측정값 없음</string>
     <plurals name="bp_part_value">
-        <item quantity="other">평균 %1$s mmHg · %2$d회</item>
+        <item quantity="other">평균 %1$s\u2009\uFEFFmmHg · %2$d회</item>
     </plurals>
     <string name="bp_parts_rule">아침은 4:00부터 13:59까지, 저녁은 14:00부터입니다. 자정 이후 4:00 이전의 측정값은 전날 저녁으로 계산합니다. 여러 앱이 저장한 같은 측정값은 한 번만 셉니다.\n\n색상은 진료실 측정에 대한 유럽고혈압학회 등급을 따릅니다. 낮음은 90/60 미만, 정상은 130/85 미만, 높은 정상은 139/89까지, 1단계는 140/90부터, 2단계는 160/100부터입니다. 두 값 중 높은 쪽으로 판정합니다. 가정에서는 135/85 이상이면 이미 높은 것으로 봅니다. 참고용이며 진단이 아닙니다.</string>
     <string name="settings_pro">Pro</string>
@@ -765,8 +765,8 @@
     <string name="privacy_contact_body">소스 코드가 공개되어 있어 이 페이지의 모든 내용을 확인할 수 있습니다. 문제는 GitHub에 있는 프로젝트의 이슈 트래커로 알려 주세요. 문의 사항은 hcview@steppicrew.de(으)로 메일을 보내 주셔도 됩니다.</string>
     <string name="hrv_night_label">밤 평균</string>
     <string name="hrv_week_label">최근 7일 밤 평균</string>
-    <string name="hrv_week_mean">최근 7일 밤 평균: %1$s ms</string>
-    <string name="hrv_usual">평소 범위 %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">최근 7일 밤 평균: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">평소 범위 %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">평소 범위 안</string>
     <string name="hrv_below">평소 범위보다 낮음</string>
     <string name="hrv_above">평소 범위보다 높음</string>

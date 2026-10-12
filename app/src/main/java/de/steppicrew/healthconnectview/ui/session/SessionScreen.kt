@@ -509,7 +509,7 @@ private fun Laps(laps: List<Lap>) {
             )
             lap.meters?.let {
                 Text(
-                    text = Formatting.number(km.convert(it / 1000)) + " " + km.symbol(),
+                    text = Formatting.number(km.convert(it / 1000)) + Formatting.UNIT_SPACE + km.symbol(),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -553,7 +553,7 @@ private fun Stats(detail: SessionDetail) {
         return
     }
     detail.stats.forEach { stat ->
-        val unit = stat.spec.displayUnitRes?.let { " " + stringResource(it) } ?: ""
+        val unit = stat.spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) } ?: ""
         StatRow(
             label = stringResource(stat.spec.displayNameRes),
             value = Formatting.number(stat.value) + unit,
@@ -648,7 +648,7 @@ private fun Halves(drift: Drift, heartRateUnitRes: Int?, explained: Boolean) {
             StatRow(
                 label = stringResource(label),
                 value = Formatting.number(half.heartRate, 0) + beatsUnit + " · " +
-                    Formatting.number(speedUnit.convert(half.speed * MS_TO_KMH), 1) + " " + speedUnit.symbol(),
+                    Formatting.number(speedUnit.convert(half.speed * MS_TO_KMH), 1) + Formatting.UNIT_SPACE + speedUnit.symbol(),
                 detail = stringResource(
                     R.string.session_drift_per_distance,
                     // Per mile where miles are shown: a mile holds more beats than a kilometre.

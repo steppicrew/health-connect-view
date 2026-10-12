@@ -240,7 +240,7 @@
     <string name="bp_part_evening">晚上</string>
     <string name="bp_part_none">无测量值</string>
     <plurals name="bp_part_value">
-        <item quantity="other">平均 %1$s mmHg · %2$d 次</item>
+        <item quantity="other">平均 %1$s\u2009\uFEFFmmHg · %2$d 次</item>
     </plurals>
     <string name="bp_parts_rule">早晨为 4:00 至 13:59，晚上从 14:00 开始。午夜之后、4:00 之前的测量计入前一晚。多个应用保存的同一次测量只计一次。\n\n颜色遵循欧洲高血压学会针对诊室测量的分级：偏低为低于 90/60，正常为低于 130/85，正常高值为不超过 139/89，1 级为 140/90 起，2 级为 160/100 起。以两个数值中较高的一个为准。在家测量时，135/85 及以上即视为偏高。仅供参考，不是诊断。</string>
     <string name="settings_pro">Pro</string>
@@ -765,8 +765,8 @@
     <string name="privacy_contact_body">源代码是公开的，因此此页面上的每项说明都可以核实。请通过该项目在 GitHub 上的问题跟踪器报告问题。如有疑问，也可发送电子邮件至 hcview@steppicrew.de。</string>
     <string name="hrv_night_label">当晚平均值</string>
     <string name="hrv_week_label">最近 7 晚平均值</string>
-    <string name="hrv_week_mean">最近 7 晚平均值：%1$s ms</string>
-    <string name="hrv_usual">平常范围 %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">最近 7 晚平均值：%1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">平常范围 %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">在您的平常范围内</string>
     <string name="hrv_below">低于您的平常范围</string>
     <string name="hrv_above">高于您的平常范围</string>

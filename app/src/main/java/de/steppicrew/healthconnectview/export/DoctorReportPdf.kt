@@ -111,15 +111,15 @@ class DoctorReportPdf(context: Context) : ReportPdf(context) {
         }
         report.weight?.overall?.let { stats ->
             val kg = Quantity.MASS
-            add(stats.row(R.string.type_weight) { "${Formatting.axisLabel(kg.convert(it), 1)} ${kg.symbol()}" })
+            add(stats.row(R.string.type_weight) { "${Formatting.axisLabel(kg.convert(it), 1)}${Formatting.UNIT_SPACE}${kg.symbol()}" })
         }
         report.resting?.overall?.let { stats ->
-            add(stats.row(R.string.type_resting_heart_rate) { "${it.roundToInt()} ${context.getString(R.string.unit_bpm)}" })
+            add(stats.row(R.string.type_resting_heart_rate) { "${it.roundToInt()}${Formatting.UNIT_SPACE}${context.getString(R.string.unit_bpm)}" })
         }
         report.glucose?.overall?.let { stats ->
             val unit = Quantity.GLUCOSE
             val decimals = if (unit.alternateShown) 0 else 1
-            add(stats.row(R.string.type_blood_glucose) { "${Formatting.axisLabel(unit.convert(it), decimals)} ${unit.symbol()}" })
+            add(stats.row(R.string.type_blood_glucose) { "${Formatting.axisLabel(unit.convert(it), decimals)}${Formatting.UNIT_SPACE}${unit.symbol()}" })
         }
     }
 
