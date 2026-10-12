@@ -277,6 +277,10 @@
     </plurals>
     <string name="goal_title">रोज़ का लक्ष्य</string>
     <string name="goal_hint">लक्ष्य वैल्यू</string>
+    <string name="goal_fixed">तय लक्ष्य</string>
+    <string name="goal_adaptive">अनुकूली लक्ष्य</string>
+    <string name="goal_start_hint">शुरुआती मान</string>
+    <string name="goal_floor_hint">निचली सीमा (वैकल्पिक)</string>
     <string name="goal_reset">डिफ़ॉल्ट इस्तेमाल करें</string>
     <string name="action_save">सेव करें</string>
     <string name="action_cancel">रद्द करें</string>

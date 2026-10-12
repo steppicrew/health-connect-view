@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.registry
 import androidx.health.connect.client.permission.HealthPermission
 import de.steppicrew.healthconnectview.health.Nutrient
 import de.steppicrew.healthconnectview.health.RecordKind
+import de.steppicrew.healthconnectview.health.STEPS_MAX_RISE
 import de.steppicrew.healthconnectview.health.Session
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.feature.ExperimentalMindfulnessSessionApi
@@ -263,6 +264,7 @@ object RecordRegistry {
             tile = TileSpec(
                 TileSpec.Form.RING,
                 defaultGoal = 10_000.0,
+                adaptiveRise = STEPS_MAX_RISE,
                 cumulativeIntraday = true,
                 integralValues = true,
                 overlaySessions = TileSpec.ACTIVITY_CONTEXT,

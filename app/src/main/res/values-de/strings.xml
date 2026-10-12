@@ -277,6 +277,10 @@
     </plurals>
     <string name="goal_title">Tagesziel</string>
     <string name="goal_hint">Zielwert</string>
+    <string name="goal_fixed">Festes Ziel</string>
+    <string name="goal_adaptive">Adaptives Ziel</string>
+    <string name="goal_start_hint">Startwert</string>
+    <string name="goal_floor_hint">Untergrenze (optional)</string>
     <string name="goal_reset">Standard verwenden</string>
     <string name="action_save">Speichern</string>
     <string name="action_cancel">Abbrechen</string>

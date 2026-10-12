@@ -287,6 +287,10 @@
     </plurals>
     <string name="goal_title">Дневная цель</string>
     <string name="goal_hint">Целевое значение</string>
+    <string name="goal_fixed">Фиксированная цель</string>
+    <string name="goal_adaptive">Адаптивная цель</string>
+    <string name="goal_start_hint">Начальное значение</string>
+    <string name="goal_floor_hint">Нижний предел (необязательно)</string>
     <string name="goal_reset">По умолчанию</string>
     <string name="action_save">Сохранить</string>
     <string name="action_cancel">Отмена</string>

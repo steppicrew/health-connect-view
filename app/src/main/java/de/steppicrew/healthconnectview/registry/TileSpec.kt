@@ -22,6 +22,11 @@ data class TileSpec(
      */
     val defaultGoal: Double? = null,
     /**
+     * The largest rise in a day of an adaptive goal ([adaptiveGoals]), in the same unit as
+     * [defaultGoal]; null where the type offers no adaptive goal. Steps for now.
+     */
+    val adaptiveRise: Double? = null,
+    /**
      * Default value bands for colouring this type's curve, low to high.
      *
      * A default only: the boundaries that matter are the user's, since a resting heart rate

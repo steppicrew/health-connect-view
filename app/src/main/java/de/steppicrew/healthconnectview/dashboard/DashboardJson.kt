@@ -26,6 +26,8 @@ internal object DashboardJson {
                     put(FIELD_WIDTH, tile.width)
                     put(FIELD_HEIGHT, tile.height)
                     tile.goal?.let { put(FIELD_GOAL, it) }
+                    if (tile.adaptiveGoal) put(FIELD_ADAPTIVE_GOAL, true)
+                    tile.goalFloor?.let { put(FIELD_GOAL_FLOOR, it) }
                     tile.zones?.let { zones ->
                         put(FIELD_ZONES, JSONArray().apply { zones.bounds.forEach { put(it) } })
                     }
@@ -52,6 +54,12 @@ internal object DashboardJson {
                 width = item.optInt(FIELD_WIDTH, 1).coerceAtLeast(1),
                 height = item.optInt(FIELD_HEIGHT, 1).coerceAtLeast(1),
                 goal = if (item.has(FIELD_GOAL)) item.optDouble(FIELD_GOAL).takeIf { it.isFinite() } else null,
+                adaptiveGoal = item.optBoolean(FIELD_ADAPTIVE_GOAL, false),
+                goalFloor = if (item.has(FIELD_GOAL_FLOOR)) {
+                    item.optDouble(FIELD_GOAL_FLOOR).takeIf { it.isFinite() && it > 0.0 }
+                } else {
+                    null
+                },
                 zones = item.optJSONArray(FIELD_ZONES)?.let { stored ->
                     // Sanitised on read as well as on write: a hand-edited or half-written
                     // value must not put unsorted bounds in front of the colour lookup.
@@ -94,5 +102,7 @@ internal object DashboardJson {
     private const val FIELD_COMPANION = "with"
     private const val FIELD_CALENDAR_YEAR = "calendarYear"
     private const val FIELD_MEAN = "mean"
+    private const val FIELD_ADAPTIVE_GOAL = "adaptiveGoal"
+    private const val FIELD_GOAL_FLOOR = "goalFloor"
     private const val FIELD_PICKS = "picks"
 }

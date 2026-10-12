@@ -20,17 +20,27 @@ import java.time.Period
 data class Streak(val count: Int, val broken: Boolean, val gap: Int = 0)
 
 /**
+ * The goal in force on a day. A fixed goal is the same every day; an adaptive one
+ * ([adaptiveGoals]) differs, and each day is judged against its own.
+ */
+typealias DayGoal = (LocalDate) -> Double
+
+/**
  * Walks [newestFirst] -- one value per day, null for no data -- continuing this streak.
  *
  * Split out so the days can arrive in chunks, newest first, and the reading stop as soon as
  * a day breaks the run: most streaks end within a week, and a year of buckets for each would
  * be spent to find that out.
  */
-fun Streak.continued(newestFirst: List<Double?>, goal: Double): Streak {
+fun Streak.continued(newestFirst: List<Double?>, goal: Double): Streak =
+    continued(newestFirst, List(newestFirst.size) { goal })
+
+/** As [continued] with one goal, but each day against its own in [goals], in the same order. */
+fun Streak.continued(newestFirst: List<Double?>, goals: List<Double>): Streak {
     if (broken) return this
     var count = count
     var gap = gap
-    for (value in newestFirst) {
+    for ((value, goal) in newestFirst.zip(goals)) {
         when {
             value == null -> if (++gap > STREAK_MAX_GAP_DAYS) return Streak(count, broken = true)
             value >= goal -> {
@@ -61,7 +71,11 @@ data class LongestStreak(val count: Int, val first: LocalDate, val last: LocalDa
  * The longest run in [oldestFirst], by the same rules as [continued]: gaps bridged up to
  * [STREAK_MAX_GAP_DAYS], a day short of the goal ending it. Null where no day met the goal.
  */
-fun longestStreak(oldestFirst: List<Pair<LocalDate, Double?>>, goal: Double): LongestStreak? {
+fun longestStreak(oldestFirst: List<Pair<LocalDate, Double?>>, goal: Double): LongestStreak? =
+    longestStreak(oldestFirst) { goal }
+
+/** As [longestStreak] with one goal, but each day against its own. */
+fun longestStreak(oldestFirst: List<Pair<LocalDate, Double?>>, goal: DayGoal): LongestStreak? {
     var best: LongestStreak? = null
     var count = 0
     var gap = 0
@@ -69,7 +83,7 @@ fun longestStreak(oldestFirst: List<Pair<LocalDate, Double?>>, goal: Double): Lo
     for ((day, value) in oldestFirst) {
         when {
             value == null -> if (++gap > STREAK_MAX_GAP_DAYS) count = 0
-            value >= goal -> {
+            value >= goal(day) -> {
                 if (count == 0) first = day
                 count++
                 gap = 0
@@ -139,15 +153,25 @@ suspend fun currentStreak(
     dayValue: Double?,
     daily: DailyValues,
     today: LocalDate = LocalDate.now(),
+): Int = currentStreak({ goal }, date, dayValue, daily, today)
+
+/** As [currentStreak] with one goal, but each day against its own. */
+suspend fun currentStreak(
+    goal: DayGoal,
+    date: LocalDate,
+    dayValue: Double?,
+    daily: DailyValues,
+    today: LocalDate = LocalDate.now(),
 ): Int {
-    var streak = streakStart(dayValue, goal, running = date == today) ?: return 0
+    var streak = streakStart(dayValue, goal(date), running = date == today) ?: return 0
     var end = date
     var covered = 0
     while (!streak.broken && covered < STREAK_MAX_DAYS) {
         val days = minOf(STREAK_CHUNK_DAYS, STREAK_MAX_DAYS - covered)
         val start = end.minusDays(days.toLong())
         val values = daily(start, end)
-        streak = streak.continued(List(days) { values(end.minusDays(it + 1L)) }, goal)
+        val newestFirst = List(days) { end.minusDays(it + 1L) }
+        streak = streak.continued(newestFirst.map(values), newestFirst.map(goal))
         end = start
         covered += days
     }
@@ -169,14 +193,24 @@ suspend fun streakSummary(
     dayValue: Double?,
     daily: DailyValues,
     today: LocalDate = LocalDate.now(),
+): StreakSummary = streakSummary({ goal }, date, dayValue, daily, today)
+
+/** As [streakSummary] with one goal, but each day against its own. */
+suspend fun streakSummary(
+    goal: DayGoal,
+    date: LocalDate,
+    dayValue: Double?,
+    daily: DailyValues,
+    today: LocalDate = LocalDate.now(),
 ): StreakSummary {
     val running = date == today
     val start = date.minusDays(STREAK_MAX_DAYS.toLong())
     val values = daily(start, date)
     val before = List(STREAK_MAX_DAYS) { start.plusDays(it.toLong()).let { day -> day to values(day) } }
-    val shown = dayValue?.takeUnless { running && it < goal }
-    val current = streakStart(dayValue, goal, running)
-        ?.continued(before.reversed().map { it.second }, goal)?.count ?: 0
+    val shown = dayValue?.takeUnless { running && it < goal(date) }
+    val newestFirst = before.reversed()
+    val current = streakStart(dayValue, goal(date), running)
+        ?.continued(newestFirst.map { it.second }, newestFirst.map { goal(it.first) })?.count ?: 0
     return StreakSummary(current, longestStreak(before + (date to shown), goal))
 }
 

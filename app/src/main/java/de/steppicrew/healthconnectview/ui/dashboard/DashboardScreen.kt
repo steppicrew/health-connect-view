@@ -260,7 +260,17 @@ fun DashboardScreen(
             },
             unit = editing.spec.displayUnitRes?.let { stringResource(it) },
             onDismiss = { editingGoalFor = null },
-            onSave = { typeName, goal -> viewModel.setGoal(typeName, goal?.let(editing.spec::toMetric)) },
+            onSave = { typeName, choice ->
+                viewModel.setGoal(
+                    typeName,
+                    choice.goal?.let(editing.spec::toMetric),
+                    choice.adaptive,
+                    choice.floor?.let(editing.spec::toMetric),
+                )
+            },
+            adaptiveOffered = editing.spec.tile.adaptiveRise != null,
+            currentAdaptive = editing.tile.adaptiveGoal,
+            currentFloor = editing.tile.goalFloor?.let { (editing.spec.display(it) * 100).roundToInt() / 100.0 },
         )
     }
 

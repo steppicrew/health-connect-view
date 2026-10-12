@@ -282,6 +282,10 @@
     </plurals>
     <string name="goal_title">Obiettivo giornaliero</string>
     <string name="goal_hint">Valore obiettivo</string>
+    <string name="goal_fixed">Obiettivo fisso</string>
+    <string name="goal_adaptive">Obiettivo adattivo</string>
+    <string name="goal_start_hint">Valore iniziale</string>
+    <string name="goal_floor_hint">Limite minimo (facoltativo)</string>
     <string name="goal_reset">Usa predefinito</string>
     <string name="action_save">Salva</string>
     <string name="action_cancel">Annulla</string>

@@ -279,6 +279,10 @@
     </plurals>
     <string name="goal_title">Daily goal</string>
     <string name="goal_hint">Target value</string>
+    <string name="goal_fixed">Fixed goal</string>
+    <string name="goal_adaptive">Adaptive goal</string>
+    <string name="goal_start_hint">Starting value</string>
+    <string name="goal_floor_hint">Lower limit (optional)</string>
     <string name="goal_reset">Use default</string>
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>

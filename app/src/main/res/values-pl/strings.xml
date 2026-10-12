@@ -287,6 +287,10 @@
     </plurals>
     <string name="goal_title">Cel dzienny</string>
     <string name="goal_hint">Wartość docelowa</string>
+    <string name="goal_fixed">Stały cel</string>
+    <string name="goal_adaptive">Cel adaptacyjny</string>
+    <string name="goal_start_hint">Wartość początkowa</string>
+    <string name="goal_floor_hint">Dolna granica (opcjonalnie)</string>
     <string name="goal_reset">Użyj domyślnego</string>
     <string name="action_save">Zapisz</string>
     <string name="action_cancel">Anuluj</string>
