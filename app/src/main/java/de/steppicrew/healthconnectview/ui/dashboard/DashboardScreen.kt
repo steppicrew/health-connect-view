@@ -213,7 +213,8 @@ fun DashboardScreen(
     val resizable = pro.allows(Feature.TILE_SIZES)
     val repeatable = pro.allows(Feature.TILE_REPEAT)
     val colorsUnlocked = pro.allows(Feature.TILE_COLORS)
-    var editingColorFor by remember { mutableStateOf<TileData?>(null) }
+    // The tile and its name: the week's changes and the cycle tile are named by no type.
+    var editingColorFor by remember { mutableStateOf<Pair<Tile, Int>?>(null) }
     var editingGoalFor by remember { mutableStateOf<TileData?>(null) }
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
@@ -288,12 +289,12 @@ fun DashboardScreen(
         )
     }
 
-    editingColorFor?.let { editing ->
+    editingColorFor?.let { (tile, name) ->
         TileColorDialog(
-            displayName = stringResource(editing.spec.displayNameRes),
-            current = editing.tile.color,
+            displayName = stringResource(name),
+            current = tile.color,
             onDismiss = { editingColorFor = null },
-            onPick = { viewModel.setColor(editing.tile.id, it) },
+            onPick = { viewModel.setColor(tile.id, it) },
         )
     }
 
@@ -507,9 +508,17 @@ fun DashboardScreen(
                                     )
                                 }
                                 if (entry is GridEntry.Cycle) {
-                                    SharedTileCard(
+                                    TileColored(if (colorsUnlocked) entry.data.tile.color else TileColor.DEFAULT) { SharedTileCard(
                                         tile = entry.data.tile,
                                         title = stringResource(R.string.cycle_tile_title),
+                                        colorsUnlocked = colorsUnlocked,
+                                        onSetColor = {
+                                            if (colorsUnlocked) {
+                                                editingColorFor = entry.data.tile to R.string.cycle_tile_title
+                                            } else {
+                                                activity?.let(AppEntitlements.current::buy)
+                                            }
+                                        },
                                         caption = entry.data.now?.let { now ->
                                             stringResource(R.string.cycle_tile_since, Formatting.dayAndMonth(now.start.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(), HealthRepository.DEFAULT_ZONE))
                                         }.orEmpty(),
@@ -527,11 +536,19 @@ fun DashboardScreen(
                                         onResize = {
                                             if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
                                         },
-                                    ) { width, height -> CycleTileBody(entry.data, width, height) }
+                                    ) { width, height -> CycleTileBody(entry.data, width, height) } }
                                 } else if (entry is GridEntry.Insights) {
-                                    SharedTileCard(
+                                    TileColored(if (colorsUnlocked) entry.data.tile.color else TileColor.DEFAULT) { SharedTileCard(
                                         tile = entry.data.tile,
                                         title = stringResource(R.string.insights_tile_title),
+                                        colorsUnlocked = colorsUnlocked,
+                                        onSetColor = {
+                                            if (colorsUnlocked) {
+                                                editingColorFor = entry.data.tile to R.string.insights_tile_title
+                                            } else {
+                                                activity?.let(AppEntitlements.current::buy)
+                                            }
+                                        },
                                         caption = stringResource(R.string.insights_tile_caption),
                                         modifier = placed,
                                         editing = editing,
@@ -556,7 +573,7 @@ fun DashboardScreen(
                                         onResize = {
                                             if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
                                         },
-                                    ) { width, height -> InsightsTileBody(entry.data, width, height) }
+                                    ) { width, height -> InsightsTileBody(entry.data, width, height) } }
                                 } else {
                                     val tile = (entry as GridEntry.Type).data
                                     // Without Pro drawn in the theme's colour, the chosen one kept, as
@@ -610,7 +627,7 @@ fun DashboardScreen(
                                             colorsUnlocked = colorsUnlocked,
                                             onSetColor = {
                                                 if (colorsUnlocked) {
-                                                    editingColorFor = tile
+                                                    editingColorFor = tile.tile to tile.spec.displayNameRes
                                                 } else {
                                                     activity?.let(AppEntitlements.current::buy)
                                                 }
@@ -844,6 +861,9 @@ private fun SharedTileCard(
     onMoveUp: () -> Unit,
     onMoveDown: () -> Unit,
     onRemove: () -> Unit,
+    /** Whether colours are unlocked, and what the colour button does; see [TileEditControls]. */
+    colorsUnlocked: Boolean,
+    onSetColor: () -> Unit,
     /** Whether larger sizes are unlocked; drawn at one cell without, as type tiles are. */
     resizable: Boolean = false,
     onResize: () -> Unit = {},
@@ -896,14 +916,13 @@ private fun SharedTileCard(
                         resizable = resizable,
                         width = width,
                         height = height,
-                        colorsUnlocked = false,
+                        colorsUnlocked = colorsUnlocked,
                         onResize = onResize,
-                        onSetColor = {},
+                        onSetColor = onSetColor,
                         onRemove = onRemove,
                         onSetGoal = {},
                         onSetZones = {},
                         onSetOptions = onSetOptions,
-                        canSetColor = false,
                     )
                 } else {
                     body(width, height)
