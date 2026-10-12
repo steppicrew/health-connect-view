@@ -1,0 +1,1 @@
+1.6.0 — Un objetivo de pasos adaptativo que sube tras días activos y baja tras días tranquilos, con un límite inferior opcional. Los anillos muestran cuánto superaste el objetivo: un anillo fino por cada objetivo completo adicional y la parte alcanzada en el anillo. Colores para los mosaicos «Cambios de esta semana» y «Ciclo» (Pro). Carga más rápida.

@@ -1,0 +1,1 @@
+1.6.0 — Target langkah adaptif yang naik setelah hari yang aktif dan turun setelah hari yang santai, dengan batas bawah opsional. Cincin menunjukkan seberapa jauh Anda melampaui target: cincin tipis untuk setiap target penuh berikutnya dan bagian yang tercapai di dalam cincin. Warna untuk kartu “Perubahan minggu ini” dan “Siklus” (Pro). Pemuatan lebih cepat.

@@ -1,0 +1,1 @@
+1.6.0 — Adaptacyjny cel kroków, który rośnie po aktywnych dniach i spada po spokojnych, z opcjonalną dolną granicą. Pierścienie pokazują, o ile przekroczono cel: cienki pierścień za każdy kolejny pełny cel i osiągnięta część w pierścieniu. Kolory dla kafelków „Zmiany w tym tygodniu” i „Cykl” (Pro). Szybsze ładowanie.

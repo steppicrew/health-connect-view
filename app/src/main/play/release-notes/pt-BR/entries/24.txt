@@ -1,0 +1,1 @@
+1.6.0 — Uma meta de passos adaptativa que sobe depois de dias ativos e desce depois de dias tranquilos, com um limite mínimo opcional. Os anéis mostram o quanto você passou da meta: um anel fino para cada meta completa a mais e a parte alcançada no anel. Cores para os blocos “Mudanças desta semana” e “Ciclo” (Pro). Carregamento mais rápido.
