@@ -1,0 +1,1 @@
+1.6.0 — Een adaptief stappendoel dat stijgt na actieve dagen en daalt na rustige, met een optionele ondergrens. Ringen tonen hoe ver je boven het doel zit: een dunne ring voor elk extra volledig doel en het gehaalde deel in de ring. Kleuren voor de tegels ‘Veranderingen deze week’ en ‘Cyclus’ (Pro). Sneller laden.

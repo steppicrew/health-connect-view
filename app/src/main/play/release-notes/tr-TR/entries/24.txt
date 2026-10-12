@@ -1,0 +1,1 @@
+1.6.0 — Hareketli günlerden sonra yükselen, sakin günlerden sonra düşen uyarlanabilir adım hedefi; isteğe bağlı alt sınırla. Halkalar hedefi ne kadar aştığınızı gösterir: her ek tam hedef için ince bir halka ve ulaşılan oran halkanın içinde. “Bu haftaki değişiklikler” ve “Döngü” kutucukları için renkler (Pro). Daha hızlı yükleme.
