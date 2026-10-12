@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.health.hrvWindow
 import de.steppicrew.healthconnectview.health.HrvSummary
 import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
+import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.sessionsIn
@@ -98,6 +99,12 @@ internal class TileChartLoader(
          * read again for a figure the tile never showed.
          */
         withStreak: Boolean = true,
+        /**
+         * The tile whose goal the chart draws. Null on the detail screen, which shows a type
+         * and takes the goal of its first tile; a dashboard with two tiles of one type must
+         * draw each with its own.
+         */
+        tile: Tile? = null,
         onProgress: (Float) -> Unit = {},
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
@@ -462,7 +469,7 @@ internal class TileChartLoader(
         stepDone() // the total
         // The goal is read on a day's own window, where streaks are counted against it too; an
         // adaptive goal is that day's, from the year of daily totals before it.
-        val resolvedGoal = if (span == Span.DAY) goalFor(spec, span.startDate(offset, today), origins) else null
+        val resolvedGoal = if (span == Span.DAY) goalFor(spec, span.startDate(offset, today), origins, tile) else null
         val goal = resolvedGoal?.goal?.invoke(span.startDate(offset, today))?.takeIf { cumulative }
 
         // A counted quantity bucketed across days is a total per bucket, not a reading taken
@@ -1228,10 +1235,9 @@ internal class TileChartLoader(
      * unit, since goals are stored metric and the chart is not. Where it adapts, each day's own,
      * replayed up to [date] from the daily totals of [origins]; see [resolveGoal].
      */
-    private suspend fun goalFor(spec: RecordTypeSpec<*>, date: LocalDate, origins: Set<DataOrigin>): ResolvedGoal? {
+    private suspend fun goalFor(spec: RecordTypeSpec<*>, date: LocalDate, origins: Set<DataOrigin>, shown: Tile?): ResolvedGoal? {
         val typeName = spec.type.simpleName
-        val stored = runCatching { dashboardStore.config.first() }.getOrNull()
-        val tile = stored?.tiles?.firstOrNull { it.typeName == typeName }
+        val tile = shown ?: runCatching { dashboardStore.config.first() }.getOrNull()?.tiles?.firstOrNull { it.typeName == typeName }
         val fixed = (tile?.effectiveGoal ?: spec.tile.defaultGoal)?.let(spec::display) ?: return null
         val metric = spec.aggregate ?: return ResolvedGoal({ fixed }) { _, _ -> { null } }
         return runCatching { resolveGoal(fixed, tile?.goalRule, date, repository.dailyTotalsOf(metric, origins)) }

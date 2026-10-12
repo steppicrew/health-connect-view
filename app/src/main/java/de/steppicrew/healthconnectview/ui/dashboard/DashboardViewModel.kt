@@ -943,7 +943,7 @@ class DashboardViewModel(
         val capped = tile.span.needsHistoryPermission(0, date) && !historyGranted
         val reads = Reads()
         val chart = reads.attempt {
-            TileChartLoader(repository, store, today = date).chart(placeholder.spec, tile.span, 0, capped, source, withStreak = false)
+            TileChartLoader(repository, store, today = date).chart(placeholder.spec, tile.span, 0, capped, source, withStreak = false, tile = tile)
         }
 
         // The chosen readings over the day's sessions: its night -- the longest sleep, not a
