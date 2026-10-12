@@ -492,7 +492,16 @@ class DashboardViewModel(
      */
     fun setColor(id: String, color: TileColor) {
         config = config.withColor(id, color)
-        _state.update { it.copy(tiles = withCurrentLayout(it.tiles), layout = config.tiles.map(Tile::id)) }
+        val after = config.tiles.firstOrNull { it.id == id }
+        _state.update { state ->
+            state.copy(
+                tiles = withCurrentLayout(state.tiles),
+                layout = config.tiles.map(Tile::id),
+                // The insights and cycle tiles are kept apart from the type tiles, as for a resize.
+                insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
+                cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
+            )
+        }
         viewModelScope.launch { store.save(config) }
     }
 
