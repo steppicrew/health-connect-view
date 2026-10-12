@@ -10,6 +10,7 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.records.RestingHeartRateRecord
@@ -68,6 +69,7 @@ object SampleDataSeeder {
         FloorsClimbedRecord::class,
         BloodPressureRecord::class,
         BloodGlucoseRecord::class,
+        HeartRateVariabilityRmssdRecord::class,
     )
 
 /** One kind of seeded workout: what it was, what it is called, and when it happens. */
@@ -121,8 +123,8 @@ private val SEEDED_WORKOUTS = listOf(
         // not restart at midnight where one seeded day hands over to the next.
         var bpm = 51
         val records = buildList<Record> {
-            // A year of steps before the detailed month, one record a day, so the year
-            // calendar in the Pro screenshot is a year and not a month at its end: busier on
+            // A year of steps and sleep before the detailed month, one record a day, so the year
+            // calendars in the Pro screenshots are a year and not a month at their end: busier on
             // weekends, quieter in winter, and a day now and then with nothing recorded.
             for (dayOffset in DAYS until YEAR_DAYS) {
                 val dayStart = today.minus(dayOffset.toLong(), ChronoUnit.DAYS)
@@ -138,6 +140,20 @@ private val SEEDED_WORKOUTS = listOf(
                         endTime = dayStart.plus(21, ChronoUnit.HOURS),
                         endZoneOffset = zone.rules.getOffset(dayStart),
                         count = count.toLong().coerceAtLeast(800),
+                        metadata = metadata(),
+                    ),
+                )
+                // And a night before it, for the sleep calendar in the second Pro shot: longer
+                // into a weekend morning, without the stages the detailed month has.
+                val sleepStart = dayStart.minus(1, ChronoUnit.DAYS).plus(22, ChronoUnit.HOURS)
+                    .plus(random.nextLong(0, 90), ChronoUnit.MINUTES)
+                val sleepMinutes = 6 * 60 + random.nextLong(0, 120) + if (weekend) 50 else 0
+                add(
+                    SleepSessionRecord(
+                        startTime = sleepStart,
+                        startZoneOffset = zone.rules.getOffset(sleepStart),
+                        endTime = sleepStart.plus(sleepMinutes, ChronoUnit.MINUTES),
+                        endZoneOffset = zone.rules.getOffset(sleepStart),
                         metadata = metadata(),
                     ),
                 )
@@ -341,6 +357,23 @@ private val SEEDED_WORKOUTS = listOf(
                         metadata = metadata(),
                     ),
                 )
+                // HRV through the night, as a watch measures it: the night's mean is what the
+                // HRV tile and screen show, its week against the weeks before as the status.
+                if (past(sleepEnd)) {
+                    val nightLevel = 44.0 + 6.0 * sin(dayOffset / 5.0) + random.nextDouble(-4.0, 4.0)
+                    var at = sleepStart.plus(10, ChronoUnit.MINUTES)
+                    while (at.isBefore(sleepEnd)) {
+                        add(
+                            HeartRateVariabilityRmssdRecord(
+                                time = at,
+                                zoneOffset = offset,
+                                heartRateVariabilityMillis = (nightLevel + random.nextDouble(-8.0, 8.0)).coerceAtLeast(5.0),
+                                metadata = metadata(),
+                            ),
+                        )
+                        at = at.plus(5, ChronoUnit.MINUTES)
+                    }
+                }
 
                 // Exercise on most days, varying the activity so the icons and the session
                 // list have something to distinguish. Not every day: a tile that always

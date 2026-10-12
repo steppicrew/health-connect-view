@@ -73,16 +73,18 @@ normalise() {
     magick "$file" -alpha remove -alpha off "$file"
 }
 
-# A screenshot of a Pro feature says so: a band above it, in the feature graphic's colour, so
-# nobody installs for a feature and then finds it behind a purchase. Above the screen rather
-# than over it, so it hides nothing. "Pro" is the feature's name in every language.
+# A screenshot of a Pro feature says so: a band in the feature graphic's colour, so nobody
+# installs for a feature and then finds it behind a purchase. It covers the app's top bar --
+# the date and its buttons, which the free shots show anyway -- rather than pushing the screen
+# down, which cut the same height off the bottom: the owner's choice, 12.10.2026. [$2] is the
+# bar's height in pixels. "Pro" is the feature's name in every language.
 label_pro() {
-    local file="$1"
-    # The same height comes off the bottom -- the gesture bar, mostly -- so the frame keeps
-    # its size: grown, it passed Play's 2:1 and was padded with bars down both sides.
-    magick "$file" -gravity south -chop 0x120 +repage \
-        -gravity north -background "#00696D" -splice 0x120 \
-        -font DejaVu-Sans-Bold -pointsize 56 -fill "#E6FFFD" -annotate +0+28 "Pro" "$file"
+    local file="$1" bar="$2"
+    local width
+    width=$(magick identify -format "%w" "$file")
+    magick "$file" -fill "#00696D" -draw "rectangle 0,0 $((width - 1)),$((bar - 1))" \
+        -gravity north -font DejaVu-Sans-Bold -pointsize 56 -fill "#E6FFFD" \
+        -annotate "+0+$(( (bar - 56) / 2 - 4 ))" "Pro" "$file"
 }
 
 # Screens worth showing, as nav routes. The debug build reads `route` from its launch
@@ -91,20 +93,20 @@ label_pro() {
 # navigation drifts out of date the moment the UI changes.
 #
 # {name}:{route}:{layout}; an empty route means the dashboard. A layout, where given, is set
-# first by the debug seeder (`default`, `showcase` or `insights`, see SeedActivity) and stays
-# for the shots after it: the second shows what Pro adds -- large, coloured tiles with their
-# curves -- and the seventh what Pro tells you -- the week's changes on their strips and a year
-# with its weekday rhythm -- which nobody can arrange by hand on a scripted emulator. Blood
-# pressure gave up its place for it, the owner's choice, 11.10.2026. Eight at most, Play's
+# first by the debug seeder (`default`, `showcase` or `night`, see SeedActivity) and stays
+# for the shots after it. The two Pro shots are the owner's own dashboard, side by side (their
+# choice, 12.10.2026): its top -- the week's changes, rings past their goals, the day's steps
+# and workouts -- and further down -- the night, a year of sleep, heart rate and HRV -- with
+# the last tile of each cut off by the screen's edge, as on a phone. Eight at most, Play's
 # limit, and numbered in order: release.sh uploads them sorted by name.
 SHOT_ROUTES=(
     "1-dashboard::default"
     "2-dashboard-pro::showcase"
-    "3-steps:tile/StepsRecord?date=DATE:"
-    "4-activities:tile/ExerciseSessionRecord?date=DATE:"
-    "5-sleep:tile/SleepSessionRecord?date=DATE:"
-    "6-heart-rate:tile/HeartRateRecord?date=DATE:"
-    "7-insights-pro::insights"
+    "3-night-pro::night"
+    "4-steps:tile/StepsRecord?date=DATE:"
+    "5-activities:tile/ExerciseSessionRecord?date=DATE:"
+    "6-sleep:tile/SleepSessionRecord?date=DATE:"
+    "7-heart-rate:tile/HeartRateRecord?date=DATE:"
     "8-catalog:catalog:"
 )
 
@@ -121,7 +123,10 @@ restore_label() {
         STASHED_LABEL=""
     fi
 }
-trap restore_label EXIT INT TERM
+# Interrupted, put the label back and stop: a TERM trap that only restored it let the run go
+# on capturing with the label in place.
+trap restore_label EXIT
+trap 'restore_label; exit 130' INT TERM
 
 take_shots() {
     need magick
@@ -158,6 +163,10 @@ take_shots() {
     status_bar="$(adb -s "$device" shell dumpsys window \
         | sed -n 's/.*type=statusBars frame=\[0,0\]\[[0-9]*,\([0-9]*\)\].*/\1/p' | head -1)"
     status_bar="${status_bar:-0}"
+    # The app's top bar, 64 dp, which a Pro shot's band covers.
+    local density app_bar
+    density="$(adb -s "$device" shell wm density | awk '{print $NF}' | tail -1 | tr -d '\r')"
+    app_bar=$(( 64 * ${density:-420} / 160 ))
 
     local out="$OUT_DIR/screenshots/$lang"
     mkdir -p "$out"
@@ -215,7 +224,7 @@ take_shots() {
         [ "$settled" -eq 1 ] || echo "warning: $name did not settle; check it" >&2
 
         normalise "$shot" "$status_bar"
-        case "$name" in *-pro) label_pro "$shot" ;; esac
+        case "$name" in *-pro) label_pro "$shot" "$app_bar" ;; esac
         echo "$shot"
     done
 }
