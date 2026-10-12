@@ -35,9 +35,12 @@ data class CatalogUiState(
     val granted: Set<String> = emptySet(),
     val status: Map<String, TypeStatus> = emptyMap(),
     val loading: Boolean = true,
+    /** Health Connect would not say what is granted: every type failed, none is locked. */
+    val grantsUnknown: Boolean = false,
 ) {
     fun statusOf(spec: RecordTypeSpec<*>): TypeStatus =
         when {
+            grantsUnknown -> TypeStatus.FAILED
             spec.permission !in granted -> TypeStatus.NOT_GRANTED
             else -> status[spec.type.simpleName] ?: TypeStatus.CHECKING
         }
@@ -70,8 +73,17 @@ class CatalogViewModel(application: Application) : AndroidViewModel(application)
                 return@launch
             }
 
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
-            _state.update { it.copy(availability = availability, granted = granted, loading = false) }
+            val granted = try {
+                repository.grantedPermissions()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Not "nothing granted": a padlock on every type would send the user to grant
+                // what they already have. The next resume asks again.
+                _state.update { it.copy(availability = availability, grantsUnknown = true, loading = false) }
+                return@launch
+            }
+            _state.update { it.copy(availability = availability, granted = granted, grantsUnknown = false, loading = false) }
             probeForData(granted)
         }
     }

@@ -14,7 +14,9 @@ import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Period
@@ -52,8 +54,30 @@ class HealthRepository private constructor(
         return shared.answers().get(key, read)
     }
 
-    suspend fun grantedPermissions(): Set<String> = withContext(Dispatchers.IO) {
-        client.permissionController.getGrantedPermissions()
+    /**
+     * The permissions granted now, tried again after a pause where Health Connect refuses the
+     * question, and the last answer this process had where it keeps refusing.
+     *
+     * Health Connect limits how often an app may ask anything, and over the limit it refuses
+     * this question too. Read as "nothing granted", that put a padlock on every type in the
+     * catalog -- seen on the owner's phone and in a screenshot run, 12.10.2026 -- and would
+     * send someone to the system settings to grant what they had granted. A refusal is not an
+     * answer, so the last real one stands in; with none yet, this throws.
+     */
+    suspend fun grantedPermissions(): Set<String> {
+        var failure: Exception? = null
+        for (attempt in 0 until PERMISSION_TRIES) {
+            if (attempt > 0) delay(PERMISSION_RETRY_MS shl (attempt - 1))
+            try {
+                return withContext(Dispatchers.IO) { client.permissionController.getGrantedPermissions() }
+                    .also { lastGranted = it }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                failure = e
+            }
+        }
+        return lastGranted ?: throw checkNotNull(failure)
     }
 
     suspend fun revokeAll() = withContext(Dispatchers.IO) {
@@ -399,6 +423,12 @@ class HealthRepository private constructor(
     }
 
     companion object {
+        /** The last permissions Health Connect reported, for when it refuses to say; not health data. */
+        @Volatile
+        private var lastGranted: Set<String>? = null
+        private const val PERMISSION_TRIES = 3
+        private const val PERMISSION_RETRY_MS = 500L
+
         const val PAGE_SIZE = 1000
         const val MAX_RECORDS = 5000
 

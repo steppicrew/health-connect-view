@@ -904,7 +904,15 @@ class TileDetailViewModel(
             _state.update { UiState.Loading }
             _latestBefore.value = null
 
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            val granted = try {
+                repository.grantedPermissions()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Not "not allowed": that screen asks the user to grant what they may well have.
+                _state.update { UiState.Error(e.message ?: "Could not read data") }
+                return@run
+            }
             if (spec.permission !in granted) {
                 _state.update { UiState.NoPermission }
                 return@run
