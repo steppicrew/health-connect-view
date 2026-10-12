@@ -922,6 +922,42 @@ doctor report and the year heatmap; the rest unranked.
     chip in the tile's options for curve types (heart rate), drawn as the chart's dashed
     baseline at the window's platform average. That is the figure the tile already shows, so
     the line has no label of its own.
+92. [x] **Adaptive steps goal** -- the owner, 12.10.2026, after Garmin's dynamic goal: higher
+    after days above it, lower after days below, so a hiking holiday raises it and a lazy one
+    lowers it. Built, free: the goal dialog offers "Festes Ziel" or "Adaptives Ziel" with a
+    start value and an optional floor (`Tile.adaptiveGoal`, `Tile.goalFloor`; steps only, via
+    `TileSpec.adaptiveRise`). The rule was read off a year-old record of the owner's watch, 32
+    days of goal and steps: a tenth of the gap on the first change in a direction, a fifth from
+    the second in the same direction on, rises capped at 2,000 a day, falls uncapped, each
+    change rounded up to ten; a day without data changes nothing. It reproduces 27 of the
+    watch's 31 changes to within ten steps (`AdaptiveGoalTest`). Nothing is stored: each day's
+    goal is replayed from the start value over the year before it plus 56 days of warm-up, in
+    one daily-bucket read, and streaks count each day against its own goal. On the phone the
+    replay matched the watch on 05.10 and 28.09 and was ten above it on 12.10. The ring gets its
+    goal with its value, the chart its dashed line from the same read.
+93. [x] **Rings past their goal** -- the owner, 12.10.2026: 107 % and 180 % were the same full
+    green ring. Each further hundred percent is now a thin ring of its own around the main
+    one, starting again at twelve, up to three (the owner's pick over laps drawn darker on top
+    of each other). Ring tiles and a ring type's value-and-chart tile print the share and the
+    goal on two lines, "180 % von / 2.990", rounded down so a day short of its goal never reads
+    100 %. The number is drawn over the rings, so a small inner circle never hides it.
+94. [x] **A thin space between a number and its unit** -- the owner, 12.10.2026, who found the
+    full space in "110 %" too wide. German wants a space there, a narrow one, so every number
+    and unit symbol (and the language's own percent format) is now joined by a thin space and a
+    zero-width no-break space (`Formatting.UNIT_SPACE`); words as units ("5.138 Schritte") keep
+    a full one. Not U+202F: Roboto draws it as wide as a space, and the phone's MiSans lacks
+    it; not the word joiner, which MiSans draws 0.6 em wide.
+95. [x] **Each request read once per load** -- the owner asked why the ring's goal came later
+    than the chart's, and for one shared answer per question, like a promise. Measured on the
+    owner's dashboard, 36 of 175 requests in one load asked something already asked: daily
+    buckets for a chart, a goal, a streak and a trend; the day's sessions three times. Within
+    a load, `HealthRepository.sharing()` now reads each request once and every other asker
+    awaits it (`SharedReads`); failures are not kept, and the answers go with the load. 139
+    requests, and the full load from 8.3 to 6.6 s. The detail screen shares too, though no
+    duplicates were seen there. Found on the way: a chart took its goal from the first tile of
+    its type, so a second steps tile drew the first one's goal.
+96. [x] **Colours for the week's changes and the cycle tile** -- the owner, 12.10.2026: they
+    have their own card, since neither belongs to a type, and it never offered a colour.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
