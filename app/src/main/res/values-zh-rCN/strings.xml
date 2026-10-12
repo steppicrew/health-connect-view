@@ -276,6 +276,7 @@
     <string name="goal_adaptive">自适应目标</string>
     <string name="goal_start_hint">起始值</string>
     <string name="goal_floor_hint">下限（可选）</string>
+    <string name="tile_goal_share">目标 %2$s 的\n%1$s</string>
     <string name="goal_reset">使用默认值</string>
     <string name="action_save">保存</string>
     <string name="action_cancel">取消</string>

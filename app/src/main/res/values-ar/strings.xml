@@ -301,6 +301,7 @@
     <string name="goal_adaptive">هدف متكيّف</string>
     <string name="goal_start_hint">القيمة الابتدائية</string>
     <string name="goal_floor_hint">الحد الأدنى (اختياري)</string>
+    <string name="tile_goal_share">%1$s من\n%2$s</string>
     <string name="goal_reset">استخدام القيمة التلقائية</string>
     <string name="action_save">حفظ</string>
     <string name="action_cancel">إلغاء</string>

@@ -291,6 +291,7 @@
     <string name="goal_adaptive">Cel adaptacyjny</string>
     <string name="goal_start_hint">Wartość początkowa</string>
     <string name="goal_floor_hint">Dolna granica (opcjonalnie)</string>
+    <string name="tile_goal_share">%1$s z\n%2$s</string>
     <string name="goal_reset">Użyj domyślnego</string>
     <string name="action_save">Zapisz</string>
     <string name="action_cancel">Anuluj</string>
