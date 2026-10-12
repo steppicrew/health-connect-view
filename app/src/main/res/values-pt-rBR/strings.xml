@@ -244,9 +244,9 @@
     <string name="bp_part_evening">Noite</string>
     <string name="bp_part_none">Nenhuma medição</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Média %1$s mmHg · %2$d medição</item>
-        <item quantity="many">Média %1$s mmHg · %2$d medições</item>
-        <item quantity="other">Média %1$s mmHg · %2$d medições</item>
+        <item quantity="one">Média %1$s\u2009\uFEFFmmHg · %2$d medição</item>
+        <item quantity="many">Média %1$s\u2009\uFEFFmmHg · %2$d medições</item>
+        <item quantity="other">Média %1$s\u2009\uFEFFmmHg · %2$d medições</item>
     </plurals>
     <string name="bp_parts_rule">A manhã vai das 4:00 às 13:59, a noite a partir das 14:00. Uma medição depois da meia-noite, mas antes das 4:00, conta para a noite anterior. A mesma medição gravada por vários apps conta uma vez só.\n\nAs cores seguem os graus da Sociedade Europeia de Hipertensão para medições no consultório: baixa abaixo de 90/60, normal abaixo de 130/85, normal alta até 139/89, grau 1 a partir de 140/90, grau 2 a partir de 160/100. Decide o maior dos dois valores. Em casa, 135/85 ou mais já conta como elevada. Uma orientação, não um diagnóstico.</string>
     <string name="settings_pro">Pro</string>
@@ -817,8 +817,8 @@
     <string name="privacy_contact_body">O código-fonte é público, então cada afirmação desta página pode ser verificada. Relate problemas pelo rastreador de problemas do projeto no GitHub. Você também pode enviar dúvidas por e-mail para hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Média da noite</string>
     <string name="hrv_week_label">Média das últimas 7 noites</string>
-    <string name="hrv_week_mean">Média das últimas 7 noites: %1$s ms</string>
-    <string name="hrv_usual">Faixa habitual %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Média das últimas 7 noites: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Faixa habitual %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">dentro da sua faixa habitual</string>
     <string name="hrv_below">abaixo da sua faixa habitual</string>
     <string name="hrv_above">acima da sua faixa habitual</string>

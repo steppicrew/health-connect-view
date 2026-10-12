@@ -240,7 +240,7 @@
     <string name="bp_part_evening">夜</string>
     <string name="bp_part_none">測定なし</string>
     <plurals name="bp_part_value">
-        <item quantity="other">平均 %1$s mmHg · %2$d 回</item>
+        <item quantity="other">平均 %1$s\u2009\uFEFFmmHg · %2$d 回</item>
     </plurals>
     <string name="bp_parts_rule">朝は 4:00〜13:59、夜は 14:00 以降です。午前 0 時以降 4:00 より前の測定は前日の夜に含めます。複数のアプリが保存した同じ測定値は 1 回として数えます。\n\n色は、診察室での測定に対する欧州高血圧学会の分類に従います。低血圧は 90/60 未満、正常は 130/85 未満、正常高値は 139/89 まで、I 度は 140/90 以上、II 度は 160/100 以上です。2 つの値のうち高い方で判定します。家庭では 135/85 以上ですでに高値とみなされます。目安であり、診断ではありません。</string>
     <string name="settings_pro">Pro</string>
@@ -765,8 +765,8 @@
     <string name="privacy_contact_body">ソースコードは公開されているため、このページの記述はすべて確認できます。問題は GitHub のプロジェクトの issue トラッカーからご報告ください。ご質問は hcview@steppicrew.de へのメールでも受け付けています。</string>
     <string name="hrv_night_label">夜間の平均</string>
     <string name="hrv_week_label">過去 7 夜の平均</string>
-    <string name="hrv_week_mean">過去 7 夜の平均: %1$s ms</string>
-    <string name="hrv_usual">いつもの範囲 %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">過去 7 夜の平均: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">いつもの範囲 %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">いつもの範囲内</string>
     <string name="hrv_below">いつもの範囲より低い</string>
     <string name="hrv_above">いつもの範囲より高い</string>

@@ -142,5 +142,5 @@ object Units {
 
     /** A stored value as text in the shown unit, for a record's one-line summary. */
     fun format(quantity: Quantity, base: Double): String =
-        Formatting.number(quantity.convert(base), quantity.decimals()) + " " + quantity.symbol()
+        Formatting.number(quantity.convert(base), quantity.decimals()) + Formatting.UNIT_SPACE + quantity.symbol()
 }

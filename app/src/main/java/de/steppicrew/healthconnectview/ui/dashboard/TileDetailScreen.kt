@@ -870,9 +870,9 @@ private fun NutrientsSection(nutrients: List<NutrientTotal>) {
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = if (row.days > 1) {
-                            stringResource(R.string.nutrient_per_day, nutrientAmount(row.perDay) + " " + unit)
+                            stringResource(R.string.nutrient_per_day, nutrientAmount(row.perDay) + Formatting.UNIT_SPACE + unit)
                         } else {
-                            nutrientAmount(row.total) + " " + unit
+                            nutrientAmount(row.total) + Formatting.UNIT_SPACE + unit
                         },
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -881,7 +881,7 @@ private fun NutrientsSection(nutrients: List<NutrientTotal>) {
                             text = pluralStringResource(
                                 R.plurals.nutrients_total_days,
                                 row.days,
-                                nutrientAmount(row.total) + " " + unit,
+                                nutrientAmount(row.total) + Formatting.UNIT_SPACE + unit,
                                 row.days,
                             ),
                             style = MaterialTheme.typography.bodySmall,
@@ -951,7 +951,7 @@ private fun totalText(data: TileDetailData, total: Double, secondary: Double?): 
         // wearer's baseline where "0,01 ± °C" read like a tolerance.
         (if (data.spec.quantity == Quantity.TEMPERATURE_CHANGE && total > 0) "+" else "") +
             pressureText(total, secondary, data.spec.valueDecimals) +
-            (data.spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
+            (data.spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) } ?: "")
     }
 
 /** What the headline figure is. A mean is not a total: "Total 129 mmHg" read as blood pressures added up. */

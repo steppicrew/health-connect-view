@@ -19,7 +19,7 @@ private fun durationHours(start: Instant, end: Instant): Double =
     Duration.between(start, end).toMinutes() / 60.0
 
 private fun seriesSummary(values: List<Double>, unit: String): String =
-    if (values.isEmpty()) "—" else Formatting.number(values.average()) + " " + unit + " (" + values.size + ")"
+    if (values.isEmpty()) "—" else Formatting.number(values.average()) + Formatting.UNIT_SPACE + unit + " (" + values.size + ")"
 
 private fun flowRes(flow: Int): Int = when (flow) {
     MenstruationFlowRecord.FLOW_LIGHT -> R.string.flow_light
@@ -97,7 +97,7 @@ object RecordRegistry {
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
-            summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
+            summary = { Formatting.number(it.energy.inKilocalories) + "${Formatting.UNIT_SPACE}kcal" },
             aggregate = ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
             tile = TileSpec(
                 TileSpec.Form.NUMBER,
@@ -114,7 +114,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.basalMetabolicRate.inKilocaloriesPerDay)) },
-            summary = { Formatting.number(it.basalMetabolicRate.inKilocaloriesPerDay) + " kcal/day" },
+            summary = { Formatting.number(it.basalMetabolicRate.inKilocaloriesPerDay) + "${Formatting.UNIT_SPACE}kcal/day" },
             aggregate = BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, dailyValue = true),
         ),
@@ -293,7 +293,7 @@ object RecordRegistry {
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
-            summary = { Formatting.number(it.energy.inKilocalories) + " kcal" },
+            summary = { Formatting.number(it.energy.inKilocalories) + "${Formatting.UNIT_SPACE}kcal" },
             aggregate = TotalCaloriesBurnedRecord.ENERGY_TOTAL,
             // Basal first: it is the floor the day is built on, so it belongs at the bottom
             // of the bar. Note BasalMetabolicRate stores no records at all on a real device
@@ -318,7 +318,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.vo2MillilitersPerMinuteKilogram)) },
-            summary = { Formatting.number(it.vo2MillilitersPerMinuteKilogram) + " mL/kg/min" },
+            summary = { Formatting.number(it.vo2MillilitersPerMinuteKilogram) + "${Formatting.UNIT_SPACE}mL/kg/min" },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, personalRecord = RecordKind.HIGHEST, occasional = true),
         ),
         RecordTypeSpec(
@@ -349,7 +349,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.percentage.value)) },
-            summary = { Formatting.number(it.percentage.value) + " %" },
+            summary = { Formatting.number(it.percentage.value) + "${Formatting.UNIT_SPACE}%" },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, carryLastReading = true, occasional = true),
         ),
         RecordTypeSpec(
@@ -438,7 +438,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.systolic.inMillimetersOfMercury)) },
-            summary = { Formatting.number(it.systolic.inMillimetersOfMercury) + "/" + Formatting.number(it.diastolic.inMillimetersOfMercury) + " mmHg" },
+            summary = { Formatting.number(it.systolic.inMillimetersOfMercury) + "/" + Formatting.number(it.diastolic.inMillimetersOfMercury) + "${Formatting.UNIT_SPACE}mmHg" },
             aggregate = BloodPressureRecord.SYSTOLIC_AVG,
             secondaryPoints = { listOf(Point(it.time, it.diastolic.inMillimetersOfMercury)) },
             secondaryAggregate = BloodPressureRecord.DIASTOLIC_AVG,
@@ -488,7 +488,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.heartRateVariabilityMillis)) },
-            summary = { Formatting.number(it.heartRateVariabilityMillis) + " ms" },
+            summary = { Formatting.number(it.heartRateVariabilityMillis) + "${Formatting.UNIT_SPACE}ms" },
             tile = TileSpec(TileSpec.Form.NUMBER, markReadings = true, nightlyStatus = true),
         ),
         RecordTypeSpec(
@@ -502,7 +502,7 @@ object RecordRegistry {
             // by some writers; charted, it is a plunge to the axis nobody survived. The record
             // list still shows it, as what the app stored.
             points = { listOfNotNull(Point(it.time, it.percentage.value).takeIf { p -> p.value > 0.0 }) },
-            summary = { Formatting.number(it.percentage.value) + " %" },
+            summary = { Formatting.number(it.percentage.value) + "${Formatting.UNIT_SPACE}%" },
             // The general adult reference, named as such in the legend -- not the wearer's own
             // range, and not a diagnosis.
             tile = TileSpec(
@@ -543,7 +543,7 @@ object RecordRegistry {
             shape = Shape.INSTANT,
             startTime = { it.time },
             points = { listOf(Point(it.time, it.beatsPerMinute.toDouble())) },
-            summary = { Formatting.integer(it.beatsPerMinute) + " bpm" },
+            summary = { Formatting.integer(it.beatsPerMinute) + "${Formatting.UNIT_SPACE}bpm" },
             aggregate = RestingHeartRateRecord.BPM_AVG,
             rangeAggregates = RestingHeartRateRecord.BPM_MIN to RestingHeartRateRecord.BPM_MAX,
             tile = TileSpec(
@@ -612,7 +612,7 @@ object RecordRegistry {
             startTime = { it.startTime },
             endTime = { it.endTime },
             points = { listOf(Point(it.startTime, it.energy?.inKilocalories ?: 0.0)) },
-            summary = { it.energy?.let { e -> Formatting.number(e.inKilocalories) + " kcal" } ?: "—" },
+            summary = { it.energy?.let { e -> Formatting.number(e.inKilocalories) + "${Formatting.UNIT_SPACE}kcal" } ?: "—" },
             // The meal's name as the app wrote it, then what it held, in label order. Units are
             // symbols, the same in every language, as on the type's own total.
             details = { meal ->
@@ -622,7 +622,7 @@ object RecordRegistry {
                             val value = nutrient.of(mass)
                             Field(
                                 nutrient.labelRes,
-                                Formatting.number(value, if (value < 10) 1 else 0) + if (nutrient.milligrams) " mg" else " g",
+                                Formatting.number(value, if (value < 10) 1 else 0) + if (nutrient.milligrams) "${Formatting.UNIT_SPACE}mg" else "${Formatting.UNIT_SPACE}g",
                             )
                         }
                     }

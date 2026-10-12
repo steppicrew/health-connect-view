@@ -168,7 +168,7 @@ fun heatmapShades(): List<Color> {
  */
 @Composable
 fun heatmapValue(spec: RecordTypeSpec<*>): (Double) -> String {
-    val unit = spec.displayUnitRes?.let { " " + stringResource(it) }.orEmpty()
+    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
     return if (spec.tile.form == TileSpec.Form.SESSIONS) {
         // "0", not "0s": the legend's start, where seconds were never meant.
         { v -> if (v == 0.0) "0" else Formatting.duration(Duration.ofMinutes((v * MINUTES_PER_HOUR).roundToLong())) }

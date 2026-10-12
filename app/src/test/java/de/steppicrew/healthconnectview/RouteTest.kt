@@ -152,8 +152,8 @@ class RouteTest {
 
     @Test
     fun `a pace is minutes and seconds per km or mile, and none for a standstill`() {
-        assertEquals("5:00 min/km", Formatting.pace(1000.0 / 300, imperial = false))
-        assertEquals("8:03 min/mi", Formatting.pace(1000.0 / 300, imperial = true))
+        assertEquals("5:00\u2009\uFEFFmin/km", Formatting.pace(1000.0 / 300, imperial = false))
+        assertEquals("8:03\u2009\uFEFFmin/mi", Formatting.pace(1000.0 / 300, imperial = true))
         assertNull(Formatting.pace(0.0, imperial = false))
         assertNull(Formatting.pace(0.1, imperial = false))
     }

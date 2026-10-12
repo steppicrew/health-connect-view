@@ -189,7 +189,7 @@ private fun PartChart(
     onSelectTime: (Instant?) -> Unit,
     lowest: Boolean,
 ) {
-    val unit = " " + stringResource(part.unitRes)
+    val unit = Formatting.UNIT_SPACE + stringResource(part.unitRes)
     val first = part.points.first()
     val last = part.points.last()
     val name = stringResource(part.labelRes) + if (part.derived) " *" else ""

@@ -332,7 +332,7 @@ fun SettingsScreen(
             LinkRow(
                 title = stringResource(R.string.settings_max_hr),
                 body = settings.maxHeartRate
-                    ?.let { Formatting.number(it.toDouble()) + " " + stringResource(R.string.unit_bpm) }
+                    ?.let { Formatting.number(it.toDouble()) + Formatting.UNIT_SPACE + stringResource(R.string.unit_bpm) }
                     ?: stringResource(R.string.settings_max_hr_auto),
                 onClick = { editingMaxHeartRate = true },
             )

@@ -242,8 +242,8 @@
     <string name="bp_part_evening">शाम</string>
     <string name="bp_part_none">कोई रीडिंग नहीं</string>
     <plurals name="bp_part_value">
-        <item quantity="one">औसत %1$s mmHg · %2$d रीडिंग</item>
-        <item quantity="other">औसत %1$s mmHg · %2$d रीडिंग</item>
+        <item quantity="one">औसत %1$s\u2009\uFEFFmmHg · %2$d रीडिंग</item>
+        <item quantity="other">औसत %1$s\u2009\uFEFFmmHg · %2$d रीडिंग</item>
     </plurals>
     <string name="bp_parts_rule">सुबह 4:00 से 13:59 तक है, शाम 14:00 से। आधी रात के बाद लेकिन 4:00 से पहले की रीडिंग पिछली शाम में गिनी जाती है। कई ऐप में सेव एक ही रीडिंग एक बार गिनी जाती है।\n\nरंग, क्लिनिक में ली गई रीडिंग के लिए यूरोपियन सोसाइटी ऑफ़ हाइपरटेंशन के ग्रेड के मुताबिक हैं: 90/60 से कम कम, 130/85 से कम सामान्य, 139/89 तक ऊंचा सामान्य, 140/90 से ग्रेड 1, 160/100 से ग्रेड 2। दोनों में से ज़्यादा वैल्यू से तय होता है। घर पर 135/85 और उससे ज़्यादा को पहले से ही बढ़ा हुआ माना जाता है। यह एक संकेत है, निदान नहीं।</string>
     <string name="settings_pro">Pro</string>
@@ -791,8 +791,8 @@
     <string name="privacy_contact_body">सोर्स कोड सार्वजनिक है, इसलिए इस पेज की हर बात जांची जा सकती है। कृपया समस्याएं GitHub पर प्रोजेक्ट के इश्यू ट्रैकर से बताएं। आप सवाल hcview@steppicrew.de पर ईमेल से भी भेज सकते हैं।</string>
     <string name="hrv_night_label">रात का औसत</string>
     <string name="hrv_week_label">पिछली 7 रातों का औसत</string>
-    <string name="hrv_week_mean">पिछली 7 रातों का औसत: %1$s ms</string>
-    <string name="hrv_usual">सामान्य रेंज %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">पिछली 7 रातों का औसत: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">सामान्य रेंज %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">आपकी सामान्य रेंज में</string>
     <string name="hrv_below">आपकी सामान्य रेंज से नीचे</string>
     <string name="hrv_above">आपकी सामान्य रेंज से ऊपर</string>

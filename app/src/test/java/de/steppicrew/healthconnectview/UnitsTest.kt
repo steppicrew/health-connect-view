@@ -78,7 +78,7 @@ class UnitsTest {
             metadata = Metadata.manualEntry(),
         )
         assertEquals(99.0, spec.pointsOf(record).single().value, 1e-9)
-        assertEquals("99 mg/dL", spec.summaryOf(record))
+        assertEquals("99\u2009\uFEFFmg/dL", spec.summaryOf(record))
         assertEquals(R.string.unit_mgdl, spec.displayUnitRes)
         // Imperial leaves glucose alone: it is a lab convention, not a measuring system.
         Units.system = UnitSystem.IMPERIAL
@@ -107,6 +107,6 @@ class UnitsTest {
         assertEquals(176.37, spec.pointsOf(record).single().value, 0.01)
         assertEquals(176.37, numericAggregate(Mass.kilograms(80.0), WeightRecord.WEIGHT_AVG)!!, 0.01)
         assertEquals(6.214, numericAggregate(Length.kilometers(10.0), DistanceRecord.DISTANCE_TOTAL)!!, 0.001)
-        assertEquals("176 lb", Units.format(Quantity.MASS, 80.0))
+        assertEquals("176\u2009\uFEFFlb", Units.format(Quantity.MASS, 80.0))
     }
 }

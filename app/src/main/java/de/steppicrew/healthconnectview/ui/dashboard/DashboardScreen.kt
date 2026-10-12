@@ -1861,9 +1861,7 @@ private fun TileValue(data: TileData, large: Boolean = false) {
 private fun GoalShare(data: TileData) {
     val goal = data.dayGoal ?: return
     val progress = data.progress ?: return
-    val percent = NumberFormat.getPercentInstance(LocalConfiguration.current.locales[0])
-        .apply { maximumFractionDigits = 0 }
-        .format(floor(progress * PERCENT) / PERCENT)
+    val percent = Formatting.percent(floor(progress * PERCENT) / PERCENT, LocalConfiguration.current.locales[0])
     Text(
         text = stringResource(R.string.tile_goal_share, percent, Formatting.number(goal, data.spec.valueDecimals)),
         style = MaterialTheme.typography.labelSmall,

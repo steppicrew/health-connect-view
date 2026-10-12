@@ -48,7 +48,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
         }
         val kg = Quantity.MASS
         // One decimal throughout: 104.6 kg is not 105, and a column should state one precision.
-        fun mass(value: Double) = "${Formatting.axisLabel(kg.convert(value), 1)} ${kg.symbol()}"
+        fun mass(value: Double) = "${Formatting.axisLabel(kg.convert(value), 1)}${Formatting.UNIT_SPACE}${kg.symbol()}"
 
         add(section(context.getString(R.string.report_summary)))
         val columns = floatArrayOf(0f, 170f)
@@ -56,7 +56,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
         buildList {
             report.firstReading?.let { add(R.string.report_weight_first to "${mass(it.value)}  (${day(it.time, zone)})") }
             report.lastReading?.let { add(R.string.report_weight_last to "${mass(it.value)}  (${day(it.time, zone)})") }
-            report.change?.let { add(R.string.report_weight_change to signed(kg.convert(it)) + " " + kg.symbol()) }
+            report.change?.let { add(R.string.report_weight_change to signed(kg.convert(it)) + Formatting.UNIT_SPACE + kg.symbol()) }
             add(R.string.report_col_mean to mass(overall.mean))
             add(R.string.report_col_low to mass(overall.low))
             add(R.string.report_col_high to mass(overall.high))
@@ -107,7 +107,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
             add(textLine(context.getString(R.string.report_none), text))
             return@buildList
         }
-        fun bpm(value: Double) = "${value.roundToInt()} ${context.getString(R.string.unit_bpm)}"
+        fun bpm(value: Double) = "${value.roundToInt()}${Formatting.UNIT_SPACE}${context.getString(R.string.unit_bpm)}"
 
         add(section(context.getString(R.string.report_summary)))
         val columns = floatArrayOf(0f, 190f)
@@ -232,7 +232,7 @@ class ReadingReportPdf(context: Context) : ReportPdf(context) {
                     cell(context.getString(bandLabel(band)), bandColumns[0], y, if (band == GlucoseBand.IN_RANGE) bold else text)
                     cell(range, bandColumns[1], y)
                     cell(count.toString(), bandColumns[2], y)
-                    cell(if (total == 0) "–" else "${(count * 100.0 / total).roundToInt()} %", bandColumns[3], y)
+                    cell(if (total == 0) "–" else "${(count * 100.0 / total).roundToInt()}${Formatting.UNIT_SPACE}%", bandColumns[3], y)
                 },
             )
         }

@@ -240,7 +240,7 @@
     <string name="bp_part_evening">Malam</string>
     <string name="bp_part_none">Tidak ada hasil ukur</string>
     <plurals name="bp_part_value">
-        <item quantity="other">Rata-rata %1$s mmHg · %2$d pengukuran</item>
+        <item quantity="other">Rata-rata %1$s\u2009\uFEFFmmHg · %2$d pengukuran</item>
     </plurals>
     <string name="bp_parts_rule">Pagi adalah 4.00 sampai 13.59, malam mulai 14.00. Pengukuran setelah tengah malam tetapi sebelum 4.00 dihitung untuk malam sebelumnya. Hasil ukur yang sama yang disimpan beberapa aplikasi dihitung sekali.\n\nWarna mengikuti derajat European Society of Hypertension untuk pengukuran di tempat praktik: rendah di bawah 90/60, normal di bawah 130/85, normal tinggi sampai 139/89, derajat 1 mulai 140/90, derajat 2 mulai 160/100. Yang menentukan adalah nilai tertinggi dari keduanya. Di rumah, 135/85 ke atas sudah dianggap tinggi. Sebagai panduan, bukan diagnosis.</string>
     <string name="settings_pro">Pro</string>
@@ -765,8 +765,8 @@
     <string name="privacy_contact_body">Kode sumbernya terbuka untuk umum, jadi setiap pernyataan di halaman ini dapat diperiksa. Laporkan masalah melalui issue tracker proyek di GitHub. Pertanyaan juga dapat dikirim lewat email ke hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Rata-rata malam</string>
     <string name="hrv_week_label">Rata-rata 7 malam terakhir</string>
-    <string name="hrv_week_mean">Rata-rata 7 malam terakhir: %1$s ms</string>
-    <string name="hrv_usual">Rentang biasa %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Rata-rata 7 malam terakhir: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Rentang biasa %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">dalam rentang biasa Anda</string>
     <string name="hrv_below">di bawah rentang biasa Anda</string>
     <string name="hrv_above">di atas rentang biasa Anda</string>

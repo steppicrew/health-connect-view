@@ -250,12 +250,12 @@
     <string name="bp_part_evening">المساء</string>
     <string name="bp_part_none">لا توجد قراءة</string>
     <plurals name="bp_part_value">
-        <item quantity="zero">المتوسط %1$s mmHg · بلا قراءات</item>
-        <item quantity="one">المتوسط %1$s mmHg · قراءة واحدة</item>
-        <item quantity="two">المتوسط %1$s mmHg · قراءتان</item>
-        <item quantity="few">المتوسط %1$s mmHg · %2$d قراءات</item>
-        <item quantity="many">المتوسط %1$s mmHg · %2$d قراءة</item>
-        <item quantity="other">المتوسط %1$s mmHg · %2$d قراءة</item>
+        <item quantity="zero">المتوسط %1$s\u2009\uFEFFmmHg · بلا قراءات</item>
+        <item quantity="one">المتوسط %1$s\u2009\uFEFFmmHg · قراءة واحدة</item>
+        <item quantity="two">المتوسط %1$s\u2009\uFEFFmmHg · قراءتان</item>
+        <item quantity="few">المتوسط %1$s\u2009\uFEFFmmHg · %2$d قراءات</item>
+        <item quantity="many">المتوسط %1$s\u2009\uFEFFmmHg · %2$d قراءة</item>
+        <item quantity="other">المتوسط %1$s\u2009\uFEFFmmHg · %2$d قراءة</item>
     </plurals>
     <string name="bp_parts_rule">الصباح من 4:00 إلى 13:59، والمساء من 14:00. القراءة بعد منتصف الليل وقبل 4:00 تُحتسب للمساء السابق. القراءة نفسها التي تحفظها عدة تطبيقات تُحتسب مرة واحدة.\n\nتتبع الألوان درجات الجمعية الأوروبية لارتفاع ضغط الدم للقراءات في العيادة: منخفض تحت 90/60، وطبيعي تحت 130/85، وطبيعي مرتفع حتى 139/89، والدرجة 1 من 140/90، والدرجة 2 من 160/100. تُحدَّد الدرجة بالقيمة الأعلى من القيمتين. أما في المنزل فيُعدّ 135/85 فما فوق مرتفعًا بالفعل. هذا دليل استرشادي، وليس تشخيصًا.</string>
     <string name="settings_pro">Pro</string>
@@ -895,8 +895,8 @@
     <string name="privacy_contact_body">الرمز المصدري متاح للعموم، لذا يمكن التحقق من كل ما في هذه الصفحة. يُرجى الإبلاغ عن المشكلات عبر نظام تتبّع المشكلات الخاص بالمشروع على GitHub. ويمكنك أيضًا إرسال أسئلتك بالبريد الإلكتروني إلى hcview@steppicrew.de.</string>
     <string name="hrv_night_label">متوسط الليلة</string>
     <string name="hrv_week_label">متوسط آخر 7 ليالٍ</string>
-    <string name="hrv_week_mean">متوسط آخر 7 ليالٍ: %1$s ms</string>
-    <string name="hrv_usual">النطاق المعتاد %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">متوسط آخر 7 ليالٍ: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">النطاق المعتاد %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">ضمن نطاقك المعتاد</string>
     <string name="hrv_below">أقل من نطاقك المعتاد</string>
     <string name="hrv_above">أعلى من نطاقك المعتاد</string>

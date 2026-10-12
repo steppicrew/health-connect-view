@@ -244,9 +244,9 @@
     <string name="bp_part_evening">Tarde</string>
     <string name="bp_part_none">Sin medición</string>
     <plurals name="bp_part_value">
-        <item quantity="one">Media %1$s mmHg · %2$d medición</item>
-        <item quantity="many">Media %1$s mmHg · %2$d mediciones</item>
-        <item quantity="other">Media %1$s mmHg · %2$d mediciones</item>
+        <item quantity="one">Media %1$s\u2009\uFEFFmmHg · %2$d medición</item>
+        <item quantity="many">Media %1$s\u2009\uFEFFmmHg · %2$d mediciones</item>
+        <item quantity="other">Media %1$s\u2009\uFEFFmmHg · %2$d mediciones</item>
     </plurals>
     <string name="bp_parts_rule">La mañana va de 4:00 a 13:59, la tarde desde las 14:00. Una medición después de medianoche pero antes de las 4:00 cuenta para la tarde anterior. La misma medición guardada por varias aplicaciones cuenta una sola vez.\n\nLos colores siguen los grados de la Sociedad Europea de Hipertensión para mediciones en consulta: baja por debajo de 90/60, normal por debajo de 130/85, normal alta hasta 139/89, grado 1 desde 140/90, grado 2 desde 160/100. Decide el más alto de los dos valores. En casa, 135/85 o más ya se considera elevada. Una orientación, no un diagnóstico.</string>
     <string name="settings_pro">Pro</string>
@@ -817,8 +817,8 @@
     <string name="privacy_contact_body">El código fuente es público, así que cada afirmación de esta página se puede comprobar. Informa de los problemas en el gestor de incidencias del proyecto en GitHub. También puedes enviar tus preguntas por correo a hcview@steppicrew.de.</string>
     <string name="hrv_night_label">Media de la noche</string>
     <string name="hrv_week_label">Media de las últimas 7 noches</string>
-    <string name="hrv_week_mean">Media de las últimas 7 noches: %1$s ms</string>
-    <string name="hrv_usual">Rango habitual %1$s–%2$s ms · %3$s</string>
+    <string name="hrv_week_mean">Media de las últimas 7 noches: %1$s\u2009\uFEFFms</string>
+    <string name="hrv_usual">Rango habitual %1$s–%2$s\u2009\uFEFFms · %3$s</string>
     <string name="hrv_within">dentro de tu rango habitual</string>
     <string name="hrv_below">por debajo de tu rango habitual</string>
     <string name="hrv_above">por encima de tu rango habitual</string>

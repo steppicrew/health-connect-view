@@ -136,7 +136,7 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
             val heightLabel = stringResource(
                 R.string.route_heights,
                 Formatting.number(m.convert(heights.start)),
-                Formatting.number(m.convert(heights.endInclusive)) + " " + m.symbol(),
+                Formatting.number(m.convert(heights.endInclusive)) + Formatting.UNIT_SPACE + m.symbol(),
             )
             ExpandableChart("$heightLabel · $period") { expanded, onExpand ->
                 if (expanded) {
@@ -210,9 +210,9 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
         val km = Quantity.DISTANCE
         val readout = listOfNotNull(
             Formatting.time(here.time),
-            Formatting.number(km.convert(distances[index] / 1000)) + " " + km.symbol(),
+            Formatting.number(km.convert(distances[index] / 1000)) + Formatting.UNIT_SPACE + km.symbol(),
             speeds?.let { speedText(it[index], asPace) },
-            here.altitude?.let { Formatting.number(m.convert(it)) + " " + m.symbol() },
+            here.altitude?.let { Formatting.number(m.convert(it)) + Formatting.UNIT_SPACE + m.symbol() },
         ).joinToString(" · ")
         Text(text = readout, style = MaterialTheme.typography.bodyMedium)
         if (scale != null) {
@@ -316,7 +316,7 @@ private const val METRES_PER_MILE = 1609.344
 private fun speedText(metresPerSecond: Double, pace: Boolean): String {
     if (pace) return Formatting.pace(metresPerSecond) ?: "–"
     val kmh = Quantity.SPEED
-    return Formatting.number(kmh.convert(metresPerSecond * MS_TO_KMH)) + " " + kmh.symbol()
+    return Formatting.number(kmh.convert(metresPerSecond * MS_TO_KMH)) + Formatting.UNIT_SPACE + kmh.symbol()
 }
 
 /**
