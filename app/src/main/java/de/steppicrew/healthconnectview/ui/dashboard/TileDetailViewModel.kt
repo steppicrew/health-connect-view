@@ -361,7 +361,13 @@ class TileDetailViewModel(
     private val saved: SavedStateHandle,
 ) : AndroidViewModel(application) {
 
-    private val repository = HealthRepository(application)
+    private val base = HealthRepository(application)
+
+    /**
+     * [base], or during a load the same with its answers shared, so the chart, its extras, the
+     * list and the heatmap read what they have in common once. See [SharedReads].
+     */
+    private var repository = base
     private val sourceStore = SourceStore(application)
     private val dashboardStore = DashboardStore(application)
 
@@ -881,13 +887,27 @@ class TileDetailViewModel(
         loadJob?.cancel()
         compareJob?.cancel()
         loadJob = viewModelScope.launch {
+            val shared = base.sharing()
+            repository = shared
+            try {
+                loadShown(spec)
+            } finally {
+                shared.sharedReads?.let { Log.d(TAG, "reads: ${it.issued} sent, ${it.shared} shared") }
+                // Unless a newer load has taken over: its reads must stay shared.
+                if (repository === shared) repository = base
+            }
+        }
+    }
+
+    private suspend fun loadShown(spec: RecordTypeSpec<*>) = coroutineScope {
+        run {
             _state.update { UiState.Loading }
             _latestBefore.value = null
 
             val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
             if (spec.permission !in granted) {
                 _state.update { UiState.NoPermission }
-                return@launch
+                return@run
             }
 
             _historyGranted.value = RecordRegistry.HISTORY_PERMISSION in granted

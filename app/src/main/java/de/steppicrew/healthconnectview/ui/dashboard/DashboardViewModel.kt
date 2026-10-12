@@ -302,7 +302,13 @@ class DashboardViewModel(
     private val saved: SavedStateHandle,
 ) : AndroidViewModel(application) {
 
-    private val repository = HealthRepository(application)
+    private val base = HealthRepository(application)
+
+    /**
+     * [base], or during a load the same with its answers shared, so tiles asking the same thing
+     * -- a ring and a chart of one type, a chart's goal and a ring's streak -- read it once.
+     */
+    private var repository = base
     private val store = DashboardStore(application)
     private val sourceStore = SourceStore(application)
 
@@ -657,6 +663,19 @@ class DashboardViewModel(
      * would otherwise fire a tile's worth of IPC calls at Health Connect simultaneously.
      */
     private suspend fun loadTiles() {
+        val shared = base.sharing()
+        repository = shared
+        try {
+            loadTilesSharing()
+        } finally {
+            // Counts only: how much one load asks twice is worth measuring from adb.
+            shared.sharedReads?.let { Log.i(TAG, "reads: ${it.issued} sent, ${it.shared} shared") }
+            // Unless a newer load has taken over: its reads must stay shared.
+            if (repository === shared) repository = base
+        }
+    }
+
+    private suspend fun loadTilesSharing() {
         val date = _state.value.date
         val sameDay = tilesDate == date
         val insightsTile = config.tiles.firstOrNull { it.isInsights }

@@ -30,9 +30,27 @@ import kotlin.reflect.KClass
  * aggregation, which applies data-origin priority and deduplicates; [read] is for display
  * only and its output must never be summed.
  */
-class HealthRepository(private val context: Context) {
+class HealthRepository private constructor(
+    private val context: Context,
+    /** Answers shared within one load, or null to read every request; see [sharing]. */
+    val sharedReads: SharedReads?,
+) {
+    constructor(context: Context) : this(context, null)
 
     private val client: HealthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
+
+    /**
+     * This repository with each request read once and its answer shared with everyone who
+     * asks the same thing through it: one per load, so the next load reads afresh.
+     * Permissions are never shared; they are re-read every time.
+     */
+    fun sharing(): HealthRepository = HealthRepository(context, SharedReads())
+
+    /** [read] through [sharedReads] where there is one; [V] is what [key]'s request returns. */
+    private suspend fun <V> ask(answers: SharedReads.() -> SharedReads.Answers<V>, key: Any, read: suspend () -> V): V {
+        val shared = sharedReads ?: return read()
+        return shared.answers().get(key, read)
+    }
 
     suspend fun grantedPermissions(): Set<String> = withContext(Dispatchers.IO) {
         client.permissionController.getGrantedPermissions()
@@ -51,6 +69,18 @@ class HealthRepository(private val context: Context) {
         range: TimeRangeFilter,
         maxRecords: Int = MAX_RECORDS,
         origins: Set<DataOrigin> = emptySet(),
+    ): List<T> {
+        if (sharedReads == null) return readNewest(type, range, maxRecords, origins)
+        return ask({ records }, listOf("read", type, range, maxRecords, origins)) {
+            readNewest(type, range, maxRecords, origins)
+        }.map(type.java::cast)
+    }
+
+    private suspend fun <T : Record> readNewest(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        maxRecords: Int,
+        origins: Set<DataOrigin>,
     ): List<T> = withContext(Dispatchers.IO) {
         val collected = mutableListOf<T>()
         var pageToken: String? = null
@@ -96,6 +126,20 @@ class HealthRepository(private val context: Context) {
         limit: Int = CHART_POINTS,
         origins: Set<DataOrigin> = emptySet(),
         progress: PageProgress<in T>? = null,
+    ): List<T> {
+        if (sharedReads == null) return readThinned(type, range, limit, origins, progress)
+        // Only the first asker sees the pages go by; the others wait for the result.
+        return ask({ records }, listOf("chart", type, range, limit, origins)) {
+            readThinned(type, range, limit, origins, progress)
+        }.map(type.java::cast)
+    }
+
+    private suspend fun <T : Record> readThinned(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        limit: Int,
+        origins: Set<DataOrigin>,
+        progress: PageProgress<in T>?,
     ): List<T> = withContext(Dispatchers.IO) {
         val kept = ArrayDeque<T>()
         var seen = 0
@@ -176,6 +220,15 @@ class HealthRepository(private val context: Context) {
         range: TimeRangeFilter,
         aggregateRange: TimeRangeFilter? = null,
         metric: AggregateMetric<*>? = null,
+    ): Boolean = ask({ presence }, listOf("has", type, range, aggregateRange, metric)) {
+        probe(type, range, aggregateRange, metric)
+    }
+
+    private suspend fun <T : Record> probe(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        aggregateRange: TimeRangeFilter?,
+        metric: AggregateMetric<*>?,
     ): Boolean = withContext(Dispatchers.IO) {
         val hasRecords = client.readRecords(
             ReadRecordsRequest(recordType = type, timeRangeFilter = range, pageSize = 1),
@@ -194,15 +247,7 @@ class HealthRepository(private val context: Context) {
     suspend fun dailyTotals(
         metric: AggregateMetric<*>,
         range: TimeRangeFilter,
-    ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
-        client.aggregateGroupByPeriod(
-            AggregateGroupByPeriodRequest(
-                metrics = setOf(metric),
-                timeRangeFilter = range,
-                timeRangeSlicer = Period.ofDays(1),
-            ),
-        )
-    }
+    ): List<AggregationResultGroupedByPeriod> = bucketedTotals(metric, range, Period.ofDays(1))
 
     /**
      * One deduplicated total for a range. A dashboard tile's headline number.
@@ -225,6 +270,14 @@ class HealthRepository(private val context: Context) {
         metrics: Set<AggregateMetric<*>>,
         range: TimeRangeFilter,
         origins: Set<DataOrigin> = emptySet(),
+    ): Map<AggregateMetric<*>, Double> = ask({ totals }, listOf("totals", metrics, range, origins)) {
+        aggregate(metrics, range, origins)
+    }
+
+    private suspend fun aggregate(
+        metrics: Set<AggregateMetric<*>>,
+        range: TimeRangeFilter,
+        origins: Set<DataOrigin>,
     ): Map<AggregateMetric<*>, Double> = withContext(Dispatchers.IO) {
         val result = client.aggregate(AggregateRequest(metrics, range, origins))
         metrics.mapNotNull { metric ->
@@ -250,15 +303,17 @@ class HealthRepository(private val context: Context) {
          * times the IPC to produce numbers that must line up bucket for bucket anyway.
          */
         also: Set<AggregateMetric<*>> = emptySet(),
-    ): List<AggregationResultGroupedByPeriod> = withContext(Dispatchers.IO) {
-        client.aggregateGroupByPeriod(
-            AggregateGroupByPeriodRequest(
-                metrics = setOf(metric) + also,
-                timeRangeFilter = range,
-                timeRangeSlicer = bucket,
-                dataOriginFilter = origins,
-            ),
-        )
+    ): List<AggregationResultGroupedByPeriod> = ask({ periods }, listOf("periods", setOf(metric) + also, range, bucket, origins)) {
+        withContext(Dispatchers.IO) {
+            client.aggregateGroupByPeriod(
+                AggregateGroupByPeriodRequest(
+                    metrics = setOf(metric) + also,
+                    timeRangeFilter = range,
+                    timeRangeSlicer = bucket,
+                    dataOriginFilter = origins,
+                ),
+            )
+        }
     }
 
     /**
@@ -276,15 +331,17 @@ class HealthRepository(private val context: Context) {
         range: TimeRangeFilter,
         bucket: Duration,
         origins: Set<DataOrigin> = emptySet(),
-    ): List<AggregationResultGroupedByDuration> = withContext(Dispatchers.IO) {
-        client.aggregateGroupByDuration(
-            AggregateGroupByDurationRequest(
-                metrics = setOf(metric),
-                timeRangeFilter = range,
-                timeRangeSlicer = bucket,
-                dataOriginFilter = origins,
-            ),
-        )
+    ): List<AggregationResultGroupedByDuration> = ask({ durations }, listOf("durations", metric, range, bucket, origins)) {
+        withContext(Dispatchers.IO) {
+            client.aggregateGroupByDuration(
+                AggregateGroupByDurationRequest(
+                    metrics = setOf(metric),
+                    timeRangeFilter = range,
+                    timeRangeSlicer = bucket,
+                    dataOriginFilter = origins,
+                ),
+            )
+        }
     }
 
     /**
@@ -301,6 +358,16 @@ class HealthRepository(private val context: Context) {
         type: KClass<T>,
         range: TimeRangeFilter,
         origins: Set<DataOrigin> = emptySet(),
+    ): T? {
+        if (sharedReads == null) return readOldest(type, range, origins)
+        return ask({ oldest }, listOf("oldest", type, range, origins)) { readOldest(type, range, origins) }
+            ?.let(type.java::cast)
+    }
+
+    private suspend fun <T : Record> readOldest(
+        type: KClass<T>,
+        range: TimeRangeFilter,
+        origins: Set<DataOrigin>,
     ): T? = withContext(Dispatchers.IO) {
         client.readRecords(
             ReadRecordsRequest(
@@ -322,11 +389,13 @@ class HealthRepository(private val context: Context) {
     suspend fun contributingApps(
         metric: AggregateMetric<*>,
         range: TimeRangeFilter,
-    ): Set<String> = withContext(Dispatchers.IO) {
-        client.aggregate(AggregateRequest(setOf(metric), range))
-            .dataOrigins
-            .map { it.packageName }
-            .toSet()
+    ): Set<String> = ask({ apps }, listOf("apps", metric, range)) {
+        withContext(Dispatchers.IO) {
+            client.aggregate(AggregateRequest(setOf(metric), range))
+                .dataOrigins
+                .map { it.packageName }
+                .toSet()
+        }
     }
 
     companion object {
