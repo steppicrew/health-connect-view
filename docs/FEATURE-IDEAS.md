@@ -89,6 +89,19 @@ about the activity type (`BIKING` against `BIKING_STATIONARY` for the same ride)
 whole-day summary record cannot be split at all. Every surface showing it would have to say it
 is matched by time.
 
+## Adaptive goal on active calories
+
+Noted 13.10.2026 in the same discussion, as the other answer to "walking and cycling should
+weigh differently": active calories are effort the device has already weighed across every
+activity, with no factor of ours. An adaptive goal there (`AdaptiveGoalRule`, as for steps and
+distance) would follow effort where the distance goal follows kilometres. Not scored yet. It
+needs a ring tile for active calories, which has none (rings: steps, distance, floors, total
+calories), a cap and a rounding step chosen without a watch record to read them from, and a
+device that writes the type at all. Today's calorie totals are also the hardest figures in the
+app to get right (the running tally in `CLAUDE.md`), so the day's own value must be checked on
+the phone before a ring is drawn against it. Total calories would not do instead: most of it
+is basal energy that is the same every day, which leaves the goal little to follow.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).
