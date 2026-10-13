@@ -1,7 +1,8 @@
 package de.steppicrew.healthconnectview
 
 import de.steppicrew.healthconnectview.health.AdaptiveGoalRule
-import de.steppicrew.healthconnectview.health.STEPS_MAX_RISE
+import de.steppicrew.healthconnectview.health.DISTANCE_GOAL_RULE
+import de.steppicrew.healthconnectview.health.STEPS_GOAL_RULE
 import de.steppicrew.healthconnectview.health.adaptiveGoals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -10,7 +11,7 @@ import java.time.LocalDate
 
 class AdaptiveGoalTest {
     private val start = LocalDate.of(2025, 8, 1)
-    private val rule = AdaptiveGoalRule(maxRise = STEPS_MAX_RISE)
+    private val rule = STEPS_GOAL_RULE
 
     private fun goals(steps: List<Double?>, seed: Double, rule: AdaptiveGoalRule = this.rule): List<Double> {
         val last = start.plusDays(steps.size - 1L)
@@ -61,6 +62,35 @@ class AdaptiveGoalTest {
 
         assertEquals(6_000.0, floored.last(), 0.0)
         assertTrue(goals(List(30) { 0.0 }, seed = 10_000.0).last() < 6_000.0)
+    }
+
+    @Test
+    fun `a distance goal moves in hundredths of a kilometre`() {
+        val replayed = goals(listOf(2.0, 2.0, 8.0, 8.04, 0.0), seed = 5.0, DISTANCE_GOAL_RULE)
+
+        // A tenth of 3 km down, a fifth of 2.7, a tenth of 3.84 up, a fifth of 3.49, each rounded up.
+        listOf(5.0, 4.7, 4.16, 4.55, 5.25).zip(replayed).forEach { (expected, ours) -> assertEquals(expected, ours, 1e-9) }
+    }
+
+    @Test
+    fun `a distance goal falls on a day a little short of it`() {
+        // 300 m short: a tenth of a kilometre as the step would round the fall up to nothing.
+        assertEquals(4.97, goals(listOf(4.7, 4.7), seed = 5.0, DISTANCE_GOAL_RULE)[1], 1e-9)
+    }
+
+    @Test
+    fun `a long ride raises a distance goal by a kilometre and no more`() {
+        val replayed = goals(listOf(80.0, 80.0, 0.0), seed = 5.0, DISTANCE_GOAL_RULE)
+
+        listOf(5.0, 6.0, 7.0).zip(replayed).forEach { (expected, ours) -> assertEquals(expected, ours, 1e-9) }
+    }
+
+    @Test
+    fun `a distance goal never falls to nothing`() {
+        val idle = List(200) { 0.0 }
+
+        assertTrue(goals(idle, seed = 5.0, DISTANCE_GOAL_RULE).last() > 0.0)
+        assertEquals(3.0, goals(idle, seed = 5.0, DISTANCE_GOAL_RULE.copy(floor = 3.0)).last(), 1e-9)
     }
 
     @Test

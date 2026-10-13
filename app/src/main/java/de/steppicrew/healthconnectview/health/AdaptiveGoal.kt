@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.health
 
 import java.time.LocalDate
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToLong
 
@@ -12,7 +13,7 @@ import kotlin.math.roundToLong
  * with the goal it set each day (12.10.2026), and reproduces 27 of its 31 changes to within
  * ten steps: a tenth of the gap on the first change in a direction, a fifth from the second
  * in the same direction on, rises capped at [maxRise] a day, falls not capped, each change
- * rounded up to [ROUNDING]. The four it misses are a reset the watch made on its own and days
+ * rounded up to [step]. The four it misses are a reset the watch made on its own and days
  * it left unchanged though they held data -- presumably totals that arrived late.
  *
  * Nothing is stored: the goals are replayed from [seed], the user's fixed goal, over the days
@@ -23,7 +24,12 @@ import kotlin.math.roundToLong
 data class AdaptiveGoalRule(
     /** The largest rise in one day, in the metric's stored unit. */
     val maxRise: Double,
-    /** The lowest the goal may fall to; null for none beyond [MIN_GOAL]. */
+    /**
+     * What goals move in, in the metric's stored unit: every change is rounded up to it, and
+     * no goal falls below one of it, floor or not.
+     */
+    val step: Double,
+    /** The lowest the goal may fall to; null for none beyond one [step]. */
     val floor: Double? = null,
 )
 
@@ -43,8 +49,8 @@ fun adaptiveGoals(
     first: LocalDate,
     last: LocalDate,
 ): Map<LocalDate, Double> {
-    val lowest = maxOf(rule.floor ?: 0.0, MIN_GOAL)
-    var goal = rounded(seed).coerceAtLeast(lowest)
+    val lowest = maxOf(rule.floor ?: 0.0, rule.step)
+    var goal = (rounded(seed / rule.step) * rule.step).coerceAtLeast(lowest)
     var direction = 0
     val goals = mutableMapOf<LocalDate, Double>()
     var day = replayFrom
@@ -57,7 +63,9 @@ fun adaptiveGoals(
             if (towards != 0) {
                 val share = if (towards == direction) SECOND_SHARE else FIRST_SHARE
                 val change = (share * gap).coerceAtMost(rule.maxRise)
-                goal = (goal + roundedUp(change)).coerceAtLeast(lowest)
+                // Counted in whole steps, so a goal in hundredths of a kilometre stays on them.
+                val steps = rounded(goal / rule.step) + roundedUp(change / rule.step)
+                goal = (steps * rule.step).coerceAtLeast(lowest)
                 direction = towards
             }
         }
@@ -66,29 +74,40 @@ fun adaptiveGoals(
     return goals
 }
 
-private fun rounded(value: Double): Double = (value / ROUNDING).roundToLong() * ROUNDING
+private fun rounded(steps: Double): Double = steps.roundToLong().toDouble()
 
 /**
- * A change rounded up to the next [ROUNDING], as the watch's were: all 13 of its rises fit and
- * 7 of its 9 falls, where rounding to the nearest left the goal 20 off after a week.
+ * A change rounded up to the next whole step, as the watch's were: all 13 of its rises fit and
+ * 7 of its 9 falls, where rounding to the nearest left the goal 20 off after a week. A change
+ * of a whole number of steps stays that many, whatever the division left behind it.
  */
-private fun roundedUp(change: Double): Double = ceil(change / ROUNDING) * ROUNDING
+private fun roundedUp(steps: Double): Double {
+    val whole = rounded(steps)
+    return if (abs(steps - whole) < STEP_SLACK) whole else ceil(steps)
+}
 
 /** The share of the gap on the first change in a direction, and on every later one. */
 private const val FIRST_SHARE = 0.1
 private const val SECOND_SHARE = 0.2
 
-/** Goals move in steps of ten, as the watch's did. */
-private const val ROUNDING = 10.0
-
-/** A goal never falls to nothing, floor or not. */
-private const val MIN_GOAL = 10.0
+/** How far from a whole number of steps a division's rounding error may leave a change. */
+private const val STEP_SLACK = 1e-9
 
 /** Days replayed before the first one answered for, to forget the seed. */
 const val WARMUP_DAYS = 56L
 
-/** The steps goal's largest rise in a day, as the watch's. */
-const val STEPS_MAX_RISE = 2_000.0
+/** The steps goal: rises of at most 2,000 a day, in steps of ten, both as the watch's. */
+val STEPS_GOAL_RULE = AdaptiveGoalRule(maxRise = 2_000.0, step = 10.0)
+
+/**
+ * The distance goal, in kilometres. No watch record to read this one from: the cap is the same
+ * fifth of the default goal as for steps, and it matters more here, since distance counts
+ * cycling too and one long ride is a gap no day on foot produces. Ten metres are about what
+ * ten steps cover; a coarser step would hold the goal up, since a fall is rounded up too and
+ * a day less than five steps' worth short of its goal lowers nothing -- half a kilometre, at a
+ * tenth of one.
+ */
+val DISTANCE_GOAL_RULE = AdaptiveGoalRule(maxRise = 1.0, step = 0.01)
 
 /**
  * The goal on each day up to [date], with the daily values it was replayed from.

@@ -272,7 +272,7 @@ fun DashboardScreen(
                     choice.floor?.let(editing.spec::toMetric),
                 )
             },
-            adaptiveOffered = editing.spec.tile.adaptiveRise != null,
+            adaptiveOffered = editing.spec.tile.adaptiveRule != null,
             currentAdaptive = editing.tile.adaptiveGoal,
             currentFloor = editing.tile.goalFloor?.let { (editing.spec.display(it) * 100).roundToInt() / 100.0 },
         )

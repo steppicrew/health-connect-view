@@ -37,7 +37,7 @@ data class Tile(
     val goal: Double? = null,
     /**
      * The goal follows the days before it ([adaptiveGoals]), [effectiveGoal] being where the
-     * replay starts. Per type, like [goal]; only where [TileSpec.adaptiveRise] offers it.
+     * replay starts. Per type, like [goal]; only where [TileSpec.adaptiveRule] offers it.
      */
     val adaptiveGoal: Boolean = false,
     /** The lowest an adaptive goal may fall to, stored metric like [goal]; null for none. */
@@ -114,7 +114,7 @@ data class Tile(
 
     /** The rule an adaptive goal follows, where it is chosen and the type offers one. */
     val goalRule: AdaptiveGoalRule?
-        get() = spec?.tile?.adaptiveRise?.takeIf { adaptiveGoal }?.let { AdaptiveGoalRule(it, goalFloor) }
+        get() = spec?.tile?.adaptiveRule?.takeIf { adaptiveGoal }?.copy(floor = goalFloor)
 
     /** The value bands actually in force: the user's override, else the type's default. */
     val effectiveZones: ValueZones? get() = zones ?: spec?.tile?.defaultZones
