@@ -12,7 +12,7 @@ import kotlin.math.roundToLong
  * The rule was read off a year-old record of the owner's watch, 32 days of a hiking holiday
  * with the goal it set each day (12.10.2026), and reproduces 27 of its 31 changes to within
  * ten steps: a tenth of the gap on the first change in a direction, a fifth from the second
- * in the same direction on, rises capped at [maxRise] a day, falls not capped, each change
+ * in the same direction on, rises capped at [maxRise] a day ([cap]), falls not capped, each change
  * rounded up to [step]. The four it misses are a reset the watch made on its own and days
  * it left unchanged though they held data -- presumably totals that arrived late.
  *
@@ -25,13 +25,21 @@ data class AdaptiveGoalRule(
     /** The largest rise in one day, in the metric's stored unit. */
     val maxRise: Double,
     /**
+     * The largest rise as a share of the goal it starts from, where that is more than
+     * [maxRise]; null where [maxRise] is the cap whatever the goal, as on the watch.
+     */
+    val maxRiseShare: Double? = null,
+    /**
      * What goals move in, in the metric's stored unit: every change is rounded up to it, and
      * no goal falls below one of it, floor or not.
      */
     val step: Double,
     /** The lowest the goal may fall to; null for none beyond one [step]. */
     val floor: Double? = null,
-)
+) {
+    /** The largest rise in one day from [goal]. */
+    fun cap(goal: Double): Double = maxOf(maxRise, (maxRiseShare ?: 0.0) * goal)
+}
 
 /**
  * The goal in force on each day from [first] to [last], replayed from [seed] over the days
@@ -62,7 +70,7 @@ fun adaptiveGoals(
             val towards = gap.compareTo(0.0)
             if (towards != 0) {
                 val share = if (towards == direction) SECOND_SHARE else FIRST_SHARE
-                val change = (share * gap).coerceAtMost(rule.maxRise)
+                val change = (share * gap).coerceAtMost(rule.cap(goal))
                 // Counted in whole steps, so a goal in hundredths of a kilometre stays on them.
                 val steps = rounded(goal / rule.step) + roundedUp(change / rule.step)
                 goal = (steps * rule.step).coerceAtLeast(lowest)
@@ -100,14 +108,18 @@ const val WARMUP_DAYS = 56L
 val STEPS_GOAL_RULE = AdaptiveGoalRule(maxRise = 2_000.0, step = 10.0)
 
 /**
- * The distance goal, in kilometres. No watch record to read this one from: the cap is the same
- * fifth of the default goal as for steps, and it matters more here, since distance counts
- * cycling too and one long ride is a gap no day on foot produces. Ten metres are about what
+ * The distance goal, in kilometres. No watch record to read this one from. The cap is the
+ * fifth of the default goal that 2,000 steps are, and matters more here, since distance counts
+ * cycling too and one long ride is a gap no day on foot produces. It is a fifth of the goal
+ * itself where that is more: people's days differ far more in distance than in steps, and on
+ * the owner's phone (13.10.2026, weekdays of 16 to 41 km by bike, weekends of 1) a flat
+ * kilometre a day could not win back in five weekdays what a weekend took off, so the goal
+ * sat at 13 to 17 km, below nearly every weekday. Ten metres are about what
  * ten steps cover; a coarser step would hold the goal up, since a fall is rounded up too and
  * a day less than five steps' worth short of its goal lowers nothing -- half a kilometre, at a
  * tenth of one.
  */
-val DISTANCE_GOAL_RULE = AdaptiveGoalRule(maxRise = 1.0, step = 0.01)
+val DISTANCE_GOAL_RULE = AdaptiveGoalRule(maxRise = 1.0, maxRiseShare = 0.2, step = 0.01)
 
 /**
  * The goal on each day up to [date], with the daily values it was replayed from.

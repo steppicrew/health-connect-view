@@ -78,6 +78,17 @@ Pro:
   across weeks. "The same route" is fuzzy, and writers disagree about activity types.
 - Monthly summary PDF (5): any metric for a month; overlaps with the CSV export.
 
+## Distance by activity (Pro)
+
+The owner, 13.10.2026, over the adaptive distance goal: walking and cycling produce the same
+kilometres but are not the same thing, so each activity -- cycling, walking, canoeing ... --
+should be collected on its own, with its own total, chart and goal. Not scored yet. What it
+runs into: distance records carry no activity, so a day's kilometres have to be assigned by
+time overlap with the exercise sessions and what is left counted as on foot; writers disagree
+about the activity type (`BIKING` against `BIKING_STATIONARY` for the same ride); and a
+whole-day summary record cannot be split at all. Every surface showing it would have to say it
+is matched by time.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).
