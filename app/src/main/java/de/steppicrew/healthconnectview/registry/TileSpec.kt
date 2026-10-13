@@ -2,6 +2,7 @@ package de.steppicrew.healthconnectview.registry
 
 import androidx.annotation.StringRes
 import de.steppicrew.healthconnectview.health.RecordKind
+import de.steppicrew.healthconnectview.health.AdaptiveGoalRule
 import de.steppicrew.healthconnectview.health.Session
 
 /**
@@ -22,10 +23,10 @@ data class TileSpec(
      */
     val defaultGoal: Double? = null,
     /**
-     * The largest rise in a day of an adaptive goal ([adaptiveGoals]), in the same unit as
-     * [defaultGoal]; null where the type offers no adaptive goal. Steps for now.
+     * The rule an adaptive goal ([adaptiveGoals]) follows, in the same unit as [defaultGoal] and
+     * without a floor, which is the user's; null where the type offers no adaptive goal.
      */
-    val adaptiveRise: Double? = null,
+    val adaptiveRule: AdaptiveGoalRule? = null,
     /**
      * Default value bands for colouring this type's curve, low to high.
      *

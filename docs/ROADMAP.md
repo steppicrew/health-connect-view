@@ -958,6 +958,14 @@ doctor report and the year heatmap; the rest unranked.
     its type, so a second steps tile drew the first one's goal.
 96. [x] **Colours for the week's changes and the cycle tile** -- the owner, 12.10.2026: they
     have their own card, since neither belongs to a type, and it never offered a colour.
+97. [x] **Adaptive distance goal** -- the owner, 13.10.2026: distance could follow its days
+    as steps do. Same rule, with its two unit-bound numbers moved into it
+    (`AdaptiveGoalRule.step`, `TileSpec.adaptiveRule`): rises capped at 1 km a day, the same
+    fifth of the default goal as 2,000 steps, and changes rounded up to 10 m, about what ten
+    steps cover. Not a tenth of a kilometre: a fall is rounded up as well, so a day less than
+    five rounding steps short of its goal lowers nothing, and that would be half a kilometre.
+    The cap is a judgement, not a measurement -- there is no watch record of a distance goal --
+    and matters more than for steps, since distance counts cycling.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
