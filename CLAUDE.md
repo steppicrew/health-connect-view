@@ -214,7 +214,8 @@ settings while backgrounded.
 - `allWarningsAsError` and lint `warningsAsErrors` are on, with no baseline. Fix warnings
   rather than suppressing them; count strings need `<plurals>`, not `%d` in a string.
 - The system Gradle on this machine is broken (missing `gradle-public-api-legacy`). Use
-  `./gradlew`; the wrapper jar was assembled from the official 9.7.1 distribution.
+  `./gradlew`. Raise the wrapper with `./gradlew wrapper --gradle-version <v>`, run twice so
+  the script and jar follow; it also writes a `gradlew.bat`, which is not kept.
 
 ## Testing on hardware
 
