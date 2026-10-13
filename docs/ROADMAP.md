@@ -961,11 +961,17 @@ doctor report and the year heatmap; the rest unranked.
 97. [x] **Adaptive distance goal** -- the owner, 13.10.2026: distance could follow its days
     as steps do. Same rule, with its two unit-bound numbers moved into it
     (`AdaptiveGoalRule.step`, `TileSpec.adaptiveRule`): rises capped at 1 km a day, the same
-    fifth of the default goal as 2,000 steps, and changes rounded up to 10 m, about what ten
-    steps cover. Not a tenth of a kilometre: a fall is rounded up as well, so a day less than
+    fifth of the default goal as 2,000 steps, or at a fifth of the goal itself where that is
+    more (`maxRiseShare`), and changes rounded up to 10 m, about what ten steps cover. The flat
+    kilometre alone failed on the phone: weekdays of 16 to 41 km by bike and weekends of 1 left
+    the goal at 13 to 17 km, since a weekend took off what five capped weekdays could just win
+    back; with the share it runs at about 17 to 24. Not a tenth of a kilometre: a fall is rounded up as well, so a day less than
     five rounding steps short of its goal lowers nothing, and that would be half a kilometre.
     The cap is a judgement, not a measurement -- there is no watch record of a distance goal --
-    and matters more than for steps, since distance counts cycling.
+    and matters more than for steps, since distance counts cycling. Unweighted on purpose: a
+    kilometre by bike and one on foot count alike, as on the device; for the owner the steps
+    goal is the walking goal and this one in effect the cycling goal. Distance per activity is
+    in `FEATURE-IDEAS.md`.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that

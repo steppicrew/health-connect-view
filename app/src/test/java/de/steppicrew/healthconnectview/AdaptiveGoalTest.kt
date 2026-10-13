@@ -79,10 +79,27 @@ class AdaptiveGoalTest {
     }
 
     @Test
-    fun `a long ride raises a distance goal by a kilometre and no more`() {
-        val replayed = goals(listOf(80.0, 80.0, 0.0), seed = 5.0, DISTANCE_GOAL_RULE)
+    fun `a long ride raises a low distance goal by a kilometre and no more`() {
+        val replayed = goals(listOf(80.0, 80.0, 0.0), seed = 4.0, DISTANCE_GOAL_RULE)
 
-        listOf(5.0, 6.0, 7.0).zip(replayed).forEach { (expected, ours) -> assertEquals(expected, ours, 1e-9) }
+        listOf(4.0, 5.0, 6.0).zip(replayed).forEach { (expected, ours) -> assertEquals(expected, ours, 1e-9) }
+    }
+
+    @Test
+    fun `a higher distance goal may rise by a fifth of itself`() {
+        val replayed = goals(listOf(80.0, 80.0, 0.0), seed = 20.0, DISTANCE_GOAL_RULE)
+
+        listOf(20.0, 24.0, 28.8).zip(replayed).forEach { (expected, ours) -> assertEquals(expected, ours, 1e-9) }
+    }
+
+    @Test
+    fun `a distance goal keeps up with weekdays on the bike`() {
+        // A week like the owner's: under a flat kilometre a day the goal sat at 13 to 17 km.
+        val week = listOf(41.0, 16.0, 33.0, 33.0, 26.0, 1.0, 1.0)
+        val replayed = goals(List(20) { week }.flatten(), seed = 5.0, DISTANCE_GOAL_RULE).takeLast(7)
+
+        assertTrue(replayed.min() > 17.0)
+        assertTrue(replayed.max() < 26.0)
     }
 
     @Test
