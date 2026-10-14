@@ -1,0 +1,1 @@
+1.7.0 — El objetivo adaptativo ahora también funciona con la distancia: sube tras los días largos y baja tras los cortos. Corregido: si una app guardaba un entrenamiento dos veces, la copia errónea podía ocultar otro entrenamiento con el que se solapaba.

@@ -1,1 +1,1 @@
-1.6.0 — Adaptacyjny cel kroków, który rośnie po aktywnych dniach i spada po spokojnych, z opcjonalną dolną granicą. Pierścienie pokazują, o ile przekroczono cel: cienki pierścień za każdy kolejny pełny cel i osiągnięta część w pierścieniu. Kolory dla kafelków „Zmiany w tym tygodniu” i „Cykl” (Pro). Szybsze ładowanie.
+1.7.0 — Cel adaptacyjny działa teraz także dla dystansu: rośnie po długich dniach i spada po krótkich. Poprawiono: gdy aplikacja zapisała trening dwa razy, błędna kopia mogła ukryć inny trening, który się z nią nakładał.

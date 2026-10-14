@@ -1,0 +1,1 @@
+1.7.0 — The adaptive goal now works for distance too: it rises after long days and falls after short ones. Fixed: when an app wrote a workout twice, the stray copy could hide another workout it overlapped.
