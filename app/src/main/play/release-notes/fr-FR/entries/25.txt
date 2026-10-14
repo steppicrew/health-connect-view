@@ -1,0 +1,1 @@
+1.7.0 — L’objectif adaptatif existe désormais aussi pour la distance : il augmente après les longues journées et baisse après les courtes. Corrigé : quand une app enregistrait un entraînement en double, la copie erronée pouvait masquer un autre entraînement qu’elle chevauchait.

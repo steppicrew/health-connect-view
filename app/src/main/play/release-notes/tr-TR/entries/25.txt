@@ -1,0 +1,1 @@
+1.7.0 — Uyarlanabilir hedef artık mesafe için de var: uzun günlerden sonra yükselir, kısa günlerden sonra düşer. Düzeltildi: bir uygulama bir antrenmanı iki kez kaydettiğinde, hatalı kopya onunla çakışan başka bir antrenmanı gizleyebiliyordu.

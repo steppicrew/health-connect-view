@@ -1,0 +1,1 @@
+1.7.0 — Target adaptif kini juga tersedia untuk jarak: naik setelah hari yang panjang dan turun setelah hari yang pendek. Diperbaiki: jika sebuah aplikasi menyimpan latihan dua kali, salinan yang keliru dapat menyembunyikan latihan lain yang tumpang tindih dengannya.

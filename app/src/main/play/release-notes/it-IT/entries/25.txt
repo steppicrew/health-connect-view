@@ -1,0 +1,1 @@
+1.7.0 — L’obiettivo adattivo ora funziona anche per la distanza: sale dopo le giornate lunghe e scende dopo quelle brevi. Corretto: se un’app salvava un allenamento due volte, la copia errata poteva nascondere un altro allenamento con cui si sovrapponeva.

@@ -1,1 +1,1 @@
-1.6.0 — An adaptive steps goal that rises after active days and falls after quiet ones, with an optional lower limit. Rings show how far past the goal you went: a thin ring for each further full goal, and the share of the goal in the ring. Colours for the “Changes this week” and “Cycle” tiles (Pro). Faster loading.
+1.7.0 — The adaptive goal now works for distance too: it rises after long days and falls after short ones. Fixed: when an app wrote a workout twice, the stray copy could hide another workout it overlapped.

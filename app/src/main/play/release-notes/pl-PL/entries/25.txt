@@ -1,0 +1,1 @@
+1.7.0 — Cel adaptacyjny działa teraz także dla dystansu: rośnie po długich dniach i spada po krótkich. Poprawiono: gdy aplikacja zapisała trening dwa razy, błędna kopia mogła ukryć inny trening, który się z nią nakładał.

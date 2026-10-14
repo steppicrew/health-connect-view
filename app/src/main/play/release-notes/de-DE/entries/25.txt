@@ -1,0 +1,1 @@
+1.7.0 — Das adaptive Ziel gibt es jetzt auch für die Distanz: Es steigt nach langen Tagen und sinkt nach kurzen. Behoben: Hatte eine App ein Training doppelt gespeichert, konnte die falsche Kopie ein anderes Training verdecken, mit dem sie sich überschnitt.
