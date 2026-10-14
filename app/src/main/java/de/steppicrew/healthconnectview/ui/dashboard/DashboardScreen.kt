@@ -423,6 +423,7 @@ fun DashboardScreen(
             // Not while arranging tiles: the drag that moves one must not start a reload.
             enabled = !editing,
             modifier = Modifier.fillMaxSize(),
+            indicatorPadding = PaddingValues(top = padding.calculateTopPadding()),
         ) {
             when {
                 state.loading -> LoadingView(Modifier.padding(padding))

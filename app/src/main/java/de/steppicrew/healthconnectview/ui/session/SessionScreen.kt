@@ -19,6 +19,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -161,6 +162,7 @@ fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
             refreshing = refreshing,
             onRefresh = viewModel::pullRefresh,
             modifier = Modifier.fillMaxSize(),
+            indicatorPadding = PaddingValues(top = padding.calculateTopPadding()),
         ) {
             when (val current = state) {
                 UiState.Loading -> LoadingView(inner)
