@@ -78,17 +78,16 @@ data class RouteRef(val recordId: String)
  * written by three -- and they disagree: a Garmin watch recorded it as outdoor biking while
  * the machine's own app recorded it as stationary. Preferring a titled session favours the app
  * specific enough to name the activity, which in practice is the one that knows what it was.
+ *
+ * Only copies of one kind of workout are the same workout ([sameWorkout]). Merging on overlap
+ * alone once let a stray ride hide a strength session it overlapped (14.10.2026, below).
  */
 fun dedupeSessions(sessions: List<Session>): List<Session> {
-    val sorted = sessions.sortedWith(compareBy({ it.start }, { it.end }))
+    val sorted = withoutEchoes(sessions).sortedWith(compareBy({ it.start }, { it.end }))
     val kept = mutableListOf<Session>()
 
     sorted.forEach { candidate ->
-        val overlapping = kept.indexOfFirst { existing ->
-            existing.kind == candidate.kind &&
-                candidate.start < existing.end &&
-                candidate.end > existing.start
-        }
+        val overlapping = kept.indexOfFirst { existing -> existing.overlaps(candidate) && sameWorkout(existing, candidate) }
         val existing = kept.getOrNull(overlapping)
         if (existing == null) {
             kept += candidate
@@ -113,6 +112,61 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
     }
     return kept
 }
+
+/**
+ * Whether two sessions share most of the shorter one's time, as copies of one workout do. Not
+ * any overlap: on 14.10.2026 the stray ride ended five seconds into the watch's real one, and
+ * touching was enough to merge them.
+ */
+private fun Session.overlaps(other: Session): Boolean {
+    val shared = Duration.between(maxOf(start, other.start), minOf(end, other.end))
+    val shorter = minOf(Duration.between(start, end), Duration.between(other.start, other.end))
+    return other.start < end && other.end > start && shared.multipliedBy(2) >= shorter
+}
+
+/**
+ * Whether two overlapping sessions can be copies of one: the same kind and, for exercise, the
+ * same [WorkoutFamily], so a watch's biking and a machine's stationary biking still merge. Two
+ * types outside every family merge only where the type is the same.
+ */
+private fun sameWorkout(a: Session, b: Session): Boolean {
+    if (a.kind != b.kind) return false
+    if (a.kind != Session.Kind.EXERCISE) return true
+    val family = familyOf(a.exerciseType)
+    if (family != familyOf(b.exerciseType)) return false
+    return family != WorkoutFamily.OTHER || a.exerciseType == b.exerciseType
+}
+
+/**
+ * Drops a workout a writer wrote twice, the second copy moved off the real one.
+ *
+ * On 14.10.2026 a machine's app wrote a 53-minute ride at the right time and again 53 minutes
+ * earlier, ending a second before the real one began; the watch and a sync app recorded a
+ * strength session in that earlier hour. The copy is recognised by all of this together: the
+ * same writer, the same type, the same length to the second, the two back to back, the other
+ * copy confirmed by another writer's workout of its kind, and this one confirmed by none. Any
+ * part missing and both are kept: a writer's two real sessions back to back are not echoes.
+ */
+private fun withoutEchoes(sessions: List<Session>): List<Session> {
+    fun confirmed(session: Session) = sessions.any {
+        it.origin != session.origin && it.overlaps(session) && sameWorkout(it, session)
+    }
+    fun echoes(copy: Session, real: Session) = copy !== real &&
+        copy.kind == Session.Kind.EXERCISE &&
+        copy.origin == real.origin &&
+        copy.exerciseType == real.exerciseType &&
+        Duration.between(copy.start, copy.end).seconds == Duration.between(real.start, real.end).seconds &&
+        (gapBetween(copy, real) <= ECHO_GAP) &&
+        confirmed(real) && !confirmed(copy)
+    return sessions.filterNot { copy -> sessions.any { real -> echoes(copy, real) } }
+}
+
+/** The time between two sessions that do not overlap, in whichever order they ran. */
+private fun gapBetween(a: Session, b: Session): Duration =
+    if (a.end <= b.start) Duration.between(a.end, b.start) else Duration.between(b.end, a.start).abs()
+
+/** How far apart a writer's two copies may sit and still count as back to back. */
+private val ECHO_GAP: Duration = Duration.ofMinutes(1)
 
 /**
  * The day's night: its longest sleep. Not the last -- after an afternoon nap that was the nap,
