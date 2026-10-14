@@ -972,6 +972,14 @@ doctor report and the year heatmap; the rest unranked.
     kilometre by bike and one on foot count alike, as on the device; for the owner the steps
     goal is the walking goal and this one in effect the cycling goal. Distance per activity is
     in `FEATURE-IDEAS.md`.
+98. [x] **A stray ride hid a strength session** -- the owner, 14.10.2026: the day showed rides
+    05:12-06:05 and 06:05-06:58, where the watch had strength training 05:39-06:03 and the ride
+    after it. The machine's app had written the ride twice, once 53 minutes early, and the
+    merge took any overlap for one workout, so the stray copy swallowed the strength session.
+    Copies now merge only within a workout family and where they share most of their time, and
+    a writer's echo of its own confirmed session is dropped (CLAUDE.md, sessions). The record
+    stays in Health Connect; the preferred app does not decide among sessions, since a
+    workout written by any app is still a fact about the day.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that

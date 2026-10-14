@@ -7,6 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import org.junit.Test
 import java.time.Instant
 
@@ -25,13 +26,86 @@ class SessionTest {
         title: String?,
         origin: String,
         kind: Session.Kind = Session.Kind.EXERCISE,
+        type: Int? = null,
     ) = Session(
         start = base.plusSeconds(startMin * 60),
         end = base.plusSeconds((startMin + durationMin) * 60),
         title = title,
         kind = kind,
         origin = origin,
+        exerciseType = type,
     )
+
+    /** A session at clock seconds after [base], for the measured day below. */
+    private fun at(startSec: Long, endSec: Long, origin: String, type: Int, title: String? = null) = Session(
+        start = base.plusSeconds(startSec),
+        end = base.plusSeconds(endSec),
+        title = title,
+        kind = Session.Kind.EXERCISE,
+        origin = origin,
+        exerciseType = type,
+    )
+
+    private val bike = ExerciseSessionRecord.EXERCISE_TYPE_BIKING
+    private val stationary = ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY
+    private val strength = ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING
+    private val garmin = "com.garmin.android.apps.connectmobile"
+    private val sync = "nl.appyhapps.healthsync"
+    private val machine = "com.lifefitness.connect"
+
+    /**
+     * 14.10.2026 on the phone, in seconds after 05:00: the machine's app wrote its 53-minute
+     * ride twice, once 53 minutes early, and that copy hid the strength session it overlapped.
+     */
+    private val morning = listOf(
+        at(12 * 60 + 2, 65 * 60 + 2, machine, stationary, "Heimtrainer"),
+        at(39 * 60 + 9, 62 * 60 + 52, garmin, strength),
+        at(39 * 60 + 9, 62 * 60 + 52, sync, strength),
+        at(64 * 60 + 57, 117 * 60 + 57, garmin, bike),
+        at(64 * 60 + 57, 117 * 60 + 57, sync, bike),
+        at(65 * 60 + 3, 118 * 60 + 3, machine, stationary, "Heimtrainer"),
+    )
+
+    @Test
+    fun `a stray copy of a ride neither hides the strength session nor shows itself`() {
+        val kept = dedupeSessions(morning)
+
+        assertEquals(listOf(strength, stationary), kept.map { it.exerciseType })
+        assertEquals(base.plusSeconds(39 * 60 + 9), kept.first().start)
+        assertEquals("Heimtrainer", kept.last().title)
+    }
+
+    @Test
+    fun `rides by two writers that only touch are both kept`() {
+        val kept = dedupeSessions(listOf(session(0, 30, null, "a", type = bike), session(29, 30, null, "b", type = bike)))
+
+        assertEquals(2, kept.size)
+    }
+
+    @Test
+    fun `different workouts overlapping are both kept`() {
+        val kept = dedupeSessions(listOf(session(0, 60, null, "a", type = bike), session(10, 30, null, "b", type = strength)))
+
+        assertEquals(2, kept.size)
+    }
+
+    @Test
+    fun `a writer's two equal workouts back to back are both kept without a witness against one`() {
+        // Two real intervals of one length, nothing else written: no copy is confirmed, so
+        // neither can be the echo of the other.
+        val kept = dedupeSessions(listOf(session(0, 20, null, machine, type = stationary), session(20, 20, null, machine, type = stationary)))
+
+        assertEquals(2, kept.size)
+    }
+
+    @Test
+    fun `two types outside every family merge only when they are the same`() {
+        val golf = ExerciseSessionRecord.EXERCISE_TYPE_GOLF
+        val dance = ExerciseSessionRecord.EXERCISE_TYPE_DANCING
+
+        assertEquals(2, dedupeSessions(listOf(session(0, 60, null, "a", type = golf), session(0, 60, null, "b", type = dance))).size)
+        assertEquals(1, dedupeSessions(listOf(session(0, 60, null, "a", type = golf), session(0, 60, null, "b", type = golf))).size)
+    }
 
     @Test
     fun `three writers of one workout collapse to a single session`() {

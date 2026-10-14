@@ -160,6 +160,15 @@ disagree about the activity: the same indoor bike session arrives as `BIKING` fr
 `BIKING_STATIONARY` from the machine's own app. Prefer the writer that set a title; only the
 specific apps name their sessions.
 
+**Overlap alone does not make two sessions one workout.** Merging every overlapping copy let a
+stray ride hide the strength session it overlapped (14.10.2026). Copies merge only within one
+`WorkoutFamily` and where they share most of the shorter one's time -- the stray copy touched
+the watch's real ride by five seconds. A writer can also write one workout twice: a machine's
+app wrote a 53-minute ride at the right time and again 53 minutes earlier, ending a second
+before the real one. `dedupeSessions` drops such an echo only where every sign agrees (same
+writer, type and length to the second, back to back, the other copy confirmed by another
+writer, this one by none); the record itself stays in Health Connect.
+
 **Sleep spans midnight, so a day-bounded read misses it.** A night credited to the morning it
 ends on starts the previous evening (measured: 22:48 to 05:15). Search sessions over a widened
 window and *select* by the visible range -- keep or drop each session whole, never trim it to
