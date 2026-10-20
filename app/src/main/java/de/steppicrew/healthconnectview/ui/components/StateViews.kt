@@ -1,9 +1,12 @@
 package de.steppicrew.healthconnectview.ui.components
 
+import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -119,35 +122,50 @@ fun BoxScope.SlowLoadingPill(active: Boolean, modifier: Modifier = Modifier) {
             .align(Alignment.BottomCenter)
             .padding(16.dp),
     ) {
-        Surface(
-            shape = MaterialTheme.shapes.extraLarge,
-            color = MaterialTheme.colorScheme.inverseSurface,
-            shadowElevation = 4.dp,
+        // The last line stays while the pill fades out, rather than an empty pill.
+        var last by remember { mutableIntStateOf(SLOW_NOTES.first()) }
+        if (shown != null) last = shown
+        // Each line is a pill of its own: one fades out, and the next fades in once it is gone.
+        // One pill cross-fading its text snapped to the new line's size once the fade ended,
+        // and that jump read as a further change, so a line seemed gone before it could be read
+        // (20.10.2026); two pills overlapping mid-fade looked muddled (24.10.2026).
+        AnimatedContent(
+            targetState = last,
+            transitionSpec = {
+                fadeIn(tween(PILL_FADE_MS, delayMillis = PILL_FADE_MS)) togetherWith
+                    fadeOut(tween(PILL_FADE_MS)) using null
+            },
+            contentAlignment = Alignment.BottomCenter,
+            label = "slow loading pill",
+        ) { note -> SlowLoadingPillLine(note) }
+    }
+}
+
+@Composable
+private fun SlowLoadingPillLine(@StringRes note: Int) {
+    Surface(
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.inverseSurface,
+        shadowElevation = 4.dp,
+    ) {
+        val style = MaterialTheme.typography.bodyMedium
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
         ) {
-            val style = MaterialTheme.typography.bodyMedium
-            Row(
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .padding(top = firstLineInset(style, PILL_SPINNER))
-                        .size(PILL_SPINNER),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.inverseOnSurface,
-                )
-                // The last line stays while the pill fades out, rather than an empty pill.
-                var last by remember { mutableIntStateOf(SLOW_NOTES.first()) }
-                if (shown != null) last = shown
-                Crossfade(targetState = last, label = "slow loading pill") { note ->
-                    Text(
-                        text = stringResource(note),
-                        style = style,
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
-                }
-            }
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = firstLineInset(style, PILL_SPINNER))
+                    .size(PILL_SPINNER),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+            )
+            Text(
+                text = stringResource(note),
+                style = style,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+            )
         }
     }
 }
@@ -175,13 +193,20 @@ private fun rememberSlowLoadingNote(active: Boolean, after: Long = LOADING_SLOW_
 
 private val SLOW_NOTES = listOf(R.string.loading_slow_1, R.string.loading_slow_2, R.string.loading_slow_3)
 
-/** How long a load runs before it says that it is still running. */
-private const val LOADING_SLOW_AFTER_MS = 5_000L
+/**
+ * How long a load runs before it says that it is still running. Three seconds: a day's 37 tiles
+ * took 5.0-5.6 s on the owner's phone once reads were shared, so at five the words came as the
+ * last tile arrived, or not at all (24.10.2026).
+ */
+private const val LOADING_SLOW_AFTER_MS = 3_000L
 
 private val PILL_SPINNER = 16.dp
 
-/** How long each of those lines stays before the next. */
-private const val LOADING_NOTE_EVERY_MS = 2_500L
+/** How long one pill takes to fade out, and the next to fade in after it. */
+private const val PILL_FADE_MS = 300
+
+/** How long each of those lines stays before the next: at 2.5 s a long line went unread. */
+private const val LOADING_NOTE_EVERY_MS = 4_000L
 
 /** How long a load may run before anything is drawn for it. */
 private const val LOADING_SHOW_AFTER_MS = 300L
