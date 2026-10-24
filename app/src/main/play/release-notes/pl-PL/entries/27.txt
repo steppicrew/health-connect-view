@@ -1,0 +1,1 @@
+1.8.0 — Kalorie łącznie podzielone na pasywne i aktywne, na słupkach i w pierścieniu, z wyjaśnieniem, dlaczego podstawowa przemiana materii i aktywne kalorie nie muszą dawać sumy. Kalendarz roku pomija dni bez wartości, więc seria jest widoczna od razu. Poprawiono: poszarpany oddech w długie noce, znacznik celu obok linii i wskaźnik odświeżania ukryty za górnym paskiem.

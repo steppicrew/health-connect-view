@@ -1,0 +1,1 @@
+1.8.0 — Total calories split into passive and active, in the bars and the ring, with a note on why basal rate plus active calories need not equal the total. A year's calendar leaves out days without a value, so a streak shows at a glance. Fixed: respiratory rate broken up on long nights, the goal marker beside the line, and pull to refresh hidden behind the top bar.
