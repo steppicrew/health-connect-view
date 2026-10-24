@@ -655,6 +655,9 @@
     <string name="chart_source_aggregated_split">Parçalarına ayrılmış günlük toplamlar, Health Connect tarafından tekilleştirildi</string>
     <string name="calories_basal">Bazal</string>
     <string name="calories_active">Aktif</string>
+    <string name="calories_passive">Pasif</string>
+    <string name="calories_explain_title">Kaloriler nasıl oluşur</string>
+    <string name="calories_explain_body">Toplam kalori, yazan uygulamanın kaydettiği değerdir: dinlenirken yaktığınıza dair kendi tahmini artı aktivitenin eklediği. Aktif kaloriler ayrı kaydedilir; toplamın geri kalanı pasif olarak gösterilir. Bazal metabolizma başka bir şeydir: Health Connect bunu kilonuz, boyunuz ve yaşınızdan genel bir formülle hesaplar; bu yüzden bazal ile aktif kalorilerin toplamı toplam kaloriye eşit olmak zorunda değildir. Bugünün toplamı gün boyunca artar, bazal metabolizma ise her zaman tüm gün içindir.</string>
     <string name="chart_source_aggregated_range">Her günün aralığıyla günlük ortalamalar, Health Connect tarafından tekilleştirildi</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Noktalı: hiçbir şeyin kaydedilmediği bir gün – değeri sıfır olan bir günle aynı değildir.</item>

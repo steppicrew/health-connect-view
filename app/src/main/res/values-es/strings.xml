@@ -675,6 +675,9 @@
     <string name="chart_source_aggregated_split">Totales diarios divididos en sus partes, sin duplicados según Health Connect</string>
     <string name="calories_basal">Basal</string>
     <string name="calories_active">Activa</string>
+    <string name="calories_passive">Pasiva</string>
+    <string name="calories_explain_title">Cómo se componen las calorías</string>
+    <string name="calories_explain_body">Las calorías totales son la cifra que guarda la app que las escribe: su propia estimación de lo que gastas en reposo más lo que añade la actividad. Las calorías activas se guardan aparte; el resto del total se muestra como pasivo. La tasa basal es otra cosa: Health Connect la calcula con una fórmula general a partir de tu peso, altura y edad, así que la tasa basal más las calorías activas no tiene por qué dar el total. El total de hoy crece a lo largo del día; la tasa basal siempre es para el día entero.</string>
     <string name="chart_source_aggregated_range">Medias diarias con el rango de cada día, sin duplicados según Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Punteado: un día sin registros – no es lo mismo que un día con valor cero.</item>

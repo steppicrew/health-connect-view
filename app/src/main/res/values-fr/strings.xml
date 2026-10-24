@@ -675,6 +675,9 @@
     <string name="chart_source_aggregated_split">Totaux journaliers répartis en leurs parties, dédoublonnés par Santé Connect</string>
     <string name="calories_basal">Basales</string>
     <string name="calories_active">Actives</string>
+    <string name="calories_passive">Passives</string>
+    <string name="calories_explain_title">Comment se composent les calories</string>
+    <string name="calories_explain_body">Les calories totales sont le chiffre enregistré par l\'application qui les écrit : sa propre estimation de ce que vous dépensez au repos, plus ce qu\'ajoute l\'activité. Les calories actives sont enregistrées à part ; le reste du total est affiché comme passif. Le métabolisme de base est autre chose : Santé Connect le calcule avec une formule générale à partir de votre poids, de votre taille et de votre âge. Métabolisme de base et calories actives ne donnent donc pas forcément le total. Le total du jour augmente au fil de la journée, le métabolisme de base vaut toujours pour la journée entière.</string>
     <string name="chart_source_aggregated_range">Moyennes journalières avec la plage de chaque jour, dédoublonnées par Santé Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Pointillés : %1$d jour sans enregistrement – ce n’est pas la même chose qu’un jour à zéro.</item>

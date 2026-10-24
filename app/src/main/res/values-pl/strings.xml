@@ -695,6 +695,9 @@
     <string name="chart_source_aggregated_split">Sumy dzienne podzielone na części, bez duplikatów według Health Connect</string>
     <string name="calories_basal">Podstawowe</string>
     <string name="calories_active">Aktywne</string>
+    <string name="calories_passive">Pasywne</string>
+    <string name="calories_explain_title">Z czego składają się kalorie</string>
+    <string name="calories_explain_body">Kalorie łącznie to wartość zapisana przez aplikację, która je zapisuje: jej własne oszacowanie tego, co spalasz w spoczynku, plus to, co dodaje aktywność. Aktywne kalorie są zapisywane osobno; reszta sumy jest pokazana jako pasywna. Podstawowa przemiana materii to coś innego: Health Connect oblicza ją ogólnym wzorem na podstawie wagi, wzrostu i wieku, więc podstawowa przemiana plus aktywne kalorie nie muszą dawać sumy. Dzisiejsza suma rośnie w ciągu dnia, a podstawowa przemiana zawsze dotyczy całego dnia.</string>
     <string name="chart_source_aggregated_range">Średnie dzienne z zakresem każdego dnia, bez duplikatów według Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Kropkowane: dzień bez zapisów – to nie to samo co dzień z wartością zero.</item>

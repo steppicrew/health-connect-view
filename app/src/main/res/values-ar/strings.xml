@@ -735,6 +735,9 @@
     <string name="chart_source_aggregated_split">المجاميع اليومية مقسّمة إلى أجزائها، بعد إزالة التكرار بواسطة Health Connect</string>
     <string name="calories_basal">الأساسية</string>
     <string name="calories_active">النشطة</string>
+    <string name="calories_passive">الخاملة</string>
+    <string name="calories_explain_title">كيف تتكوّن السعرات</string>
+    <string name="calories_explain_body">إجمالي السعرات هو الرقم الذي يسجّله التطبيق الكاتب: تقديره الخاص لما تحرقه في الراحة مضافًا إليه ما يضيفه النشاط. تُسجَّل السعرات النشطة على حدة، ويُعرض باقي الإجمالي على أنه خامل. أما معدل الأيض الأساسي فشيء آخر: يحسبه Health Connect بصيغة عامة من وزنك وطولك وعمرك، لذلك لا يلزم أن يساوي الأيض الأساسي مع السعرات النشطة الإجمالي. إجمالي اليوم يزداد على مدار اليوم، أما الأيض الأساسي فهو دائمًا لليوم كله.</string>
     <string name="chart_source_aggregated_range">المتوسطات اليومية مع نطاق كل يوم، بعد إزالة التكرار بواسطة Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="zero">منقّط: أيام لم يُسجَّل فيها شيء – وهذا يختلف عن أيام قيمتها صفر.</item>

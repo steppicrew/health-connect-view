@@ -107,9 +107,25 @@ data class RecordTypeSpec<T : Record>(
      * fraction of a bar that is mostly basal either way.
      *
      * Each entry is a label and the metric supplying it, drawn bottom-up in order. The
-     * components must add to the type's own total, or the bar contradicts the headline.
+     * components must add to the type's own total, or the bar contradicts the headline --
+     * which is what [stackRemainder] is for.
      */
     val stackComponents: List<Pair<Int, AggregateMetric<*>>> = emptyList(),
+    /**
+     * The label of a bottom part that is whatever [stackComponents] leave of the total.
+     *
+     * Total calories' basal part was once the platform's basal rate, which it works out from
+     * weight and height while the total is the writer's own estimate: the two parts then fell
+     * short of the total by hundreds of kilocalories a day. Passive is now the total less the
+     * active part, so the bar ends on the total (owner's choice, 24.10.2026).
+     */
+    @param:StringRes val stackRemainder: Int? = null,
+    /**
+     * What a day's figure cannot go below, with its label: the basal rate under total
+     * calories. A calendar's shading starts at its mean day, as from zero every day of it
+     * looked the same.
+     */
+    val floorComponent: Pair<Int, AggregateMetric<*>>? = null,
     /**
      * How this type is drawn on the dashboard. Defaults to a plain number, which every
      * chartable type can render, so a new type needs no tile decision to be usable.

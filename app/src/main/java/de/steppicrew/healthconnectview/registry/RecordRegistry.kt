@@ -83,6 +83,7 @@ object RecordRegistry {
                     .plus(spec.rangeAggregates?.toList().orEmpty())
                     .plus(spec.secondaryRangeAggregates?.toList().orEmpty())
                     .plus(spec.stackComponents.map { it.second })
+                    .plus(listOfNotNull(spec.floorComponent?.second))
                     .forEach { put(it, quantity) }
             }
         }
@@ -297,14 +298,15 @@ object RecordRegistry {
             points = { listOf(Point(it.startTime, it.energy.inKilocalories)) },
             summary = { Formatting.number(it.energy.inKilocalories) + "${Formatting.UNIT_SPACE}kcal" },
             aggregate = TotalCaloriesBurnedRecord.ENERGY_TOTAL,
-            // Basal first: it is the floor the day is built on, so it belongs at the bottom
-            // of the bar. Note BasalMetabolicRate stores no records at all on a real device
-            // -- it is derived from height and weight -- so this can only come from the
-            // aggregate, never from a record read.
+            // Passive at the bottom, the total less the active part, so the bar ends on the
+            // total. Not the basal rate: BasalMetabolicRate stores no records on a real device
+            // -- the platform derives it from height and weight -- and it never matched the
+            // writer's own resting estimate inside the total.
+            stackRemainder = R.string.calories_passive,
             stackComponents = listOf(
-                R.string.calories_basal to BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
                 R.string.calories_active to ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL,
             ),
+            floorComponent = R.string.calories_basal to BasalMetabolicRateRecord.BASAL_CALORIES_TOTAL,
             tile = TileSpec(
                 TileSpec.Form.RING,
                 defaultGoal = 2_200.0,

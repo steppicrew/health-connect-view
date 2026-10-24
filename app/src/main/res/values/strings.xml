@@ -689,6 +689,9 @@
     <string name="chart_source_aggregated_split">Daily totals split into their parts, deduplicated by Health Connect</string>
     <string name="calories_basal">Basal</string>
     <string name="calories_active">Active</string>
+    <string name="calories_passive">Passive</string>
+    <string name="calories_explain_title">How the calories add up</string>
+    <string name="calories_explain_body">Total calories are the figure the writing app records: its own estimate of what you burn at rest plus what activity adds. Active calories are recorded separately; the rest of the total is shown as passive. The basal rate is something else: Health Connect works it out from your weight, height and age with a general formula, so basal rate plus active calories need not equal the total. Today\'s total grows through the day, while the basal rate is always for the whole day.</string>
     <string name="chart_source_aggregated_range">Daily averages with each day\'s range, deduplicated by Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Dotted: a day with nothing recorded – not the same as a day with a value of zero.</item>
