@@ -980,6 +980,24 @@ doctor report and the year heatmap; the rest unranked.
     a writer's echo of its own confirmed session is dropped (CLAUDE.md, sessions). The record
     stays in Health Connect; the preferred app does not decide among sessions, since a
     workout written by any app is still a fact about the day.
+99. [x] **Pull to refresh that could be seen** -- the owner, 14.10.2026: the indicator showed
+    while pulled and vanished on release. It came to rest behind the top bar on the dashboard
+    and the workout screen (`RefreshBox(indicatorPadding)`), and now spins at least a second.
+    Released as 1.7.1.
+100. [x] **Total calories as passive and active** -- the owner, 24.10.2026, expected basal rate
+    plus active calories to make the total. They come from three places: the total is the
+    writer's own figure, active calories are written separately, and the basal rate is the
+    platform's formula from weight and height. The bars stacked the basal rate under the
+    active part and fell short of the total by hundreds of kcal a day; passive is now the
+    total less the active part (`stackRemainder`), active has a colour of its own, the ring
+    shades the two in one hue, and an "i" on the detail screen explains the difference. The
+    calendar's shading still starts at the basal rate (`floorComponent`).
+101. [x] **Smaller fixes, 20.-24.10.2026** -- a long night's respiratory rate fell into
+    fragments as a second line (slice medians 5.8 min apart against a 5 min gap,
+    `profileGap`); a running total is drawn straight, which also put the goal marker back on
+    the line it had missed by hours on a sparse day; a year's calendar leaves out days
+    without a value, so a run of 64 training days shows; the slow-loading words are a chip
+    per line, one fading out before the next, shown after 3 s for 4 s each.
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
