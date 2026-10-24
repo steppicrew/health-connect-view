@@ -1,0 +1,1 @@
+1.8.0 — Totale calorieën verdeeld in passief en actief, in de staven en de ring, met een uitleg waarom basaal plus actief niet het totaal hoeft te zijn. De jaarkalender laat dagen zonder waarde weg, zodat een reeks in één oogopslag te zien is. Opgelost: onderbroken ademhalingsfrequentie in lange nachten, de doelmarkering naast de lijn en de vernieuwindicator achter de bovenbalk.
