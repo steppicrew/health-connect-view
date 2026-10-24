@@ -2089,6 +2089,7 @@ private fun TileCalendar(data: TileData, heatmap: YearHeatmap) {
             selected = null,
             onSelect = null,
             description = stringResource(R.string.heatmap_title),
+            showEmpty = false,
         )
         // Blood pressure is graded, not shaded: neither the bars nor the legend would read.
         if (heatmap.secondValues.isEmpty()) {

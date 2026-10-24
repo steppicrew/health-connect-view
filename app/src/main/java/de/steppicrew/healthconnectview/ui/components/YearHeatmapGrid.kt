@@ -53,7 +53,8 @@ import kotlin.math.roundToLong
 /**
  * [heatmap] as a calendar: a column per week, the locale's first weekday at the top, month
  * names above the week each month starts in. A day with no colour is a faint empty square, so
- * "nothing recorded" never looks like "little". A tap picks a day ([onSelect]).
+ * "nothing recorded" never looks like "little" -- or, without [showEmpty], left out, so the days
+ * that have one stand out as a run. A tap picks a day ([onSelect]).
  */
 @Composable
 fun YearHeatmapGrid(
@@ -67,6 +68,12 @@ fun YearHeatmapGrid(
     modifier: Modifier = Modifier,
     /** Drawn over a day's square, given its top left and size: the cycle calendar's marks. */
     marks: (DrawScope.(day: LocalDate, topLeft: Offset, cell: Float) -> Unit)? = null,
+    /**
+     * Whether a day with no colour is drawn as an empty square. A year's calendar leaves it out:
+     * 64 days of training in a row did not show at a glance among the faint squares of the days
+     * without (24.10.2026).
+     */
+    showEmpty: Boolean = true,
 ) {
     val firstDay = remember { WeekFields.of(Locale.getDefault()).firstDayOfWeek }
     val today = remember { LocalDate.now() }
@@ -121,12 +128,15 @@ fun YearHeatmapGrid(
                     // Days to come are left out, not drawn as days with nothing recorded.
                     if (day.isAfter(today)) continue
                     val y = labelHeight + row * (cell + gap)
-                    drawRoundRect(
-                        color = colorOf(day) ?: empty,
-                        topLeft = Offset(x, y),
-                        size = Size(cell, cell),
-                        cornerRadius = CornerRadius(cell * CORNER),
-                    )
+                    val color = colorOf(day) ?: empty.takeIf { showEmpty }
+                    if (color != null) {
+                        drawRoundRect(
+                            color = color,
+                            topLeft = Offset(x, y),
+                            size = Size(cell, cell),
+                            cornerRadius = CornerRadius(cell * CORNER),
+                        )
+                    }
                     marks?.invoke(this, day, Offset(x, y), cell)
                     if (day == selected) {
                         drawRoundRect(ring, Offset(x, y), Size(cell, cell), CornerRadius(cell * CORNER), style = Stroke(gap * 1.5f))
@@ -140,12 +150,13 @@ fun YearHeatmapGrid(
 /**
  * Each day's colour: its shade, or -- where a day has a second value, blood pressure's
  * diastolic -- the grade of the day's averages, as every reading of it is coloured elsewhere.
+ * None for a count's zero, a day without training: it is no day of little.
  */
 @Composable
 fun heatmapColors(heatmap: YearHeatmap): (LocalDate) -> Color? {
     val shades = heatmapShades()
     return { day ->
-        heatmap.values[day]?.let { first ->
+        heatmap.values[day]?.takeUnless { it == 0.0 && heatmap.low == 0.0 }?.let { first ->
             val second = heatmap.secondValues[day]
             if (second != null) ValueZones.ZONE_COLORS[pressureCategory(first, second).ordinal] else shades[heatmap.step(first)]
         }
