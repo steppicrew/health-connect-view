@@ -67,6 +67,7 @@ import de.steppicrew.healthconnectview.health.Lap
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.heightProfile
+import de.steppicrew.healthconnectview.health.profileGap
 import de.steppicrew.healthconnectview.health.profileOf
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.registry.Formatting
@@ -346,7 +347,7 @@ private fun HeartRate(detail: SessionDetail) {
                         unitKey = "speed",
                         unitText = speedUnit.symbol(),
                         valueDecimals = 1,
-                        maxGap = LINE_GAP,
+                        maxGap = profileGap(speed, LINE_GAP),
                     )
                 },
                 // Height from the route, where it is shown: a climb is what a rising heart rate
@@ -362,7 +363,7 @@ private fun HeartRate(detail: SessionDetail) {
                         unitText = heightUnit.symbol(),
                         integral = true,
                         minSpan = HEIGHT_MIN_SPAN,
-                        maxGap = LINE_GAP,
+                        maxGap = profileGap(heights.map { (time, metres) -> Point(time, metres) }, LINE_GAP),
                     )
                 },
             )
@@ -777,7 +778,11 @@ private fun nightSeries(detail: SessionDetail, line: SessionLine): ChartSeries? 
         minSpan = line.minSpan,
         unitRes = spec.displayUnitRes,
         integral = spec.tile.integralValues,
-        maxGap = if (line.dots) null else LINE_GAP,
+        maxGap = when {
+            line.dots -> null
+            line.smoothed -> profileGap(points, LINE_GAP)
+            else -> LINE_GAP
+        },
         dots = line.dots,
         reference = spec.tile.referenceRange,
     )

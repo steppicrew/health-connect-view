@@ -10,6 +10,8 @@ import de.steppicrew.healthconnectview.health.cumulativeDistances
 import de.steppicrew.healthconnectview.health.heightProfile
 import de.steppicrew.healthconnectview.health.indexAt
 import de.steppicrew.healthconnectview.health.dedupeSessions
+import de.steppicrew.healthconnectview.health.profileGap
+import de.steppicrew.healthconnectview.health.profileOf
 import de.steppicrew.healthconnectview.health.projectRoute
 import de.steppicrew.healthconnectview.health.recordedSpeeds
 import de.steppicrew.healthconnectview.registry.Point
@@ -21,6 +23,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.StringWriter
+import java.time.Duration
 import java.time.Instant
 
 /** Exercise routes: drawn without a map, exported as GPX, kept through the session dedupe. */
@@ -172,5 +175,20 @@ class RouteTest {
         val points = (0..10).map { point(it, 50.0, 8.0) }
         val samples = (0..50).map { Point(t0.plusSeconds(it.toLong()), 3.0) }
         assertNull(recordedSpeeds(points, samples))
+    }
+
+    @Test
+    fun `a long night's sliced line is not broken between its own slices`() {
+        // A reading a minute over 11 h 34 min, as on 23.10.2026: the slices are 5.8 min apart.
+        val night = (0..694).map { Point(t0.plus(Duration.ofMinutes(it.toLong())), 14.0) }
+        val gap = profileGap(night, Duration.ofMinutes(5))
+        val sliced = profileOf(night)
+        assertTrue(sliced.zipWithNext().all { (a, b) -> Duration.between(a.time, b.time) <= gap })
+    }
+
+    @Test
+    fun `a short night keeps the readings' own gap`() {
+        val night = (0..240).map { Point(t0.plus(Duration.ofMinutes(it.toLong())), 14.0) }
+        assertEquals(Duration.ofMinutes(5), profileGap(night, Duration.ofMinutes(5)))
     }
 }
