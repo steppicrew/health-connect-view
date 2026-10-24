@@ -1345,6 +1345,7 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
             onSelect = { selected = it },
             description = title,
             modifier = Modifier.padding(top = 8.dp),
+            showEmpty = false,
         )
         val day = selected
         if (day == null) {
