@@ -655,6 +655,9 @@
     <string name="chart_source_aggregated_split">हिस्सों में बंटा रोज़ का कुल, Health Connect ने डुप्लीकेट हटाए</string>
     <string name="calories_basal">बेसल</string>
     <string name="calories_active">ऐक्टिव</string>
+    <string name="calories_passive">पैसिव</string>
+    <string name="calories_explain_title">कैलोरी कैसे जुड़ती हैं</string>
+    <string name="calories_explain_body">कुल कैलोरी वह आंकड़ा है जो लिखने वाला ऐप सहेजता है: आराम में आपके खर्च का उसका अपना अनुमान और गतिविधि से जुड़ी कैलोरी। सक्रिय कैलोरी अलग से सहेजी जाती है; कुल का बाकी हिस्सा पैसिव के रूप में दिखता है। बेसल मेटाबॉलिक रेट कुछ और है: Health Connect इसे आपके वज़न, लंबाई और उम्र से एक सामान्य सूत्र से निकालता है, इसलिए बेसल और सक्रिय कैलोरी का जोड़ कुल के बराबर होना ज़रूरी नहीं। आज का कुल दिन भर में बढ़ता है, जबकि बेसल हमेशा पूरे दिन का होता है।</string>
     <string name="chart_source_aggregated_range">हर दिन की रेंज के साथ रोज़ का औसत, Health Connect ने डुप्लीकेट हटाए</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">डॉट वाली लाइन: %1$d दिन जब कुछ रिकॉर्ड नहीं हुआ – यह शून्य वैल्यू वाले दिन जैसा नहीं है।</item>

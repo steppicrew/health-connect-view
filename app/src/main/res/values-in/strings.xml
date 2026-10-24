@@ -635,6 +635,9 @@
     <string name="chart_source_aggregated_split">Total harian yang dibagi menurut bagiannya, tanpa duplikat menurut Health Connect</string>
     <string name="calories_basal">Basal</string>
     <string name="calories_active">Aktif</string>
+    <string name="calories_passive">Pasif</string>
+    <string name="calories_explain_title">Bagaimana kalori tersusun</string>
+    <string name="calories_explain_body">Total kalori adalah angka yang dicatat aplikasi penulisnya: perkiraannya sendiri tentang yang Anda bakar saat istirahat ditambah yang ditambahkan aktivitas. Kalori aktif dicatat terpisah; sisa total ditampilkan sebagai pasif. Laju metabolisme basal adalah hal lain: Health Connect menghitungnya dengan rumus umum dari berat, tinggi, dan usia Anda, sehingga basal ditambah kalori aktif tidak harus sama dengan total. Total hari ini bertambah sepanjang hari, sedangkan basal selalu untuk sehari penuh.</string>
     <string name="chart_source_aggregated_range">Rata-rata harian dengan rentang tiap hari, tanpa duplikat menurut Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="other">Bertitik: %1$d hari tanpa catatan – tidak sama dengan hari bernilai nol.</item>

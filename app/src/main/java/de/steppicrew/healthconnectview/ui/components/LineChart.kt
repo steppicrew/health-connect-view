@@ -364,6 +364,7 @@ fun LineChart(
     val span = (maxValue - minValue).takeIf { it > 0.0 } ?: 1.0
 
     val lineColor = lineColorOverride ?: MaterialTheme.colorScheme.primary
+    val stackColors = stackColors(lineColor, stack.firstOrNull()?.parts?.size ?: 0)
     // Each other-unit line's own range, rounded like the axis, so its curve fills the plot the
     // way it would on a chart of its own.
     val overlayScales = remember(overlays) {
@@ -755,9 +756,7 @@ fun LineChart(
                         val height = (runningTop - segmentTop).coerceAtLeast(0f)
                         if (height > 0f) {
                             drawRect(
-                                color = lineColor.copy(
-                                    alpha = stackAlpha(partIndex, parts.size),
-                                ),
+                                color = stackColors.getOrElse(partIndex) { lineColor },
                                 topLeft = Offset(left, segmentTop),
                                 size = androidx.compose.ui.geometry.Size(barWidth, height),
                             )
@@ -2018,16 +2017,20 @@ private const val OVERLAY_BAR_ALPHA = 0.45f
 private const val RANGE_BAND_ALPHA = 0.18f
 
 /**
- * Opacity of one stacked segment, darkening upwards.
+ * The colours of a stacked bar's [count] segments, bottom-up, as the legend names them too.
  *
- * One hue at different weights rather than separate colours: the segments are parts of one
- * quantity, and giving each its own colour would read as unrelated series sharing a bar. The
- * bottom segment is the lightest because it is the floor the day is built on.
+ * The bottom segment is the floor the day is built on, the line's own colour faintly; the
+ * parts above it each a colour of their own, so the active calories over the passive read at
+ * a glance -- the owner's request, 24.10.2026, over one hue at rising weights, where the two
+ * weights were hard to tell apart.
  */
-private fun stackAlpha(index: Int, count: Int): Float =
-    STACK_ALPHA_MIN + (1f - STACK_ALPHA_MIN) * (index + 1).toFloat() / count.toFloat()
+@Composable
+fun stackColors(base: Color, count: Int): List<Color> {
+    val tops = listOf(SeriesColors.orange(), SeriesColors.aqua(), SeriesColors.violet())
+    return List(count) { index -> if (index == 0) base.copy(alpha = STACK_FLOOR_ALPHA) else tops[(index - 1) % tops.size] }
+}
 
-private const val STACK_ALPHA_MIN = 0.35f
+private const val STACK_FLOOR_ALPHA = 0.45f
 
 
 /** Width of a lone bar, as a fraction of the plot. A single day should not fill the chart. */

@@ -655,6 +655,9 @@
     <string name="chart_source_aggregated_split">Dagtotalen opgesplitst in hun delen, ontdubbeld door Health Connect</string>
     <string name="calories_basal">Basaal</string>
     <string name="calories_active">Actief</string>
+    <string name="calories_passive">Passief</string>
+    <string name="calories_explain_title">Hoe de calorieën zijn opgebouwd</string>
+    <string name="calories_explain_body">De totale calorieën zijn het getal dat de schrijvende app opslaat: een eigen schatting van wat je in rust verbruikt plus wat activiteit toevoegt. Actieve calorieën worden apart opgeslagen; de rest van het totaal wordt als passief getoond. Het basaal metabolisme is iets anders: Health Connect berekent het met een algemene formule uit je gewicht, lengte en leeftijd. Basaal plus actief hoeft dus niet het totaal te zijn. Het totaal van vandaag groeit in de loop van de dag, het basaal metabolisme geldt altijd voor de hele dag.</string>
     <string name="chart_source_aggregated_range">Daggemiddelden met het bereik van elke dag, ontdubbeld door Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Gestippeld: een dag zonder registraties – niet hetzelfde als een dag met de waarde nul.</item>

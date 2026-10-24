@@ -649,6 +649,9 @@
     <string name="chart_source_aggregated_split">Tagessummen nach Anteilen, von Health Connect entdoppelt</string>
     <string name="calories_basal">Grundumsatz</string>
     <string name="calories_active">Aktiv</string>
+    <string name="calories_passive">Passiv</string>
+    <string name="calories_explain_title">Wie sich die Kalorien zusammensetzen</string>
+    <string name="calories_explain_body">Die Gesamtkalorien sind der Wert, den die schreibende App speichert: ihre eigene Schätzung für den Verbrauch in Ruhe plus das, was Aktivität dazukommt. Aktive Kalorien werden getrennt gespeichert; der Rest der Gesamtkalorien wird als passiv gezeigt. Der Grundumsatz ist etwas anderes: Health Connect berechnet ihn mit einer allgemeinen Formel aus Gewicht, Größe und Alter. Grundumsatz und aktive Kalorien ergeben daher nicht unbedingt die Gesamtkalorien. Der heutige Gesamtwert wächst im Lauf des Tages, der Grundumsatz gilt immer für den ganzen Tag.</string>
     <string name="chart_source_aggregated_range">Tagesmittel mit Spanne des Tages, von Health Connect entdoppelt</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Gepunktet: ein Tag ohne Aufzeichnung – das ist nicht dasselbe wie ein Tag mit dem Wert null.</item>

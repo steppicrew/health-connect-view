@@ -1295,7 +1295,12 @@ private fun TileBody(
         data.loading || data.failed || data.value == null -> TileValue(data, large)
 
         data.spec.tile.form == TileSpec.Form.RING && progress != null ->
-            ProgressRing(progress = progress, modifier = Modifier.fillMaxSize()) {
+            ProgressRing(
+                progress = progress,
+                modifier = Modifier.fillMaxSize(),
+                // Total calories' active part at full strength, the passive lighter.
+                accent = data.stackedShare(),
+            ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     TileValue(data, large)
                     GoalShare(data)

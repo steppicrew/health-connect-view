@@ -635,6 +635,9 @@
     <string name="chart_source_aggregated_split">内訳に分けた 1 日の合計（ヘルスコネクトが重複を除外）</string>
     <string name="calories_basal">基礎</string>
     <string name="calories_active">アクティブ</string>
+    <string name="calories_passive">パッシブ</string>
+    <string name="calories_explain_title">カロリーの内訳について</string>
+    <string name="calories_explain_body">総消費カロリーは、書き込んだアプリが記録する値です。安静時の消費についてのそのアプリ自身の推定に、活動による分を加えたものです。アクティブカロリーは別に記録され、総量の残りをパッシブとして表示しています。基礎代謝は別物で、ヘルスコネクトが体重・身長・年齢から一般的な式で計算します。そのため、基礎代謝とアクティブカロリーの合計が総量と一致するとは限りません。今日の総量は一日を通して増え、基礎代謝は常に一日全体の値です。</string>
     <string name="chart_source_aggregated_range">各日の範囲付きの 1 日の平均（ヘルスコネクトが重複を除外）</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="other">点線: 記録のない %1$d 日 – 値がゼロの日とは異なります。</item>

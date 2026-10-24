@@ -695,6 +695,9 @@
     <string name="chart_source_aggregated_split">Итоги за день по составляющим, без дубликатов по данным Health Connect</string>
     <string name="calories_basal">Базальные</string>
     <string name="calories_active">Активные</string>
+    <string name="calories_passive">Пассивные</string>
+    <string name="calories_explain_title">Из чего складываются калории</string>
+    <string name="calories_explain_body">Всего калорий — это значение, которое записывает приложение-источник: его собственная оценка расхода в покое плюс то, что добавляет активность. Активные калории записываются отдельно; остаток общего значения показан как пассивный. Базальный обмен — другое: Health Connect рассчитывает его по общей формуле из вашего веса, роста и возраста, поэтому базальный обмен и активные калории не обязательно дают общее значение. Сегодняшнее значение растёт в течение дня, а базальный обмен всегда указан за весь день.</string>
     <string name="chart_source_aggregated_range">Средние за день с диапазоном каждого дня, без дубликатов по данным Health Connect</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Пунктир: %1$d день без записей – это не то же самое, что день со значением ноль.</item>

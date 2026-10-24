@@ -675,6 +675,9 @@
     <string name="chart_source_aggregated_split">Totais diários divididos em suas partes, sem duplicatas segundo o Conexão Saúde</string>
     <string name="calories_basal">Basal</string>
     <string name="calories_active">Ativa</string>
+    <string name="calories_passive">Passiva</string>
+    <string name="calories_explain_title">Como as calorias se compõem</string>
+    <string name="calories_explain_body">As calorias totais são o valor que o app que as grava registra: a própria estimativa do que você gasta em repouso mais o que a atividade acrescenta. As calorias ativas são registradas à parte; o restante do total aparece como passivo. A taxa basal é outra coisa: o Conexão Saúde a calcula com uma fórmula geral a partir do seu peso, altura e idade, então basal mais ativas não precisa dar o total. O total de hoje cresce ao longo do dia; a taxa basal vale sempre para o dia inteiro.</string>
     <string name="chart_source_aggregated_range">Médias diárias com a faixa de cada dia, sem duplicatas segundo o Conexão Saúde</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Pontilhado: %1$d dia sem registros – não é o mesmo que um dia com valor zero.</item>

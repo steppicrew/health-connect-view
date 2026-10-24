@@ -635,6 +635,9 @@
     <string name="chart_source_aggregated_split">按组成部分拆分的每日总计，已由 Health Connect 去重</string>
     <string name="calories_basal">基础</string>
     <string name="calories_active">活动</string>
+    <string name="calories_passive">被动</string>
+    <string name="calories_explain_title">卡路里如何构成</string>
+    <string name="calories_explain_body">总卡路里是写入数据的应用记录的数值：它自己对静息消耗的估算，加上活动增加的部分。活动卡路里单独记录；总量的其余部分显示为被动。基础代谢则不同：Health Connect 根据你的体重、身高和年龄用通用公式计算，因此基础代谢加活动卡路里不一定等于总量。今天的总量会随一天增长，而基础代谢始终是全天的数值。</string>
     <string name="chart_source_aggregated_range">每日平均值及每天的范围，已由 Health Connect 去重</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="other">虚线：%1$d 天没有任何记录 – 这与数值为零的日子不同。</item>

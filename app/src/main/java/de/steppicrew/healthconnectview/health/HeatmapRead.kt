@@ -97,9 +97,9 @@ suspend fun HealthRepository.readHeatmap(
     val metric = spec.aggregate ?: return@runCatching null
     // Blood pressure's diastolic from the same buckets: a day is graded on both.
     val second = spec.secondaryAggregate
-    // A stack's first part is the floor the day is built on -- the basal rate under total
-    // calories -- and the shading starts at its mean day.
-    val floorPart = spec.stackComponents.firstOrNull()
+    // The floor the day is built on -- the basal rate under total calories -- where the
+    // shading starts at its mean day.
+    val floorPart = spec.floorComponent
     val days = generateSequence(first) { it.plusDays(PIECE_DAYS) }.takeWhile { it < end }.toList().flatMap { from ->
         val to = minOf(from.plusDays(PIECE_DAYS), end)
         bucketedTotals(

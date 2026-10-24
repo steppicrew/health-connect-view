@@ -26,11 +26,17 @@ import kotlin.math.ceil
  * starting again at twelve o'clock, so 107 % and 180 % no longer read alike as one full green
  * ring -- the owner's choice, 12.10.2026, over laps drawn on top of each other. Up to
  * [MAX_LAPS] are drawn; beyond, the outermost stays full and the printed share says the rest.
+ *
+ * [accent] is the share of the filled amount drawn last at full strength, the rest before it
+ * lighter: total calories' active part after the passive. One hue at two weights, blue or green
+ * as the goal stands -- the owner's choice, 24.10.2026, over a second colour in the ring. It runs
+ * on across the thin rings like the fill itself.
  */
 @Composable
 fun ProgressRing(
     progress: Float,
     modifier: Modifier = Modifier,
+    accent: Float = 0f,
     content: @Composable () -> Unit = {},
 ) {
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
@@ -44,6 +50,10 @@ fun ProgressRing(
     val fillColor = if (progress >= 1f) GOAL_MET else MaterialTheme.colorScheme.primary
     // The thin rings only where a day went past its goal, so a ring short of it keeps its size.
     val laps = ceil(progress - 1f).toInt().coerceIn(0, MAX_LAPS)
+    // Where the accent starts, on the same scale as progress: a ring's own share past its lap.
+    val split = accent > 0f
+    val accentFrom = if (split) progress * (1f - accent.coerceIn(0f, 1f)) else 0f
+    fun lighter(color: Color) = if (split) color.copy(alpha = PASSIVE_ALPHA) else color
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -54,28 +64,34 @@ fun ProgressRing(
             for (lap in laps downTo 1) {
                 val diameter = side - thin - 2f * step * (laps - lap)
                 ring(lapTrackColor, 1f, diameter, thin)
-                ring(GOAL_MET, (progress - lap).coerceIn(0f, 1f), diameter, thin)
+                ring(lighter(GOAL_MET), (progress - lap).coerceIn(0f, 1f), diameter, thin)
+                if (split) arc(GOAL_MET, (accentFrom - lap).coerceIn(0f, 1f), (progress - lap).coerceIn(0f, 1f), diameter, thin)
             }
             val stroke = STROKE_WIDTH.dp.toPx()
             // Shrink by one stroke width so the ring's outer edge sits inside the bounds, or
             // inside the thin rings, rather than being clipped.
             val diameter = side - stroke - 2f * step * laps
             ring(trackColor, 1f, diameter, stroke)
-            ring(fillColor, progress.coerceIn(0f, 1f), diameter, stroke)
+            ring(lighter(fillColor), progress.coerceIn(0f, 1f), diameter, stroke)
+            if (split) arc(fillColor, accentFrom.coerceIn(0f, 1f), progress.coerceIn(0f, 1f), diameter, stroke)
         }
         content()
     }
 }
 
 /** A ring centred in the canvas, filled to [share] from twelve o'clock. */
-private fun DrawScope.ring(color: Color, share: Float, diameter: Float, width: Float) {
-    if (share <= 0f) return
+private fun DrawScope.ring(color: Color, share: Float, diameter: Float, width: Float) =
+    arc(color, 0f, share, diameter, width)
+
+/** The stretch of a ring from [from] to [to], as shares of the full circle from twelve o'clock. */
+private fun DrawScope.arc(color: Color, from: Float, to: Float, diameter: Float, width: Float) {
+    if (to <= from) return
     drawArc(
         color = color,
         // Start at twelve o'clock: a ring that begins at three reads as an arbitrary offset
         // rather than as progress.
-        startAngle = START_ANGLE,
-        sweepAngle = FULL_CIRCLE * share,
+        startAngle = START_ANGLE + FULL_CIRCLE * from,
+        sweepAngle = FULL_CIRCLE * (to - from),
         useCenter = false,
         topLeft = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f),
         size = Size(diameter, diameter),
@@ -87,6 +103,9 @@ private fun DrawScope.ring(color: Color, share: Float, diameter: Float, width: F
 private val GOAL_MET = Color(0xFF16A34A)
 
 private const val STROKE_WIDTH = 8f
+
+/** The passive part's weight beside the active part's full colour. */
+private const val PASSIVE_ALPHA = 0.4f
 private const val FULL_CIRCLE = 360f
 private const val START_ANGLE = -90f
 

@@ -160,6 +160,7 @@ import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.LineChart
+import de.steppicrew.healthconnectview.ui.components.stackColors
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.MessageView
 import de.steppicrew.healthconnectview.ui.components.OnResume
@@ -1164,6 +1165,7 @@ private fun SpanSummary(
             // question and the one a shaded band raises -- the sleep ribbon behind a heart
             // rate was reported as simply unexplained.
             ChartLegend(data = shown)
+            if (data.spec.stackRemainder != null) CaloriesNote()
             if (data.nightPoints.isNotEmpty()) {
                 ChartToggle(showNights, R.string.hrv_show_nights) {
                     scope.launch { store.setShowSingleNights(it) }
@@ -1389,6 +1391,33 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
     }
 }
 
+/**
+ * Why total calories are not the basal rate plus the active calories, folded away behind an
+ * "i": the owner expected the three tiles to add up (24.10.2026), and they come from three
+ * different places.
+ */
+@Composable
+private fun CaloriesNote() {
+    val explanation = rememberExplanation("calories")
+    Column(Modifier.padding(top = 8.dp)) {
+        Row(verticalAlignment = Alignment.Top) {
+            Text(
+                text = stringResource(R.string.calories_explain_title),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            InfoToggle(explanation, firstLine = MaterialTheme.typography.bodyMedium)
+        }
+        if (explanation.expanded == true) {
+            Text(
+                text = stringResource(R.string.calories_explain_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
 /** A Pro section's place without Pro: what it is, and the way to it. */
 @Composable
 private fun LockedSection(@StringRes title: Int, @StringRes body: Int) {
@@ -1520,18 +1549,11 @@ private fun ChartLegend(data: TileDetailData) {
     ) {
         seriesLabel?.let { LegendEntry(color = MaterialTheme.colorScheme.primary, label = it) }
 
-        // Named in the same order and weight as the segments they stand for: a stack is one
-        // hue at rising weights, deliberately not separate colours, so nothing else on screen
-        // says which weight is which.
+        // Named in the same order and colour as the segments they stand for.
         if (stacked) {
+            val colors = stackColors(MaterialTheme.colorScheme.primary, data.stackLabels.size)
             data.stackLabels.forEachIndexed { index, label ->
-                LegendEntry(
-                    color = MaterialTheme.colorScheme.primary.copy(
-                        alpha = LEGEND_ALPHA_MIN + (1f - LEGEND_ALPHA_MIN) *
-                            (index + 1).toFloat() / data.stackLabels.size.toFloat(),
-                    ),
-                    label = label,
-                )
+                LegendEntry(color = colors[index], label = label)
             }
         }
 
@@ -1994,7 +2016,6 @@ private const val LEGEND_BREAK_ALPHA = 0.3f
 private val LEGEND_SLEEP = Color(0xFF5C7CFA).copy(alpha = LEGEND_BAND_ALPHA)
 
 /** Matches the chart's own stack weighting, so the swatch reads as the segment it names. */
-private const val LEGEND_ALPHA_MIN = 0.35f
 
 @Composable
 private fun SessionCaption(session: Session, onClick: () -> Unit) {

@@ -16,6 +16,7 @@ import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 import android.app.Application
 import android.util.Log
+import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.records.MenstruationFlowRecord
 import androidx.health.connect.client.records.MenstruationPeriodRecord
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -119,6 +120,11 @@ data class TileData(
     val value: Double? = null,
     /** The type's second value where it has one -- blood pressure's diastolic. */
     val secondaryValue: Double? = null,
+    /**
+     * The part of [value] its stack draws on top -- total calories' active part -- from the
+     * same writers and span, drawn in its own colour in the ring.
+     */
+    val stackedValue: Double? = null,
     /** Recent readings for a curve tile; empty for every other form. */
     val curve: List<Point> = emptyList(),
     /**
@@ -274,6 +280,13 @@ data class InsightsTileData(
     val insights: List<Insight>? = null,
     val locked: Boolean = false,
 )
+
+/** The share of [TileData.value] its stack draws on top, 0 where there is none or it cannot fit. */
+fun TileData.stackedShare(): Float {
+    val total = value ?: return 0f
+    val part = stackedValue ?: return 0f
+    return if (total > 0.0 && part in 0.0..total) (part / total).toFloat() else 0f
+}
 
 /**
  * The cycle tile: the running cycle on the dashboard's day. [now] is null where no period was
@@ -1112,19 +1125,7 @@ class DashboardViewModel(
         }
 
         val value = if (metric != null) {
-            val total = reads.attempt { repository.total(metric, dayTotalFilter(date), origins) }
-                // Aggregation returns nothing for an interval as wide as its own bucket -- an
-                // app posting one whole-day summary record. Summing that one app's records is
-                // safe because a single writer cannot overlap itself; never for the combined
-                // view, where resolving overlap is the whole point.
-                ?: tile.source?.let { sumOwnRecords(spec, date, origins) }
-            // Today, a running tally labelled as the whole day is apportioned by the platform
-            // and reads low; the writer's own figure is the floor. See openTally.
-            if (date == LocalDate.now()) {
-                atLeast(total, runCatching { repository.openTally(spec, origins) }.getOrNull())
-            } else {
-                total
-            }
+            dayTotal(spec, metric, date, origins, tile.source, reads)
         } else {
             reads.attempt {
                 repository.read(
@@ -1162,9 +1163,22 @@ class DashboardViewModel(
             null
         }
 
+        // The active calories inside a day's total, read as their own tile would read them
+        // from the same writers, so the ring's two colours come from one source.
+        val stackedValue = if (value != null && spec.stackRemainder != null) {
+            spec.stackComponents.singleOrNull()?.second?.let { partMetric ->
+                RecordRegistry.all.firstOrNull { it.aggregate == partMetric }?.let { partSpec ->
+                    runCatching { dayTotal(partSpec, partMetric, date, origins, tile.source, Reads()) }.getOrNull()
+                }
+            }
+        } else {
+            null
+        }
+
         return tile.copy(
             value = value ?: carried?.second,
             secondaryValue = secondaryValue,
+            stackedValue = stackedValue,
             valueDate = carried?.first,
             curve = curve,
             loading = false,
@@ -1172,6 +1186,30 @@ class DashboardViewModel(
             // failed beside it.
             failed = value == null && carried == null && reads.failed,
         )
+    }
+
+    /** [spec]'s total for [date] as a tile shows it, from [origins]; [source] where one is chosen. */
+    private suspend fun dayTotal(
+        spec: RecordTypeSpec<*>,
+        metric: AggregateMetric<*>,
+        date: LocalDate,
+        origins: Set<DataOrigin>,
+        source: String?,
+        reads: Reads,
+    ): Double? {
+        val total = reads.attempt { repository.total(metric, dayTotalFilter(date), origins) }
+            // Aggregation returns nothing for an interval as wide as its own bucket -- an
+            // app posting one whole-day summary record. Summing that one app's records is
+            // safe because a single writer cannot overlap itself; never for the combined
+            // view, where resolving overlap is the whole point.
+            ?: source?.let { sumOwnRecords(spec, date, origins) }
+        // Today, a running tally labelled as the whole day is apportioned by the platform
+        // and reads low; the writer's own figure is the floor. See openTally.
+        return if (date == LocalDate.now()) {
+            atLeast(total, runCatching { repository.openTally(spec, origins) }.getOrNull())
+        } else {
+            total
+        }
     }
 
     /**

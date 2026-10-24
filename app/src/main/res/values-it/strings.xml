@@ -675,6 +675,9 @@
     <string name="chart_source_aggregated_split">Totali giornalieri suddivisi nelle loro parti, senza duplicati secondo Connessione Salute</string>
     <string name="calories_basal">Basali</string>
     <string name="calories_active">Attive</string>
+    <string name="calories_passive">Passive</string>
+    <string name="calories_explain_title">Come si compongono le calorie</string>
+    <string name="calories_explain_body">Le calorie totali sono il valore registrato dall\'app che le scrive: la sua stima di quanto consumi a riposo più ciò che aggiunge l\'attività. Le calorie attive sono registrate a parte; il resto del totale è mostrato come passivo. Il metabolismo basale è un\'altra cosa: Connessione Salute lo calcola con una formula generale da peso, altezza ed età, quindi basale più calorie attive non dà necessariamente il totale. Il totale di oggi cresce nel corso della giornata, il basale vale sempre per l\'intera giornata.</string>
     <string name="chart_source_aggregated_range">Medie giornaliere con l’intervallo di ogni giorno, senza duplicati secondo Connessione Salute</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="one">Tratteggiato: un giorno senza registrazioni – non è lo stesso di un giorno con valore zero.</item>

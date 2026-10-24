@@ -264,9 +264,20 @@ internal class TileChartLoader(
                         emptyList()
                     } else {
                         buckets.mapNotNull { bucket ->
-                            val parts = stackMetrics.map { (_, partMetric) ->
+                            val components = stackMetrics.map { (_, partMetric) ->
                                 bucket.result[partMetric]?.let { numericAggregate(it, partMetric) }
                                     ?: return@mapNotNull null
+                            }
+                            // The rest of the total below them. A part larger than the total
+                            // -- two writers' figures that do not fit -- leaves the bar whole.
+                            val parts = if (spec.stackRemainder != null) {
+                                val total = bucket.result[metric]?.let { numericAggregate(it, metric) }
+                                    ?: return@mapNotNull null
+                                val rest = total - components.sum()
+                                if (rest < 0.0) return@mapNotNull null
+                                listOf(rest) + components
+                            } else {
+                                components
                             }
                             StackedBucket(
                                 time = bucket.startTime
@@ -782,7 +793,7 @@ internal class TileChartLoader(
             rangeBand = rangeBand,
             secondaryRangeBand = secondaryRangeBand,
             stack = stack,
-            stackLabels = spec.stackComponents.map { it.first },
+            stackLabels = listOfNotNull(spec.stackRemainder) + spec.stackComponents.map { it.first },
             sessionCounts = perDayPoints.isNotEmpty() && sessionKind == Session.Kind.EXERCISE,
             timePoints = timePoints,
             timeMoving = span != Span.YEAR,

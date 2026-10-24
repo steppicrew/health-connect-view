@@ -635,6 +635,9 @@
     <string name="chart_source_aggregated_split">依組成部分拆分的每日總計，已由 Health Connect 去除重複</string>
     <string name="calories_basal">基礎</string>
     <string name="calories_active">活動</string>
+    <string name="calories_passive">被動</string>
+    <string name="calories_explain_title">卡路里如何構成</string>
+    <string name="calories_explain_body">總卡路里是寫入資料的應用程式記錄的數值：它自己對靜止消耗的估算，加上活動增加的部分。活動卡路里另外記錄；總量的其餘部分顯示為被動。基礎代謝則不同：Health Connect 會根據你的體重、身高和年齡以通用公式計算，因此基礎代謝加活動卡路里不一定等於總量。今天的總量會隨一天增加，而基礎代謝一律是整天的數值。</string>
     <string name="chart_source_aggregated_range">每日平均值及每天的範圍，已由 Health Connect 去除重複</string>
     <plurals name="chart_gaps_dotted">
         <item quantity="other">虛線：%1$d 天沒有任何記錄 – 這與數值為零的日子不同。</item>
