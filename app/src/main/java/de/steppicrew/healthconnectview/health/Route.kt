@@ -70,6 +70,18 @@ fun speedProfile(points: List<RoutePoint>, speeds: DoubleArray, slices: Int = PR
 fun profileOf(points: List<Point>, slices: Int = PROFILE_SLICES): List<Point> =
     sliceMedians(points.map { it.time }, points.map { it.value }, slices).map { (time, value) -> Point(time, value) }
 
+/**
+ * The longest pause a line sliced like [profileOf] may bridge, never under [floor]. Its points
+ * lie about a slice apart, so a gap measured against the readings broke a long night's sliced
+ * line at every other point: an 11.5 h night has 5.8 min slices against a 5 min gap
+ * (24.10.2026). Two slices apart is one slice with no reading at all.
+ */
+fun profileGap(points: List<Point>, floor: Duration, slices: Int = PROFILE_SLICES): Duration {
+    if (points.size < 2) return floor
+    val slice = Duration.between(points.first().time, points.last().time).dividedBy(slices.toLong())
+    return maxOf(floor, slice.multipliedBy(2))
+}
+
 /** The median of each of [slices] equal stretches of time; [times] in order, one per value. */
 private fun sliceMedians(times: List<Instant>, values: List<Double>, slices: Int): List<Pair<Instant, Double>> {
     if (times.size < 2) return emptyList()
