@@ -1777,7 +1777,10 @@ internal fun DataLineChart(
         // covered: the curve rounds the corners of a real ramp rather than inventing
         // a slope where the data says a vertical jump. The clamp keeps every segment
         // within the two values it joins, so a plateau cannot bulge.
-        smooth = data.spec.tile.smoothChart && !data.bars,
+        // Never a running total: between two of its points nothing was recorded, so it rises
+        // straight, and the goal's crossing -- found on straight lines -- sits on it. Drawn as
+        // a curve, a sparse day's total met the goal hours before the marker (24.10.2026).
+        smooth = data.spec.tile.smoothChart && !data.bars && !data.cumulative,
         bars = data.bars,
         rangeBand = data.rangeBand,
         secondaryRangeBand = data.secondaryRangeBand,
