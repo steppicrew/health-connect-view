@@ -5,6 +5,7 @@
 #   ./scripts/release.sh --shots            also recapture screenshots first (needs an emulator)
 #   ./scripts/release.sh --track beta       publish to another track
 #   ./scripts/release.sh --dry-run          do everything except upload
+#   ./scripts/release.sh --fixes-only       a release with no "What's new" card of its own
 #
 # Steps, in order:
 #   1. refuse to release a dirty tree or a version already published
@@ -28,6 +29,7 @@ SHOT_DIR="build/store/screenshots"
 TRACK="internal"
 WITH_SHOTS=0
 DRY_RUN=0
+FIXES_ONLY=0
 
 die() { echo "error: $*" >&2; exit 1; }
 step() { echo; echo "=== $* ==="; }
@@ -37,6 +39,7 @@ while [ $# -gt 0 ]; do
         --shots)   WITH_SHOTS=1; shift ;;
         --track)   TRACK="${2:?--track needs a value}"; shift 2 ;;
         --dry-run) DRY_RUN=1; shift ;;
+        --fixes-only) FIXES_ONLY=1; shift ;;
         *)         die "unknown option '$1'" ;;
     esac
 done
@@ -66,6 +69,14 @@ for lang_dir in "$PLAY_DIR"/release-notes/*/; do
     lang="$(basename "$lang_dir")"
     [ -f "$lang_dir/entries/$CODE.txt" ] || die "missing release note: $lang/entries/$CODE.txt"
 done
+
+# The dashboard's "What's new" card stood on 1.6.0 through three feature releases because
+# nothing asked for it (the owner, 25.10.2026). A release with features brings its own card:
+# whats_new_<code> in every language and an entry in WHATS_NEW. Fixes alone say so.
+if [ "$FIXES_ONLY" -eq 0 ] && ! grep -q "^ *$CODE to R.string.whats_new_$CODE," \
+    app/src/main/java/de/steppicrew/healthconnectview/ui/dashboard/WhatsNewCard.kt; then
+    die "no What's new card for $CODE: add whats_new_$CODE and a WHATS_NEW entry, or pass --fixes-only"
+fi
 
 step "Release notes"
 ./scripts/release-notes.sh

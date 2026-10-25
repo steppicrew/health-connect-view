@@ -47,7 +47,9 @@ infinitive ("Tippen, um ...") is fine.
 **Seventeen languages ship**, and a new string goes into every `values-*` file in the same
 commit: `TranslationsTest` fails a locale that was complete and drops a key. Each release also
 needs `release-notes/<lang>/entries/<versionCode>.txt` for all 18 Play locales, or
-`release.sh` stops. Register per language: formal *vous*, *вы*, *siz*, *आप*, *Anda*; the
+`release.sh` stops. A release with features also brings its dashboard "What's new" card --
+`whats_new_<versionCode>` in every language and an entry in `WHATS_NEW` -- or `release.sh`
+stops; a release of fixes alone passes `--fixes-only`. Register per language: formal *vous*, *вы*, *siz*, *आप*, *Anda*; the
 informal *tú*, *tu*, *você*, *je* that Android's own UI uses in those languages; polite form in
 Japanese and Korean. Use Health Connect's platform name where Android localizes it -- *Santé
 Connect*, *Connessione Salute*, *Conexão Saúde*, *ヘルスコネクト*, *헬스 커넥트* -- so the text
