@@ -953,4 +953,27 @@
     <string name="segment_upper_twist">Torsione della parte superiore del corpo</string>
     <string name="segment_weightlifting">Sollevamento pesi</string>
     <string name="segment_wheelchair">Sedia a rotelle</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Piano di allenamento</string>
+    <string name="plan_phase_warmup">Riscaldamento</string>
+    <string name="plan_phase_active">Lavoro</string>
+    <string name="plan_phase_rest">Pausa</string>
+    <string name="plan_phase_cooldown">Defaticamento</string>
+    <string name="plan_phase_recovery">Recupero</string>
+    <string name="plan_goal_manual">finché non ti fermi</string>
+    <string name="plan_target_heart">frequenza cardiaca %1$s</string>
+    <string name="plan_target_speed">velocità %1$s</string>
+    <string name="plan_target_power">potenza %1$s</string>
+    <string name="plan_target_cadence">cadenza %1$s</string>
+    <string name="plan_target_weight">con %1$s</string>
+    <string name="plan_target_effort">sforzo %1$s su 10</string>
+    <string name="plan_target_amrap">il massimo possibile</string>
+    <string name="plan_planned_value">previsto: %1$s</string>
+    <string name="plan_linked_note">Il piano è quello che l’app di allenamento ha collegato a questo allenamento. Le sue fasi sono mostrate come previste; solo i totali si possono confrontare con quanto registrato, perché Connessione Salute non indica quando è iniziata ciascuna fase.</string>
+    <string name="workouts_planned">Pianificati</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d passo</item>
+        <item quantity="many">%d passi</item>
+        <item quantity="other">%d passi</item>
+    </plurals>
 </resources>

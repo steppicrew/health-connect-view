@@ -895,4 +895,25 @@
     <string name="segment_upper_twist">Putaran tubuh bagian atas</string>
     <string name="segment_weightlifting">Angkat besi</string>
     <string name="segment_wheelchair">Kursi roda</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Rencana latihan</string>
+    <string name="plan_phase_warmup">Pemanasan</string>
+    <string name="plan_phase_active">Latihan inti</string>
+    <string name="plan_phase_rest">Istirahat</string>
+    <string name="plan_phase_cooldown">Pendinginan</string>
+    <string name="plan_phase_recovery">Pemulihan</string>
+    <string name="plan_goal_manual">sampai Anda berhenti</string>
+    <string name="plan_target_heart">detak jantung %1$s</string>
+    <string name="plan_target_speed">kecepatan %1$s</string>
+    <string name="plan_target_power">daya %1$s</string>
+    <string name="plan_target_cadence">kadens %1$s</string>
+    <string name="plan_target_weight">dengan %1$s</string>
+    <string name="plan_target_effort">upaya %1$s dari 10</string>
+    <string name="plan_target_amrap">sebanyak mungkin</string>
+    <string name="plan_planned_value">rencana %1$s</string>
+    <string name="plan_linked_note">Rencana ini adalah rencana yang ditautkan aplikasi latihan ke olahraga ini. Tahapannya ditampilkan sesuai rencana; hanya totalnya yang dapat dibandingkan dengan yang tercatat, karena Health Connect tidak mencatat kapan setiap tahap dimulai.</string>
+    <string name="workouts_planned">Direncanakan</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="other">%d langkah</item>
+    </plurals>
 </resources>

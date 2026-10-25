@@ -924,4 +924,26 @@
     <string name="segment_upper_twist">Bovenlichaamsdraai</string>
     <string name="segment_weightlifting">Gewichtheffen</string>
     <string name="segment_wheelchair">Rolstoel</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Trainingsschema</string>
+    <string name="plan_phase_warmup">Warming-up</string>
+    <string name="plan_phase_active">Inspanning</string>
+    <string name="plan_phase_rest">Rust</string>
+    <string name="plan_phase_cooldown">Cooling-down</string>
+    <string name="plan_phase_recovery">Herstel</string>
+    <string name="plan_goal_manual">tot je stopt</string>
+    <string name="plan_target_heart">hartslag %1$s</string>
+    <string name="plan_target_speed">snelheid %1$s</string>
+    <string name="plan_target_power">vermogen %1$s</string>
+    <string name="plan_target_cadence">cadans %1$s</string>
+    <string name="plan_target_weight">met %1$s</string>
+    <string name="plan_target_effort">inspanning %1$s van 10</string>
+    <string name="plan_target_amrap">zoveel als je kunt</string>
+    <string name="plan_planned_value">gepland %1$s</string>
+    <string name="plan_linked_note">Dit is het schema dat de trainingsapp aan deze training heeft gekoppeld. De onderdelen staan er zoals gepland; alleen de totalen zijn te vergelijken met wat is vastgelegd, omdat Health Connect niet bijhoudt wanneer elk onderdeel begon.</string>
+    <string name="workouts_planned">Gepland</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d stap</item>
+        <item quantity="other">%d stappen</item>
+    </plurals>
 </resources>

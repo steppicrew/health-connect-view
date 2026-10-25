@@ -55,6 +55,13 @@ data class Session(
     val notes: String? = null,
     /** A workout's segments -- sets, strokes, rests -- where its writer split it; empty otherwise. */
     val segments: List<WorkoutSegment> = emptyList(),
+    /** The planned workout this one carried out, where its writer linked one. */
+    val plannedId: String? = null,
+    /**
+     * The record ids of the other writers' copies merged into this one, so a plan pointing at
+     * a copy that lost the merge still finds its workout.
+     */
+    val copyIds: Set<String> = emptySet(),
     /**
      * A workout's breaks, inferred from its movement readings stopping; see [Movement]. Empty
      * until read, which only some screens do, and for anything but exercise.
@@ -114,6 +121,8 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
             laps = winner.laps.ifEmpty { loser.laps },
             notes = winner.notes ?: loser.notes,
             segments = winner.segments.ifEmpty { loser.segments },
+            plannedId = winner.plannedId ?: loser.plannedId,
+            copyIds = winner.copyIds + loser.copyIds + loser.recordId,
         )
     }
     return kept
@@ -198,6 +207,7 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     laps = laps.map { Lap(it.startTime, it.endTime, it.length?.inMeters) },
     notes = notes?.trim()?.takeIf { it.isNotEmpty() },
     segments = segments.map { it.toWorkoutSegment() },
+    plannedId = plannedExerciseSessionId,
     exerciseType = exerciseType,
     route = when (exerciseRouteResult) {
         is ExerciseRouteResult.Data, is ExerciseRouteResult.ConsentRequired -> RouteRef(metadata.id)

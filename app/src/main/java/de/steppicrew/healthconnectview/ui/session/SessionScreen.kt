@@ -66,6 +66,9 @@ import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
 import de.steppicrew.healthconnectview.health.WorkoutSegment
+import de.steppicrew.healthconnectview.health.WorkoutPlan
+import de.steppicrew.healthconnectview.health.totals
+import androidx.health.connect.client.records.DistanceRecord
 import de.steppicrew.healthconnectview.health.isRest
 import de.steppicrew.healthconnectview.health.summariseSegments
 import de.steppicrew.healthconnectview.ui.components.segmentNameRes
@@ -238,6 +241,14 @@ private fun SessionContent(
         if (session.segments.isNotEmpty()) {
             Section(stringResource(R.string.session_segments))
             Segments(session.segments, detail.heartRate, detail.heartRateUnitRes)
+        }
+
+        detail.plan?.let { plan ->
+            val explanation = rememberExplanation("session_plan")
+            Section(stringResource(R.string.session_plan) + " · " + planName(plan), explanation)
+            if (explanation.expanded == true) Note(stringResource(R.string.plan_linked_note))
+            PlanAgainstWorkout(plan, detail)
+            PlanSteps(plan, pace = session.exerciseType in PACE_TYPES, modifier = Modifier.padding(top = 4.dp))
         }
 
         Section(stringResource(R.string.session_statistics))
@@ -552,6 +563,31 @@ private fun Laps(laps: List<Lap>) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+/**
+ * The plan's totals against the workout's, where the plan has any: "6.3 km, planned 6 km". Only
+ * totals -- Health Connect records no step's start, so a step cannot be matched to its stretch.
+ */
+@Composable
+private fun PlanAgainstWorkout(plan: WorkoutPlan, detail: SessionDetail) {
+    val totals = plan.totals()
+    totals.meters?.let { meters ->
+        val done = detail.stats.firstOrNull { it.spec.type == DistanceRecord::class }
+        val unit = done?.spec?.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) } ?: ""
+        StatRow(
+            label = stringResource(R.string.type_distance),
+            value = done?.let { Formatting.number(it.value) + unit } ?: "–",
+            detail = stringResource(R.string.plan_planned_value, distanceText(meters)),
+        )
+    }
+    totals.duration?.let { planned ->
+        StatRow(
+            label = stringResource(R.string.session_time_total),
+            value = Formatting.duration(detail.session.duration),
+            detail = stringResource(R.string.plan_planned_value, Formatting.duration(planned)),
+        )
     }
 }
 

@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.ui.session
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.records.BasalMetabolicRateRecord
 import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.PlannedExerciseSessionRecord
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.health.Break
@@ -11,6 +12,9 @@ import de.steppicrew.healthconnectview.health.Movement
 import de.steppicrew.healthconnectview.health.RECOVERY_TOLERANCE
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.WorkoutPlan
+import de.steppicrew.healthconnectview.health.planFor
+import de.steppicrew.healthconnectview.health.toPlan
 import de.steppicrew.healthconnectview.health.activePieces
 import de.steppicrew.healthconnectview.health.combinePieces
 import de.steppicrew.healthconnectview.health.movementIn
@@ -160,6 +164,43 @@ private fun statOf(spec: RecordTypeSpec<*>, perPiece: List<Pair<Map<AggregateMet
     )
 }
 
+
+/**
+ * The plan a workout carried out, where a training app wrote one and either side links the
+ * other. Plans are read a day either side: one may be set for the day rather than the minute.
+ * Null where none is linked, or where the device lacks planned workouts -- an optional Health
+ * Connect feature, whose read then throws, as for mindfulness.
+ */
+suspend fun HealthRepository.planFor(session: Session): WorkoutPlan? {
+    if (session.kind != Session.Kind.EXERCISE) return null
+    val range = TimeRangeFilter.between(session.start.minus(PLAN_REACH), session.end.plus(PLAN_REACH))
+    val plans = readPlans(range)
+    return planFor(plans, session.plannedId, session.copyIds + session.recordId)
+        ?: session.plannedId?.let { id -> readOrNull { readOne(PlannedExerciseSessionRecord::class, id).toPlan() } }
+}
+
+/**
+ * Planned workouts not yet carried out, from [from] to [days] ahead, soonest first: what a
+ * training app has lined up.
+ */
+suspend fun HealthRepository.upcomingPlans(from: Instant, days: Long = UPCOMING_DAYS): List<WorkoutPlan> =
+    readPlans(TimeRangeFilter.between(from, from.plus(Duration.ofDays(days))))
+        .filter { it.completedSessionId == null }
+        .sortedBy { it.start }
+
+private suspend fun HealthRepository.readPlans(range: TimeRangeFilter): List<WorkoutPlan> =
+    readOrNull { read(PlannedExerciseSessionRecord::class, range).map { it.toPlan() } }.orEmpty()
+
+private suspend fun <T> readOrNull(block: suspend () -> T): T? = try {
+    block()
+} catch (e: CancellationException) {
+    throw e
+} catch (_: Exception) {
+    null
+}
+
+private val PLAN_REACH: Duration = Duration.ofDays(1)
+private const val UPCOMING_DAYS = 7L
 
 /**
  * The route of [session], read now that the session is open: its points, a note that the
