@@ -41,5 +41,16 @@ val RECOVERY_TOLERANCE: Duration = Duration.ofSeconds(10)
 /** How long after a workout its heart rate is drawn. */
 val AFTER_END: Duration = Duration.ofMinutes(5)
 
+/**
+ * Where the minutes after a workout ending at [end] stop: [AFTER_END] later, or where the next
+ * workout starts, whichever comes first; [nextStarts] are the starts of the workouts around it.
+ * Drawn on to the full five minutes, a ride followed by a run three minutes later showed the
+ * run's warm-up as the ride's recovery.
+ */
+fun afterUntil(end: Instant, nextStarts: List<Instant>): Instant {
+    val full = end.plus(AFTER_END)
+    return nextStarts.filter { it > end && it < full }.minOrNull() ?: full
+}
+
 private val ONE_MINUTE: Duration = Duration.ofMinutes(1)
 private val TWO_MINUTES: Duration = Duration.ofMinutes(2)

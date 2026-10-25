@@ -378,7 +378,7 @@ private fun HeartRate(detail: SessionDetail) {
                     chartId = "session_" + detail.session.kind.name.lowercase(),
                     series = series,
                     defaultShown = listOf(LINE_HEART_RATE),
-                    extent = detail.session.start..(if (after.isEmpty()) end else end.plus(AFTER_END)),
+                    extent = detail.session.start..(if (after.isEmpty()) end else detail.afterUntil ?: end.plus(AFTER_END)),
                     breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
                     // A night's stages along the bottom, so a rise in heart rate can be laid
                     // against the REM it fell in.

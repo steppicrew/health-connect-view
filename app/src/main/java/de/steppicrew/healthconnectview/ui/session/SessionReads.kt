@@ -8,7 +8,6 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.health.Break
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Movement
-import de.steppicrew.healthconnectview.health.AFTER_END
 import de.steppicrew.healthconnectview.health.RECOVERY_TOLERANCE
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
@@ -206,12 +205,12 @@ suspend fun HealthRepository.heartRateDuring(session: Session): List<Point>? {
 /**
  * Heart rate in the minutes after a workout, and a little before its end, from the writer
  * with the densest readings there: mostly the watch's all-day readings, since the workout's
- * own recording has stopped. Null where nothing was read after the end.
+ * own recording has stopped. Up to [to], where a following workout may cut the minutes short
+ * ([afterUntil]). Null where nothing was read after the end.
  */
-suspend fun HealthRepository.heartRateAfter(session: Session): List<Point>? {
+suspend fun HealthRepository.heartRateAfter(session: Session, to: Instant): List<Point>? {
     val spec = heartRateSpec() ?: return null
     val from = session.end.minus(RECOVERY_TOLERANCE)
-    val to = session.end.plus(AFTER_END)
     return fullestWriter(
         pointsByWriter(spec, from, to),
         from,

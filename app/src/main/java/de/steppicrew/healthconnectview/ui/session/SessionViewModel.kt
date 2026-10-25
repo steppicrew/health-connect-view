@@ -19,6 +19,9 @@ import de.steppicrew.healthconnectview.health.Drift
 import de.steppicrew.healthconnectview.health.activePieces
 import de.steppicrew.healthconnectview.health.driftOf
 import de.steppicrew.healthconnectview.health.recoveryOf
+import de.steppicrew.healthconnectview.health.AFTER_END
+import de.steppicrew.healthconnectview.health.afterUntil
+import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.heartZones
 import de.steppicrew.healthconnectview.health.observedMaxHeartRate
@@ -50,6 +53,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 
 /** Everything the session screen shows, read together so it appears at once. */
 data class SessionDetail(
@@ -80,6 +84,8 @@ data class SessionDetail(
     val heartZones: HeartZones? = null,
     /** A workout's heart rate in the minutes after it, drawn on past its end; null for a night. */
     val heartRateAfter: List<Point>? = null,
+    /** Where the minutes after a workout stop: five minutes on, or the next workout's start. */
+    val afterUntil: Instant? = null,
     val recovery: Recovery? = null,
     /** A workout's heart rate against its speed, first half against second; null without both. */
     val drift: Drift? = null,
@@ -160,8 +166,19 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         // carries no route but does carry its speed.
         val speed = async { if (coversDistance(session.exerciseType)) repository.speedDuring(session) else null }
         val heartRate = async { if (heartRateLocked) null else repository.heartRateDuring(session) }
+        // The minutes after a workout end where the next one starts, or they draw its warm-up.
+        val until = async {
+            if (session.kind != Session.Kind.EXERCISE) {
+                null
+            } else {
+                val next = runCatching {
+                    repository.sessionsIn(session.end, session.end.plus(AFTER_END), setOf(Session.Kind.EXERCISE))
+                }.getOrDefault(emptyList())
+                afterUntil(session.end, next.map { it.start })
+            }
+        }
         val after = async {
-            if (heartRateLocked || session.kind != Session.Kind.EXERCISE) null else repository.heartRateAfter(session)
+            if (heartRateLocked) null else until.await()?.let { repository.heartRateAfter(session, it) }
         }
         val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty(), heartRate.await()) }
         val nightLines = async {
@@ -201,6 +218,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             heartRateUnitRes = spec?.displayUnitRes,
             heartZones = heartZones,
             heartRateAfter = after.await(),
+            afterUntil = until.await(),
             recovery = after.await()?.let { recoveryOf(it, session.end) },
             drift = heartPoints?.let { beats ->
                 speed.await()?.let { pace ->
