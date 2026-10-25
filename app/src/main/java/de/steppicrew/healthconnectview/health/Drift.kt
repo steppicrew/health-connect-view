@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.health
 import de.steppicrew.healthconnectview.registry.Point
 import java.time.Duration
 import java.time.Instant
+import de.steppicrew.healthconnectview.registry.METRES_PER_KM
 
 /**
  * A workout's heart rate against its speed, first half of the moving time against the second:
@@ -82,4 +83,3 @@ private const val MIN_HALF_READINGS = 10
 private const val MIN_SPEED = 0.3
 
 private const val SECONDS_PER_MINUTE = 60.0
-private const val METRES_PER_KM = 1000.0

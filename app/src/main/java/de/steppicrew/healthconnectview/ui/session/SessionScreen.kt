@@ -111,6 +111,7 @@ import de.steppicrew.healthconnectview.util.appLabelFor
 import java.time.Duration
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import de.steppicrew.healthconnectview.registry.KMH_PER_MS
 
 /**
  * One session, full screen: when and how long, who wrote it, the heart rate through it, its
@@ -374,7 +375,7 @@ private fun HeartRate(detail: SessionDetail) {
                         key = LINE_SPEED,
                         label = stringResource(R.string.type_speed),
                         // Sliced like the route's speed profile below, so the two agree.
-                        points = profileOf(speed.map { Point(it.time, speedUnit.convert(it.value * MS_TO_KMH)) }),
+                        points = profileOf(speed.map { Point(it.time, speedUnit.convert(it.value * KMH_PER_MS)) }),
                         color = SeriesColors.blue(),
                         unitKey = "speed",
                         unitText = speedUnit.symbol(),
@@ -755,14 +756,13 @@ private fun loadSum(zones: HeartZones): String {
 @Composable
 private fun Halves(drift: Drift, heartRateUnitRes: Int?, explained: Boolean) {
     val beatsUnit = heartRateUnitRes?.let { " " + stringResource(it) } ?: ""
-    val speedUnit = Quantity.SPEED
     val distanceUnit = Quantity.DISTANCE
     listOf(R.string.session_drift_first to drift.first, R.string.session_drift_second to drift.second)
         .forEach { (label, half) ->
             StatRow(
                 label = stringResource(label),
                 value = Formatting.number(half.heartRate, 0) + beatsUnit + " · " +
-                    Formatting.number(speedUnit.convert(half.speed * MS_TO_KMH), 1) + Formatting.UNIT_SPACE + speedUnit.symbol(),
+                    Formatting.speed(half.speed, 1),
                 detail = stringResource(
                     R.string.session_drift_per_distance,
                     // Per mile where miles are shown: a mile holds more beats than a kilometre.
@@ -902,7 +902,6 @@ private fun nightSeries(detail: SessionDetail, line: SessionLine): ChartSeries? 
 /** A line is broken where its readings stop for longer: a watch out of range, not a value. */
 private val LINE_GAP: Duration = Duration.ofMinutes(5)
 
-private const val MS_TO_KMH = 3.6
 
 private const val LINE_HEIGHT = "height"
 

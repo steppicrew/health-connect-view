@@ -23,6 +23,7 @@ import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.ui.components.exerciseNameRes
 import de.steppicrew.healthconnectview.ui.components.segmentNameRes
+import de.steppicrew.healthconnectview.registry.KMH_PER_MS
 
 /** What to call a plan: its own title, else its kind of workout, else "Planned workout". */
 @Composable
@@ -147,9 +148,8 @@ private fun speedRange(low: Double, high: Double, pace: Boolean): String {
         if (fast != null && slow != null) return if (low == high) slow else "$fast–$slow"
     }
     val unit = Quantity.SPEED
-    val from = Formatting.number(unit.convert(low * MS_TO_KMH), 1)
-    val to = Formatting.number(unit.convert(high * MS_TO_KMH), 1)
+    val from = Formatting.number(unit.convert(low * KMH_PER_MS), 1)
+    val to = Formatting.number(unit.convert(high * KMH_PER_MS), 1)
     return (if (low == high) from else "$from–$to") + Formatting.UNIT_SPACE + unit.symbol()
 }
 
-private const val MS_TO_KMH = 3.6

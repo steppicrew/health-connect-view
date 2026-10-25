@@ -39,6 +39,9 @@ import de.steppicrew.healthconnectview.registry.Quantity
 import de.steppicrew.healthconnectview.ui.components.exerciseNameRes
 import de.steppicrew.healthconnectview.ui.components.labelFor
 import java.time.Instant
+import de.steppicrew.healthconnectview.registry.KMH_PER_MS
+import de.steppicrew.healthconnectview.registry.METRES_PER_KM
+import de.steppicrew.healthconnectview.registry.METRES_PER_MILE
 
 /**
  * One kind's course over the year (step 81, Pro), above its list: a dot per workout for its
@@ -148,10 +151,7 @@ private fun DotChart(label: String, values: List<Pair<Instant, Double>>, inverte
 
 private const val CHART_HEIGHT = 120
 private const val DOT_RADIUS = 3.5f
-private const val METRES_PER_KM = 1000.0
-private const val METRES_PER_MILE = 1609.344
 private const val SECONDS_PER_MINUTE = 60.0
-private const val KMH_PER_MS = 3.6
 
 /** A pause is hours per km; past this a "pace" says nothing, as `Formatting.pace` holds. */
 private const val MAX_PACE_MINUTES = 30.0
