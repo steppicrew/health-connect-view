@@ -153,4 +153,3 @@ private fun PickRow(label: String, checked: Boolean, onCheck: () -> Unit, onUp: 
     }
 }
 
-private const val TOGGLE_SIZE = 24
