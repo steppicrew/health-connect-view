@@ -22,6 +22,7 @@ import java.time.Duration
 import java.time.Period
 import java.time.ZoneId
 import kotlin.reflect.KClass
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * All Health Connect access goes through here.
@@ -261,7 +262,7 @@ class HealthRepository private constructor(
         if (hasRecords || metric == null || aggregateRange == null) {
             hasRecords
         } else {
-            runCatching { client.aggregate(AggregateRequest(setOf(metric), aggregateRange)) }
+            catching { client.aggregate(AggregateRequest(setOf(metric), aggregateRange)) }
                 .map { it.contains(metric) }
                 .getOrDefault(false)
         }

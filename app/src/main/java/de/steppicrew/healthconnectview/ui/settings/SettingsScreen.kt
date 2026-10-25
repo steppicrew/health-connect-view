@@ -66,6 +66,7 @@ import de.steppicrew.healthconnectview.settings.GlucoseChoice
 import de.steppicrew.healthconnectview.settings.UnitChoice
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.util.appLabelFor
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Preferences, and the doors into the settings that belong to Android or Health Connect
@@ -660,7 +661,7 @@ private fun Context.openHealthConnectSettings() {
  * module -- enabling it for a single string would add a build feature for no other reason.
  */
 private fun Context.versionName(): String =
-    runCatching { packageManager.getPackageInfo(packageName, 0).versionName }
+    catching { packageManager.getPackageInfo(packageName, 0).versionName }
         .getOrNull()
         .orEmpty()
 
@@ -674,7 +675,7 @@ private fun Context.openUrl(url: String) {
  */
 private fun Context.startActivitySafely(vararg intents: Intent) {
     intents.forEach { intent ->
-        if (runCatching { startActivity(intent) }.isSuccess) return
+        if (catching { startActivity(intent) }.isSuccess) return
     }
 }
 

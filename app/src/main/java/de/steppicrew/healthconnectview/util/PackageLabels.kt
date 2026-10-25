@@ -17,7 +17,7 @@ fun Context.appLabelFor(packageName: String): String {
     if (packageName.startsWith(PHONE_SENSOR_PREFIX)) {
         return getString(R.string.source_phone_sensors)
     }
-    return runCatching {
+    return catching {
         val info = packageManager.getApplicationInfo(packageName, 0)
         packageManager.getApplicationLabel(info).toString()
     }.getOrDefault(packageName)
@@ -32,7 +32,7 @@ fun Context.appLabelFor(packageName: String): String {
  */
 fun Context.appIconFor(packageName: String): Drawable? {
     if (packageName.startsWith(PHONE_SENSOR_PREFIX)) return null
-    return runCatching { packageManager.getApplicationIcon(packageName) }.getOrNull()
+    return catching { packageManager.getApplicationIcon(packageName) }.getOrNull()
 }
 
 /** Whether [packageName] is the phone's own sensors, which have no app and so no app icon. */

@@ -194,6 +194,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * One type, full screen, over a span the user can step through.
@@ -245,7 +246,7 @@ fun TileDetailScreen(
     LaunchedEffect(state, requested) {
         if (requested.isEmpty() || opened) return@LaunchedEffect
         val sessions = (state as? UiState.Data)?.value?.sessions ?: return@LaunchedEffect
-        val at = runCatching { Instant.parse(requested) }.getOrNull()
+        val at = catching { Instant.parse(requested) }.getOrNull()
         sessions.firstOrNull { if (at != null) at >= it.start && at < it.end else requested == "route" && it.route != null }?.let {
             opened = true
             onOpenSession(it)

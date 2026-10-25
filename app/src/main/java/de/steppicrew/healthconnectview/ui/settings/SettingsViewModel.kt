@@ -40,6 +40,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+import de.steppicrew.healthconnectview.util.catching
 
 /** How a backup action went, for a one-line message. */
 enum class BackupEvent { Exported, Restored, NotABackup, NewerFormat, Failed }
@@ -80,7 +81,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     /** Granted permissions are re-read rather than cached; they change outside this app. */
     fun refresh() {
         viewModelScope.launch {
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            val granted = catching { repository.grantedPermissions() }.getOrDefault(emptySet())
             _grantedCount.value = granted.size
             discoverWriters(granted)
         }
@@ -123,7 +124,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 .map { spec ->
                     async {
                         val writers = gate.withPermit {
-                            runCatching {
+                            catching {
                                 repository
                                     .read(spec.type, range.filter(), maxRecords = WRITER_SAMPLE)
                                     .map { spec.originOf(it) }
@@ -178,7 +179,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
      */
     fun revokeAll(onDone: () -> Unit) {
         viewModelScope.launch {
-            runCatching { repository.revokeAll() }
+            catching { repository.revokeAll() }
             refresh()
             onDone()
         }
@@ -197,7 +198,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun exportBackup(uri: Uri) {
         viewModelScope.launch {
             val resolver = getApplication<Application>().contentResolver
-            val result = runCatching {
+            val result = catching {
                 val backup = SettingsBackup(
                     dashboard = dashboardStore.config.first(),
                     sourceSelections = sourceStore.selections.first(),
@@ -221,7 +222,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun readBackup(uri: Uri) {
         viewModelScope.launch {
             val resolver = getApplication<Application>().contentResolver
-            val result = runCatching {
+            val result = catching {
                 val text = withContext(Dispatchers.IO) {
                     requireNotNull(resolver.openInputStream(uri)) { "cannot open $uri" }.use { input ->
                         // A settings backup is a few kilobytes; anything far larger is not one,
@@ -252,7 +253,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         val backup = _pendingRestore.value ?: return
         _pendingRestore.value = null
         viewModelScope.launch {
-            val result = runCatching {
+            val result = catching {
                 dashboardStore.save(backup.dashboard)
                 sourceStore.restore(backup.sourceSelections, backup.preferredSource)
                 store.restore(backup.settings)

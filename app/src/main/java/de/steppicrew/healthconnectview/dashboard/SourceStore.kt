@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import java.time.Instant
 import kotlinx.coroutines.flow.map
 import org.json.JSONObject
+import de.steppicrew.healthconnectview.util.catching
 
 private val Context.sourceDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "sources",
@@ -39,7 +40,7 @@ class SourceStore(private val context: Context) {
 
     val selections: Flow<Map<String, String>> = context.sourceDataStore.data.map { prefs ->
         val stored = prefs[KEY_SOURCES] ?: return@map emptyMap()
-        runCatching { decode(stored) }.getOrDefault(emptyMap())
+        catching { decode(stored) }.getOrDefault(emptyMap())
     }
 
     /**
@@ -96,7 +97,7 @@ class SourceStore(private val context: Context) {
     suspend fun select(typeName: String, packageName: String?) {
         context.sourceDataStore.edit { prefs ->
             val current = prefs[KEY_SOURCES]
-                ?.let { runCatching { decode(it) }.getOrDefault(emptyMap()) }
+                ?.let { catching { decode(it) }.getOrDefault(emptyMap()) }
                 ?: emptyMap()
             val updated = if (packageName == null) {
                 current - typeName
@@ -152,10 +153,10 @@ suspend fun SourceStore.openingSource(
     end: Instant,
 ): String? {
     val typeName = spec.type.simpleName.orEmpty()
-    val selections = runCatching { selections.first() }.getOrDefault(emptyMap())
+    val selections = catching { selections.first() }.getOrDefault(emptyMap())
     selections[typeName]?.let { return it.takeUnless { chosen -> chosen == SourceStore.ALL_SOURCES } }
-    val preferred = runCatching { preferred.first() }.getOrNull() ?: return null
-    val wrote = runCatching {
+    val preferred = catching { preferred.first() }.getOrNull() ?: return null
+    val wrote = catching {
         repository.recordsIn(spec, start, end, setOf(DataOrigin(preferred)), maxRecords = 1).isNotEmpty()
     }.getOrDefault(false)
     return preferred.takeIf { wrote }

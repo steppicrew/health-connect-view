@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.reflect.KClass
+import de.steppicrew.healthconnectview.util.catching
 
 data class CycleData(
     /** Oldest first, so the rows read down the page the way time runs. */
@@ -99,7 +100,7 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             // A refused permission read is a failure, not "nothing granted".
-            val granted = runCatching { repository.grantedPermissions() }.getOrElse { error ->
+            val granted = catching { repository.grantedPermissions() }.getOrElse { error ->
                 ensureActive()
                 _state.update { UiState.Error(error.message ?: "Could not read data") }
                 return@launch
@@ -111,8 +112,8 @@ class CycleViewModel(application: Application) : AndroidViewModel(application) {
                 return@launch
             }
             val last = SharedDate.current
-            val result = runCatching { loadData(granted, last) }
-            // runCatching also catches the cancellation; a superseded load must not publish.
+            val result = catching { loadData(granted, last) }
+            // A superseded load must not publish, even where a read inside swallowed its cancellation.
             ensureActive()
             _state.update {
                 result.fold(

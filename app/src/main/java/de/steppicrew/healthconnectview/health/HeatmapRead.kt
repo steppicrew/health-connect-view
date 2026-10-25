@@ -10,6 +10,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Shaded from zero: what adds up -- steps, a day's training. A level across its own range, and
@@ -85,16 +86,16 @@ suspend fun HealthRepository.readHeatmap(
     last: LocalDate,
     origins: Set<DataOrigin>,
     through: LocalDate = last,
-): YearHeatmap? = runCatching {
+): YearHeatmap? = catching {
     val zone = HealthRepository.DEFAULT_ZONE
     val end = minOf(last, through).plusDays(1)
     val started = System.currentTimeMillis()
     val kind = spec.tile.sessionKind
     if (spec.tile.form == TileSpec.Form.SESSIONS && kind != null) {
         val sessions = sessionsIn(first.atStartOfDay(zone).toInstant(), end.atStartOfDay(zone).toInstant(), setOf(kind))
-        return@runCatching yearHeatmap(sessionDays(sessions, kind, zone), first, last, fromZero = countsFromZero(spec))
+        return@catching yearHeatmap(sessionDays(sessions, kind, zone), first, last, fromZero = countsFromZero(spec))
     }
-    val metric = spec.aggregate ?: return@runCatching null
+    val metric = spec.aggregate ?: return@catching null
     // Blood pressure's diastolic from the same buckets: a day is graded on both.
     val second = spec.secondaryAggregate
     // The floor the day is built on -- the basal rate under total calories -- where the

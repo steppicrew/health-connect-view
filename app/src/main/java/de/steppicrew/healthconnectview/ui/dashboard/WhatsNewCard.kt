@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.settings.WhatsNewStore
 import kotlinx.coroutines.launch
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * What the versions with new features brought, once, above the tiles after an update -- the
@@ -43,7 +44,7 @@ fun WhatsNewCard(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     var due by remember { mutableStateOf(emptyList<Int>()) }
     LaunchedEffect(Unit) {
-        due = runCatching { store.due(WHATS_NEW.keys.toList()) }.getOrDefault(emptyList())
+        due = catching { store.due(WHATS_NEW.keys.toList()) }.getOrDefault(emptyList())
     }
     if (due.isEmpty()) return
     val points = due.sortedDescending().flatMap { version ->
@@ -85,7 +86,7 @@ fun WhatsNewCard(modifier: Modifier = Modifier) {
                 onClick = {
                     val latest = due.max()
                     due = emptyList()
-                    scope.launch { runCatching { store.dismiss(latest) } }
+                    scope.launch { catching { store.dismiss(latest) } }
                 },
                 modifier = Modifier.align(Alignment.End),
             ) {

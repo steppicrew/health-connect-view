@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.time.LocalDate
+import de.steppicrew.healthconnectview.util.catching
 
 /** One type's last week against its month, from the same numbers as its trend arrow. */
 data class Insight(val spec: RecordTypeSpec<*>, val trend: TrendResult)
@@ -95,7 +96,7 @@ class InsightsViewModel(application: Application) : AndroidViewModel(application
     private fun reload() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            val granted = catching { repository.grantedPermissions() }.getOrDefault(emptySet())
             val specs = insightTypes(granted)
             _state.value = InsightsState(pending = specs.size, total = specs.size, noAccess = specs.isEmpty())
             readInsights(repository, sourceStore, specs, date, Semaphore(MAX_CONCURRENT_READS)) { insight ->
@@ -142,7 +143,7 @@ suspend fun readInsights(
     specs.map { spec ->
         async {
             val trend = gate.withPermit {
-                runCatching {
+                catching {
                     val source = sourceStore.openingSource(repository, spec, start, end)
                     val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
                     repository.trendBefore(requireNotNull(spec.aggregate), date, origins)
