@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.WorkoutPlan
 import de.steppicrew.healthconnectview.health.WorkoutTrendPoint
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.familyOf
@@ -31,6 +32,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import java.time.LocalDate
 import java.time.Duration
 import java.time.Instant
 
@@ -69,6 +71,11 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
         _family.value = family
         trend(family)
     }
+
+    private val _upcoming = MutableStateFlow<List<WorkoutPlan>>(emptyList())
+
+    /** Planned workouts of the coming week, read after the list; empty where there are none. */
+    val upcoming: StateFlow<List<WorkoutPlan>> = _upcoming.asStateFlow()
 
     private val _trend = MutableStateFlow<WorkoutTrend?>(null)
 
@@ -163,6 +170,10 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
             }
             // A kind the route opened on has its course read as soon as there is a list.
             trend(_family.value)
+            // From the start of today: a plan for this evening is still to come at noon.
+            _upcoming.value = repository.upcomingPlans(
+                LocalDate.now(HealthRepository.DEFAULT_ZONE).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+            )
         }
     }
 

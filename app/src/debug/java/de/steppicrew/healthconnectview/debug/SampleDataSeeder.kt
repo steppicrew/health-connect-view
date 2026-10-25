@@ -6,7 +6,12 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseLap
+import androidx.health.connect.client.records.ExerciseCompletionGoal
+import androidx.health.connect.client.records.ExercisePerformanceTarget
 import androidx.health.connect.client.records.ExerciseSegment
+import androidx.health.connect.client.records.PlannedExerciseBlock
+import androidx.health.connect.client.records.PlannedExerciseSessionRecord
+import androidx.health.connect.client.records.PlannedExerciseStep
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
@@ -31,6 +36,7 @@ import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.health.connect.client.units.Pressure
 import androidx.health.connect.client.units.Percentage
+import androidx.health.connect.client.units.Velocity
 import java.time.Instant
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
@@ -129,6 +135,9 @@ private val SEEDED_WORKOUTS = listOf(
         // Heart rate is one walk through the whole fixture, oldest day first, so a night does
         // not restart at midnight where one seeded day hands over to the next.
         var bpm = 51
+        val planIds = runCatching { seedPlans(client, today, now, offset) }
+            .onFailure { Log.w("SampleDataSeeder", "plan seed skipped: ${it.javaClass.simpleName}") }
+            .getOrDefault(emptyMap())
         val records = buildList<Record> {
             // A year of steps and sleep before the detailed month, one record a day, so the year
             // calendars in the Pro screenshots are a year and not a month at their end: busier on
@@ -405,6 +414,7 @@ private val SEEDED_WORKOUTS = listOf(
                             // development; no app on the test phone writes any.
                             notes = SEEDED_NOTES[dayOffset % SEEDED_NOTES.size].takeIf { dayOffset % 4 == 0 },
                             segments = segmentsOf(workout.type, exerciseStart, exerciseStart.plus(minutes, ChronoUnit.MINUTES)),
+                            plannedExerciseSessionId = planIds[dayOffset],
                             metadata = metadata(),
                         ),
                     )
@@ -631,6 +641,108 @@ private val SEEDED_WORKOUTS = listOf(
     }
 
     /**
+     * Planned runs, as a training app writes them: one for each seeded run of the detailed
+     * month, linked from the run, and three still to come. Alternately an interval session and
+     * an easy run of a set distance, so both a plan of steps and a plan compared against the
+     * run's distance show in development. Inserted first, since a run names its plan by the
+     * id Health Connect gives it. Returns those ids by day offset.
+     */
+    private suspend fun seedPlans(
+        client: HealthConnectClient,
+        today: Instant,
+        now: Instant,
+        offset: java.time.ZoneOffset,
+    ): Map<Int, String> {
+        client.deleteRecords(
+            PlannedExerciseSessionRecord::class,
+            TimeRangeFilter.between(today.minus(DAYS.toLong(), ChronoUnit.DAYS), today.plus(PLAN_DAYS_AHEAD, ChronoUnit.DAYS)),
+        )
+        val running = SEEDED_WORKOUTS.first { it.type == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING }
+        val past = (0 until DAYS).filter { day ->
+            day % 3 != 2 && SEEDED_WORKOUTS[day % SEEDED_WORKOUTS.size] == running &&
+                today.minus(day.toLong(), ChronoUnit.DAYS).plus(running.startHour.toLong(), ChronoUnit.HOURS) < now
+        }
+        // Negative offsets are days ahead.
+        val days = past + listOf(-1, -2, -4)
+        val plans = days.map { day ->
+            val start = today.minus(day.toLong(), ChronoUnit.DAYS).plus(running.startHour.toLong(), ChronoUnit.HOURS)
+            val intervals = day % 2 == 0
+            PlannedExerciseSessionRecord(
+                startTime = start,
+                startZoneOffset = offset,
+                endTime = start.plus(45, ChronoUnit.MINUTES),
+                endZoneOffset = offset,
+                metadata = Metadata.manualEntry(),
+                blocks = if (intervals) intervalBlocks() else easyBlocks(),
+                exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                title = if (intervals) "4 × 1 km" else "Easy 6 km",
+                notes = "Keep the recoveries really easy.".takeIf { intervals },
+            )
+        }
+        val ids = client.insertRecords(plans).recordIdsList
+        return days.zip(ids).filter { (day, _) -> day >= 0 }.toMap()
+    }
+
+    private fun intervalBlocks(): List<PlannedExerciseBlock> = listOf(
+        PlannedExerciseBlock(
+            repetitions = 1,
+            steps = listOf(
+                PlannedExerciseStep(
+                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_WARMUP,
+                    completionGoal = ExerciseCompletionGoal.DurationGoal(java.time.Duration.ofMinutes(10)),
+                    performanceTargets = listOf(ExercisePerformanceTarget.HeartRateTarget(110.0, 130.0)),
+                ),
+            ),
+        ),
+        PlannedExerciseBlock(
+            repetitions = 4,
+            description = "Main set",
+            steps = listOf(
+                PlannedExerciseStep(
+                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_ACTIVE,
+                    completionGoal = ExerciseCompletionGoal.DistanceGoal(Length.meters(1000.0)),
+                    performanceTargets = listOf(
+                        ExercisePerformanceTarget.SpeedTarget(Velocity.metersPerSecond(3.5), Velocity.metersPerSecond(3.8)),
+                    ),
+                ),
+                PlannedExerciseStep(
+                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_WALKING,
+                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_RECOVERY,
+                    completionGoal = ExerciseCompletionGoal.DurationGoal(java.time.Duration.ofMinutes(2)),
+                    performanceTargets = emptyList(),
+                ),
+            ),
+        ),
+        PlannedExerciseBlock(
+            repetitions = 1,
+            steps = listOf(
+                PlannedExerciseStep(
+                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_COOLDOWN,
+                    completionGoal = ExerciseCompletionGoal.ManualCompletion,
+                    performanceTargets = listOf(ExercisePerformanceTarget.RateOfPerceivedExertionTarget(3)),
+                ),
+            ),
+        ),
+    )
+
+    private fun easyBlocks(): List<PlannedExerciseBlock> = listOf(
+        PlannedExerciseBlock(
+            repetitions = 1,
+            steps = listOf(
+                PlannedExerciseStep(
+                    exerciseType = ExerciseSegment.EXERCISE_SEGMENT_TYPE_RUNNING,
+                    exercisePhase = PlannedExerciseStep.EXERCISE_PHASE_ACTIVE,
+                    completionGoal = ExerciseCompletionGoal.DistanceGoal(Length.meters(6000.0)),
+                    performanceTargets = listOf(ExercisePerformanceTarget.HeartRateTarget(120.0, 140.0)),
+                ),
+            ),
+        ),
+    )
+
+    /**
      * Sets and rests for a strength session, lengths of a few strokes for a swim, as a gym or
      * swim app splits them, so the workout screen's segments show in development; no app on
      * the test phone writes any. Each kind is one Health Connect accepts for that workout.
@@ -713,4 +825,5 @@ private val SEEDED_WORKOUTS = listOf(
     private const val MINUTES_PER_DAY = 24 * 60
     private const val SPO2_RECORDS_PER_DAY = 48
     private const val BATCH_SIZE = 500
+    private const val PLAN_DAYS_AHEAD = 14L
 }

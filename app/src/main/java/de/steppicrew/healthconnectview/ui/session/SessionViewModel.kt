@@ -30,6 +30,7 @@ import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.ui.components.SessionLine
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.WorkoutPlan
 import de.steppicrew.healthconnectview.health.sessionById
 import de.steppicrew.healthconnectview.health.toPoints
 import de.steppicrew.healthconnectview.registry.Point
@@ -86,6 +87,8 @@ data class SessionDetail(
     val heartRateAfter: List<Point>? = null,
     /** Where the minutes after a workout stop: five minutes on, or the next workout's start. */
     val afterUntil: Instant? = null,
+    /** The plan a training app linked to this workout, where there is one. */
+    val plan: WorkoutPlan? = null,
     val recovery: Recovery? = null,
     /** A workout's heart rate against its speed, first half against second; null without both. */
     val drift: Drift? = null,
@@ -180,6 +183,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val after = async {
             if (heartRateLocked) null else until.await()?.let { repository.heartRateAfter(session, it) }
         }
+        val plan = async { repository.planFor(session) }
         val stats = async { repository.statisticsFor(session, movement.await()?.breaks.orEmpty(), heartRate.await()) }
         val nightLines = async {
             when (session.kind) {
@@ -219,6 +223,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             heartZones = heartZones,
             heartRateAfter = after.await(),
             afterUntil = until.await(),
+            plan = plan.await(),
             recovery = after.await()?.let { recoveryOf(it, session.end) },
             drift = heartPoints?.let { beats ->
                 speed.await()?.let { pace ->

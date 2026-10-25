@@ -895,4 +895,25 @@
     <string name="segment_upper_twist">상체 트위스트</string>
     <string name="segment_weightlifting">역도</string>
     <string name="segment_wheelchair">휠체어</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">훈련 계획</string>
+    <string name="plan_phase_warmup">워밍업</string>
+    <string name="plan_phase_active">운동</string>
+    <string name="plan_phase_rest">휴식</string>
+    <string name="plan_phase_cooldown">쿨다운</string>
+    <string name="plan_phase_recovery">회복</string>
+    <string name="plan_goal_manual">멈출 때까지</string>
+    <string name="plan_target_heart">심박수 %1$s</string>
+    <string name="plan_target_speed">속도 %1$s</string>
+    <string name="plan_target_power">파워 %1$s</string>
+    <string name="plan_target_cadence">케이던스 %1$s</string>
+    <string name="plan_target_weight">무게 %1$s</string>
+    <string name="plan_target_effort">운동 강도 %1$s/10</string>
+    <string name="plan_target_amrap">가능한 한 많이</string>
+    <string name="plan_planned_value">계획 %1$s</string>
+    <string name="plan_linked_note">이 계획은 훈련 앱이 이 운동에 연결한 것입니다. 각 단계는 계획대로 표시됩니다. 헬스 커넥트는 각 단계가 언제 시작되었는지 알려 주지 않으므로 기록과 비교할 수 있는 것은 합계뿐입니다.</string>
+    <string name="workouts_planned">예정됨</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="other">%d보</item>
+    </plurals>
 </resources>

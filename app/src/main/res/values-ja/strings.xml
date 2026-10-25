@@ -895,4 +895,25 @@
     <string name="segment_upper_twist">上半身ツイスト</string>
     <string name="segment_weightlifting">ウェイトリフティング</string>
     <string name="segment_wheelchair">車いす</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">トレーニングプラン</string>
+    <string name="plan_phase_warmup">ウォームアップ</string>
+    <string name="plan_phase_active">アクティブ</string>
+    <string name="plan_phase_rest">休憩</string>
+    <string name="plan_phase_cooldown">クールダウン</string>
+    <string name="plan_phase_recovery">リカバリー</string>
+    <string name="plan_goal_manual">停止するまで</string>
+    <string name="plan_target_heart">心拍数 %1$s</string>
+    <string name="plan_target_speed">速度 %1$s</string>
+    <string name="plan_target_power">パワー %1$s</string>
+    <string name="plan_target_cadence">ケイデンス %1$s</string>
+    <string name="plan_target_weight">重量 %1$s</string>
+    <string name="plan_target_effort">運動強度 %1$s / 10</string>
+    <string name="plan_target_amrap">できるだけ多く</string>
+    <string name="plan_planned_value">予定 %1$s</string>
+    <string name="plan_linked_note">このプランは、トレーニングアプリがこのワークアウトに関連付けたものです。各ステップは予定どおりに表示されます。ヘルスコネクトには各ステップの開始時刻が記録されないため、記録と比較できるのは合計のみです。</string>
+    <string name="workouts_planned">予定</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="other">%d 歩</item>
+    </plurals>
 </resources>

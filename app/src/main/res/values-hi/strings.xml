@@ -924,4 +924,26 @@
     <string name="segment_upper_twist">ऊपरी शरीर का ट्विस्ट</string>
     <string name="segment_weightlifting">वेटलिफ़्टिंग</string>
     <string name="segment_wheelchair">व्हीलचेयर</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">ट्रेनिंग प्लान</string>
+    <string name="plan_phase_warmup">वार्म-अप</string>
+    <string name="plan_phase_active">एक्टिव</string>
+    <string name="plan_phase_rest">आराम</string>
+    <string name="plan_phase_cooldown">कूल-डाउन</string>
+    <string name="plan_phase_recovery">रिकवरी</string>
+    <string name="plan_goal_manual">जब तक आप न रुकें</string>
+    <string name="plan_target_heart">हार्ट रेट %1$s</string>
+    <string name="plan_target_speed">स्पीड %1$s</string>
+    <string name="plan_target_power">पावर %1$s</string>
+    <string name="plan_target_cadence">कैडेंस %1$s</string>
+    <string name="plan_target_weight">%1$s के साथ</string>
+    <string name="plan_target_effort">मेहनत 10 में से %1$s</string>
+    <string name="plan_target_amrap">जितने हो सकें</string>
+    <string name="plan_planned_value">प्लान: %1$s</string>
+    <string name="plan_linked_note">यह वह प्लान है जिसे ट्रेनिंग ऐप ने इस वर्कआउट से जोड़ा है। इसके चरण प्लान के मुताबिक दिखाए गए हैं; दर्ज डेटा से सिर्फ़ कुल की तुलना की जा सकती है, क्योंकि Health Connect यह नहीं बताता कि हर चरण कब शुरू हुआ।</string>
+    <string name="workouts_planned">प्लान किए गए</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d कदम</item>
+        <item quantity="other">%d कदम</item>
+    </plurals>
 </resources>

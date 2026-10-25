@@ -925,4 +925,27 @@
     <string name="segment_upper_twist">Oberkörperdrehung</string>
     <string name="segment_weightlifting">Gewichtheben</string>
     <string name="segment_wheelchair">Rollstuhl</string>
+
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Trainingsplan</string>
+    <string name="plan_phase_warmup">Aufwärmen</string>
+    <string name="plan_phase_active">Belastung</string>
+    <string name="plan_phase_rest">Pause</string>
+    <string name="plan_phase_cooldown">Abkühlen</string>
+    <string name="plan_phase_recovery">Erholung</string>
+    <string name="plan_goal_manual">bis Sie aufhören</string>
+    <string name="plan_target_heart">Herzfrequenz %1$s</string>
+    <string name="plan_target_speed">Tempo %1$s</string>
+    <string name="plan_target_power">Leistung %1$s</string>
+    <string name="plan_target_cadence">Kadenz %1$s</string>
+    <string name="plan_target_weight">mit %1$s</string>
+    <string name="plan_target_effort">Anstrengung %1$s von 10</string>
+    <string name="plan_target_amrap">so viele wie möglich</string>
+    <string name="plan_planned_value">geplant %1$s</string>
+    <string name="plan_linked_note">Der Plan ist der, den die Trainings-App mit diesem Training verknüpft hat. Seine Schritte stehen hier wie geplant; nur die Summen lassen sich dem Aufgezeichneten gegenüberstellen, da Health Connect nicht festhält, wann ein Schritt begann.</string>
+    <string name="workouts_planned">Geplant</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d Schritt</item>
+        <item quantity="other">%d Schritte</item>
+    </plurals>
 </resources>

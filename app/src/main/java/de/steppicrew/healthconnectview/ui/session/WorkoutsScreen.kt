@@ -31,7 +31,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -39,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.WorkoutPlan
+import de.steppicrew.healthconnectview.health.readsPace
+import de.steppicrew.healthconnectview.health.totals
 import de.steppicrew.healthconnectview.health.WorkoutFamily
 import de.steppicrew.healthconnectview.health.duration
 import de.steppicrew.healthconnectview.health.familiesIn
@@ -69,6 +75,7 @@ fun WorkoutsScreen(
     val family by viewModel.family.collectAsStateWithLifecycle()
     val historyGranted by viewModel.historyGranted.collectAsStateWithLifecycle()
     val trend by viewModel.trend.collectAsStateWithLifecycle()
+    val upcoming by viewModel.upcoming.collectAsStateWithLifecycle()
     OnResume { viewModel.onResume() }
 
     Scaffold(
@@ -113,6 +120,7 @@ fun WorkoutsScreen(
                 sessions = current.value,
                 family = family,
                 trend = trend,
+                upcoming = upcoming,
                 historyGranted = historyGranted,
                 onSelect = viewModel::select,
                 onOpenSession = onOpenSession,
@@ -128,6 +136,7 @@ private fun WorkoutList(
     sessions: List<Session>,
     family: WorkoutFamily?,
     trend: WorkoutTrend?,
+    upcoming: List<WorkoutPlan>,
     historyGranted: Boolean,
     onSelect: (WorkoutFamily?) -> Unit,
     onOpenSession: (Session) -> Unit,
@@ -176,6 +185,21 @@ private fun WorkoutList(
             if (trend != null && trend.family == shownFamily) {
                 item(key = "trend") {
                     WorkoutTrendSection(trend)
+                    HorizontalDivider()
+                }
+            }
+            // What a training app has lined up, above what was done; of the chosen kind only.
+            val planned = upcoming.filter { shownFamily == null || familyOf(it.exerciseType) == shownFamily }
+            if (planned.isNotEmpty()) {
+                item(key = "planned") {
+                    Text(
+                        text = stringResource(R.string.workouts_planned),
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
+                    )
+                }
+                items(planned, key = { "plan_" + it.recordId }) { plan ->
+                    PlanRow(plan)
                     HorizontalDivider()
                 }
             }
@@ -246,6 +270,56 @@ private fun WorkoutRow(session: Session, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+/** A planned workout: what and when; a tap folds its steps out beneath it. */
+@Composable
+private fun PlanRow(plan: WorkoutPlan) {
+    var open by rememberSaveable(plan.recordId) { mutableStateOf(false) }
+    val style = MaterialTheme.typography.bodyLarge
+    val totals = plan.totals()
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clickable { open = !open }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                imageVector = iconFor(familyOf(plan.exerciseType)),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = firstLineInset(style, ROW_ICON.dp)).size(ROW_ICON.dp),
+            )
+            Column(Modifier.weight(1f)) {
+                Text(text = planName(plan), style = style)
+                Text(
+                    text = Formatting.date(plan.start) + "  " + Formatting.time(plan.start),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            listOfNotNull(totals.meters?.let(::distanceText), totals.duration?.let(Formatting::duration))
+                .takeIf { it.isNotEmpty() }
+                ?.let {
+                    Text(
+                        text = it.joinToString(" · "),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+        }
+        if (open) {
+            PlanSteps(
+                plan,
+                pace = familyOf(plan.exerciseType).readsPace(),
+                modifier = Modifier.padding(start = (ROW_ICON + 12).dp, top = 8.dp),
+            )
+        }
     }
 }
 

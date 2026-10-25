@@ -961,4 +961,27 @@
     <string name="segment_upper_twist">Upper-body twist</string>
     <string name="segment_weightlifting">Weightlifting</string>
     <string name="segment_wheelchair">Wheelchair</string>
+
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Plan</string>
+    <string name="plan_phase_warmup">Warm-up</string>
+    <string name="plan_phase_active">Work</string>
+    <string name="plan_phase_rest">Rest</string>
+    <string name="plan_phase_cooldown">Cool-down</string>
+    <string name="plan_phase_recovery">Recovery</string>
+    <string name="plan_goal_manual">until you stop</string>
+    <string name="plan_target_heart">heart rate %1$s</string>
+    <string name="plan_target_speed">speed %1$s</string>
+    <string name="plan_target_power">power %1$s</string>
+    <string name="plan_target_cadence">cadence %1$s</string>
+    <string name="plan_target_weight">with %1$s</string>
+    <string name="plan_target_effort">effort %1$s of 10</string>
+    <string name="plan_target_amrap">as many as you can</string>
+    <string name="plan_planned_value">planned %1$s</string>
+    <string name="plan_linked_note">The plan is the one the training app linked to this workout. Its steps are shown as planned; only the totals can be set against what was recorded, since Health Connect does not say when each step began.</string>
+    <string name="workouts_planned">Planned</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d step</item>
+        <item quantity="other">%d steps</item>
+    </plurals>
 </resources>

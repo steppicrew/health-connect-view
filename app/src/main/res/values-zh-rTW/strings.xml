@@ -895,4 +895,25 @@
     <string name="segment_upper_twist">上半身轉體</string>
     <string name="segment_weightlifting">舉重</string>
     <string name="segment_wheelchair">輪椅</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">訓練計畫</string>
+    <string name="plan_phase_warmup">暖身</string>
+    <string name="plan_phase_active">訓練</string>
+    <string name="plan_phase_rest">休息</string>
+    <string name="plan_phase_cooldown">緩和</string>
+    <string name="plan_phase_recovery">恢復</string>
+    <string name="plan_goal_manual">直到您停止</string>
+    <string name="plan_target_heart">心率 %1$s</string>
+    <string name="plan_target_speed">速度 %1$s</string>
+    <string name="plan_target_power">功率 %1$s</string>
+    <string name="plan_target_cadence">頻率 %1$s</string>
+    <string name="plan_target_weight">負重 %1$s</string>
+    <string name="plan_target_effort">強度 %1$s/10</string>
+    <string name="plan_target_amrap">盡可能多</string>
+    <string name="plan_planned_value">計畫 %1$s</string>
+    <string name="plan_linked_note">這是訓練應用程式連結到這次運動的計畫。各步驟依計畫顯示；只有總計可以與記錄的資料比較，因為 Health Connect 不會記錄每個步驟的開始時間。</string>
+    <string name="workouts_planned">已排定</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="other">%d 步</item>
+    </plurals>
 </resources>

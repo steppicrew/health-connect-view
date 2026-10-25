@@ -982,4 +982,28 @@
     <string name="segment_upper_twist">Skręt górnej części ciała</string>
     <string name="segment_weightlifting">Podnoszenie ciężarów</string>
     <string name="segment_wheelchair">Wózek inwalidzki</string>
+    <!-- Planned workouts: a training app's plan, its steps, goals and targets -->
+    <string name="session_plan">Plan treningu</string>
+    <string name="plan_phase_warmup">Rozgrzewka</string>
+    <string name="plan_phase_active">Wysiłek</string>
+    <string name="plan_phase_rest">Przerwa</string>
+    <string name="plan_phase_cooldown">Schłodzenie</string>
+    <string name="plan_phase_recovery">Regeneracja</string>
+    <string name="plan_goal_manual">do zatrzymania</string>
+    <string name="plan_target_heart">tętno %1$s</string>
+    <string name="plan_target_speed">prędkość %1$s</string>
+    <string name="plan_target_power">moc %1$s</string>
+    <string name="plan_target_cadence">kadencja %1$s</string>
+    <string name="plan_target_weight">z obciążeniem %1$s</string>
+    <string name="plan_target_effort">wysiłek %1$s z 10</string>
+    <string name="plan_target_amrap">tyle, ile zdołasz</string>
+    <string name="plan_planned_value">plan: %1$s</string>
+    <string name="plan_linked_note">To plan, który aplikacja treningowa powiązała z tym treningiem. Jego etapy są pokazane tak, jak je zaplanowano; z zapisem można porównać tylko sumy, bo Health Connect nie podaje, kiedy zaczął się każdy etap.</string>
+    <string name="workouts_planned">Zaplanowane</string>
+    <plurals name="plan_goal_steps">
+        <item quantity="one">%d krok</item>
+        <item quantity="few">%d kroki</item>
+        <item quantity="many">%d kroków</item>
+        <item quantity="other">%d kroku</item>
+    </plurals>
 </resources>
