@@ -80,7 +80,8 @@ object SampleDataSeeder {
     )
 
 /** One kind of seeded workout: what it was, what it is called, and when it happens. */
-private data class SeededWorkout(val type: Int, val title: String, val startHour: Int)
+/** [title] null where the screen should name the workout itself, in the user's language. */
+private data class SeededWorkout(val type: Int, val title: String?, val startHour: Int)
 
 /**
  * Varied so the icons and titles differ between days in the session list.
@@ -99,7 +100,9 @@ private val SEEDED_NOTES = listOf(
 private val SEEDED_WORKOUTS = listOf(
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING, "Morning run", startHour = 7),
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_BIKING, "Ride home", startHour = 17),
-    SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, "Strength", startHour = 18),
+    // Untitled, as a gym app often leaves it: the store screenshot of its sets then reads
+    // "Krafttraining" in German rather than an English title in every language.
+    SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING, null, startHour = 18),
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL, "Pool session", startHour = 12),
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_YOGA, "Evening yoga", startHour = 20),
 )

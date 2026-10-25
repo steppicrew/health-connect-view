@@ -99,12 +99,17 @@ label_pro() {
 # and workouts -- and further down -- the night, a year of sleep, heart rate and HRV -- with
 # the last tile of each cut off by the screen's edge, as on a phone. Eight at most, Play's
 # limit, and numbered in order: release.sh uploads them sorted by name.
+#
+# STRENGTH stands for the newest seeded strength session, whose sets and rests show under its
+# heart rate (1.9.0, in place of the workouts list it is reached from): a session is opened
+# by the id Health Connect gave it, which changes with every seeding, so it is looked up on
+# the device just before the shot.
 SHOT_ROUTES=(
     "1-dashboard::default"
     "2-dashboard-pro::showcase"
     "3-night-pro::night"
     "4-steps:tile/StepsRecord?date=DATE:"
-    "5-activities:tile/ExerciseSessionRecord?date=DATE:"
+    "5-strength:session/EXERCISE/STRENGTH:"
     "6-sleep:tile/SleepSessionRecord?date=DATE:"
     "7-heart-rate:tile/HeartRateRecord?date=DATE:"
     "8-catalog:catalog:"
@@ -127,6 +132,22 @@ restore_label() {
 # on capturing with the label in place.
 trap restore_label EXIT
 trap 'restore_label; exit 130' INT TERM
+
+# The record id of the newest seeded workout of exercise type [$2] with segments (70 is
+# strength training), from the debug build's LatestSessionActivity.
+latest_session() {
+    local device="$1" type="$2" id
+    adb -s "$device" logcat -c
+    adb -s "$device" shell am start -W -n "$PACKAGE/de.steppicrew.healthconnectview.debug.LatestSessionActivity" \
+        --ei type "$type" >/dev/null
+    for _ in $(seq 1 20); do
+        id="$(adb -s "$device" logcat -d -s LatestSession:I | sed -n 's/.*id=\([^ ]*\).*/\1/p' | tail -1 | tr -d '\r')"
+        [ -n "$id" ] && break
+        sleep 0.5
+    done
+    [ -n "$id" ] || die "no seeded workout of type $type with segments; seed the emulator first"
+    echo "$id"
+}
 
 take_shots() {
     need magick
@@ -181,6 +202,11 @@ take_shots() {
         route="${rest%%:*}"
         layout="${rest#*:}"
         route="${route//DATE/$day}"
+        if [[ "$route" == *STRENGTH* ]]; then
+            local strength
+            strength="$(latest_session "$device" 70)" || exit 1
+            route="${route//STRENGTH/$strength}"
+        fi
         # SHOT_ONLY="5-sleep 3-steps" retakes those alone; the layouts still apply in order.
         if [ -n "${SHOT_ONLY:-}" ] && [[ " $SHOT_ONLY " != *" $name "* ]]; then
             [ -n "$layout" ] && adb -s "$device" shell am start -W \
