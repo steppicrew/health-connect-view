@@ -269,8 +269,8 @@ internal fun WorkoutCountAndTime(data: TileDetailData, period: String, modifier:
 private fun hoursText(hours: Double): String {
     val minutes = (hours * MINUTES_PER_HOUR).roundToLong()
     return when {
-        minutes == 0L -> "0"
-        minutes % MINUTES_PER_HOUR == 0L -> "${minutes / MINUTES_PER_HOUR}h"
+        minutes == 0L -> Formatting.number(0.0)
+        minutes % MINUTES_PER_HOUR == 0L -> Formatting.hours(minutes / MINUTES_PER_HOUR)
         else -> Formatting.duration(Duration.ofMinutes(minutes))
     }
 }

@@ -158,14 +158,36 @@ object Formatting {
             .withZone(zone)
             .format(instant)
 
-    /** Compact duration such as "7h 32m"; the unit letters come from resources at call sites. */
-    fun duration(duration: Duration): String {
+    /**
+     * Compact duration such as "7h 32m", in the locale's digits like every other number.
+     *
+     * The letters stay h, m and s, which most of the shipped languages read in a compact
+     * duration, except in Arabic: there "7h 32m" was the one Latin run in a right-to-left line
+     * of Arabic digits. It takes the narrow units Android itself writes, س, د and ث.
+     */
+    fun duration(duration: Duration, locale: Locale = Locale.getDefault()): String {
+        val units = DurationUnits.of(locale)
         val hours = duration.toHours()
         val minutes = duration.toMinutes() % 60
         return when {
-            hours > 0L -> "${hours}h ${minutes}m"
-            minutes > 0L -> "${minutes}m"
-            else -> "${duration.seconds}s"
+            hours > 0L -> integer(hours, locale) + units.hour + " " + integer(minutes, locale) + units.minute
+            minutes > 0L -> integer(minutes, locale) + units.minute
+            else -> integer(duration.seconds, locale) + units.second
+        }
+    }
+
+    /** Whole hours as [duration] writes them: "30h". */
+    fun hours(hours: Long, locale: Locale = Locale.getDefault()): String =
+        integer(hours, locale) + DurationUnits.of(locale).hour
+
+    /** The letters after a duration's numbers; a no-break space keeps a word-like unit on its number. */
+    private enum class DurationUnits(val hour: String, val minute: String, val second: String) {
+        LATIN("h", "m", "s"),
+        ARABIC("\u00A0س", "\u00A0د", "\u00A0ث"),
+        ;
+
+        companion object {
+            fun of(locale: Locale): DurationUnits = if (locale.language == "ar") ARABIC else LATIN
         }
     }
 
