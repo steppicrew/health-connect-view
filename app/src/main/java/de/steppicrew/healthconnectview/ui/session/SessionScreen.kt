@@ -65,6 +65,11 @@ import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.health.Lap
+import de.steppicrew.healthconnectview.health.WorkoutSegment
+import de.steppicrew.healthconnectview.health.isRest
+import de.steppicrew.healthconnectview.health.summariseSegments
+import de.steppicrew.healthconnectview.ui.components.segmentNameRes
+import androidx.compose.ui.res.pluralStringResource
 import de.steppicrew.healthconnectview.health.RoutePoint
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.heightProfile
@@ -230,6 +235,11 @@ private fun SessionContent(
             Laps(session.laps)
         }
 
+        if (session.segments.isNotEmpty()) {
+            Section(stringResource(R.string.session_segments))
+            Segments(session.segments, detail.heartRate, detail.heartRateUnitRes)
+        }
+
         Section(stringResource(R.string.session_statistics))
         Stats(detail)
         detail.recovery?.let { recovery ->
@@ -379,6 +389,9 @@ private fun HeartRate(detail: SessionDetail) {
                 },
             )
             val stageNames = StageKind.entries.associateWith { stringResource(labelOf(it)) }
+            val segments = detail.session.segments.sortedBy { it.start }
+            val segmentColors = segmentColors(segments)
+            val segmentNames = segments.map { it.type }.distinct().associateWith { stringResource(segmentNameRes(it)) }
             val laps = detail.session.laps.sortedBy { it.start }
             val lapNames = laps.indices.map { stringResource(R.string.session_lap, it + 1) }
             val afterName = stringResource(R.string.session_after_end)
@@ -393,7 +406,9 @@ private fun HeartRate(detail: SessionDetail) {
                     breaks = detail.movement?.breaks.orEmpty().map { it.start..it.end },
                     // A night's stages along the bottom, so a rise in heart rate can be laid
                     // against the REM it fell in.
-                    strip = detail.session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) },
+                    // A workout's segments likewise: a set of squats against the heart rate it raised.
+                    strip = detail.session.stages.map { StripSegment(it.start, it.end, colorOf(it.kind)) } +
+                        segments.map { StripSegment(it.start, it.end, segmentColors.getValue(it.type)) },
                     // Where the laps meet, the last one's end being the workout's own.
                     // And where the workout ended, where the minutes after it follow.
                     markers = laps.dropLast(1).map { it.end } + listOfNotNull(end.takeIf { after.isNotEmpty() }),
@@ -401,6 +416,10 @@ private fun HeartRate(detail: SessionDetail) {
                     stripLabel = when {
                         detail.session.stages.isNotEmpty() -> { time ->
                             detail.session.stages.firstOrNull { time >= it.start && time < it.end }?.let { stageNames[it.kind] }
+                        }
+                        segments.isNotEmpty() -> { time ->
+                            if (time > end) afterName
+                            else segments.firstOrNull { time >= it.start && time < it.end }?.let { segmentNames[it.type] }
                         }
                         laps.size > 1 -> { time ->
                             if (time > end) afterName
@@ -535,6 +554,51 @@ private fun Laps(laps: List<Lap>) {
         }
     }
 }
+
+/**
+ * A workout's segments, one row per kind -- "Bench press 3× · 36 reps" -- in the colour the
+ * chart's strip draws it in, with the time they add up to and the mean heart rate inside them.
+ */
+@Composable
+private fun Segments(segments: List<WorkoutSegment>, heartRate: List<Point>?, @StringRes heartRateUnitRes: Int?) {
+    val colors = segmentColors(segments.sortedBy { it.start })
+    val unit = heartRateUnitRes?.let { Formatting.UNIT_SPACE + stringResource(it) } ?: ""
+    summariseSegments(segments, heartRate).forEach { kind ->
+        val parts = listOfNotNull(
+            Formatting.number(kind.sets.toDouble()) + "×",
+            kind.repetitions.takeIf { it > 0 }?.let { pluralStringResource(R.plurals.session_segment_reps, it, it) },
+            kind.heartRate?.let { stringResource(R.string.session_segment_heart, Formatting.number(it, 0) + unit) },
+        )
+        StatRow(
+            label = stringResource(segmentNameRes(kind.type)),
+            value = Formatting.duration(kind.time),
+            detail = parts.joinToString(" · "),
+            swatch = colors.getValue(kind.type),
+        )
+    }
+}
+
+/**
+ * A colour for each kind of segment: rests and pauses grey, the exercises in turn from a
+ * palette in the order they first come, so the first exercise is blue on every workout.
+ */
+@Composable
+private fun segmentColors(segments: List<WorkoutSegment>): Map<Int, Color> {
+    val rest = MaterialTheme.colorScheme.outlineVariant
+    var next = 0
+    return segments.map { it.type }.distinct().associateWith { type ->
+        if (isRest(type)) rest else SEGMENT_COLORS[next++ % SEGMENT_COLORS.size]
+    }
+}
+
+private val SEGMENT_COLORS = listOf(
+    Color(0xFF3F7FD9),
+    Color(0xFF2EA88A),
+    Color(0xFFB57EDC),
+    Color(0xFFE0A030),
+    Color(0xFFD9577A),
+    Color(0xFF7A8F2E),
+)
 
 /**
  * What was recorded during the session. Where it was not all spent moving, its total and
