@@ -39,6 +39,7 @@ import androidx.activity.compose.LocalActivity
 import de.steppicrew.healthconnectview.billing.AppEntitlements
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.ui.components.CategoryHeader
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -129,18 +130,6 @@ fun CatalogScreen(
             }
         }
     }
-}
-
-@Composable
-private fun CategoryHeader(category: Category) {
-    Text(
-        text = stringResource(category.labelRes),
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 @Composable

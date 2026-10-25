@@ -158,6 +158,7 @@ import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.ExportAction
 import de.steppicrew.healthconnectview.ui.components.Hypnogram
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
+import de.steppicrew.healthconnectview.ui.components.InfoTitle
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.stackColors
@@ -555,32 +556,17 @@ private fun TrendExplanation(trend: TrendResult, @StringRes unitRes: Int?, decim
     InfoGroup {
         // The headline and the averages always show: they are the data. The rule is behind the
         // "i", closed until asked for, so the numbers are what is seen at first glance.
-        Row(verticalAlignment = Alignment.Top) {
-            // The tile's arrow, so the direction reads at a glance before the words do. The
-            // title beside it says the same, so the icon needs no description of its own.
-            Icon(
-                imageVector = trend.direction.icon,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            Text(
-                text = stringResource(
-                    when (trend.direction) {
-                        Trend.UP -> R.string.trend_title_up
-                        Trend.FLAT -> R.string.trend_title_flat
-                        Trend.DOWN -> R.string.trend_title_down
-                    },
-                ),
-                style = MaterialTheme.typography.titleSmall,
-                // The 24 dp icon is taller than the line, so the text comes down to its middle.
-                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            InfoToggle(
-                explanation,
-                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-                firstLine = MaterialTheme.typography.titleSmall,
-            )
-        }
+        InfoTitle(
+            title = stringResource(
+                when (trend.direction) {
+                    Trend.UP -> R.string.trend_title_up
+                    Trend.FLAT -> R.string.trend_title_flat
+                    Trend.DOWN -> R.string.trend_title_down
+                },
+            ),
+            explanation = explanation,
+            icon = trend.direction.icon,
+        )
         Text(
             text = stringResource(
                 R.string.trend_numbers,
@@ -624,24 +610,11 @@ private fun StreakExplanation(summary: StreakSummary, active: Boolean) {
         )
     }
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Icon(
-                imageVector = Icons.Default.EmojiEvents,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                // The 24 dp icon is taller than the line, so the text comes down to its middle.
-                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            InfoToggle(
-                explanation,
-                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-                firstLine = MaterialTheme.typography.titleSmall,
-            )
-        }
+        InfoTitle(
+            title = title,
+            explanation = explanation,
+            icon = Icons.Default.EmojiEvents,
+        )
         when {
             // The current run is the year's longest: saying both would repeat the number.
             current != null && (longest == null || current >= longest.count) ->
@@ -736,24 +709,11 @@ private fun RecordExplanation(record: PersonalRecord, spec: RecordTypeSpec<*>) {
             (spec.displayUnitRes?.let { " " + stringResource(it) } ?: "")
     }
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Icon(
-                imageVector = Icons.Default.MilitaryTech,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp, top = firstLineInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                // The 24 dp icon is taller than the line, so the text comes down to its middle.
-                modifier = Modifier.weight(1f).padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-            )
-            InfoToggle(
-                explanation,
-                Modifier.padding(top = firstLineTextInset(MaterialTheme.typography.titleSmall, 24.dp)),
-                firstLine = MaterialTheme.typography.titleSmall,
-            )
-        }
+        InfoTitle(
+            title = title,
+            explanation = explanation,
+            icon = Icons.Default.MilitaryTech,
+        )
         Text(
             text = stringResource(
                 R.string.record_value_on,
@@ -822,14 +782,7 @@ private fun DayPartsSection(split: DayPartSplit) {
     val explanation = rememberExplanation("dayparts")
 
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Text(
-                text = stringResource(R.string.bp_parts_title),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
-            )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
-        }
+        InfoTitle(stringResource(R.string.bp_parts_title), explanation)
         DayPartRow(stringResource(R.string.bp_part_morning), split.morning)
         DayPartRow(stringResource(R.string.bp_part_evening), split.evening)
         if (explanation.expanded == true) {
@@ -851,14 +804,7 @@ private fun DayPartsSection(split: DayPartSplit) {
 private fun NutrientsSection(nutrients: List<NutrientTotal>) {
     val explanation = rememberExplanation("nutrients")
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Text(
-                text = stringResource(R.string.nutrients_title),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
-            )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
-        }
+        InfoTitle(stringResource(R.string.nutrients_title), explanation)
         nutrients.forEach { row ->
             val unit = stringResource(if (row.nutrient.milligrams) R.string.unit_mg else R.string.unit_g)
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.Top) {
@@ -1337,10 +1283,7 @@ private fun HeatmapSection(heatmap: YearHeatmap, spec: RecordTypeSpec<*>) {
     val title = stringResource(R.string.heatmap_title)
     val explanation = rememberExplanation("heatmap")
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Text(title, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
-        }
+        InfoTitle(title, explanation)
         YearHeatmapGrid(
             heatmap = heatmap,
             colorOf = colorOf,

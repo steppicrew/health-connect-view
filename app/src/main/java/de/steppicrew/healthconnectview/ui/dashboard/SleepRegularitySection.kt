@@ -28,7 +28,7 @@ import de.steppicrew.healthconnectview.health.MINUTES_PER_DAY
 import de.steppicrew.healthconnectview.health.SleepRegularity
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.ui.components.InfoGroup
-import de.steppicrew.healthconnectview.ui.components.InfoToggle
+import de.steppicrew.healthconnectview.ui.components.InfoTitle
 import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 
 /**
@@ -42,14 +42,7 @@ import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 internal fun SleepRegularitySection(regularity: SleepRegularity) {
     val explanation = rememberExplanation("sleep_regularity")
     InfoGroup {
-        Row(verticalAlignment = Alignment.Top) {
-            Text(
-                text = stringResource(R.string.sleep_regularity_title),
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f),
-            )
-            InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
-        }
+        InfoTitle(stringResource(R.string.sleep_regularity_title), explanation)
         Text(
             text = pluralStringResource(R.plurals.sleep_regularity_nights, regularity.nights, regularity.nights),
             style = MaterialTheme.typography.labelSmall,
