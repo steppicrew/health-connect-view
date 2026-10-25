@@ -83,6 +83,12 @@ private data class SeededWorkout(val type: Int, val title: String, val startHour
  * visible in a store screenshot. Fixture data has to be internally consistent or it
  * advertises itself as fake.
  */
+private val SEEDED_NOTES = listOf(
+    "Legs heavy from yesterday, kept it easy.",
+    "New shoes, left knee fine after 5 km.",
+    "Windy on the way back.",
+)
+
 private val SEEDED_WORKOUTS = listOf(
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_RUNNING, "Morning run", startHour = 7),
     SeededWorkout(ExerciseSessionRecord.EXERCISE_TYPE_BIKING, "Ride home", startHour = 17),
@@ -394,6 +400,9 @@ private val SEEDED_WORKOUTS = listOf(
                             exerciseType = workout.type,
                             title = workout.title,
                             laps = lapsOf(workout.type, exerciseStart, exerciseStart.plus(minutes, ChronoUnit.MINUTES)),
+                            // A note on every fourth, so the workout screen shows one in
+                            // development; no app on the test phone writes any.
+                            notes = SEEDED_NOTES[dayOffset % SEEDED_NOTES.size].takeIf { dayOffset % 4 == 0 },
                             metadata = metadata(),
                         ),
                     )
