@@ -5,6 +5,7 @@ import de.steppicrew.healthconnectview.health.AFTER_END
 import de.steppicrew.healthconnectview.health.Drift
 import de.steppicrew.healthconnectview.health.HeartZones
 import de.steppicrew.healthconnectview.ui.components.ExplanationState
+import de.steppicrew.healthconnectview.ui.components.InfoTitle
 import de.steppicrew.healthconnectview.ui.components.InfoToggle
 import de.steppicrew.healthconnectview.ui.components.rememberExplanation
 import de.steppicrew.healthconnectview.ui.components.DotText
@@ -855,17 +856,7 @@ private fun StatRow(
 @Composable
 private fun Section(title: String, explanation: ExplanationState? = null) {
     HorizontalDivider(Modifier.padding(top = 16.dp))
-    Row(
-        modifier = Modifier.padding(top = 12.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.weight(1f),
-        )
-        if (explanation != null) InfoToggle(explanation, firstLine = MaterialTheme.typography.titleSmall)
-    }
+    InfoTitle(title, explanation, Modifier.padding(top = 12.dp, bottom = 6.dp))
 }
 
 private const val HEADER_ICON = 28

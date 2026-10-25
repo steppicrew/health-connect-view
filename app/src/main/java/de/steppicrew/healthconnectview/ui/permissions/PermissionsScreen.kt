@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.ui.components.CategoryHeader
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.registry.Category
 import de.steppicrew.healthconnectview.registry.RecordRegistry
@@ -229,18 +230,6 @@ private fun PermissionList(
             }
         }
     }
-}
-
-@Composable
-private fun CategoryHeader(category: Category) {
-    Text(
-        text = stringResource(category.labelRes),
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-    )
 }
 
 /**
