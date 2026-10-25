@@ -696,7 +696,7 @@
     <string name="privacy_read_only_title">읽기 전용 액세스</string>
     <string name="privacy_read_only_body">읽기 권한만 요청하므로 앱이 건강 기록을 변경하거나 삭제할 수 없습니다. 허용할 데이터 유형은 하나씩 직접 선택하며, 기본으로 선택된 것은 없습니다.</string>
     <string name="privacy_storage_title">앱은 아무것도 저장하지 않습니다</string>
-    <string name="privacy_storage_body">건강 데이터는 보고 있는 동안에만 메모리에 보관되며, 앱이 스스로 저장소에 쓰는 일은 없습니다. 유일한 예외는 내보내기입니다. 요청하면 Android의 저장 대화상자에서 선택한 위치에 파일이 기록되며, 앱은 사본을 보관하지 않습니다. 보거나 인쇄하는 보고서는 메모리에서 바로 Android의 인쇄 미리보기로 전달되며, 그 이후에는 직접 보낸 곳으로만 갑니다. 그 밖에 앱이 보관하는 것은 표시 설정뿐입니다. 백업과 기기 간 전송이 꺼져 있으므로 클라우드로 복사되는 것은 없습니다.</string>
+    <string name="privacy_storage_body">건강 데이터는 보고 있는 동안에만 메모리에 보관되며, 앱이 스스로 저장소에 쓰는 일은 없습니다. 유일한 예외는 내보내기입니다. 요청하면 Android의 저장 대화상자에서 선택한 위치에 파일이 기록되며, 앱은 사본을 보관하지 않습니다. 보거나 인쇄하는 보고서는 메모리에서 바로 Android의 인쇄 미리보기로 전달되며, 그 이후에는 직접 보낸 곳으로만 갑니다. 그 밖에 앱이 보관하는 것은 표시 설정뿐입니다. ‘설정 내보내기’로 원하는 파일에 저장할 수 있으며, 건강 데이터는 포함되지 않습니다. 백업과 기기 간 전송이 꺼져 있으므로 클라우드로 복사되는 것은 없습니다.</string>
     <string name="privacy_sharing_title">공유하지 않음</string>
     <string name="privacy_sharing_body">건강 데이터는 개발자를 포함해 누구와도 공유되지 않습니다. 어떤 서드 파티 SDK도 데이터를 받지 않습니다. 내보낸 파일은 사용자의 것이며, 그 이후의 사용은 사용자가 결정합니다.</string>
     <string name="permission_routes_title">모든 운동 경로</string>

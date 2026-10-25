@@ -696,7 +696,7 @@
     <string name="privacy_read_only_title">只读访问</string>
     <string name="privacy_read_only_body">只请求读取权限，因此此应用无法更改或删除您的健康记录。允许哪些数据类型由您逐一选择，默认不选中任何项。</string>
     <string name="privacy_storage_title">此应用不存储任何内容</string>
-    <string name="privacy_storage_body">健康数据只在您查看时保存在内存中，此应用绝不会自行将其写入存储空间。唯一的例外是导出：当您要求导出时，文件会写入您在 Android 自带的保存对话框中选择的位置，此应用不保留任何副本。您查看或打印的报告会直接从内存送到 Android 自带的打印预览，之后只会发送到您指定的地方。除此之外，此应用只保存您的显示设置。备份和设备间转移已停用，因此不会有任何内容复制到云端。</string>
+    <string name="privacy_storage_body">健康数据只在您查看时保存在内存中，此应用绝不会自行将其写入存储空间。唯一的例外是导出：当您要求导出时，文件会写入您在 Android 自带的保存对话框中选择的位置，此应用不保留任何副本。您查看或打印的报告会直接从内存送到 Android 自带的打印预览，之后只会发送到您指定的地方。除此之外，此应用只保存您的显示设置。您可以通过“导出设置”将其保存到您选择的文件中，其中不含任何健康数据。备份和设备间转移已停用，因此不会有任何内容复制到云端。</string>
     <string name="privacy_sharing_title">不共享</string>
     <string name="privacy_sharing_body">您的健康数据绝不会与任何人共享，包括开发者在内。任何第三方 SDK 都不会接收这些数据。导出的文件归您所有：之后去向由您决定。</string>
     <string name="permission_routes_title">所有锻炼路线</string>

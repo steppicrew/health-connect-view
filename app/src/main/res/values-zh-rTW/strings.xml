@@ -696,7 +696,7 @@
     <string name="privacy_read_only_title">唯讀存取權</string>
     <string name="privacy_read_only_body">只要求讀取權限，因此這個應用程式無法變更或刪除您的健康記錄。要允許哪些資料類型由您逐一選擇，預設不選取任何項目。</string>
     <string name="privacy_storage_title">這個應用程式不會儲存任何內容</string>
-    <string name="privacy_storage_body">健康資料只會在您查看時保留在記憶體中，這個應用程式絕不會自行將其寫入儲存空間。唯一的例外是匯出：當您要求匯出時，檔案會寫入您在 Android 內建儲存對話方塊中選擇的位置，這個應用程式不會保留任何副本。您檢視或列印的報告會直接從記憶體送到 Android 內建的列印預覽，之後只會送到您指定的地方。除此之外，這個應用程式只會保留您的顯示設定。備份和裝置間轉移功能已停用，因此不會將任何內容複製到雲端。</string>
+    <string name="privacy_storage_body">健康資料只會在您查看時保留在記憶體中，這個應用程式絕不會自行將其寫入儲存空間。唯一的例外是匯出：當您要求匯出時，檔案會寫入您在 Android 內建儲存對話方塊中選擇的位置，這個應用程式不會保留任何副本。您檢視或列印的報告會直接從記憶體送到 Android 內建的列印預覽，之後只會送到您指定的地方。除此之外，這個應用程式只會保留您的顯示設定。您可以透過「匯出設定」將其儲存到您選擇的檔案中，其中不含任何健康資料。備份和裝置間轉移功能已停用，因此不會將任何內容複製到雲端。</string>
     <string name="privacy_sharing_title">不分享</string>
     <string name="privacy_sharing_body">您的健康資料絕不會與任何人分享，包括開發人員在內。任何第三方 SDK 都不會收到這些資料。匯出的檔案屬於您：之後的去向由您決定。</string>
     <string name="permission_routes_title">所有運動路線</string>
