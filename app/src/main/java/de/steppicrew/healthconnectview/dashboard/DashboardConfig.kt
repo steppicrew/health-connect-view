@@ -296,12 +296,13 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         /**
          * First-run dashboard: the types most people check daily, in the order they are
          * usually wanted. Only types that are actually granted and hold data will render, so
-         * an over-generous default costs nothing but a few empty slots.
+         * an over-generous default costs nothing but a few empty slots. Resting heart rate rather
+         * than heart rate: one telling number a day, where the day's readings average to little.
          */
         val DEFAULT: DashboardConfig = DashboardConfig(
             listOf(
                 Tile("StepsRecord"),
-                Tile("HeartRateRecord"),
+                Tile("RestingHeartRateRecord"),
                 Tile("ExerciseSessionRecord"),
                 Tile("SleepSessionRecord"),
                 Tile("WeightRecord"),
