@@ -7,14 +7,14 @@ CE QU’ELLE FAIT
 • Chaque enregistrement avec son heure, sa valeur et l’appli qui l’a écrit
 • Graphiques par jour, semaine, quatre semaines ou année
 • Sommeil et entraînements ombrés derrière les graphiques du jour, pour qu’un pic ait une explication
-• Chaque entraînement avec fréquence cardiaque, vitesse et altitude dans un graphique, pauses retirées, et son parcours si vous l’autorisez
+• Chaque entraînement avec fréquence cardiaque, vitesse et altitude dans un graphique, sans pauses, son parcours si vous l’autorisez, ses séries, notes et plan si votre app les écrit
 • Les phases de sommeil, à côté du pouls, de la respiration, de la SpO₂ et de la VFC de la nuit
 • Une vue des cycles : tous les cycles d’une année, alignés sur le premier jour, aussi en calendrier et en vignette, sans prédiction
 • Des flèches de tendance : la dernière semaine comparée à votre moyenne sur 30 jours
 • Des séries : jours d’affilée à atteindre votre objectif ou à être actif, et la plus longue de l’année
 • Comment chaque mesure a été prise : glycémie à jeun ou après un repas, tension assis ou au poignet
 • Vignettes réorganisables par glisser, unités métriques ou impériales, glycémie en mmol/L ou mg/dL, graphiques décrits pour les lecteurs d’écran
-• Sauvegarde du tableau de bord et des paramètres dans un fichier, pour un nouveau téléphone
+• Sauvegarde du tableau de bord et des réglages pour un nouveau téléphone
 
 VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 
@@ -30,7 +30,7 @@ DES TOTAUX JUSTES
 
 Quand un téléphone et une montre comptent tous deux les pas, l’agrégation de Santé Connect supprime les doublons : les totaux journaliers sont justes.
 
-Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. L’application les rapproche par l’heure et le dit.
+Santé Connect ne relie pas un entraînement aux mesures prises pendant celui-ci. L’app les rapproche par l’heure et le dit.
 
 PRO — ACHAT UNIQUE, SANS ABONNEMENT
 

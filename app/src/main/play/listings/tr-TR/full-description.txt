@@ -7,14 +7,14 @@ NE YAPAR
 • Tam zamanı, değeri, birimi ve yazan uygulamasıyla tek tek kayıtlar
 • Gün, hafta, dört hafta veya yıl bazında grafikler
 • Günün grafiklerinin arkasında gölgelenen uyku ve antrenmanlar; böylece bir zirvenin açıklaması olur
-• Her antrenman nabız, hız ve yükseklikle tek bir grafikte, molalar algılanıp düşülmüş olarak, izin verirseniz rotasıyla birlikte
+• Her antrenman nabız, hız ve yükseklikle tek bir grafikte, molalar düşülmüş olarak, izin verirseniz rotasıyla, uygulamanız yazıyorsa setleri, notları ve antrenman planıyla birlikte
 • Saatinizin kaydettiği her gecenin uyku evreleri, gecenin nabzı, solunum hızı, SpO₂ ve HRV değerleriyle yan yana
 • Döngü özeti: bir yılın tüm döngüleri yan yana, ilk güne hizalı, takvim ve kutucuk olarak da, tahmin yok
 • Eğilim okları: son hafta, 30 günlük ortalamanızla karşılaştırılır
 • Seriler: hedefe art arda kaç gün ulaştığınız veya aktif olduğunuz, ve yılın en uzunu
 • Her ölçümün nasıl alındığı: kan şekeri açken veya yemekten sonra, tansiyon oturarak veya bilekten
 • Sürükleyerek düzenlenen kutucuklar, metrik veya İngiliz birimleri, mmol/L veya mg/dL kan şekeri, ekran okuyucular için açıklanan grafikler
-• Paneli ve ayarları bir dosyaya yedekleyip yeni telefonda geri yükleme
+• Paneli ve ayarları yedekleyip yeni telefonda geri yükleme
 
 VERİLERİNİZ TELEFONUNUZDA KALIR
 

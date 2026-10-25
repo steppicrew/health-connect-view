@@ -7,14 +7,14 @@ WHAT IT DOES
 • Every record with its exact time, value and the app that wrote it
 • Chart trends by day, week, four weeks or year
 • Sleep and workouts shaded behind the day's charts, so a peak has an explanation
-• Each workout with its heart rate, speed and height in one chart, breaks found and left out, and its route if you allow it
+• Each workout with its heart rate, speed and height in one chart, breaks left out, its route if you allow it, and its sets, notes and training plan where your app writes them
 • Sleep stages for every night your watch records them, beside the night's heart rate, breath rate, SpO₂ and HRV
 • A cycle overview: every cycle of a year side by side, aligned on day one, with bleeding, ovulation tests and temperature, also as a calendar and a tile — only what was recorded, nothing predicted
 • Trend arrows on the dashboard, comparing the last week with your 30-day average
 • Streaks: how many days in a row you met your goal or were active, and the year's longest
 • How each reading was taken: blood glucose fasting or after a meal, blood pressure seated or at the wrist, and with which device
 • Arrange tiles by dragging, metric or imperial units, blood glucose in mmol/L or mg/dL, charts described for screen readers
-• Back up your dashboard and settings to a file and restore them on a new phone
+• Back up your dashboard and settings and restore them on a new phone
 
 YOUR DATA STAYS ON YOUR PHONE
 
@@ -30,7 +30,7 @@ ACCURATE TOTALS
 
 When several apps record the same thing — a phone and a watch both counting steps — their records overlap. This app uses Health Connect's own aggregation to remove duplicates, so daily totals are not double-counted, and it tells you when more than one app contributed.
 
-Health Connect stores no link between a workout and the readings taken during it. Where this app shows a session's statistics, it says plainly that they are matched by time.
+Health Connect does not link a workout to the readings taken during it. This app matches them by time and says so.
 
 PRO — ONE-TIME PURCHASE, NO SUBSCRIPTION
 

@@ -7,14 +7,14 @@ COSA FA
 • Ogni registrazione con orario, valore e app che l’ha scritta
 • Grafici per giorno, settimana, quattro settimane o anno
 • Sonno e allenamenti ombreggiati dietro i grafici del giorno, così un picco ha una spiegazione
-• Ogni allenamento con frequenza cardiaca, velocità e altitudine in un grafico, le pause riconosciute ed escluse, e il suo percorso se lo consenti
+• Ogni allenamento con frequenza cardiaca, velocità e altitudine in un grafico, senza pause, il percorso se lo consenti, e serie, note e piano se la tua app li scrive
 • Le fasi del sonno di ogni notte, accanto a frequenza cardiaca e respiratoria, SpO₂ e HRV della notte
 • Una panoramica dei cicli: tutti i cicli di un anno affiancati, allineati sul giorno uno, anche come calendario e riquadro, senza previsioni
 • Frecce di tendenza: l’ultima settimana rispetto alla media di 30 giorni
 • Serie: giorni di fila con l’obiettivo raggiunto o di attività, e la più lunga dell’anno
 • Come è stata presa ogni misurazione: glicemia a digiuno o dopo un pasto, pressione da seduti o al polso
 • Riquadri da riordinare trascinandoli, unità metriche o imperiali, glicemia in mmol/L o mg/dL, grafici descritti per gli screen reader
-• Backup di dashboard e impostazioni in un file, da ripristinare su un nuovo telefono
+• Backup di dashboard e impostazioni da ripristinare su un nuovo telefono
 
 I TUOI DATI RESTANO SUL TELEFONO
 
@@ -30,7 +30,7 @@ TOTALI CORRETTI
 
 Quando più app registrano la stessa cosa — un telefono e un orologio che contano i passi — le registrazioni si sovrappongono. Questa app usa l’aggregazione di Connessione Salute per eliminare i duplicati, così i totali giornalieri non sono contati due volte.
 
-Connessione Salute non collega un allenamento alle misurazioni prese durante. L’app li abbina in base all’orario e lo dice.
+Connessione Salute non collega un allenamento alle misurazioni prese durante. L’app le abbina per orario e lo dice.
 
 PRO — ACQUISTO UNICO, NESSUN ABBONAMENTO
 

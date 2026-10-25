@@ -1020,6 +1020,12 @@ doctor report and the year heatmap; the rest unranked.
       and nothing shows.
     - The seeder writes notes, strength sets and swim strokes, and planned runs linked from
       the seeded runs (inserted first, since a run names its plan by Health Connect's id).
+104. [x] **Arabic durations and the 1.9.0 store set** -- 25.10.2026. "7h 32m" was the one
+    Latin run in an Arabic line; durations take the locale's digits, and Arabic the narrow units
+    Android writes (س, د, ث). Store shot 5 is a strength session with its sets in place of the
+    workout list (`LatestSessionActivity` gives the script the seeded session's id), and the
+    listing's workout bullet names sets, notes and plans, room made by shorter backup and
+    "matched by time" sentences.
 
 ### Refactoring, 25.10.2026
 

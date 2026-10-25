@@ -7,14 +7,14 @@ FITUR
 • Setiap catatan dengan waktu, nilai, dan aplikasi yang menulisnya
 • Diagram per hari, minggu, empat minggu, atau tahun
 • Tidur dan latihan diarsir di balik diagram harian, agar puncak atau penurunan punya penjelasan
-• Setiap latihan dengan detak jantung, kecepatan, dan ketinggian dalam satu grafik, jeda dikenali dan tidak dihitung, serta rutenya jika Anda mengizinkan
+• Setiap latihan dengan detak jantung, kecepatan, dan ketinggian dalam satu grafik, tanpa jeda, rutenya jika Anda izinkan, serta set, catatan, dan rencananya jika aplikasi menulisnya
 • Tahap tidur setiap malam, di samping detak jantung, laju pernapasan, SpO₂, dan HRV malam itu
 • Ringkasan siklus: semua siklus setahun berdampingan, disejajarkan pada hari pertama, juga sebagai kalender dan kartu, tanpa prediksi
 • Panah tren: minggu terakhir dibandingkan rata-rata 30 hari Anda
 • Rangkaian: berapa hari berturut-turut target tercapai atau Anda aktif, dan yang terpanjang tahun ini
 • Cara setiap pengukuran dilakukan: glukosa saat puasa atau setelah makan, tekanan darah duduk atau di pergelangan
 • Kartu yang bisa diatur dengan menyeret, satuan metrik atau imperial, glukosa dalam mmol/L atau mg/dL, diagram yang dijelaskan untuk pembaca layar
-• Cadangan dasbor dan setelan ke file untuk dipulihkan di ponsel baru
+• Cadangan dasbor dan setelan untuk dipulihkan di ponsel baru
 
 DATA ANDA TETAP DI PONSEL ANDA
 
@@ -30,7 +30,7 @@ TOTAL YANG TEPAT
 
 Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali.
 
-Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Aplikasi mencocokkannya berdasarkan waktu dan menyatakannya dengan jelas.
+Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Aplikasi mencocokkannya menurut waktu dan menyebutkannya.
 
 PRO — SEKALI BELI, TANPA LANGGANAN
 

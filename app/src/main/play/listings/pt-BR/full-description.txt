@@ -7,14 +7,14 @@ O QUE ELE FAZ
 • Registros individuais com horário exato, valor, unidade e o app que os gravou
 • Gráficos por dia, semana, quatro semanas ou ano
 • Sono e treinos sombreados atrás dos gráficos do dia, para que um pico tenha explicação
-• Cada treino com frequência cardíaca, velocidade e altitude em um gráfico, pausas detectadas e descontadas, e o trajeto se você permitir
+• Cada treino com frequência cardíaca, velocidade e altitude em um gráfico, pausas descontadas, o trajeto se você permitir, e séries, notas e plano de treino quando seu app os registra
 • Fases do sono de cada noite registrada pelo relógio, ao lado da frequência cardíaca, frequência respiratória, SpO₂ e VFC da noite
 • Uma visão geral dos ciclos: todos os ciclos de um ano lado a lado, alinhados no dia um, também como calendário e bloco, sem previsões
 • Setas de tendência: a última semana comparada com sua média de 30 dias
 • Sequências: dias seguidos cumprindo a meta ou ativo, e a mais longa do ano
 • Como cada medição foi feita: glicemia em jejum ou depois de comer, pressão sentado ou no pulso
 • Blocos organizados arrastando, unidades métricas ou imperiais, glicemia em mmol/L ou mg/dL, gráficos descritos para leitores de tela
-• Backup do painel e das configurações em um arquivo, para restaurar em um novo smartphone
+• Backup do painel e das configurações, para restaurar em um novo smartphone
 
 SEUS DADOS FICAM NO SEU SMARTPHONE
 

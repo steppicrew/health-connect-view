@@ -7,14 +7,14 @@ WAS SIE KANN
 • Jeder Datensatz mit genauer Zeit, Wert und schreibender App
 • Trends nach Tag, Woche, vier Wochen oder Jahr als Diagramm
 • Schlaf und Training hinter den Tagesdiagrammen hinterlegt, damit eine Spitze eine Erklärung hat
-• Jedes Training mit Herzfrequenz, Geschwindigkeit und Höhe in einem Diagramm, ohne Pausen, und seine Route, wenn Sie sie freigeben
+• Jedes Training mit Herzfrequenz, Tempo und Höhe in einem Diagramm, seine Route, wenn Sie sie freigeben, und Sätze, Notizen und Trainingsplan, wo Ihre App sie schreibt
 • Schlafphasen jeder Nacht, in der Ihre Uhr sie erfasst, neben Herzfrequenz, Atemfrequenz, SpO₂ und HRV der Nacht
 • Eine Zyklusübersicht: alle Zyklen eines Jahres nebeneinander, mit Blutung, Ovulationstests und Temperatur, auch als Kalender und Kachel — nur was erfasst wurde, keine Vorhersagen
 • Trendpfeile im Dashboard, die die letzte Woche mit Ihrem 30-Tage-Durchschnitt vergleichen
 • Serien: wie viele Tage in Folge Sie Ihr Ziel erreicht haben oder aktiv waren, und die längste des Jahres
 • Wie jede Messung entstand: Blutzucker nüchtern oder nach dem Essen, Blutdruck im Sitzen oder am Handgelenk, mit welchem Gerät
 • Kacheln per Ziehen anordnen, Einheiten metrisch oder imperial, Blutzucker in mmol/L oder mg/dL, Diagramme für Screenreader beschrieben
-• Dashboard und Einstellungen als Datei sichern und auf einem neuen Handy wiederherstellen
+• Dashboard und Einstellungen sichern und auf einem neuen Handy wiederherstellen
 
 IHRE DATEN BLEIBEN AUF IHREM GERÄT
 
@@ -30,7 +30,7 @@ KORREKTE SUMMEN
 
 Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte —, überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, damit nichts doppelt zählt.
 
-Health Connect speichert keine Verknüpfung zwischen einem Training und den dabei erfassten Messwerten. Diese App ordnet sie über die Zeit zu und sagt das.
+Health Connect verknüpft ein Training nicht mit den dabei erfassten Messwerten. Diese App ordnet sie über die Zeit zu und sagt das.
 
 PRO — EINMALKAUF, KEIN ABO
 
