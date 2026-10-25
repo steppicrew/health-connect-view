@@ -1,0 +1,1 @@
+1.9.1 — La scheda «Novità» della dashboard elenca le funzioni delle versioni da 1.7.0 a 1.9.0. L'informativa sulla privacy ora cita anche il file delle impostazioni che puoi esportare, che non contiene dati sanitari.

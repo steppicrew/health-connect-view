@@ -1,0 +1,1 @@
+1.9.1 — La carte « Nouveautés » du tableau de bord présente les fonctions des versions 1.7.0 à 1.9.0. La politique de confidentialité mentionne aussi le fichier de paramètres que vous pouvez exporter, qui ne contient aucune donnée de santé.

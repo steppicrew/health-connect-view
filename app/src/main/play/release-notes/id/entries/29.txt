@@ -1,0 +1,1 @@
+1.9.1 — Kartu “Yang baru” di dasbor mencantumkan fitur versi 1.7.0 hingga 1.9.0. Kebijakan privasi kini juga menyebut file setelan yang dapat Anda ekspor, yang tidak berisi data kesehatan.
