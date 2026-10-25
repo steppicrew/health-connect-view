@@ -130,8 +130,8 @@ open items below and `FEATURE-IDEAS.md`.
     Each meal's record screen lists its name and nutrients. Not on the dashboard and not in
     the store text, which has no room; the release notes can carry it. Unverified on real
     data: nobody on the phone logs food.
-24. [ ] **Laps, segments, notes, planned sessions.** Exposed on exercise sessions, filled by no
-    app on the phone. Lowest priority; revisit if a writer that fills them turns up.
+24. [x] **Laps, segments, notes, planned sessions** -- laps were built in step 54; the rest
+    25.10.2026, the owner's choice although no app on the phone writes any of it (step 103).
 25. [x] **Mindfulness sessions** -- built 27.09.2026. The reason for leaving it out was wrong:
     the library constant is *named* `READ_MINDFULNESS_SESSION` but its value, and what
     `getReadPermission()` returns in connect-client 1.1.0, is `READ_MINDFULNESS`, the
@@ -998,6 +998,42 @@ doctor report and the year heatmap; the rest unranked.
     the line it had missed by hours on a sparse day; a year's calendar leaves out days
     without a value, so a run of 64 training days shows; the slow-loading words are a chip
     per line, one fading out before the next, shown after 3 s for 4 s each.
+102. [x] **Minutes after a workout stop at the next one** -- 25.10.2026. A workout followed
+    within five minutes by another drew the next one's warm-up as its recovery, and the one-
+    and two-minute figures could come from it (`afterUntil`). The first-run tile set has
+    resting heart rate in place of heart rate (section 1, "Decided").
+103. [x] **Notes, segments and planned workouts** -- 25.10.2026, idea 24, built on seeded data
+    only: no app on the test phone writes any of the three, so none is verified on real data.
+    - **Notes** under the workout's header, in the writer's words, kept from either copy.
+    - **Segments** -- sets, strokes, rests -- as stretches of the strip under the heart-rate
+      chart, named in the readout, and summed per kind below the laps: sets, repetitions, time
+      and the mean heart rate inside them. Rests grey, exercises from a palette in the order
+      they first come. All 67 kinds named in the 17 languages (machine translations).
+    - **Planned workouts** (the read permission was already requested): the plan a workout
+      carried out, found by the workout's `plannedExerciseSessionId` or the plan's
+      `completedExerciseSessionId`, through every merged copy (`Session.copyIds`), read a day
+      either side. Its steps with phase, goal and targets; its distance and time against the
+      workout's where every step is measured in them. Only totals are compared: Health
+      Connect records no step's start, so a step cannot be matched to its stretch, and the
+      "i" says so. The workouts list shows the next seven days' plans not yet carried out.
+      Planned workouts are an optional Health Connect feature; where missing the read throws
+      and nothing shows.
+    - The seeder writes notes, strength sets and swim strokes, and planned runs linked from
+      the seeded runs (inserted first, since a run names its plan by Health Connect's id).
+
+### Refactoring, 25.10.2026
+
+The app grew to 153 Kotlin files and about 33,000 lines in a few weeks. The owner asked what
+should be restructured; options 1-5 are accepted, in this order, 6 is not.
+
+| Option | Pros | Cons | Risks | Score |
+|--------|------|------|-------|-------|
+| **1. `runCatching` around suspend calls** (~115 uses) | `runCatching` catches `CancellationException` too, so a superseded load (a day stepped, a screen left) can run on and publish stale results; one helper that rethrows it, applied throughout | Many call sites | Low: behaviour changes only on cancellation | **9/10** |
+| **2. Split `TileDetailScreen.kt` (2,757 lines) and `DashboardScreen.kt` (2,110)** | One file per section (calendar, compare, sources, sleep rhythm); faster edits | Large diffs, nothing visible | Low if moved without changes | **8/10** |
+| **3. Shared section, figure row and note** | `Section`, `StatRow`, `Note` are private to the workout screen and the detail screen has its own; one set in `ui/components`, the same spacing everywhere | Small differences surface and need deciding | Slight layout changes on known screens | 7/10 |
+| **4. Split the three large loaders** (`DashboardViewModel`, `TileDetailViewModel`, `TileChartLoader`, ~1,350-1,400 lines each) | Reading logic in testable classes, as `SessionReads` already is | The most work; load order and cancellation are subtle | Medium: the speed-ups live there; measure on the phone before and after | 6/10 |
+| **5. Small duplicates** (`MS_TO_KMH` defined 4 times, unit helpers) | Tidy | Little on its own | None | 4/10 |
+| 6. Package reorganisation (`ui/dashboard` holds detail, compare, calendar) | Clearer layout | Pure churn, every import moves | Large diff for little | 3/10 -- not done |
 
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
