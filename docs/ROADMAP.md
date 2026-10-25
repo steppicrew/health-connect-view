@@ -1156,12 +1156,19 @@ and a face -- the value, the chart, or both. Per tile, stored beside the goal an
 - Found on the way: time labels overprinted each other after a gap between samples (15 and
   16 Sept on the phone). A label that would overlap its neighbour is now left out.
 
-### Still open
+### Decided (25.10.2026)
 
-- Which stats form the default tile set on first run. Currently steps, heart rate, sleep,
-  weight, total calories, floors.
-- Whether "advanced dashboard" becomes the premium feature. `Feature.CUSTOM_DASHBOARD` is
-  reserved; free would keep a fixed starter dashboard, paid unlocks arbitrary tiles.
+- **Default tile set on first run:** steps, resting heart rate, workouts, sleep, weight, total
+  calories, floors (`DashboardConfig.DEFAULT`). Resting heart rate replaced heart rate: one
+  telling number a day, where a day of readings averages to little. Types without data or
+  permission do not render, so an unused default costs nothing. Existing dashboards keep their
+  tiles; the set applies to a first run only.
+- **The dashboard itself is free:** adding, removing and rearranging tiles. Pro on the
+  dashboard is larger tiles (`TILE_SIZES`), a type on several tiles (`TILE_REPEAT`, which needs
+  a large tile's window to differ) and colours (`TILE_COLORS`); beyond it, the exports and the
+  analysis features (compare, insights, year calendar, sleep rhythm, year comparison, workout
+  trends, body composition, history beyond 30 days). The reserved `CUSTOM_DASHBOARD` was never
+  used and is gone.
 
 ### Built: a trend arrow on every tile
 
