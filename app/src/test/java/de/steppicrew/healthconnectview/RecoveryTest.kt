@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview
 
+import de.steppicrew.healthconnectview.health.AFTER_END
+import de.steppicrew.healthconnectview.health.afterUntil
 import de.steppicrew.healthconnectview.health.recoveryOf
 import de.steppicrew.healthconnectview.registry.Point
 import org.junit.Assert.assertEquals
@@ -43,5 +45,17 @@ class RecoveryTest {
         val recovery = recoveryOf(listOf(at(2, 150.0), at(61, 135.0)), end)!!
         assertEquals(-15.0, recovery.afterOne!!, 0.001)
         assertNull(recovery.afterTwo)
+    }
+
+    @Test
+    fun `the minutes after stop where the next workout starts`() {
+        assertEquals(end.plusSeconds(180), afterUntil(end, listOf(end.plusSeconds(400), end.plusSeconds(180))))
+    }
+
+    @Test
+    fun `workouts before the end or past five minutes leave the full minutes`() {
+        // The workout's own start, an overlapping copy's, and one starting after the window.
+        val starts = listOf(end.minusSeconds(3600), end.minusSeconds(60), end.plus(AFTER_END), end.plusSeconds(900))
+        assertEquals(end.plus(AFTER_END), afterUntil(end, starts))
     }
 }
