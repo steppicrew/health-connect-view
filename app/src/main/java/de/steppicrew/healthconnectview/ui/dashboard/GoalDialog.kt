@@ -147,4 +147,3 @@ private fun ModeRow(@StringRes label: Int, selected: Boolean, onClick: () -> Uni
 private fun formatForEditing(value: Double): String =
     if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
 
-private const val TOGGLE_SIZE = 24
