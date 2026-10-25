@@ -51,6 +51,8 @@ data class Session(
     val recordId: String = "",
     /** An exercise session's laps where its writer recorded them; empty otherwise. */
     val laps: List<Lap> = emptyList(),
+    /** What the user or the writer noted on a workout, where anything was; null otherwise. */
+    val notes: String? = null,
     /**
      * A workout's breaks, inferred from its movement readings stopping; see [Movement]. Empty
      * until read, which only some screens do, and for anything but exercise.
@@ -108,6 +110,7 @@ fun dedupeSessions(sessions: List<Session>): List<Session> {
         kept[overlapping] = winner.copy(
             route = winner.route ?: loser.route,
             laps = winner.laps.ifEmpty { loser.laps },
+            notes = winner.notes ?: loser.notes,
         )
     }
     return kept
@@ -190,6 +193,7 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
     origin = metadata.dataOrigin.packageName,
     recordId = metadata.id,
     laps = laps.map { Lap(it.startTime, it.endTime, it.length?.inMeters) },
+    notes = notes?.trim()?.takeIf { it.isNotEmpty() },
     exerciseType = exerciseType,
     route = when (exerciseRouteResult) {
         is ExerciseRouteResult.Data, is ExerciseRouteResult.ConsentRequired -> RouteRef(metadata.id)
