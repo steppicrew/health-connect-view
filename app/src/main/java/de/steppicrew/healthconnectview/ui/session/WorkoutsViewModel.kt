@@ -36,6 +36,7 @@ import java.time.LocalDate
 import java.time.Duration
 import java.time.Instant
 import de.steppicrew.healthconnectview.util.catching
+import de.steppicrew.healthconnectview.registry.METRES_PER_KM
 
 /**
  * The past year's workouts, newest first, for a list filtered by kind.
@@ -185,7 +186,6 @@ class WorkoutsViewModel(application: Application) : AndroidViewModel(application
         const val TREND_READS = 4
 
         /** Distance aggregates in km here (`numericAggregate`), the points keep metres. */
-        const val METRES_PER_KM = 1000.0
     }
 }
 

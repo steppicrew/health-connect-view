@@ -175,9 +175,15 @@ object Formatting {
      * that large says nothing a runner can use.
      */
     fun pace(metresPerSecond: Double, imperial: Boolean = Quantity.DISTANCE.alternateShown): String? {
-        val metres = if (imperial) METRES_PER_MILE else 1000.0
+        val metres = if (imperial) METRES_PER_MILE else METRES_PER_KM
         val seconds = (metres / metresPerSecond).takeIf { it.isFinite() && it < MAX_PACE_SECONDS } ?: return null
         return minutes(seconds / 60) + UNIT_SPACE + paceUnit(imperial)
+    }
+
+    /** [metresPerSecond] in km/h or mph, as the user's units show speed: "24.5 km/h". */
+    fun speed(metresPerSecond: Double, decimals: Int? = null): String {
+        val unit = Quantity.SPEED
+        return number(unit.convert(metresPerSecond * KMH_PER_MS), decimals) + UNIT_SPACE + unit.symbol()
     }
 
     /** The unit a [pace] is in: "min/km", or "min/mi" where distance shows in miles. */
@@ -189,7 +195,6 @@ object Formatting {
         return String.format(Locale.getDefault(), "%d:%02d", total / 60, total % 60)
     }
 
-    private const val METRES_PER_MILE = 1609.344
     private const val MAX_PACE_SECONDS = 60.0 * 60
     private const val MINUTES_PER_HOUR = 60
     private const val HOURS_PER_DAY = 24

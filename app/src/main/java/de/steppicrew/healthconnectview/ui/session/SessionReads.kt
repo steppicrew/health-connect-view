@@ -33,6 +33,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
+import de.steppicrew.healthconnectview.registry.KMH_PER_MS
 
 /**
  * One metric measured over a session's window, for the session screen: its total or mean,
@@ -307,7 +308,7 @@ suspend fun HealthRepository.speedDuring(session: Session): List<Point>? {
     val spec = RecordRegistry.specOrNull(SPEED) ?: return null
     if (spec.permission !in grantedPermissions()) return null
     return fullestWriter(pointsByWriter(spec, session.start, session.end), session.start, session.end)
-        .map { Point(it.time, it.value / MS_TO_KMH) }
+        .map { Point(it.time, it.value / KMH_PER_MS) }
         .takeIf { it.size > 1 }
 }
 
@@ -324,7 +325,6 @@ suspend fun HealthRepository.readingsDuring(session: Session, typeName: String):
 }
 
 private const val SPEED = "SpeedRecord"
-private const val MS_TO_KMH = 3.6
 
 /** How many of a session's reads run at once: Health Connect serves an app largely in turn. */
 const val MAX_CONCURRENT_READS = 4

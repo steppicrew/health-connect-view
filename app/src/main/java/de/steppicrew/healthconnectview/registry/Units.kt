@@ -52,6 +52,11 @@ enum class GlucoseUnit {
     }
 }
 
+/** Metres per second to kilometres per hour: Health Connect stores speed in m/s. */
+const val KMH_PER_MS = 3.6
+const val METRES_PER_KM = 1000.0
+const val METRES_PER_MILE = 1609.344
+
 /**
  * What a value measures, and so how it converts. Values arrive from the registry in the unit
  * Health Connect stores, named here as the base unit; [convert] turns one into the unit the

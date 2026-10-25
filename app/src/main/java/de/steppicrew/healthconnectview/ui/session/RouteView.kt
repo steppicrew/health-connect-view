@@ -62,6 +62,8 @@ import de.steppicrew.healthconnectview.ui.components.ExpandableChart
 import de.steppicrew.healthconnectview.ui.components.LineChart
 import de.steppicrew.healthconnectview.ui.components.periodLabel
 import java.time.Instant
+import de.steppicrew.healthconnectview.registry.KMH_PER_MS
+import de.steppicrew.healthconnectview.registry.METRES_PER_MILE
 
 /**
  * A route as its shape, north up, with a height profile beneath where heights were recorded,
@@ -291,7 +293,7 @@ private fun SpeedChart(
     val metresPerUnit = if (Quantity.DISTANCE.alternateShown) METRES_PER_MILE else 1000.0
     LineChart(
         points = shown.map { (time, speed) ->
-            Point(time, if (pace) metresPerUnit / speed / 60 else Quantity.SPEED.convert(speed * MS_TO_KMH))
+            Point(time, if (pace) metresPerUnit / speed / 60 else Quantity.SPEED.convert(speed * KMH_PER_MS))
         },
         pointColors = shown.map { (_, speed) ->
             if (scale.endInclusive > scale.start) speedColour(((speed - scale.start) / range).toFloat()) else plain
@@ -310,13 +312,11 @@ private fun SpeedChart(
 
 /** Slower than this, 0.5 m/s or over half an hour per km, a pace is a pause. */
 private const val MIN_PACE_SPEED = 0.5
-private const val METRES_PER_MILE = 1609.344
 
 /** A speed as the readout shows it: a pace where [pace], else km/h or mph; "–" for a standstill. */
 private fun speedText(metresPerSecond: Double, pace: Boolean): String {
     if (pace) return Formatting.pace(metresPerSecond) ?: "–"
-    val kmh = Quantity.SPEED
-    return Formatting.number(kmh.convert(metresPerSecond * MS_TO_KMH)) + Formatting.UNIT_SPACE + kmh.symbol()
+    return Formatting.speed(metresPerSecond)
 }
 
 /**
@@ -365,7 +365,6 @@ private fun speedColour(fraction: Float): Color {
 
 private val SPEED_COLOURS = listOf(Color(0xFF2F6FDB), Color(0xFF2FA84F), Color(0xFFEBC12B), Color(0xFFDB3B2F))
 private const val SPEED_STEPS = 24
-private const val MS_TO_KMH = 3.6
 
 /**
  * A drawn shape kept between frames, rebuilt only when the canvas size
