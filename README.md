@@ -154,7 +154,7 @@ Elsewhere:
 | `scripts/` | Building, signing, releasing, store assets, the privacy page |
 | `docs/ROADMAP.md` | What was built and why, with the measurements behind the decisions |
 | `docs/FEATURE-IDEAS.md` | Ideas not yet planned |
-| `PRIVACY.md` | The privacy policy |
+| `PRIVACY.md` | The privacy policy, generated from the app's privacy strings by `scripts/privacy-page.py` |
 | `CLAUDE.md` | Working notes: the Health Connect behaviours that were expensive to find |
 
 The registry is the heart of it: one generic `RecordTypeSpec` holding lambdas, keyed by

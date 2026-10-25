@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Keeps the local copy of the privacy page in step with the app's privacy strings.
+# Keeps the local copy of the privacy page and PRIVACY.md in step with the app's privacy strings.
 #
 # Only regenerates build/privacy -- no network. Publishing happens when main is pushed (see
 # pre-push): main only moves by fast-forward, which runs no commit hook, and a commit on a dev
@@ -9,10 +9,18 @@
 set -euo pipefail
 
 # Only when a strings.xml is actually staged; every other commit is untouched.
-if ! git diff --cached --name-only | grep -qE 'app/src/main/res/values(-[a-zA-Z-]+)?/strings\.xml'; then
+if ! git diff --cached --name-only | grep -qE 'app/src/main/res/values(-[a-zA-Z-]+)?/strings\.xml|scripts/privacy-page\.py'; then
     exit 0
 fi
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 ./scripts/privacy-page.py build/privacy >/dev/null
+
+# PRIVACY.md is tracked, so a stale one would go out with this commit. Regenerate it and stop
+# the commit if that changed anything not staged, rather than staging on the user's behalf.
+./scripts/privacy-page.py --markdown PRIVACY.md >/dev/null
+if ! git diff --quiet -- PRIVACY.md; then
+    echo "PRIVACY.md was out of date and has been regenerated; stage it and commit again" >&2
+    exit 1
+fi
