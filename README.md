@@ -49,6 +49,9 @@ Free:
 - Streaks, personal bests and trend arrows comparing the last week with the 30-day average
 - Workouts with heart rate, speed and height in one chart, breaks left out, and the route
   if you allow it -- drawn without a map, since there is no network
+- A workout's sets, strokes and rests where an app records them, its notes, and the
+  training plan it followed, planned against actual; the coming week's plans in the list
+- Total calories split into passive and active
 - Sleep stages beside the night's heart rate, breath rate, SpO₂ and HRV
 - A cycle overview: the cycles of a year side by side, only what was recorded
 - How a reading was taken: blood glucose fasting or after a meal, blood pressure seated or
