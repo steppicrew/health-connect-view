@@ -1,0 +1,1 @@
+1.9.1 — De kaart ‘Wat is er nieuw’ op het dashboard noemt de functies van 1.7.0 tot en met 1.9.0. Het privacybeleid noemt nu ook het instellingenbestand dat je kunt exporteren; dat bevat geen gezondheidsgegevens.

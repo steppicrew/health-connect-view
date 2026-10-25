@@ -1,0 +1,1 @@
+1.9.1 — Karta „Co nowego” na pulpicie wymienia funkcje wersji od 1.7.0 do 1.9.0. Polityka prywatności wspomina teraz także plik ustawień, który możesz wyeksportować; nie zawiera on danych o zdrowiu.

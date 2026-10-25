@@ -1,1 +1,1 @@
-1.9.0 — Workouts show their sets, strokes and rests where an app records them: under the heart rate and summed per exercise with repetitions and heart rate. Notes on a workout, and the training plan it followed, with planned against actual distance; plans for the coming week in the workout list. The curve after a workout stops where the next one starts. Arabic durations in Arabic units.
+1.9.1 — The “What's new” card on the dashboard lists the features of 1.7.0 to 1.9.0. The privacy policy now also names the settings file you can export, which holds no health data.

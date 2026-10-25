@@ -1,0 +1,1 @@
+1.9.1 — La tarjeta «Novedades» del panel recoge las funciones de las versiones 1.7.0 a 1.9.0. La política de privacidad menciona ahora también el archivo de ajustes que puedes exportar, que no contiene datos de salud.

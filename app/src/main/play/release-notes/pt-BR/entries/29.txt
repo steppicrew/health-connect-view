@@ -1,0 +1,1 @@
+1.9.1 — O cartão “Novidades” do painel lista os recursos das versões 1.7.0 a 1.9.0. A política de privacidade agora também cita o arquivo de configurações que você pode exportar, que não contém dados de saúde.

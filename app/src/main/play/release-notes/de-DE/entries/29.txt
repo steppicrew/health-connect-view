@@ -1,0 +1,1 @@
+1.9.1 — Die Karte „Neuigkeiten“ auf der Übersicht nennt die Funktionen der Versionen 1.7.0 bis 1.9.0. Die Datenschutzerklärung erwähnt jetzt auch die Einstellungsdatei, die Sie exportieren können; sie enthält keine Gesundheitsdaten.

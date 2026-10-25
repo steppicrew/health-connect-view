@@ -1,0 +1,1 @@
+1.9.1 — Panodaki “Yenilikler” kartı 1.7.0 ile 1.9.0 arasındaki özellikleri listeliyor. Gizlilik politikası artık dışa aktarabileceğiniz ayar dosyasından da söz ediyor; dosyada sağlık verisi bulunmaz.
