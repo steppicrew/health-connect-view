@@ -7,14 +7,14 @@ WAT DE APP DOET
 • Losse registraties met exacte tijd, waarde, eenheid en de app die ze schreef
 • Grafieken per dag, week, vier weken of jaar
 • Slaap en trainingen gearceerd achter de dagkrommen, zodat een piek of dal een verklaring heeft
-• Elke training met hartslag, snelheid en hoogte in één grafiek, pauzes herkend en weggelaten, en de route als je dat toestaat
+• Elke training met hartslag, snelheid en hoogte in één grafiek, pauzes weggelaten, de route als je dat toestaat, en sets, notities en trainingsschema als je app ze vastlegt
 • Slaapfasen voor elke nacht die je horloge vastlegt, naast de hartslag, ademhalingsfrequentie, SpO₂ en HRV van die nacht
 • Een cyclusoverzicht: alle cycli van een jaar naast elkaar, uitgelijnd op dag één, ook als kalender en tegel, zonder voorspellingen
 • Trendpijlen: de laatste week tegenover je 30-daags gemiddelde
 • Reeksen: hoeveel dagen op rij je je doel haalde of actief was, en de langste van het jaar
 • Hoe elke meting is gedaan: bloedglucose nuchter of na een maaltijd, bloeddruk zittend of aan de pols
 • Tegels ordenen door te slepen, metrische of imperiale eenheden, bloedglucose in mmol/L of mg/dL, grafieken beschreven voor schermlezers
-• Je dashboard en instellingen als bestand bewaren en op een nieuwe telefoon terugzetten
+• Je dashboard en instellingen bewaren en op een nieuwe telefoon terugzetten
 
 JE GEGEVENS BLIJVEN OP JE TELEFOON
 

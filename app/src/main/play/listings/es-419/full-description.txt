@@ -7,14 +7,14 @@ QUÉ HACE
 • Registros individuales con hora exacta, valor, unidad y la app que los escribió
 • Gráficos por día, semana, cuatro semanas o año
 • Sueño y entrenamientos sombreados detrás de los gráficos del día, para que un pico tenga explicación
-• Cada entrenamiento con su frecuencia cardíaca, velocidad y altura en un gráfico, las pausas detectadas y descontadas, y su ruta si lo permites
+• Cada entrenamiento con su frecuencia cardíaca, velocidad y altura en un gráfico, sin pausas, su ruta si lo permites y sus series, notas y plan si tu app los registra
 • Fases de sueño de cada noche que registre tu reloj, junto a la frecuencia cardíaca, la frecuencia respiratoria, la SpO₂ y la VFC de la noche
 • Resumen de ciclos: todos los ciclos de un año, alineados en el día uno, también como calendario y mosaico, sin predicciones
 • Flechas de tendencia: la última semana frente a tu media de 30 días
 • Rachas: días seguidos cumpliendo tu objetivo o activo, y la más larga del año
 • Cómo se tomó cada medición: glucosa en ayunas o tras comer, presión sentado o en la muñeca
 • Mosaicos que se ordenan arrastrando, unidades métricas o imperiales, glucosa en mmol/L o mg/dL, gráficos descritos para lectores de pantalla
-• Copia de tu panel y ajustes en un archivo para restaurarlos en otro teléfono
+• Copia de tu panel y ajustes para restaurarlos en otro teléfono
 
 TUS DATOS SE QUEDAN EN TU TELÉFONO
 
