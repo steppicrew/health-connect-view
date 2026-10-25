@@ -55,6 +55,7 @@ import java.time.Instant
 import de.steppicrew.healthconnectview.health.recordsIn
 import java.time.LocalDate
 import java.time.Period
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Builds the chart for one type over one window: the series, its total, goal, bands and
@@ -173,7 +174,7 @@ internal class TileChartLoader(
         // values with the usual range behind it, not thousands of five-minute readings drawn
         // as one zigzag. Within a day the readings themselves stay, as for any reading.
         val hrv = if (spec.tile.nightlyStatus) {
-            runCatching {
+            catching {
                 repository.hrvWindow(span.startDate(offset, today), span.endDate(offset, today).minusDays(1), origins, onProgress = ::stepPart)
             }.getOrNull()
         } else {
@@ -375,7 +376,7 @@ internal class TileChartLoader(
             val readFrom = if (spec.tile.rollingBaseline || spec.tile.usualRange) first.minusDays(ROLLING_DAYS.toLong()) else first
             val daily = DailyReadings(zone, first, bucketDays)
             var inWindow = 0
-            runCatching {
+            catching {
                 repository.forEachPage(
                     spec.type,
                     TimeRangeFilter.between(readFrom.atStartOfDay(zone).toInstant(), windowEnd),
@@ -415,7 +416,7 @@ internal class TileChartLoader(
         // nothing to deduplicate.
         val chartPoints = points.ifEmpty {
             if (metric != null && source != null) {
-                runCatching {
+                catching {
                     countingWindow { progress ->
                         repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
                     }
@@ -433,7 +434,7 @@ internal class TileChartLoader(
             val platform = if (buckets != null && spec.tile.cumulativeIntraday) {
                 totalFromBuckets(metric, buckets, span, offset, origins)
             } else {
-                runCatching { repository.total(metric, span.totalFilter(offset, today), origins) }.getOrNull()
+                catching { repository.total(metric, span.totalFilter(offset, today), origins) }.getOrNull()
             }
             // Only a window reaching into the real today has a tally still growing.
             if (span.endDate(offset, today).isAfter(LocalDate.now())) withOpenTally(spec, metric, span, platform, origins) else platform
@@ -475,7 +476,7 @@ internal class TileChartLoader(
         // each point is its own day's total and the goal would be a different comparison.
         val cumulative = span.intradayBucket != null && spec.tile.cumulativeIntraday
         val secondaryTotal = spec.secondaryAggregate?.let { second ->
-            runCatching { repository.total(second, span.totalFilter(offset, today), origins) }.getOrNull()
+            catching { repository.total(second, span.totalFilter(offset, today), origins) }.getOrNull()
         }
         stepDone() // the total
         // The goal is read on a day's own window, where streaks are counted against it too; an
@@ -660,7 +661,7 @@ internal class TileChartLoader(
             val wantsDaily = (spec.tile.rollingBaseline || spec.tile.usualRange) &&
                 span.bucket != null && shownPoints.isNotEmpty()
             val daily: Map<LocalDate, Double> = if (wantsDaily) {
-                runCatching {
+                catching {
                     val zone = HealthRepository.DEFAULT_ZONE
                     val first = span.startDate(offset, today)
                     val lookback = first.minusDays(ROLLING_DAYS.toLong())
@@ -729,11 +730,11 @@ internal class TileChartLoader(
             }
 
             val trend = if (span == Span.DAY && metric != null && spec.tile.form != TileSpec.Form.SESSIONS) {
-                runCatching { repository.trendBefore(metric, span.startDate(offset, today), origins) }.getOrNull()
+                catching { repository.trendBefore(metric, span.startDate(offset, today), origins) }.getOrNull()
             } else {
                 null
             }
-            val streak = runCatching {
+            val streak = catching {
                 when {
                     span != Span.DAY || !withStreak -> null
                     resolvedGoal != null && metric != null && spec.tile.form == TileSpec.Form.RING ->
@@ -760,7 +761,7 @@ internal class TileChartLoader(
             // Blood pressure keeps its chart on a day of several readings, morning and evening.
             (spec.type != BloodPressureRecord::class || chartPoints.size == 1)
         ) {
-            runCatching { readingContext(spec, windowEnd, origins, chartPoints) }.getOrNull()
+            catching { readingContext(spec, windowEnd, origins, chartPoints) }.getOrNull()
         } else {
             null
         }
@@ -881,7 +882,7 @@ internal class TileChartLoader(
     ): List<Point> {
         val windowStart = span.startDate(offset, today)
             .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
-        val allRecords = runCatching {
+        val allRecords = catching {
             repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
         }.getOrDefault(emptyList())
 
@@ -1044,7 +1045,7 @@ internal class TileChartLoader(
         val openStart = open.minOfOrNull { it.startTime }
         val openTotal = openStart?.let { from ->
             val to = minOf(span.endDate(offset, today).atStartOfDay(), now)
-            if (to.isAfter(from)) runCatching { repository.total(metric, TimeRangeFilter.between(from, to), origins) }.getOrNull() else null
+            if (to.isAfter(from)) catching { repository.total(metric, TimeRangeFilter.between(from, to), origins) }.getOrNull() else null
         }
         if (closedValues.isEmpty() && openTotal == null) return null
         return closedValues.sum() + (openTotal ?: 0.0)
@@ -1057,9 +1058,9 @@ internal class TileChartLoader(
         platform: Double?,
         origins: Set<DataOrigin>,
     ): Double? {
-        val tally = runCatching { repository.openTally(spec, origins) }.getOrNull() ?: return platform
+        val tally = catching { repository.openTally(spec, origins) }.getOrNull() ?: return platform
         if (span == Span.DAY) return atLeast(platform, tally)
-        val today = runCatching {
+        val today = catching {
             repository.total(metric, dayTotalFilter(LocalDate.now()), origins)
         }.getOrNull() ?: 0.0
         val shortfall = (tally - today).coerceAtLeast(0.0)
@@ -1136,7 +1137,7 @@ internal class TileChartLoader(
 
     private suspend fun heartRateGranted(): Boolean {
         val permission = heartRateSpec()?.permission ?: return false
-        val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+        val granted = catching { repository.grantedPermissions() }.getOrDefault(emptySet())
         return permission in granted
     }
 
@@ -1236,7 +1237,7 @@ internal class TileChartLoader(
      */
     private suspend fun zonesFor(spec: RecordTypeSpec<*>?): ValueZones? {
         val name = spec?.type?.simpleName ?: return null
-        val stored = runCatching { dashboardStore.config.first() }.getOrNull()
+        val stored = catching { dashboardStore.config.first() }.getOrNull()
         return stored?.tiles?.firstOrNull { it.typeName == name }?.effectiveZones
             ?: spec.tile.defaultZones
     }
@@ -1248,10 +1249,10 @@ internal class TileChartLoader(
      */
     private suspend fun goalFor(spec: RecordTypeSpec<*>, date: LocalDate, origins: Set<DataOrigin>, shown: Tile?): ResolvedGoal? {
         val typeName = spec.type.simpleName
-        val tile = shown ?: runCatching { dashboardStore.config.first() }.getOrNull()?.tiles?.firstOrNull { it.typeName == typeName }
+        val tile = shown ?: catching { dashboardStore.config.first() }.getOrNull()?.tiles?.firstOrNull { it.typeName == typeName }
         val fixed = (tile?.effectiveGoal ?: spec.tile.defaultGoal)?.let(spec::display) ?: return null
         val metric = spec.aggregate ?: return ResolvedGoal({ fixed }) { _, _ -> { null } }
-        return runCatching { resolveGoal(fixed, tile?.goalRule, date, repository.dailyTotalsOf(metric, origins)) }
+        return catching { resolveGoal(fixed, tile?.goalRule, date, repository.dailyTotalsOf(metric, origins)) }
             .getOrElse { ResolvedGoal({ fixed }, repository.dailyTotalsOf(metric, origins)) }
     }
 

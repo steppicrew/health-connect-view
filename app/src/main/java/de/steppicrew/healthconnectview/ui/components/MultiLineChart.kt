@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * One line a [MultiLineChart] can show. Lines with the same [unitKey] share a scale; any other
@@ -118,7 +119,7 @@ fun MultiLineChart(
     val scope = rememberCoroutineScope()
     var shown by rememberSaveable(chartId) { mutableStateOf<List<String>?>(null) }
     LaunchedEffect(chartId) {
-        if (shown == null) shown = runCatching { store.shown(chartId).first() }.getOrNull() ?: defaultShown
+        if (shown == null) shown = catching { store.shown(chartId).first() }.getOrNull() ?: defaultShown
     }
     // Only lines this chart has: a choice saved where speed was recorded must not leave a
     // walk without one blank.

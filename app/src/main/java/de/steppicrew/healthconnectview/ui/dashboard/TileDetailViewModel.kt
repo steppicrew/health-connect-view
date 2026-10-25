@@ -101,6 +101,7 @@ import de.steppicrew.healthconnectview.health.splitByTraining
 import de.steppicrew.healthconnectview.health.trainingDays
 import java.time.Instant
 import java.time.LocalDate
+import de.steppicrew.healthconnectview.util.catching
 
 /** One bucket's total split into the components that make it up, drawn bottom-up. */
 data class StackedBucket(val time: Instant, val parts: List<Double>)
@@ -398,10 +399,10 @@ class TileDetailViewModel(
         val spec = _spec.value ?: return false
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val exporter = Exporter(getApplication(), repository)
-        val any = runCatching {
+        val any = catching {
             if (combined) {
                 val sources = reportSources(period)
-                return@runCatching Exporter.REPORT_TYPES.any { type ->
+                return@catching Exporter.REPORT_TYPES.any { type ->
                     val each = RecordRegistry.specOrNull(type.simpleName.orEmpty()) ?: return@any false
                     exporter.hasReportData(each, period.first, period.last, sources[type]?.let { setOf(DataOrigin(it)) } ?: emptySet())
                 }
@@ -428,7 +429,7 @@ class TileDetailViewModel(
         viewModelScope.launch {
             val resolver = getApplication<Application>().contentResolver
             val exporter = Exporter(getApplication(), repository)
-            val result = runCatching {
+            val result = catching {
                 withContext(Dispatchers.IO) {
                     requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
                         when (kind) {
@@ -469,7 +470,7 @@ class TileDetailViewModel(
             }
             result.onFailure {
                 Log.w(TAG, "export failed: ${it.javaClass.simpleName}")
-                runCatching { DocumentsContract.deleteDocument(resolver, uri) }
+                catching { DocumentsContract.deleteDocument(resolver, uri) }
             }
             _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
         }
@@ -493,7 +494,7 @@ class TileDetailViewModel(
     fun onResume() {
         if (!historyKnown) return
         viewModelScope.launch {
-            val granted = runCatching { repository.grantedPermissions() }.getOrNull() ?: return@launch
+            val granted = catching { repository.grantedPermissions() }.getOrNull() ?: return@launch
             if ((RecordRegistry.HISTORY_PERMISSION in granted) != _historyGranted.value) reload()
         }
     }
@@ -507,7 +508,7 @@ class TileDetailViewModel(
         val spec = _spec.value ?: return null
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val source = selectedSource?.let { getApplication<Application>().appLabelFor(it) }
-        return runCatching {
+        return catching {
             withContext(Dispatchers.IO) {
                 ByteArrayOutputStream().also { out ->
                     val exporter = Exporter(getApplication(), repository)
@@ -528,15 +529,15 @@ class TileDetailViewModel(
      * the preferred app where it wrote that type in [period].
      */
     private suspend fun reportSources(period: ExportPeriod): Map<KClass<out Record>, String?> {
-        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
+        val selections = catching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+        val preferred = catching { sourceStore.preferred.first() }.getOrNull()
         val own = _spec.value?.type
         return Exporter.REPORT_TYPES.associateWith { type ->
             if (type == own) return@associateWith selectedSource
             val name = type.simpleName.orEmpty()
             val spec = RecordRegistry.specOrNull(name) ?: return@associateWith null
             val writers = if (preferred != null && selections[name] == null) {
-                runCatching { repository.recordsIn(spec, period.start(), period.end()).map { spec.originOf(it) }.toSet() }
+                catching { repository.recordsIn(spec, period.start(), period.end()).map { spec.originOf(it) }.toSet() }
                     .getOrDefault(emptySet())
             } else {
                 emptySet()
@@ -669,8 +670,8 @@ class TileDetailViewModel(
 
     private suspend fun refreshSourceDefault(type: String) {
         _sourceDefault.value = SourceDefault(
-            preferred = runCatching { sourceStore.preferred.first() }.getOrNull(),
-            ownChoice = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap()).containsKey(type),
+            preferred = catching { sourceStore.preferred.first() }.getOrNull(),
+            ownChoice = catching { sourceStore.selections.first() }.getOrDefault(emptyMap()).containsKey(type),
         )
     }
 
@@ -698,7 +699,7 @@ class TileDetailViewModel(
         Span.entries.firstOrNull { it.name.equals(wantedSpan, ignoreCase = true) }?.let { _span.value = it }
         // The route's date is the screen it came from, which shows the shared date already;
         // a restore after the process was killed brings the date back to the whole app.
-        runCatching { LocalDate.parse(wantedDate) }.getOrNull()?.let(SharedDate::set)
+        catching { LocalDate.parse(wantedDate) }.getOrNull()?.let(SharedDate::set)
         shownEnd = SharedDate.current
         viewModelScope.launch {
             selectedSource = resolveSource(typeName)
@@ -716,12 +717,12 @@ class TileDetailViewModel(
      * built from, before any filter narrows it.
      */
     private suspend fun resolveSource(typeName: String): String? {
-        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+        val selections = catching { sourceStore.selections.first() }.getOrDefault(emptyMap())
         selections[typeName]?.let { return it.takeUnless { chosen -> chosen == SourceStore.ALL_SOURCES } }
 
-        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull() ?: return null
+        val preferred = catching { sourceStore.preferred.first() }.getOrNull() ?: return null
         val spec = RecordRegistry.specOrNull(typeName) ?: return null
-        val writers = runCatching {
+        val writers = catching {
             repository.recordsIn(
                 spec,
                 windowStart(_span.value, 0, shownEnd),
@@ -753,10 +754,10 @@ class TileDetailViewModel(
      * other records by when they began. Without the history permission Health Connect returns
      * nothing older than 30 days, so the offer reaches back that far only.
      */
-    private suspend fun latestBefore(spec: RecordTypeSpec<*>, start: Instant): LocalDate? = runCatching {
+    private suspend fun latestBefore(spec: RecordTypeSpec<*>, start: Instant): LocalDate? = catching {
         val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val record = repository.recordsIn(spec, start.minus(LATEST_LOOKBACK), start, origins, maxRecords = 1)
-            .firstOrNull() ?: return@runCatching null
+            .firstOrNull() ?: return@catching null
         val time = if (spec.type == SleepSessionRecord::class) spec.endTimeOf(record) ?: spec.timeOf(record) else spec.timeOf(record)
         time.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate()
     }.getOrNull()
@@ -847,7 +848,7 @@ class TileDetailViewModel(
         val back = offset + yearSteps(span)
         val capped = span.needsHistoryPermission(back, shownEnd) && !_historyGranted.value
         val started = System.currentTimeMillis()
-        val earlier = runCatching {
+        val earlier = catching {
             TileChartLoader(repository, dashboardStore, today = shownEnd)
                 .chart(spec, span, back, capped, selectedSource, deferExtras = true, withStreak = false)
         }.getOrNull()
@@ -926,7 +927,7 @@ class TileDetailViewModel(
                 RecordRegistry.HISTORY_PERMISSION !in granted
 
             val loadStarted = System.currentTimeMillis()
-            val result = runCatching {
+            val result = catching {
                 loadData(spec, span, offset, capped, selectedSource) { chart ->
                     ensureActive()
                     Log.d(TAG, "chart of ${spec.type.simpleName} in ${System.currentTimeMillis() - loadStarted} ms")
@@ -938,8 +939,8 @@ class TileDetailViewModel(
                     }
                 }
             }
-            // runCatching also catches cancellation, and the reads inside swallow it into
-            // defaults, so a superseded load can reach this point with a result. It must not
+            // Reads inside may swallow a cancellation into defaults, so a superseded load can
+            // reach this point with a result. It must not
             // put that result, or an error, over the newer load's screen.
             ensureActive()
             _progress.value = null
@@ -1041,7 +1042,7 @@ class TileDetailViewModel(
             val records = if (range == null) {
                 windowList ?: return@launch
             } else {
-                runCatching {
+                catching {
                     repository.recordsIn(spec, range.start, range.endInclusive, origins, HealthRepository.LIST_RECORDS)
                 }.getOrElse { return@launch }
             }
@@ -1084,7 +1085,7 @@ class TileDetailViewModel(
         onChartReady(chart)
 
         val recordsRead = async {
-            runCatching {
+            catching {
                 repository.recordsIn(spec, windowStart, windowEnd, origins, HealthRepository.LIST_RECORDS)
             }.getOrDefault(emptyList())
         }
@@ -1095,7 +1096,7 @@ class TileDetailViewModel(
             null
         } else {
             async {
-                runCatching {
+                catching {
                     repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
                         .map { spec.originOf(it) }
                         .toSet()
@@ -1106,7 +1107,7 @@ class TileDetailViewModel(
         // calories, only to name its apps, took 20 s on the phone.
         val aggregateOriginsRead = chart.aggregateOrigins?.let { known -> async { known } } ?: metric?.let { aggregate ->
             async {
-                runCatching { repository.contributingApps(aggregate, span.localFilter(offset, shownEnd)) }
+                catching { repository.contributingApps(aggregate, span.localFilter(offset, shownEnd)) }
                     .getOrDefault(emptySet())
             }
         }
@@ -1120,7 +1121,7 @@ class TileDetailViewModel(
                     span.endDate(offset, shownEnd).minusDays(1),
                     HealthRepository.DEFAULT_ZONE,
                 )
-                runCatching {
+                catching {
                     val readings = repository.recordsIn(spec, from, to, origins)
                         .filterIsInstance<BloodPressureRecord>()
                         .map {
@@ -1142,7 +1143,7 @@ class TileDetailViewModel(
         // where two apps log the same meal.
         val nutrientsRead = if (spec.type == NutritionRecord::class) {
             async {
-                runCatching {
+                catching {
                     val first = Nutrient.entries.first()
                     repository.bucketedTotals(
                         first.metric,
@@ -1182,7 +1183,7 @@ class TileDetailViewModel(
         // of the window names them, as the unfiltered list of 5,000 used to.
         val writers = otherWritersRead?.await()
             ?: if (records.size >= HealthRepository.LIST_RECORDS) {
-                runCatching {
+                catching {
                     repository.recordsIn(spec, windowStart, windowEnd, maxRecords = HealthRepository.PAGE_SIZE)
                         .map { spec.originOf(it) }
                         .toSet()
@@ -1227,7 +1228,7 @@ class TileDetailViewModel(
             }
         }
         val training = if (marksTraining(spec, span)) {
-            runCatching {
+            catching {
                 // From the day before the window: its first morning's night follows that day.
                 val sessions = repository.sessionsIn(windowStart.minus(Duration.ofDays(1)), windowEnd, setOf(Session.Kind.EXERCISE))
                 trainingDays(sessions, HealthRepository.DEFAULT_ZONE)
@@ -1274,7 +1275,7 @@ class TileDetailViewModel(
         val zone = HealthRepository.DEFAULT_ZONE
         val started = System.currentTimeMillis()
         val nights = nightsByMorning(
-            runCatching {
+            catching {
                 repository.sessionsIn(windowStart(span, offset, shownEnd), windowEnd(span, offset, shownEnd), setOf(Session.Kind.SLEEP))
             }.getOrDefault(emptyList()),
             zone,

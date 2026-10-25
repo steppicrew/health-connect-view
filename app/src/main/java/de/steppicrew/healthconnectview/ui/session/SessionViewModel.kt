@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Instant
+import de.steppicrew.healthconnectview.util.catching
 
 /** Everything the session screen shows, read together so it appears at once. */
 data class SessionDetail(
@@ -174,7 +175,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             if (session.kind != Session.Kind.EXERCISE) {
                 null
             } else {
-                val next = runCatching {
+                val next = catching {
                     repository.sessionsIn(session.end, session.end.plus(AFTER_END), setOf(Session.Kind.EXERCISE))
                 }.getOrDefault(emptyList())
                 afterUntil(session.end, next.map { it.start })
@@ -194,7 +195,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
                 .mapNotNull { line -> repository.readingsDuring(session, line.typeName)?.let { line.typeName to it } }
                 .toMap()
         }
-        val zones = runCatching { dashboardStore.config.first() }.getOrNull()
+        val zones = catching { dashboardStore.config.first() }.getOrNull()
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
             ?: spec?.tile?.defaultZones
 
@@ -202,7 +203,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         // takes seconds to read and follows in [observedZones].
         val heartPoints = heartRate.await()
         val heartZones = if (session.kind == Session.Kind.EXERCISE && heartPoints != null) {
-            runCatching { settingsStore.settings.first().maxHeartRate }.getOrNull()?.let { chosen ->
+            catching { settingsStore.settings.first().maxHeartRate }.getOrNull()?.let { chosen ->
                 heartZones(heartPoints, movement.await()?.breaks.orEmpty(), chosen, maxFromSettings = true)
             }
         } else {
@@ -266,7 +267,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
     fun exportRoute(points: List<RoutePoint>, name: String, uri: Uri) {
         viewModelScope.launch {
             val resolver = getApplication<Application>().contentResolver
-            val result = runCatching {
+            val result = catching {
                 withContext(Dispatchers.IO) {
                     requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
                         Gpx.write(points, name, out.bufferedWriter(Charsets.UTF_8))
@@ -276,7 +277,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             }
             result.onFailure {
                 Log.w(TAG, "route export failed: ${it.javaClass.simpleName}")
-                runCatching { DocumentsContract.deleteDocument(resolver, uri) }
+                catching { DocumentsContract.deleteDocument(resolver, uri) }
             }
             _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
         }

@@ -13,6 +13,7 @@ import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import java.time.Duration
 import kotlinx.coroutines.CancellationException
 import java.time.Instant
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * A span of time the user was doing something, drawn behind a chart.
@@ -282,7 +283,7 @@ suspend fun HealthRepository.sessionsIn(
 
 
     val exercise = if (Session.Kind.EXERCISE in kinds) {
-        runCatching {
+        catching {
             read(ExerciseSessionRecord::class, range).map { it.toSession() }
         }.getOrDefault(emptyList())
     } else {
@@ -292,7 +293,7 @@ suspend fun HealthRepository.sessionsIn(
     // Mindfulness is an optional Health Connect feature; where the device lacks it the read
     // throws and the list simply has none, as with any type the platform does not offer.
     val mindfulness = if (Session.Kind.MINDFULNESS in kinds) {
-        runCatching {
+        catching {
             @OptIn(ExperimentalMindfulnessSessionApi::class)
             read(MindfulnessSessionRecord::class, range).map { it.toSession() }
         }.getOrDefault(emptyList())
@@ -301,7 +302,7 @@ suspend fun HealthRepository.sessionsIn(
     }
 
     val sleep = if (Session.Kind.SLEEP in kinds) {
-        runCatching {
+        catching {
             read(SleepSessionRecord::class, range).map { it.toSession() }
         }.getOrDefault(emptyList())
     } else {

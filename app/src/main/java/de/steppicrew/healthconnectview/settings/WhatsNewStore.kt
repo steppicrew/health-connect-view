@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
+import de.steppicrew.healthconnectview.util.catching
 
 private val Context.whatsNewDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "whats_new",
@@ -42,7 +43,7 @@ class WhatsNewStore(private val context: Context) {
     }
 
     /** Installed and never updated since: the two times are the same until the first update. */
-    private fun freshInstall(): Boolean = runCatching {
+    private fun freshInstall(): Boolean = catching {
         val info = context.packageManager.getPackageInfo(context.packageName, 0)
         info.firstInstallTime == info.lastUpdateTime
     }.getOrDefault(false)

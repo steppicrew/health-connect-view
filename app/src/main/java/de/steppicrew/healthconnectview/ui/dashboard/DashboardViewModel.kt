@@ -84,6 +84,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * What one tile shows.
@@ -329,7 +330,7 @@ class DashboardViewModel(
         DashboardUiState(
             // After the process was killed the saved day comes back, to the whole app.
             date = run {
-                saved.get<String>(KEY_DATE)?.let { runCatching { LocalDate.parse(it) }.getOrNull() }?.let(SharedDate::set)
+                saved.get<String>(KEY_DATE)?.let { catching { LocalDate.parse(it) }.getOrNull() }?.let(SharedDate::set)
                 SharedDate.current
             },
         ),
@@ -421,8 +422,8 @@ class DashboardViewModel(
             }
 
             config = store.config.first()
-            sources = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-            preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
+            sources = catching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+            preferred = catching { sourceStore.preferred.first() }.getOrNull()
             loadTiles()
         }
     }
@@ -624,7 +625,7 @@ class DashboardViewModel(
     /** Looks whether to offer the cycle tile; the picker asks when it opens. */
     fun checkCycleRecorded() {
         viewModelScope.launch {
-            _cycleRecorded.value = runCatching {
+            _cycleRecorded.value = catching {
                 val granted = repository.grantedPermissions()
                 val today = LocalDate.now()
                 readCycleDays(granted, today)?.values?.any { it.bleeding } == true
@@ -861,7 +862,7 @@ class DashboardViewModel(
         // The cycle on the day shown: two reads of a few records a month, after the numbers.
         val cycle = _state.value.cycle
         if (cycle != null) {
-            val read = runCatching { readCycleDays(granted, date) }
+            val read = catching { readCycleDays(granted, date) }
             currentCoroutineContext().ensureActive()
             val shown = read.fold(
                 onSuccess = { days ->
@@ -1091,7 +1092,7 @@ class DashboardViewModel(
             return chosen.takeUnless { it == SourceStore.ALL_SOURCES }
         }
         return placeholder.source?.takeIf { pkg ->
-            runCatching {
+            catching {
                 repository.read(spec.type, range, maxRecords = LATEST_ONLY, origins = setOf(DataOrigin(pkg)))
                     .isNotEmpty()
             }.getOrDefault(false)
@@ -1143,14 +1144,14 @@ class DashboardViewModel(
         // paired with a carried reading from another day, would be half of two readings.
         val secondaryValue = if (value != null) {
             spec.secondaryAggregate?.let { second ->
-                runCatching { repository.total(second, dayTotalFilter(date), origins) }.getOrNull()
+                catching { repository.total(second, dayTotalFilter(date), origins) }.getOrNull()
             }
         } else {
             null
         }
 
         val curve = if (spec.tile.form == TileSpec.Form.CURVE) {
-            runCatching { recentPoints(spec, date, origins) }.getOrDefault(emptyList())
+            catching { recentPoints(spec, date, origins) }.getOrDefault(emptyList())
         } else {
             emptyList()
         }
@@ -1168,7 +1169,7 @@ class DashboardViewModel(
         val stackedValue = if (value != null && spec.stackRemainder != null) {
             spec.stackComponents.singleOrNull()?.second?.let { partMetric ->
                 RecordRegistry.all.firstOrNull { it.aggregate == partMetric }?.let { partSpec ->
-                    runCatching { dayTotal(partSpec, partMetric, date, origins, tile.source, Reads()) }.getOrNull()
+                    catching { dayTotal(partSpec, partMetric, date, origins, tile.source, Reads()) }.getOrNull()
                 }
             }
         } else {
@@ -1206,7 +1207,7 @@ class DashboardViewModel(
         // Today, a running tally labelled as the whole day is apportioned by the platform
         // and reads low; the writer's own figure is the floor. See openTally.
         return if (date == LocalDate.now()) {
-            atLeast(total, runCatching { repository.openTally(spec, origins) }.getOrNull())
+            atLeast(total, catching { repository.openTally(spec, origins) }.getOrNull())
         } else {
             total
         }
@@ -1259,10 +1260,10 @@ class DashboardViewModel(
                     val metric = data.spec.aggregate?.takeIf { data.spec.tile.form != TileSpec.Form.SESSIONS }
                     val trend = metric?.let {
                         gate.withPermit {
-                            runCatching { repository.trendBefore(it, date, origins)?.direction }.getOrNull()
+                            catching { repository.trendBefore(it, date, origins)?.direction }.getOrNull()
                         }
                     }
-                    val (streak, goal) = gate.withPermit { runCatching { streakOf(data, date, origins) }.getOrNull() }
+                    val (streak, goal) = gate.withPermit { catching { streakOf(data, date, origins) }.getOrNull() }
                         ?: (0 to data.adaptiveGoal)
                     data.copy(trend = trend, streak = streak, adaptiveGoal = goal)
                 }
@@ -1316,7 +1317,7 @@ class DashboardViewModel(
         spec: RecordTypeSpec<*>,
         date: LocalDate,
         origins: Set<DataOrigin>,
-    ): Double? = runCatching {
+    ): Double? = catching {
         repository.read(spec.type, dayInstants(date), origins = origins)
             .flatMap { spec.pointsOf(it) }
             .let { points -> spec.combine(points.map { it.value }) }

@@ -14,6 +14,7 @@ import de.steppicrew.healthconnectview.registry.UnitSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Locale
+import de.steppicrew.healthconnectview.util.catching
 
 private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "settings",
@@ -93,15 +94,15 @@ class SettingsStore(private val context: Context) {
     val settings: Flow<Settings> = context.settingsDataStore.data.map { prefs ->
         Settings(
             theme = prefs[KEY_THEME]
-                ?.let { stored -> runCatching { ThemeChoice.valueOf(stored) }.getOrNull() }
+                ?.let { stored -> catching { ThemeChoice.valueOf(stored) }.getOrNull() }
                 ?: ThemeChoice.SYSTEM,
             dynamicColor = prefs[KEY_DYNAMIC_COLOR] ?: true,
             expandedExplanations = prefs[KEY_EXPANDED_EXPLANATIONS] ?: emptySet(),
             units = prefs[KEY_UNITS]
-                ?.let { stored -> runCatching { UnitChoice.valueOf(stored) }.getOrNull() }
+                ?.let { stored -> catching { UnitChoice.valueOf(stored) }.getOrNull() }
                 ?: UnitChoice.SYSTEM,
             glucose = prefs[KEY_GLUCOSE]
-                ?.let { stored -> runCatching { GlucoseChoice.valueOf(stored) }.getOrNull() }
+                ?.let { stored -> catching { GlucoseChoice.valueOf(stored) }.getOrNull() }
                 ?: GlucoseChoice.SYSTEM,
             showSingleNights = prefs[KEY_SINGLE_NIGHTS] ?: true,
             showRollingMean = prefs[KEY_ROLLING_MEAN] ?: false,

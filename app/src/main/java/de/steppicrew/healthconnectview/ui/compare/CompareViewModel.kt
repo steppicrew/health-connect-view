@@ -30,6 +30,7 @@ import kotlinx.coroutines.sync.withPermit
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import de.steppicrew.healthconnectview.util.catching
 
 /** Two types' charts over one window, and the time axis both are drawn on. */
 data class Compared(
@@ -72,7 +73,7 @@ class CompareViewModel(application: Application) : AndroidViewModel(application)
         if (_types.value != null) return
         _types.value = first to second
         Span.entries.firstOrNull { it.name.equals(span, ignoreCase = true) }?.let { _span.value = it }
-        runCatching { LocalDate.parse(date) }.getOrNull()?.let(SharedDate::set)
+        catching { LocalDate.parse(date) }.getOrNull()?.let(SharedDate::set)
         reload()
     }
 
@@ -199,7 +200,7 @@ internal fun sharedExtent(span: Span, last: LocalDate, first: TileDetailData, se
  * keeps its type: better one empty chart than a type missing from the list for no reason.
  */
 suspend fun HealthRepository.comparableTypes(span: Span, end: LocalDate): List<RecordTypeSpec<*>> {
-    val granted = runCatching { grantedPermissions() }.getOrDefault(emptySet())
+    val granted = catching { grantedPermissions() }.getOrDefault(emptySet())
     val zone = HealthRepository.DEFAULT_ZONE
     val records = TimeRangeFilter.between(
         span.startDate(0, end).minusDays(1).atStartOfDay(zone).toInstant(),

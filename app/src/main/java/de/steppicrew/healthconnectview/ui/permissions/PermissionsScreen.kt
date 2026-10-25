@@ -52,6 +52,7 @@ import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import de.steppicrew.healthconnectview.ui.components.LoadingView
 import de.steppicrew.healthconnectview.ui.components.OnResume
 import de.steppicrew.healthconnectview.ui.components.MessageView
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Lets the user choose exactly which data types to share, rather than demanding everything.
@@ -389,6 +390,6 @@ private fun Context.openOwnHealthPermissions(permissionName: String) {
         .putExtra(Intent.EXTRA_PACKAGE_NAME, packageName)
     val general = Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS)
     listOf(own, general).forEach { intent ->
-        if (runCatching { startActivity(intent) }.isSuccess) return
+        if (catching { startActivity(intent) }.isSuccess) return
     }
 }

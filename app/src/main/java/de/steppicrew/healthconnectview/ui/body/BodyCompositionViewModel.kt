@@ -34,6 +34,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import kotlin.reflect.KClass
+import de.steppicrew.healthconnectview.util.catching
 
 /** One part of the body's weight over the window, in the shown unit. */
 data class BodyPart(
@@ -136,8 +137,8 @@ class BodyCompositionViewModel(application: Application) : AndroidViewModel(appl
             .filter { it.permission in granted }
         if (specs.none { it.type == WeightRecord::class }) return UiState.NoPermission
 
-        val selections = runCatching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-        val preferred = runCatching { sourceStore.preferred.first() }.getOrNull()
+        val selections = catching { sourceStore.selections.first() }.getOrDefault(emptyMap())
+        val preferred = catching { sourceStore.preferred.first() }.getOrNull()
         val first = span.startDate(0, end)
         val weekly = span == Span.YEAR
 

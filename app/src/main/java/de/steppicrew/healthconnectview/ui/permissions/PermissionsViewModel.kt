@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import de.steppicrew.healthconnectview.util.catching
 
 data class PermissionsUiState(
     val availability: Availability = Availability.Available,
@@ -57,7 +58,7 @@ class PermissionsViewModel(application: Application) : AndroidViewModel(applicat
                 _state.update { it.copy(availability = availability, loading = false) }
                 return@launch
             }
-            val granted = runCatching { repository.grantedPermissions() }.getOrDefault(emptySet())
+            val granted = catching { repository.grantedPermissions() }.getOrDefault(emptySet())
             _state.update {
                 it.copy(availability = availability, granted = granted, loading = false)
             }

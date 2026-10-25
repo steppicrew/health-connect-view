@@ -11,6 +11,7 @@ import android.print.PrintDocumentInfo
 import android.print.PrintManager
 import java.io.FileOutputStream
 import java.io.IOException
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Shows a finished PDF in the system's print preview, where it can be read, printed or saved
@@ -22,7 +23,7 @@ import java.io.IOException
  */
 fun printPdf(activity: Activity, jobName: String, pdf: ByteArray): Boolean {
     val manager = activity.getSystemService(PrintManager::class.java) ?: return false
-    return runCatching {
+    return catching {
         manager.print(jobName, BytesAdapter(jobName, pdf), PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).build())
     }.isSuccess
 }

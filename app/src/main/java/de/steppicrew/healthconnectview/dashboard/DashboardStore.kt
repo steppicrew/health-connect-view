@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.json.JSONArray
+import de.steppicrew.healthconnectview.util.catching
 
 private val Context.dashboardDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "dashboard",
@@ -31,7 +32,7 @@ class DashboardStore(private val context: Context) {
         // A malformed or half-written value must not brick the start screen, so anything
         // unparseable falls back to the default layout rather than propagating.
         val stored = prefs[KEY_TILES] ?: return@map DashboardConfig.DEFAULT
-        runCatching { DashboardJson.decode(JSONArray(stored)) }.getOrDefault(DashboardConfig.DEFAULT).sanitised()
+        catching { DashboardJson.decode(JSONArray(stored)) }.getOrDefault(DashboardConfig.DEFAULT).sanitised()
     }
 
     suspend fun save(config: DashboardConfig) {

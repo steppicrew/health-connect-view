@@ -6,6 +6,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalDate
+import de.steppicrew.healthconnectview.util.catching
 
 /**
  * Everything a phone switch would otherwise lose: the dashboard, the source choices and the
@@ -90,15 +91,15 @@ object SettingsBackupCodec {
             preferredSource = root.optString(FIELD_PREFERRED).takeIf { it.isNotEmpty() },
             settings = Settings(
                 theme = settings?.optString(FIELD_THEME)
-                    ?.let { runCatching { ThemeChoice.valueOf(it) }.getOrNull() }
+                    ?.let { catching { ThemeChoice.valueOf(it) }.getOrNull() }
                     ?: ThemeChoice.SYSTEM,
                 dynamicColor = settings?.optBoolean(FIELD_DYNAMIC, true) ?: true,
                 // Absent from backups made before units existed; those followed the region.
                 units = settings?.optString(FIELD_UNITS)
-                    ?.let { runCatching { UnitChoice.valueOf(it) }.getOrNull() }
+                    ?.let { catching { UnitChoice.valueOf(it) }.getOrNull() }
                     ?: UnitChoice.SYSTEM,
                 glucose = settings?.optString(FIELD_GLUCOSE)
-                    ?.let { runCatching { GlucoseChoice.valueOf(it) }.getOrNull() }
+                    ?.let { catching { GlucoseChoice.valueOf(it) }.getOrNull() }
                     ?: GlucoseChoice.SYSTEM,
                 showSingleNights = settings?.optBoolean(FIELD_SINGLE_NIGHTS, true) ?: true,
                 showRollingMean = settings?.optBoolean(FIELD_ROLLING_MEAN, false) ?: false,

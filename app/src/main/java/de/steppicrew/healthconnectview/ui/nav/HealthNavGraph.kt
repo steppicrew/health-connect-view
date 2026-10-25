@@ -37,6 +37,7 @@ import de.steppicrew.healthconnectview.ui.privacy.PrivacyScreen
 import de.steppicrew.healthconnectview.ui.settings.SettingsScreen
 import de.steppicrew.healthconnectview.ui.settings.SettingsViewModel
 import java.time.LocalDate
+import de.steppicrew.healthconnectview.util.catching
 
 object Routes {
     const val DASHBOARD = "dashboard"
@@ -263,7 +264,7 @@ fun HealthNavGraph(
                 },
             ),
         ) { entry ->
-            val date = entry.arguments?.getString("date")?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+            val date = entry.arguments?.getString("date")?.let { catching { LocalDate.parse(it) }.getOrNull() }
             val viewModel: InsightsViewModel = viewModel()
             LaunchedEffect(viewModel) { viewModel.start(date) }
             InsightsScreen(
