@@ -8,19 +8,14 @@ import de.steppicrew.healthconnectview.health.yearHeatmap
 import de.steppicrew.healthconnectview.health.YearHeatmap
 import de.steppicrew.healthconnectview.billing.Feature
 import de.steppicrew.healthconnectview.billing.AppEntitlements
-import kotlin.reflect.KClass
 import android.app.Application
 import android.util.Log
 import de.steppicrew.healthconnectview.export.ExportResult
 import android.net.Uri
-import java.io.ByteArrayOutputStream
-import android.provider.DocumentsContract
 import de.steppicrew.healthconnectview.export.ExportPeriod
-import de.steppicrew.healthconnectview.export.Exporter
 import de.steppicrew.healthconnectview.ui.compare.CandidateCache
 import de.steppicrew.healthconnectview.ui.compare.comparableTypes
 import de.steppicrew.healthconnectview.ui.components.ExportKind
-import de.steppicrew.healthconnectview.util.appLabelFor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -112,19 +107,12 @@ class TileDetailViewModel(
     private val _state = MutableStateFlow<UiState<TileDetailData>>(UiState.Loading)
     val state: StateFlow<UiState<TileDetailData>> = _state.asStateFlow()
 
-    // Opens on the day, matching the tile that was tapped: landing on a week would show a
-    // different number from the one just touched, and the point of opening a tile is to see
-    // that figure in more detail.
     /** Outcome of the last export, for a snackbar; one event per export. */
     private val _exportResults = MutableSharedFlow<ExportResult>(extraBufferCapacity = 1)
     val exportResults: SharedFlow<ExportResult> = _exportResults.asSharedFlow()
 
-    /**
-     * Whether [kind] over [period] would hold any data. Asked before the save dialog opens;
-     * when it would not, says so through [exportResults] and the dialog stays shut, so an empty
-     * period no longer leaves a file of headers. A failed check lets the export go ahead:
-     * the write reports its own failure.
-     */
+    private val exports = TileExports(application, sourceStore)
+
     /** The types a comparison may set beside this one: those with data in the window shown. */
     suspend fun compareCandidates(): List<RecordTypeSpec<*>> = candidateCache.get(_span.value, shownEnd) {
         repository.comparableTypes(_span.value, shownEnd)
@@ -132,84 +120,20 @@ class TileDetailViewModel(
 
     private val candidateCache = CandidateCache()
 
+    /** Whether [kind] over [period] would hold any data; when not, says so and the save dialog stays shut. */
     suspend fun canExport(kind: ExportKind, period: ExportPeriod, combined: Boolean): Boolean {
         val spec = _spec.value ?: return false
-        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
-        val exporter = Exporter(getApplication(), repository)
-        val any = catching {
-            if (combined) {
-                val sources = reportSources(period)
-                return@catching Exporter.REPORT_TYPES.any { type ->
-                    val each = RecordRegistry.specOrNull(type.simpleName.orEmpty()) ?: return@any false
-                    exporter.hasReportData(each, period.first, period.last, sources[type]?.let { setOf(DataOrigin(it)) } ?: emptySet())
-                }
-            }
-            when (kind) {
-                ExportKind.RECORDS -> exporter.hasRecords(spec, period.start(), period.end(), origins)
-                ExportKind.DAILY -> exporter.hasDailyTotals(spec, period.first, period.last.plusDays(1), origins)
-                ExportKind.REPORT, ExportKind.PRINT -> exporter.hasReportData(spec, period.first, period.last, origins)
-            }
-        }.getOrDefault(true)
+        val any = exports.hasData(repository, spec, selectedSource, kind, period, combined)
         if (!any) _exportResults.tryEmit(ExportResult.Empty)
         return any
     }
 
-    /**
-     * Writes this type, this source filter and [period] to [uri].
-     *
-     * A failed export removes the file it started, so a half-written CSV is not left looking
-     * like a complete one.
-     */
+    /** Writes this type, this source filter and [period] to [uri]. */
     fun export(kind: ExportKind, period: ExportPeriod, combined: Boolean, uri: Uri) {
         val spec = _spec.value ?: return
-        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val source = selectedSource
         viewModelScope.launch {
-            val resolver = getApplication<Application>().contentResolver
-            val exporter = Exporter(getApplication(), repository)
-            val result = catching {
-                withContext(Dispatchers.IO) {
-                    requireNotNull(resolver.openOutputStream(uri)) { "cannot open $uri" }.use { out ->
-                        when (kind) {
-                            ExportKind.RECORDS -> ExportResult.Written(
-                                exporter.writeRecords(spec, period.start(), period.end(), origins, out),
-                                uri,
-                                kind.mimeType,
-                            )
-                            ExportKind.DAILY -> ExportResult.Written(
-                                exporter.writeDailyTotals(spec, period.first, period.last.plusDays(1), origins, out),
-                                uri,
-                                kind.mimeType,
-                            )
-                            // Printing never reaches a file; see renderReport.
-                            ExportKind.PRINT -> error("print is not saved")
-                            ExportKind.REPORT -> if (combined) {
-                                val sources = reportSources(period)
-                                ExportResult.Report(
-                                    exporter.writeDoctorReport(period.first, period.last, sources, sourceLabels(sources), out),
-                                    uri,
-                                    kind.mimeType,
-                                )
-                            } else ExportResult.Report(
-                                exporter.writeReport(
-                                    spec,
-                                    period.first,
-                                    period.last,
-                                    origins,
-                                    selectedSource?.let { getApplication<Application>().appLabelFor(it) },
-                                    out,
-                                ),
-                                uri,
-                                kind.mimeType,
-                            )
-                        }
-                    }
-                }
-            }
-            result.onFailure {
-                Log.w(TAG, "export failed: ${it.javaClass.simpleName}")
-                catching { DocumentsContract.deleteDocument(resolver, uri) }
-            }
-            _exportResults.tryEmit(result.getOrDefault(ExportResult.Failed))
+            _exportResults.tryEmit(exports.write(repository, spec, source, kind, period, combined, uri))
         }
     }
 
@@ -236,63 +160,15 @@ class TileDetailViewModel(
         }
     }
 
-    /**
-     * The report for [period] as PDF bytes in memory, for the print preview; null if it failed.
-     * Read now, while the app is in front: Health Connect refuses reads once the preview covers
-     * it. Held only until the preview has taken it -- never written anywhere by the app.
-     */
+    /** The report for [period] as PDF bytes in memory, for the print preview; null if it failed. */
     suspend fun renderReport(period: ExportPeriod, combined: Boolean): ByteArray? {
         val spec = _spec.value ?: return null
-        val origins = selectedSource?.let { setOf(DataOrigin(it)) } ?: emptySet()
-        val source = selectedSource?.let { getApplication<Application>().appLabelFor(it) }
-        return catching {
-            withContext(Dispatchers.IO) {
-                ByteArrayOutputStream().also { out ->
-                    val exporter = Exporter(getApplication(), repository)
-                    if (combined) {
-                        val sources = reportSources(period)
-                        exporter.writeDoctorReport(period.first, period.last, sources, sourceLabels(sources), out)
-                    } else {
-                        exporter.writeReport(spec, period.first, period.last, origins, source, out)
-                    }
-                }.toByteArray()
-            }
-        }.onFailure { Log.w(TAG, "report failed: ${it.javaClass.simpleName}") }.getOrNull()
+        return exports.render(repository, spec, selectedSource, period, combined)
     }
-
-    /**
-     * The source of each report type for the combined report: this screen's own filter for its
-     * type, and for the others what their screens would open on -- the choice made there, else
-     * the preferred app where it wrote that type in [period].
-     */
-    private suspend fun reportSources(period: ExportPeriod): Map<KClass<out Record>, String?> {
-        val selections = catching { sourceStore.selections.first() }.getOrDefault(emptyMap())
-        val preferred = catching { sourceStore.preferred.first() }.getOrNull()
-        val own = _spec.value?.type
-        return Exporter.REPORT_TYPES.associateWith { type ->
-            if (type == own) return@associateWith selectedSource
-            val name = type.simpleName.orEmpty()
-            val spec = RecordRegistry.specOrNull(name) ?: return@associateWith null
-            val writers = if (preferred != null && selections[name] == null) {
-                catching { repository.recordsIn(spec, period.start(), period.end()).map { spec.originOf(it) }.toSet() }
-                    .getOrDefault(emptySet())
-            } else {
-                emptySet()
-            }
-            sourceStore.effective(name, selections, preferred, writers)
-        }
-    }
-
-    private fun sourceLabels(sources: Map<KClass<out Record>, String?>): Map<KClass<out Record>, String?> =
-        sources.mapValues { (_, source) -> source?.let { getApplication<Application>().appLabelFor(it) } }
 
     fun reportNoViewer() {
         _exportResults.tryEmit(ExportResult.NoViewer)
     }
-
-    private fun ExportPeriod.start(): Instant = first.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
-
-    private fun ExportPeriod.end(): Instant = last.plusDays(1).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
 
     /**
      * Share of the current load's steps finished, 0 to 1, or null when not loading.
@@ -315,6 +191,9 @@ class TileDetailViewModel(
     val emptyRecord: StateFlow<PersonalRecord?> = _emptyRecord.asStateFlow()
     val progress: StateFlow<Float?> = _progress.asStateFlow()
 
+    // Opens on the day, matching the tile that was tapped: landing on a week would show a
+    // different number from the one just touched, and the point of opening a tile is to see
+    // that figure in more detail.
     private val _span = MutableStateFlow(Span.DAY)
     val span: StateFlow<Span> = _span.asStateFlow()
 
