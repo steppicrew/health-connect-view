@@ -6,6 +6,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseLap
+import androidx.health.connect.client.records.ExerciseSegment
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.FloorsClimbedRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
@@ -403,6 +404,7 @@ private val SEEDED_WORKOUTS = listOf(
                             // A note on every fourth, so the workout screen shows one in
                             // development; no app on the test phone writes any.
                             notes = SEEDED_NOTES[dayOffset % SEEDED_NOTES.size].takeIf { dayOffset % 4 == 0 },
+                            segments = segmentsOf(workout.type, exerciseStart, exerciseStart.plus(minutes, ChronoUnit.MINUTES)),
                             metadata = metadata(),
                         ),
                     )
@@ -626,6 +628,52 @@ private val SEEDED_WORKOUTS = listOf(
                 ExerciseLap(lapStart, lapEnd, Length.meters(meters * share))
             }
             .toList()
+    }
+
+    /**
+     * Sets and rests for a strength session, lengths of a few strokes for a swim, as a gym or
+     * swim app splits them, so the workout screen's segments show in development; no app on
+     * the test phone writes any. Each kind is one Health Connect accepts for that workout.
+     */
+    private fun segmentsOf(type: Int, start: Instant, end: Instant): List<ExerciseSegment> {
+        val (kinds, work, rest) = when (type) {
+            ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> Triple(
+                listOf(
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_SQUAT,
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_BENCH_PRESS,
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_LAT_PULL_DOWN,
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_PLANK,
+                ),
+                50L,
+                90L,
+            )
+            ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> Triple(
+                listOf(
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_SWIMMING_FREESTYLE,
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_SWIMMING_BREASTSTROKE,
+                    ExerciseSegment.EXERCISE_SEGMENT_TYPE_SWIMMING_BACKSTROKE,
+                ),
+                240L,
+                30L,
+            )
+            else -> return emptyList()
+        }
+        val counted = type == ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING
+        return buildList {
+            var at = start
+            var set = 0
+            while (at.plusSeconds(work) <= end) {
+                // Three sets of each exercise, then the next.
+                val kind = kinds[(set / 3) % kinds.size]
+                val repetitions = if (counted && kind != ExerciseSegment.EXERCISE_SEGMENT_TYPE_PLANK) 8 + set % 5 else 0
+                add(ExerciseSegment(at, at.plusSeconds(work), kind, repetitions))
+                at = at.plusSeconds(work)
+                if (at.plusSeconds(rest) > end) break
+                add(ExerciseSegment(at, at.plusSeconds(rest), ExerciseSegment.EXERCISE_SEGMENT_TYPE_REST))
+                at = at.plusSeconds(rest)
+                set++
+            }
+        }
     }
 
     private fun sleepStages(start: Instant, end: Instant, random: Random): List<SleepSessionRecord.Stage> =
