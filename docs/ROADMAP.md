@@ -1035,6 +1035,24 @@ should be restructured; options 1-5 are accepted, in this order, 6 is not.
 | **5. Small duplicates** (`MS_TO_KMH` defined 4 times, unit helpers) | Tidy | Little on its own | None | 4/10 |
 | 6. Package reorganisation (`ui/dashboard` holds detail, compare, calendar) | Clearer layout | Pure churn, every import moves | Large diff for little | 3/10 -- not done |
 
+Done 25.10.2026, each a commit of its own, checked on the emulator:
+
+- **1.** `util/catching()` replaces all 115 `runCatching` calls; it rethrows
+  `CancellationException`. The three places rewritten by hand earlier keep their
+  `ensureActive()`, since reads inside may still swallow a cancellation into a default.
+- **2.** `TileDetailScreen.kt` 2,757 -> 631 lines, beside `DetailSummary`, `DetailExplanations`,
+  `DetailCharts`, `DetailSessions`, `DetailSources`; `DashboardScreen.kt` 2,110 -> 873, beside
+  `TileFaces`, `TileParts`, `DashboardInsights`, `DashboardEditing`. Declarations moved
+  unchanged; only what another file uses became `internal`. Three identical `TOGGLE_SIZE` are one.
+- **3.** `InfoTitle` (title, optional icon, "i") replaces seven hand-built headers;
+  `CategoryHeader` is shared by the catalog and the permissions screen.
+- **4, in part.** The view models' data classes are in `DashboardModels.kt` and
+  `TileDetailModels.kt`, and the detail screen's exports in `TileExports`. The load logic
+  itself (`loadTilesSharing`, `loadData`, `TileChartLoader`) is left whole: splitting it is
+  where the speed-ups live, so it waits for a feature that changes it anyway, with a
+  measurement on the phone before and after.
+- **5.** `KMH_PER_MS`, `METRES_PER_KM`, `METRES_PER_MILE` in `Units.kt`, `Formatting.speed()`.
+
 Floors, measured on the phone 09.10.2026 (`RecordShapeActivity`, 05.-09.10): Garmin's own app
 writes floors as whole numbers per 15 minutes, Health Sync one 00:00-23:59 day total that
 matches Garmin Connect. Garmin's sum is lower on three of five days (19/21, 13/15, 12/13) and
