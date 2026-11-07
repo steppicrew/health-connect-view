@@ -172,12 +172,15 @@ writers):
 - **Lone minutes:** 6-9 % of the active minutes outside workouts, at 15 s sampling. A
   two-minute rule would cut little; not worth it yet.
 - **Without steps:** over 28 days 27 % of the active minutes outside workouts had no step
-  record within a minute either side (0 % over 7 days). Either rides or other movement logged
-  without a session, or a raised pulse at rest. This is the real uncertainty; look at which
-  before shipping.
+  record within a minute either side (0 % over 7 days). All of them fell on one day, a
+  travel day (the owner confirmed it): a dozen bouts, three of 20-60 minutes, none within
+  four hours of a workout and nearly all without distance -- a raised pulse while sitting, not
+  movement. Rare, but where it happens it adds many false minutes. So a minute outside a
+  workout counts only with steps or distance within a minute of it, and the screen says so.
 - **Most active minutes fall in workouts** (70-85 %), so the session zones already give most
   of the figure.
-- **Read time:** 7 days 1.1 s; 28 days 18 s over every writer (223,000 samples). Reading only
+- **Read time:** 7 days 1.1 s; 28 days 4-18 s over every writer (223,000 samples; two
+  runs). Reading only
   the one chosen writer (`origins`), ideally the sparse one, is required for four weeks.
 
 A later second
