@@ -3,6 +3,7 @@ package de.steppicrew.healthconnectview.debug
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
@@ -110,6 +111,16 @@ class ActivityMinutesActivity : ComponentActivity() {
                     "minutesWithSteps=${pct(stepping.count { it }, minutes)}% skippedLongRecords=$longStepRecords",
             )
 
+            // Distance in short records: movement without steps (a ride) still leaves it.
+            val moving = BooleanArray(minutes)
+            runCatching {
+                repository.forEachPage(DistanceRecord::class, range) { page ->
+                    page.filter { Duration.between(it.startTime, it.endTime) <= STEP_RECORD_LONGEST }
+                        .forEach { mark(moving, start, it.startTime, it.endTime) }
+                }
+            }.onFailure { Log.w(TAG, "distance read threw: $it") }
+            val sessionMinutes = inSession.indices.filter { inSession[it] }
+
             val waking = BooleanArray(minutes) { minute ->
                 start.plusSeconds(minute * 60L).atZone(zone).hour in WAKING_HOURS
             }
@@ -140,6 +151,27 @@ class ActivityMinutesActivity : ComponentActivity() {
                             "inWorkouts=${pct(active.size - outsideActive.size, active.size)}% " +
                             "outsideLone=${pct(lone, outsideActive.size)}% " +
                             "outsideWithoutSteps=${pct(still, outsideActive.size)}%",
+                    )
+                }
+                // The stepless active minutes outside workouts as bouts (a gap of up to two
+                // minutes joins them): a long bout with distance is a ride, short scattered
+                // ones are a raised pulse at rest. Length and nearness in buckets only.
+                val level = levels(list, start, minutes, CAPS.last(), moderate, vigorous)
+                val stillMinutes = level.indices.filter { level[it] > 0 && !inSession[it] && !stepping[it] }
+                val bouts = mutableListOf<IntRange>()
+                stillMinutes.forEach { m ->
+                    val last = bouts.lastOrNull()
+                    if (last != null && m - last.last <= 3) bouts[bouts.size - 1] = last.first..m else bouts += m..m
+                }
+                bouts.forEach { bout ->
+                    val date = start.plusSeconds(bout.first * 60L).atZone(zone).toLocalDate()
+                    val length = bout.last - bout.first + 1
+                    val near = sessionMinutes.minOfOrNull { minOf(kotlin.math.abs(it - bout.first), kotlin.math.abs(it - bout.last)) }
+                    Log.i(
+                        TAG,
+                        "  stepless bout date=$date length=${bucket(length, listOf(5, 20, 60))}min " +
+                            "fromWorkout=${near?.let { bucket(it, listOf(15, 60, 240)) } ?: "none"}min " +
+                            "withDistance=${pct(bout.count { moving[it] }, length)}%",
                     )
                 }
             }
@@ -191,6 +223,16 @@ class ActivityMinutesActivity : ComponentActivity() {
     }
 
     private fun minuteOf(start: Instant, time: Instant): Int = (Duration.between(start, time).seconds / 60).toInt()
+
+    /** "<5", "5-20", ">60" and so on: which of [edges] a value falls between. */
+    private fun bucket(value: Int, edges: List<Int>): String {
+        val upper = edges.indexOfFirst { value < it }
+        return when (upper) {
+            0 -> "<${edges.first()}"
+            -1 -> ">=${edges.last()}"
+            else -> "${edges[upper - 1]}-${edges[upper]}"
+        }
+    }
 
     private fun pct(part: Int, whole: Int): Int = if (whole == 0) 0 else (100.0 * part / whole).roundToInt()
 
