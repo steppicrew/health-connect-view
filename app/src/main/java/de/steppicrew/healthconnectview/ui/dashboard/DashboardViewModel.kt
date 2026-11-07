@@ -701,19 +701,8 @@ class DashboardViewModel(
             }
         }
 
-        // The seven days up to the day shown, after the numbers: four reads, one of them a week
-        // of heart rate.
-        val active = _state.value.active
-        if (active != null && !active.locked) {
-            val read = readActive(repository, sourceStore, settingsStore, granted, date.minusDays(ACTIVE_DAYS - 1L), date)
-            currentCoroutineContext().ensureActive()
-            _state.update { state ->
-                state.active?.takeIf { it.tile.id == active.tile.id }?.let { state.copy(active = it.copy(read = read)) } ?: state
-            }
-        }
-
-        // Last: after the numbers and their arrows, so the tile never holds up a figure. Always
-        // this week, whatever day the dashboard shows -- the tile says "this week".
+        // After the numbers and their arrows, so the tile never holds up a figure. Always this
+        // week, whatever day the dashboard shows -- the tile says "this week".
         val insights = _state.value.insights
         if (insights != null && !insights.locked) {
             val read = readInsights(repository, sourceStore, insightTypes(granted), LocalDate.now(), gate)
@@ -723,6 +712,19 @@ class DashboardViewModel(
                     ?.let { state.copy(insights = it.copy(insights = read)) } ?: state
             }
             Log.i(TAG, "insights (${read.size} types) in ${System.currentTimeMillis() - started} ms")
+        }
+
+        // Last: the seven days up to the day shown, four reads, one of them a week of heart rate.
+        // Without a maximum set in the settings it first looks one up from a year of monthly
+        // maxima, about 5 s on a cold start on the owner's phone (07.11.2026) -- the insights
+        // tile above, about 1.5 s, waited behind it while this came before it.
+        val active = _state.value.active
+        if (active != null && !active.locked) {
+            val read = readActive(repository, sourceStore, settingsStore, granted, date.minusDays(ACTIVE_DAYS - 1L), date)
+            currentCoroutineContext().ensureActive()
+            _state.update { state ->
+                state.active?.takeIf { it.tile.id == active.tile.id }?.let { state.copy(active = it.copy(read = read)) } ?: state
+            }
         }
         // A failed tile is not an answer worth keeping: the next resume must read it again.
         if (loaded.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
