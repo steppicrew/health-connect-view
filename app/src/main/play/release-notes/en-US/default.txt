@@ -1,1 +1,1 @@
-1.9.1 — The “What's new” card on the dashboard lists the features of 1.7.0 to 1.9.0. The privacy policy now also names the settings file you can export, which holds no health data.
+1.10.0 — Active minutes (Pro): a tile and a screen with each day’s moderate and vigorous minutes, estimated from your heart rate, against the 150 minutes a week the WHO recommends. Workouts show on the day and at the time they took place, also after a change of time zone; a day’s charts use that day’s clock. Each tile appears as soon as it is read, and long periods load faster.
