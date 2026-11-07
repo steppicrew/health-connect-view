@@ -102,6 +102,28 @@ app to get right (the running tally in `CLAUDE.md`), so the day's own value must
 the phone before a ring is drawn against it. Total calories would not do instead: most of it
 is basal energy that is the same every day, which leaves the goal little to follow.
 
+## Travel days
+
+The owner, 07.11.2026, after a 20-hour flight to a place six hours behind: no workout was
+possible that day, and the short walk taken to keep the streak was filed on the day before.
+That filing was a bug, fixed by giving each session the day it happened on by its own UTC
+offset (`Session.startDay`/`endDay`). What remains is the idea: recognise a travel day and
+treat it as the streak already treats a day without data -- neither counted nor breaking the
+run. Not scored yet.
+
+- **Signal:** a change of UTC offset between one writer's records. Measured on the phone:
+  heart rate showed `+01:00` and `-05:00` on the three days around the flight and one offset
+  on every other day, so the change marks the trip to within a day. Cheap (offsets of
+  records already read) and exact, unlike guessing from a raised pulse without steps, which
+  also fits a long car ride or a day at a desk.
+- **Where it shows:** a mark on the day in the workout streak and its calendar, and on the
+  active-minutes screen, where a travel day's left-out minutes are expected.
+- **Wording:** "Reisetag" as a fact about the data ("Zeitzone gewechselt"), never as an excuse
+  the app makes for the user. A streak bridged over a travel day must say so, or it reads as
+  a day with a workout.
+- **Open:** a day trip across a border with no zone change is not a travel day by this
+  signal; a phone set to a zone by hand, or a writer that records no offset, gives none.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).
