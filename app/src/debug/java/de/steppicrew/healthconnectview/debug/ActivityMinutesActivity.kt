@@ -34,6 +34,10 @@ import kotlin.math.roundToInt
  *
  *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.ActivityMinutesActivity \
  *       --ei days 7
+ *
+ * With `--ez zones true` it reports instead, per workout, the day it falls on by its own UTC
+ * offset and by the phone's zone now, and each day's offsets in heart-rate records: whether
+ * a time-zone change moves a workout to another day (a travel day). Dates and offsets only.
  */
 class ActivityMinutesActivity : ComponentActivity() {
 
@@ -42,6 +46,13 @@ class ActivityMinutesActivity : ComponentActivity() {
         val repository = HealthRepository(this)
         val days = intent?.getIntExtra("days", DEFAULT_DAYS)?.coerceIn(1, 28) ?: DEFAULT_DAYS
 
+        if (intent?.getBooleanExtra("zones", false) == true) {
+            lifecycleScope.launch {
+                zones(repository, days)
+                finish()
+            }
+            return
+        }
         // Not finished early: reads fail once the activity backgrounds (CLAUDE.md).
         lifecycleScope.launch {
             val zone = ZoneId.systemDefault()
@@ -178,6 +189,36 @@ class ActivityMinutesActivity : ComponentActivity() {
             Log.i(TAG, "done")
             finish()
         }
+    }
+
+    private suspend fun zones(repository: HealthRepository, days: Int) {
+        val zone = ZoneId.systemDefault()
+        val end = Instant.now()
+        val range = TimeRangeFilter.between(LocalDate.now().minusDays(days - 1L).atStartOfDay(zone).toInstant(), end)
+        Log.i(TAG, "phone zone=$zone offset now=${zone.rules.getOffset(end)}")
+        runCatching { repository.read(ExerciseSessionRecord::class, range) }.getOrDefault(emptyList())
+            .sortedBy { it.endTime }
+            .forEach {
+                val own = it.endZoneOffset?.let { offset -> it.endTime.atOffset(offset).toLocalDate() }
+                val phone = it.endTime.atZone(zone).toLocalDate()
+                Log.i(
+                    TAG,
+                    "workout ownDay=$own phoneDay=$phone offset=${it.endZoneOffset} " +
+                        "minutes=${Duration.between(it.startTime, it.endTime).toMinutes()} writer=${it.metadata.dataOrigin.packageName}" +
+                        if (own != null && own != phone) " MOVED" else "",
+                )
+            }
+        val offsets = sortedMapOf<LocalDate, MutableSet<String>>()
+        runCatching {
+            repository.forEachPage(HeartRateRecord::class, range) { page ->
+                page.forEach { record ->
+                    val offset = record.startZoneOffset ?: return@forEach
+                    offsets.getOrPut(record.startTime.atOffset(offset).toLocalDate()) { sortedSetOf() } += offset.toString()
+                }
+            }
+        }
+        offsets.forEach { (day, set) -> Log.i(TAG, "heart rate day=$day offsets=$set${if (set.size > 1) " CHANGE" else ""}") }
+        Log.i(TAG, "done")
     }
 
     /**
