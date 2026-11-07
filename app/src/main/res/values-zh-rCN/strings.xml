@@ -917,4 +917,24 @@
     <plurals name="plan_goal_steps">
         <item quantity="other">%d 步</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">活动分钟</string>
+    <string name="active_tile_caption">最近 7 天 · 世卫组织目标</string>
+    <string name="active_tile_of">/ %1$s</string>
+    <string name="active_none">这几天没有心率数据</string>
+    <string name="active_no_access">活动分钟根据心率估算。允许应用读取心率即可查看。</string>
+    <string name="active_no_max_title">没有最大心率</string>
+    <string name="active_no_max">活动分钟以你的最大心率为基准。请在“设置”中填写；否则应用会从一年的心率数据中读取，而目前数据还不够。</string>
+    <string name="active_week_total">这 7 天的加权分钟数（世卫组织建议每周 %1$s 分钟）</string>
+    <string name="active_week_mean">每周平均加权分钟数（世卫组织建议 %1$s 分钟）</string>
+    <string name="active_of">%1$s / %2$s</string>
+    <string name="active_moderate">中等强度：%1$s</string>
+    <string name="active_vigorous">高强度：%1$s，按两倍计算</string>
+    <string name="active_left_out">有 %1$s 心率升高但未计入：它们不在锻炼期间，附近也没有记录步数或距离，例如旅途中久坐时。</string>
+    <string name="active_how_title">这些分钟如何计算</string>
+    <string name="active_guideline">世卫组织建议每周至少进行 150 分钟中等强度或 75 分钟高强度活动，或两者结合。这里 1 分钟高强度按 2 分钟计算。这是根据你的心率估算的，并非测量值。</string>
+    <string name="active_limits_reserve">心率达到 %1$s bpm 起算作中等强度，达到 %2$s bpm 起算作高强度：即你的心率储备（静息心率与最大心率之差）的 40 %% 和 60 %%。</string>
+    <string name="active_limits_max">心率达到 %1$s bpm 起算作中等强度，达到 %2$s bpm 起算作高强度：即你最大心率的 64 %% 和 77 %%。一旦记录了静息心率，阈值将改为按心率储备计算。</string>
+    <string name="active_counted">依据 %1$s 记录的心率，覆盖这几天的 %2$s。在锻炼以外，只有附近记录了步数或距离的分钟才会计入。</string>
 </resources>

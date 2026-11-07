@@ -1067,4 +1067,24 @@
         <item quantity="many">%d خطوة</item>
         <item quantity="other">%d خطوة</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">الدقائق النشطة</string>
+    <string name="active_tile_caption">آخر 7 أيام · هدف منظمة الصحة العالمية</string>
+    <string name="active_tile_of">من %1$s</string>
+    <string name="active_none">لا يوجد معدل نبض في هذه الأيام</string>
+    <string name="active_no_access">تُقدَّر الدقائق النشطة من معدل النبض. اسمح للتطبيق بقراءة معدل النبض لرؤيتها.</string>
+    <string name="active_no_max_title">لا يوجد حد أقصى لمعدل النبض</string>
+    <string name="active_no_max">تُقاس الدقائق النشطة بالنسبة إلى الحد الأقصى لمعدل نبضك. حدِّده في الإعدادات، وإلا يستخرجه التطبيق من سنة من بيانات النبض، ولا يوجد منها ما يكفي بعد.</string>
+    <string name="active_week_total">دقيقة مرجّحة في هذه الأيام السبعة، من %1$s أسبوعيًا توصي بها منظمة الصحة العالمية</string>
+    <string name="active_week_mean">دقيقة مرجّحة أسبوعيًا في المتوسط، من %1$s توصي بها منظمة الصحة العالمية</string>
+    <string name="active_of">%1$s من %2$s</string>
+    <string name="active_moderate">معتدل: %1$s</string>
+    <string name="active_vigorous">شديد: %1$s، يُحسب مرتين</string>
+    <string name="active_left_out">لم تُحتسب %1$s بنبض مرتفع: كانت خارج التمرين، دون خطوات أو مسافة مسجلة بالقرب منها، كما عند الجلوس أثناء السفر.</string>
+    <string name="active_how_title">كيف تُحسب هذه الدقائق</string>
+    <string name="active_guideline">توصي منظمة الصحة العالمية بما لا يقل عن 150 دقيقة من النشاط المعتدل أو 75 دقيقة من النشاط الشديد أسبوعيًا، أو مزيج منهما. هنا تُحسب الدقيقة الشديدة مرتين. القيمة تقديرية من معدل نبضك وليست قياسًا.</string>
+    <string name="active_limits_reserve">تُعد الدقيقة معتدلة من %1$s bpm وشديدة من %2$s bpm: أي 40 %% و60 %% من احتياطي معدل نبضك، وهو المدى بين معدل نبضك أثناء الراحة والحد الأقصى.</string>
+    <string name="active_limits_max">تُعد الدقيقة معتدلة من %1$s bpm وشديدة من %2$s bpm: أي 64 %% و77 %% من الحد الأقصى لمعدل نبضك. بمجرد تسجيل معدل النبض أثناء الراحة، تتبع الحدود احتياطي معدل النبض بدلًا من ذلك.</string>
+    <string name="active_counted">من معدل النبض الذي سجّله %1$s، ويغطي %2$s من هذه الأيام. خارج التمرين لا تُحتسب الدقيقة إلا إذا سُجلت خطوات أو مسافة بالقرب منها.</string>
 </resources>

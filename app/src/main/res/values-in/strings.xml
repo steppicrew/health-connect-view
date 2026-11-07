@@ -917,4 +917,24 @@
     <plurals name="plan_goal_steps">
         <item quantity="other">%d langkah</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Menit aktif</string>
+    <string name="active_tile_caption">7 hari terakhir · target WHO</string>
+    <string name="active_tile_of">dari %1$s</string>
+    <string name="active_none">Tidak ada detak jantung pada hari-hari ini</string>
+    <string name="active_no_access">Menit aktif diperkirakan dari detak jantung. Izinkan aplikasi membaca detak jantung untuk melihatnya.</string>
+    <string name="active_no_max_title">Tidak ada detak jantung maksimum</string>
+    <string name="active_no_max">Menit aktif diukur terhadap detak jantung maksimum Anda. Atur di Setelan; jika tidak, aplikasi membacanya dari data detak jantung setahun, dan datanya belum cukup.</string>
+    <string name="active_week_total">menit berbobot dalam 7 hari ini, dari %1$s per minggu yang dianjurkan WHO</string>
+    <string name="active_week_mean">menit berbobot per minggu rata-rata, dari %1$s yang dianjurkan WHO</string>
+    <string name="active_of">%1$s dari %2$s</string>
+    <string name="active_moderate">Sedang: %1$s</string>
+    <string name="active_vigorous">Berat: %1$s, dihitung dua kali</string>
+    <string name="active_left_out">%1$s dengan denyut tinggi tidak dihitung: di luar latihan, tanpa langkah atau jarak tercatat di dekatnya, seperti saat duduk dalam perjalanan.</string>
+    <string name="active_how_title">Cara menit ini dihitung</string>
+    <string name="active_guideline">WHO menganjurkan setidaknya 150 menit aktivitas sedang atau 75 menit aktivitas berat per minggu, atau campuran keduanya. Di sini satu menit berat dihitung dua kali. Diperkirakan dari detak jantung Anda, bukan diukur.</string>
+    <string name="active_limits_reserve">Satu menit dihitung sedang mulai %1$s bpm dan berat mulai %2$s bpm: 40 %% dan 60 %% dari cadangan detak jantung Anda, yaitu rentang antara detak jantung istirahat dan maksimum.</string>
+    <string name="active_limits_max">Satu menit dihitung sedang mulai %1$s bpm dan berat mulai %2$s bpm: 64 %% dan 77 %% dari detak jantung maksimum Anda. Setelah detak jantung istirahat tercatat, batasnya mengikuti cadangan detak jantung Anda.</string>
+    <string name="active_counted">Dari detak jantung yang dicatat %1$s, yang mencakup %2$s dari hari-hari ini. Di luar latihan, satu menit hanya dihitung jika ada langkah atau jarak tercatat di dekatnya.</string>
 </resources>

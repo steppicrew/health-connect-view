@@ -46,6 +46,9 @@ fun AddTileDialog(
     insightsUnlocked: Boolean = false,
     /** Whether the cycle tile may be offered: a period recorded, and none pinned. */
     cycleOffered: Boolean = false,
+    /** Whether the active-minutes tile may be offered: not while one is pinned. */
+    activeOffered: Boolean = false,
+    activeUnlocked: Boolean = false,
 ) {
     val (pinned, fresh) = candidates.partition { it.pinned }
     AlertDialog(
@@ -73,7 +76,15 @@ fun AddTileDialog(
                         }
                     }
                 }
-                if (fresh.isEmpty() && !insightsOffered && !cycleOffered) {
+                if (activeOffered) {
+                    item(key = "active") {
+                        NamedRow(stringResource(R.string.active_title), locked = !activeUnlocked) {
+                            if (activeUnlocked) onAdd(Tile.ACTIVE) else onBuy()
+                            onDismiss()
+                        }
+                    }
+                }
+                if (fresh.isEmpty() && !insightsOffered && !cycleOffered && !activeOffered) {
                     item(key = "all-pinned") {
                         Text(
                             text = stringResource(R.string.dashboard_add_none),

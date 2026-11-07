@@ -917,4 +917,24 @@
     <plurals name="plan_goal_steps">
         <item quantity="other">%d보</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">활동 시간</string>
+    <string name="active_tile_caption">최근 7일 · WHO 목표</string>
+    <string name="active_tile_of">/ %1$s</string>
+    <string name="active_none">이 기간에 심박수가 없습니다</string>
+    <string name="active_no_access">활동 시간은 심박수로 추정합니다. 보려면 앱이 심박수를 읽도록 허용해 주세요.</string>
+    <string name="active_no_max_title">최대 심박수가 없습니다</string>
+    <string name="active_no_max">활동 시간은 최대 심박수를 기준으로 계산합니다. 설정에서 입력해 주세요. 입력하지 않으면 앱이 1년간의 심박수에서 읽어 오는데, 아직 데이터가 충분하지 않습니다.</string>
+    <string name="active_week_total">이 7일 동안의 가중 분 (WHO 권장 주 %1$s분 대비)</string>
+    <string name="active_week_mean">주당 평균 가중 분 (WHO 권장 %1$s분 대비)</string>
+    <string name="active_of">%1$s / %2$s</string>
+    <string name="active_moderate">중강도: %1$s</string>
+    <string name="active_vigorous">고강도: %1$s, 두 배로 계산</string>
+    <string name="active_left_out">맥박이 높았던 %1$s은 계산하지 않았습니다. 운동 중이 아니었고 근처에 걸음 수나 거리 기록이 없었기 때문입니다(이동 중 앉아 있을 때처럼).</string>
+    <string name="active_how_title">이 시간을 계산하는 방법</string>
+    <string name="active_guideline">WHO는 일주일에 중강도 활동 150분 이상 또는 고강도 활동 75분 이상, 혹은 둘을 섞어서 할 것을 권장합니다. 여기서는 고강도 1분을 두 배로 계산합니다. 측정값이 아니라 심박수로 추정한 값입니다.</string>
+    <string name="active_limits_reserve">%1$s bpm부터 중강도, %2$s bpm부터 고강도로 봅니다. 심박수 예비력(안정 시 심박수와 최대 심박수의 차이)의 40 %%와 60 %%입니다.</string>
+    <string name="active_limits_max">%1$s bpm부터 중강도, %2$s bpm부터 고강도로 봅니다. 최대 심박수의 64 %%와 77 %%입니다. 안정 시 심박수가 기록되면 대신 심박수 예비력을 기준으로 합니다.</string>
+    <string name="active_counted">%1$s에서 기록한 심박수를 기준으로 하며, 이 기간의 %2$s을 포함합니다. 운동 중이 아닐 때는 근처에 걸음 수나 거리 기록이 있는 분만 계산합니다.</string>
 </resources>

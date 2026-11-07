@@ -947,4 +947,24 @@
         <item quantity="one">%d कदम</item>
         <item quantity="other">%d कदम</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">सक्रिय मिनट</string>
+    <string name="active_tile_caption">पिछले 7 दिन · WHO लक्ष्य</string>
+    <string name="active_tile_of">%1$s में से</string>
+    <string name="active_none">इन दिनों में कोई हृदय गति नहीं</string>
+    <string name="active_no_access">सक्रिय मिनट हृदय गति से अनुमानित किए जाते हैं। उन्हें देखने के लिए ऐप को हृदय गति पढ़ने की अनुमति दें।</string>
+    <string name="active_no_max_title">कोई अधिकतम हृदय गति नहीं</string>
+    <string name="active_no_max">सक्रिय मिनट आपकी अधिकतम हृदय गति के आधार पर मापे जाते हैं। इसे सेटिंग में सेट करें; नहीं तो ऐप इसे एक साल की हृदय गति से पढ़ता है, और उसके लिए अभी पर्याप्त डेटा नहीं है।</string>
+    <string name="active_week_total">इन 7 दिनों में भारित मिनट, WHO द्वारा सुझाए गए प्रति सप्ताह %1$s में से</string>
+    <string name="active_week_mean">प्रति सप्ताह औसत भारित मिनट, WHO द्वारा सुझाए गए %1$s में से</string>
+    <string name="active_of">%2$s में से %1$s</string>
+    <string name="active_moderate">मध्यम: %1$s</string>
+    <string name="active_vigorous">तीव्र: %1$s, दोगुना गिना गया</string>
+    <string name="active_left_out">बढ़ी हुई नब्ज़ वाले %1$s नहीं गिने गए: वे किसी वर्कआउट के बाहर थे और उनके पास कोई कदम या दूरी दर्ज नहीं थी, जैसे यात्रा में बैठे रहने पर।</string>
+    <string name="active_how_title">ये मिनट कैसे बनते हैं</string>
+    <string name="active_guideline">WHO प्रति सप्ताह कम से कम 150 मिनट मध्यम या 75 मिनट तीव्र गतिविधि, या दोनों के मिश्रण की सलाह देता है। यहाँ एक तीव्र मिनट दोगुना गिना जाता है। यह आपकी हृदय गति से अनुमानित है, मापा नहीं गया।</string>
+    <string name="active_limits_reserve">एक मिनट %1$s bpm से मध्यम और %2$s bpm से तीव्र गिना जाता है: आपके हृदय गति रिज़र्व का 40 %% और 60 %%, यानी आराम की और अधिकतम हृदय गति के बीच का दायरा।</string>
+    <string name="active_limits_max">एक मिनट %1$s bpm से मध्यम और %2$s bpm से तीव्र गिना जाता है: आपकी अधिकतम हृदय गति का 64 %% और 77 %%। आराम की हृदय गति दर्ज होते ही सीमाएँ इसके बजाय आपके हृदय गति रिज़र्व के अनुसार होंगी।</string>
+    <string name="active_counted">%1$s द्वारा दर्ज हृदय गति से, जो इन दिनों के %2$s हिस्से को कवर करती है। वर्कआउट के बाहर कोई मिनट तभी गिना जाता है जब उसके पास कदम या दूरी दर्ज हो।</string>
 </resources>

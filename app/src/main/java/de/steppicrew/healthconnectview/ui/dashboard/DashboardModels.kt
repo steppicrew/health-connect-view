@@ -6,6 +6,7 @@ import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.insights.Insight
 import de.steppicrew.healthconnectview.dashboard.Tile
+import de.steppicrew.healthconnectview.ui.active.ActiveRead
 import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.CycleNow
 import de.steppicrew.healthconnectview.health.HealthRepository
@@ -193,6 +194,8 @@ data class DashboardUiState(
     val insights: InsightsTileData? = null,
     /** The cycle tile where one is pinned; placed by [layout] like the insights tile. */
     val cycle: CycleTileData? = null,
+    /** The active-minutes tile where one is pinned; placed by [layout] like the insights tile. */
+    val active: ActiveTileData? = null,
     /** Every tile's id in the stored order, the insights tile's among them. */
     val layout: List<String> = emptyList(),
 ) {
@@ -228,6 +231,16 @@ data class CycleTileData(
     /** Not allowed to read menstruation, which every cycle starts from. */
     val noAccess: Boolean = false,
     val failed: Boolean = false,
+)
+
+/**
+ * The active-minutes tile: the seven days up to the dashboard's day. [read] is null while it
+ * is read; [locked] without Pro, where the tile offers the purchase instead.
+ */
+data class ActiveTileData(
+    val tile: Tile,
+    val read: ActiveRead? = null,
+    val locked: Boolean = false,
 )
 
 /** A type the add picker offers, and whether a tile of it is already pinned. */

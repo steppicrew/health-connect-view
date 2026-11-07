@@ -54,4 +54,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** One kind of workout's speed and heart rate across the year, a dot per workout. */
     WORKOUT_TRENDS(isPremium = true),
+
+    /** Minutes of moderate and vigorous activity a week, estimated from heart rate, against the WHO's 150. */
+    ACTIVE_MINUTES(isPremium = true),
 }

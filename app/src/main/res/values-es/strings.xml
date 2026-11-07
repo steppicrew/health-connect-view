@@ -977,4 +977,24 @@
         <item quantity="many">%d pasos</item>
         <item quantity="other">%d pasos</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Minutos activos</string>
+    <string name="active_tile_caption">Últimos 7 días · objetivo OMS</string>
+    <string name="active_tile_of">de %1$s</string>
+    <string name="active_none">Sin frecuencia cardiaca en estos días</string>
+    <string name="active_no_access">Los minutos activos se estiman a partir de la frecuencia cardiaca. Permite que la app lea la frecuencia cardiaca para verlos.</string>
+    <string name="active_no_max_title">Sin frecuencia cardiaca máxima</string>
+    <string name="active_no_max">Los minutos activos se miden respecto a tu frecuencia cardiaca máxima. Fíjala en Ajustes; si no, la app la obtiene de un año de frecuencia cardiaca, y aún no hay suficiente.</string>
+    <string name="active_week_total">minutos ponderados en estos 7 días, de los %1$s semanales que recomienda la OMS</string>
+    <string name="active_week_mean">minutos ponderados por semana de media, de los %1$s que recomienda la OMS</string>
+    <string name="active_of">%1$s de %2$s</string>
+    <string name="active_moderate">Moderada: %1$s</string>
+    <string name="active_vigorous">Intensa: %1$s, cuenta doble</string>
+    <string name="active_left_out">No se contaron %1$s con el pulso elevado: fuera de un entrenamiento y sin pasos ni distancia registrados cerca, como al ir sentado en un viaje.</string>
+    <string name="active_how_title">Cómo se calculan estos minutos</string>
+    <string name="active_guideline">La OMS recomienda al menos 150 minutos de actividad moderada o 75 de actividad intensa a la semana, o una mezcla de ambas. Aquí un minuto intenso cuenta doble. Estimado a partir de tu frecuencia cardiaca, no medido.</string>
+    <string name="active_limits_reserve">Un minuto cuenta como moderado desde %1$s bpm y como intenso desde %2$s bpm: el 40 %% y el 60 %% de tu reserva cardiaca, el margen entre tu frecuencia cardiaca en reposo y la máxima.</string>
+    <string name="active_limits_max">Un minuto cuenta como moderado desde %1$s bpm y como intenso desde %2$s bpm: el 64 %% y el 77 %% de tu frecuencia cardiaca máxima. En cuanto haya una frecuencia cardiaca en reposo registrada, los límites siguen tu reserva cardiaca.</string>
+    <string name="active_counted">Según la frecuencia cardiaca registrada por %1$s, que cubre el %2$s de estos días. Fuera de un entrenamiento, un minuto solo cuenta si hay pasos o distancia registrados cerca.</string>
 </resources>

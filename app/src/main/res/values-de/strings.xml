@@ -949,4 +949,24 @@
         <item quantity="one">%d Schritt</item>
         <item quantity="other">%d Schritte</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Aktive Minuten</string>
+    <string name="active_tile_caption">Letzte 7 Tage · WHO-Ziel</string>
+    <string name="active_tile_of">von %1$s</string>
+    <string name="active_none">Keine Herzfrequenz an diesen Tagen</string>
+    <string name="active_no_access">Aktive Minuten werden aus der Herzfrequenz geschätzt. Geben Sie der App die Herzfrequenz frei, um sie zu sehen.</string>
+    <string name="active_no_max_title">Keine maximale Herzfrequenz</string>
+    <string name="active_no_max">Aktive Minuten werden an Ihrer maximalen Herzfrequenz gemessen. Legen Sie sie in den Einstellungen fest; sonst liest die App sie aus einem Jahr Herzfrequenz, und dafür gibt es noch nicht genug Daten.</string>
+    <string name="active_week_total">gewichtete Minuten in diesen 7 Tagen, von den %1$s pro Woche, die die WHO empfiehlt</string>
+    <string name="active_week_mean">gewichtete Minuten pro Woche im Mittel, von den %1$s, die die WHO empfiehlt</string>
+    <string name="active_of">%1$s von %2$s</string>
+    <string name="active_moderate">Moderat: %1$s</string>
+    <string name="active_vigorous">Intensiv: %1$s, doppelt gezählt</string>
+    <string name="active_left_out">%1$s mit erhöhtem Puls wurden nicht gezählt: Sie lagen außerhalb eines Trainings, ohne Schritte oder Strecke in der Nähe, wie beim Sitzen auf einer Reise.</string>
+    <string name="active_how_title">Wie diese Minuten entstehen</string>
+    <string name="active_guideline">Die WHO empfiehlt mindestens 150 Minuten moderate oder 75 Minuten intensive Bewegung pro Woche oder eine Mischung aus beidem. Eine intensive Minute zählt hier doppelt. Aus Ihrer Herzfrequenz geschätzt, nicht gemessen.</string>
+    <string name="active_limits_reserve">Eine Minute zählt als moderat ab %1$s bpm und als intensiv ab %2$s bpm: 40 %% und 60 %% Ihrer Herzfrequenzreserve, der Spanne zwischen Ruhe- und maximaler Herzfrequenz.</string>
+    <string name="active_limits_max">Eine Minute zählt als moderat ab %1$s bpm und als intensiv ab %2$s bpm: 64 %% und 77 %% Ihrer maximalen Herzfrequenz. Sobald eine Ruheherzfrequenz erfasst ist, richten sich die Grenzen stattdessen nach Ihrer Herzfrequenzreserve.</string>
+    <string name="active_counted">Aus der Herzfrequenz, die %1$s erfasst hat; sie deckt %2$s dieser Tage ab. Außerhalb eines Trainings zählt eine Minute nur, wenn in ihrer Nähe Schritte oder Strecke erfasst wurden.</string>
 </resources>

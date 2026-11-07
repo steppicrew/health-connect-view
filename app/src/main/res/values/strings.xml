@@ -985,4 +985,24 @@
         <item quantity="one">%d step</item>
         <item quantity="other">%d steps</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Active minutes</string>
+    <string name="active_tile_caption">Last 7 days · WHO goal</string>
+    <string name="active_tile_of">of %1$s</string>
+    <string name="active_none">No heart rate in these days</string>
+    <string name="active_no_access">Active minutes are estimated from heart rate. Allow the app to read heart rate to see them.</string>
+    <string name="active_no_max_title">No maximum heart rate</string>
+    <string name="active_no_max">Active minutes are measured against your maximum heart rate. Set it in Settings; otherwise the app reads it from a year of heart rate, and there is not enough of that yet.</string>
+    <string name="active_week_total">weighted minutes these 7 days, of the %1$s a week the WHO recommends</string>
+    <string name="active_week_mean">weighted minutes a week on average, of the %1$s the WHO recommends</string>
+    <string name="active_of">%1$s of %2$s</string>
+    <string name="active_moderate">Moderate: %1$s</string>
+    <string name="active_vigorous">Vigorous: %1$s, counted twice</string>
+    <string name="active_left_out">%1$s with a raised pulse were not counted: they were outside a workout, with no steps or distance recorded near them, as when sitting on a journey.</string>
+    <string name="active_how_title">How these minutes are made</string>
+    <string name="active_guideline">The WHO recommends at least 150 minutes of moderate or 75 minutes of vigorous activity a week, or a mix of both. Here a vigorous minute counts twice. Estimated from your heart rate, not measured.</string>
+    <string name="active_limits_reserve">A minute counts as moderate from %1$s bpm and as vigorous from %2$s bpm: 40 %% and 60 %% of your heart-rate reserve, the range between your resting and your maximum heart rate.</string>
+    <string name="active_limits_max">A minute counts as moderate from %1$s bpm and as vigorous from %2$s bpm: 64 %% and 77 %% of your maximum heart rate. Once a resting heart rate is recorded, the limits follow your heart-rate reserve instead.</string>
+    <string name="active_counted">From the heart rate %1$s recorded, which covers %2$s of these days. Outside a workout a minute counts only where steps or distance were recorded near it.</string>
 </resources>

@@ -5,6 +5,8 @@ import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionScreen
 import de.steppicrew.healthconnectview.ui.compare.CompareScreen
+import de.steppicrew.healthconnectview.ui.active.ActiveMinutesScreen
+import de.steppicrew.healthconnectview.ui.active.ActiveMinutesViewModel
 import de.steppicrew.healthconnectview.ui.insights.InsightsScreen
 import de.steppicrew.healthconnectview.ui.insights.InsightsViewModel
 import de.steppicrew.healthconnectview.ui.compare.CompareViewModel
@@ -60,6 +62,10 @@ object Routes {
 
     const val INSIGHTS = "insights?date={date}"
 
+    const val ACTIVE = "active?date={date}"
+
+    fun active(date: String = "") = "active?date=$date"
+
     fun insights(date: String = "") = "insights?date=$date"
 
     const val COMPARE = "compare/{first}/{second}?span={span}&date={date}"
@@ -103,6 +109,7 @@ fun HealthNavGraph(
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onOpenInsights = { navController.navigate(Routes.insights()) },
                 onOpenCycle = { navController.navigate(Routes.cycle()) },
+                onOpenActive = { navController.navigate(Routes.active(it)) },
                 onGrantAccess = { navController.navigate(Routes.PERMISSIONS) },
                 onOpenBody = { navController.navigate(Routes.BODY) },
                 onOpenSession = { navController.navigate(Routes.session(it)) },
@@ -274,6 +281,26 @@ fun HealthNavGraph(
                 // nothing yet just after midnight.
                 onOpenType = { type -> navController.navigate(Routes.tileDetail(type, (date ?: LocalDate.now()).toString(), Span.MONTH)) },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+            )
+        }
+
+        composable(
+            route = Routes.ACTIVE,
+            arguments = listOf(
+                navArgument("date") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+            ),
+        ) { entry ->
+            val date = entry.arguments?.getString("date")?.let { catching { LocalDate.parse(it) }.getOrNull() }
+            val viewModel: ActiveMinutesViewModel = viewModel()
+            LaunchedEffect(viewModel) { viewModel.start(date) }
+            ActiveMinutesScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
+                onOpenSettings = { navController.navigate(Routes.SETTINGS) },
             )
         }
 

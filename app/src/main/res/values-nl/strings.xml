@@ -947,4 +947,24 @@
         <item quantity="one">%d stap</item>
         <item quantity="other">%d stappen</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Actieve minuten</string>
+    <string name="active_tile_caption">Laatste 7 dagen · WHO-doel</string>
+    <string name="active_tile_of">van %1$s</string>
+    <string name="active_none">Geen hartslag op deze dagen</string>
+    <string name="active_no_access">Actieve minuten worden geschat uit de hartslag. Geef de app toegang tot je hartslag om ze te zien.</string>
+    <string name="active_no_max_title">Geen maximale hartslag</string>
+    <string name="active_no_max">Actieve minuten worden afgemeten aan je maximale hartslag. Stel die in bij Instellingen; anders haalt de app hem uit een jaar hartslag, en daarvoor is er nog niet genoeg.</string>
+    <string name="active_week_total">gewogen minuten deze 7 dagen, van de %1$s per week die de WHO aanraadt</string>
+    <string name="active_week_mean">gewogen minuten per week gemiddeld, van de %1$s die de WHO aanraadt</string>
+    <string name="active_of">%1$s van %2$s</string>
+    <string name="active_moderate">Matig: %1$s</string>
+    <string name="active_vigorous">Intensief: %1$s, telt dubbel</string>
+    <string name="active_left_out">%1$s met een verhoogde hartslag zijn niet meegeteld: buiten een training, zonder stappen of afstand in de buurt, zoals zittend op reis.</string>
+    <string name="active_how_title">Hoe deze minuten tot stand komen</string>
+    <string name="active_guideline">De WHO raadt minstens 150 minuten matige of 75 minuten intensieve beweging per week aan, of een mix van beide. Een intensieve minuut telt hier dubbel. Geschat uit je hartslag, niet gemeten.</string>
+    <string name="active_limits_reserve">Een minuut telt als matig vanaf %1$s bpm en als intensief vanaf %2$s bpm: 40 %% en 60 %% van je hartslagreserve, het bereik tussen je rust- en je maximale hartslag.</string>
+    <string name="active_limits_max">Een minuut telt als matig vanaf %1$s bpm en als intensief vanaf %2$s bpm: 64 %% en 77 %% van je maximale hartslag. Zodra er een rusthartslag is vastgelegd, volgen de grenzen in plaats daarvan je hartslagreserve.</string>
+    <string name="active_counted">Uit de hartslag die %1$s heeft vastgelegd, die %2$s van deze dagen beslaat. Buiten een training telt een minuut alleen als er in de buurt stappen of afstand zijn vastgelegd.</string>
 </resources>

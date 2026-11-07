@@ -7,6 +7,7 @@ import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.metadata.DataOrigin
 import androidx.health.connect.client.time.TimeRangeFilter
+import android.util.Log
 import de.steppicrew.healthconnectview.registry.Point
 import de.steppicrew.healthconnectview.util.catching
 import java.time.Duration
@@ -34,6 +35,8 @@ data class ActiveMinutes(
     val leftOut: Int,
     /** Share of the window's minutes the readings cover, 0 to 1. */
     val coverage: Double,
+    /** Where the [leftOut] minutes lie, runs within [JOIN_GAP] of each other joined. */
+    val unconfirmed: List<Pair<Instant, Instant>> = emptyList(),
 ) {
     val moderate: Int get() = days.sumOf { it.moderate }
     val vigorous: Int get() = days.sumOf { it.vigorous }
@@ -119,6 +122,7 @@ fun activeMinutes(
     val vigorous = IntArray(minutes)
     var covered = 0
     var leftOut = 0
+    val unconfirmed = mutableListOf<Pair<Instant, Instant>>()
     for (minute in 0 until minutes) {
         val total = seconds.sumOf { it[minute] }
         if (total < 30) continue
@@ -127,6 +131,13 @@ fun activeMinutes(
         if (level == RESTING) continue
         if (!inWorkout[minute] && !moving[minute]) {
             leftOut++
+            val from = start.plusSeconds(minute * 60L)
+            val last = unconfirmed.lastOrNull()
+            if (last != null && Duration.between(last.second, from) <= JOIN_GAP) {
+                unconfirmed[unconfirmed.size - 1] = last.first to from.plusSeconds(60)
+            } else {
+                unconfirmed += from to from.plusSeconds(60)
+            }
             continue
         }
         if (level == VIGOROUS) vigorous[minute] = 1 else moderate[minute] = 1
@@ -136,7 +147,7 @@ fun activeMinutes(
         val to = Duration.between(start, date.plusDays(1).atStartOfDay(zone).toInstant()).toMinutes().toInt()
         ActiveDay(date, (from until to).sumOf { moderate[it] }, (from until to).sumOf { vigorous[it] })
     }.toList()
-    return ActiveMinutes(days, limits, writer, leftOut, if (minutes == 0) 0.0 else covered.toDouble() / minutes)
+    return ActiveMinutes(days, limits, writer, leftOut, if (minutes == 0) 0.0 else covered.toDouble() / minutes, unconfirmed)
 }
 
 /** The minutes any of [spans] touches, widened by [margin] either side. */
@@ -152,8 +163,8 @@ private fun marked(minutes: Int, start: Instant, spans: List<Pair<Instant, Insta
 }
 
 /**
- * The days from [first] to [last] read from Health Connect, or null where there is no
- * maximum heart rate to measure against or no reading in the window.
+ * The days from [first] to [last] read from Health Connect against [max], or null where there
+ * is no reading in the window.
  *
  * One writer only, [preferred] if it wrote heart rate on the last day read, otherwise the one
  * whose readings covered most of it, the sparser of two that cover about as much: reading every
@@ -164,20 +175,28 @@ private fun marked(minutes: Int, start: Instant, spans: List<Pair<Instant, Insta
 suspend fun HealthRepository.readActiveMinutes(
     first: LocalDate,
     last: LocalDate,
-    max: Int?,
+    max: Int,
     preferred: String?,
     zone: ZoneId = HealthRepository.DEFAULT_ZONE,
 ): ActiveMinutes? {
-    val chosenMax = max ?: observedMaxHeartRate(last) ?: return null
     val start = first.atStartOfDay(zone).toInstant()
     val end = minOf(last.plusDays(1).atStartOfDay(zone).toInstant(), Instant.now())
     if (!end.isAfter(start)) return null
+    var mark = System.currentTimeMillis()
+    // Timings only, never a reading: which of the reads costs what is worth seeing from adb.
+    fun lap(step: String) {
+        val now = System.currentTimeMillis()
+        Log.i(TAG, "$step ${now - mark} ms")
+        mark = now
+    }
     val writer = activeWriter(end, preferred) ?: return null
+    lap("writer")
     val range = TimeRangeFilter.between(start, end)
 
     val restingFrom = last.minusDays(RESTING_DAYS).atStartOfDay(zone).toInstant()
     val resting = read(RestingHeartRateRecord::class, TimeRangeFilter.between(restingFrom, end))
         .map { it.beatsPerMinute.toInt() }.sorted().let { it.getOrNull(it.size / 2) }
+    lap("resting")
 
     val points = mutableListOf<Point>()
     forEachPage(HeartRateRecord::class, range, setOf(DataOrigin(writer))) { page ->
@@ -187,8 +206,14 @@ suspend fun HealthRepository.readActiveMinutes(
     }
     if (points.isEmpty()) return null
     points.sortBy { it.time }
+    lap("heart rate")
 
     val workouts = read(ExerciseSessionRecord::class, range).map { it.startTime to it.endTime }
+    lap("workouts")
+    // Steps first, over the whole window; distance only where steps left a minute unconfirmed.
+    // A day of distance can be thousands of small records -- the whole week took 26 s on the
+    // phone -- and only a ride or a walk the step counter missed needs it.
+    val limits = activeLimits(max, resting)
     val movement = mutableListOf<Pair<Instant, Instant>>()
     fun short(from: Instant, until: Instant) = Duration.between(from, until) <= LONGEST_MOVEMENT
     catching {
@@ -196,12 +221,19 @@ suspend fun HealthRepository.readActiveMinutes(
             page.filter { short(it.startTime, it.endTime) }.forEach { movement += it.startTime to it.endTime }
         }
     }
-    catching {
-        forEachPage(DistanceRecord::class, range) { page ->
-            page.filter { short(it.startTime, it.endTime) }.forEach { movement += it.startTime to it.endTime }
+    lap("steps")
+    val bySteps = activeMinutes(points, first, last, zone, limits, workouts, movement, writer)
+    if (bySteps.unconfirmed.isEmpty()) return bySteps
+    bySteps.unconfirmed.forEach { (from, until) ->
+        catching {
+            val around = TimeRangeFilter.between(from.minus(LONGEST_MOVEMENT), until.plusSeconds(60))
+            forEachPage(DistanceRecord::class, around) { page ->
+                page.filter { short(it.startTime, it.endTime) }.forEach { movement += it.startTime to it.endTime }
+            }
         }
     }
-    return activeMinutes(points, first, last, zone, activeLimits(chosenMax, resting), workouts, movement, writer)
+    lap("distance (${bySteps.unconfirmed.size} spans)")
+    return activeMinutes(points, first, last, zone, limits, workouts, movement, writer)
 }
 
 /** The writer to read; see [readActiveMinutes]. From the day before [end]. */
@@ -233,6 +265,7 @@ fun chooseWriter(byWriter: Map<String, List<Instant>>): String? {
 /** The WHO guideline: 150 moderate minutes a week, or 75 vigorous. */
 const val WHO_WEEKLY = 150
 
+private const val TAG = "ActiveMinutes"
 private const val RESTING = 0
 private const val MODERATE = 1
 private const val VIGOROUS = 2
@@ -245,3 +278,4 @@ private const val RESTING_DAYS = 30L
 private val SHORTEST_CAP: Duration = Duration.ofMinutes(1)
 private val LONGEST_CAP: Duration = Duration.ofMinutes(5)
 private val LONGEST_MOVEMENT: Duration = Duration.ofMinutes(15)
+private val JOIN_GAP: Duration = Duration.ofMinutes(30)
