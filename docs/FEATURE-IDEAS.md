@@ -124,6 +124,47 @@ run. Not scored yet.
 - **Open:** a day trip across a border with no zone change is not a travel day by this
   signal; a phone set to a zone by hand, or a writer that records no offset, gives none.
 
+## Active minutes against the WHO guideline
+
+Asked for by a Pro user, 07.11.2026, as the points one fitness app gives for the WHO
+guideline. Health Connect has no type for such points or for active minutes, so no writer can
+pass them on; the app would have to estimate them from heart rate. Not scored yet. The
+guideline is 150 minutes of moderate activity a week, or 75 vigorous, a vigorous minute
+counting twice. Since 2020 every minute counts, not only bouts of ten.
+
+Sketch:
+
+- **Source: all-day heart rate**, read with `forEachPage` and reduced page by page to one
+  intensity per minute (none, moderate, vigorous), so a week is 10,080 small values in memory
+  and no reading is kept. Not `readForChart`, which thins away the minutes, and not a
+  per-minute `aggregateGroupByDuration`: the cost grows with the buckets (365 daily buckets
+  took 55 s on the phone).
+- **Thresholds from heart-rate reserve** (Karvonen): moderate from 40 %, vigorous from 60 % of
+  the span between resting and maximum heart rate. Resting from `RestingHeartRateRecord`
+  (median of the past 30 days); maximum from settings or `observedMaxHeartRate`, as the
+  workout zones do. Where resting is missing, shares of the maximum instead (64 % and 77 %),
+  and the screen says which was used.
+- **One writer per minute, never added up.** A minute is classified from one writer's
+  readings: the preferred source if one is set, otherwise the writer with most readings that
+  day. Counting minutes on one timeline cannot double-count the way summing values does, but
+  two writers disagreeing on the same minute must not make it count twice either.
+- **Gaps count as nothing.** Each reading counts until the next for at most a cap, as
+  `heartZones` does with `LONGEST_SAMPLE`; all-day sampling is sparser than in a workout
+  (often one reading a minute or less), so the cap needs measuring on the phone. The screen
+  shows how much of the waking day had readings, since a watch that samples every ten minutes
+  will show far fewer active minutes than were done.
+- **Shown as a week**, a ring against 150 (moderate plus twice vigorous) on a dashboard tile,
+  with each day as a stacked bar of moderate and vigorous on the detail screen. Weeks and
+  four weeks only: a year of readings is millions of samples.
+- **Wording:** "estimated from your heart rate", with the thresholds behind an "i". Neutral
+  name ("Aktive Minuten"), never the other app's term for its points.
+
+Open questions to measure first: whether stress or caffeine at rest puts minutes over 40 %
+of reserve (perhaps require two minutes in a row); how many readings an hour the common
+writers leave outside workouts; how long a week's read takes on the phone. A later second
+source: step cadence (100 steps a minute or more is moderate) for days without heart rate,
+though minute-level steps run into the intraday double-counting in `CLAUDE.md`.
+
 ## Everyday usability
 
 - A local reminder if, say, no blood pressure reading has been logged by mid-afternoon (on-device notification, no server needed).
