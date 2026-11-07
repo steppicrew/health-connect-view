@@ -44,6 +44,7 @@ Wszystko powyżej jest bezpłatne i takie pozostanie. Pro, jednorazowy zakup, od
 • Ten miesiąc obok tego samego miesiąca rok wcześniej.
 • Rytm snu: jak regularnie kładziesz się spać i wstajesz.
 • Jeden rodzaj treningu w ciągu roku: prędkość lub tempo oraz tętno.
+• Aktywne minuty wobec 150 tygodniowo zalecanych przez WHO, szacowane na podstawie tętna.
 • Kilka kafelków dla jednej wartości, kolory kafelków, skład ciała, dwie wartości na jednej osi czasu, trasy jako pliki GPX.
 • Wszystkie przyszłe funkcje Pro bez dodatkowych opłat.
 

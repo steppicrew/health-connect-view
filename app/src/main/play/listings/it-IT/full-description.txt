@@ -28,7 +28,7 @@ Le autorizzazioni vengono richieste un tipo alla volta, e nulla è preselezionat
 
 TOTALI CORRETTI
 
-Quando più app registrano la stessa cosa — un telefono e un orologio che contano i passi — le registrazioni si sovrappongono. Questa app usa l’aggregazione di Connessione Salute per eliminare i duplicati, così i totali giornalieri non sono contati due volte.
+Quando più app registrano la stessa cosa, le registrazioni si sovrappongono. Questa app usa l’aggregazione di Connessione Salute per eliminare i duplicati, così i totali giornalieri non sono contati due volte.
 
 Connessione Salute non collega un allenamento alle misurazioni prese durante. L’app le abbina per orario e lo dice.
 
@@ -44,10 +44,9 @@ Tutto quanto sopra è gratuito e lo resterà. Pro, un acquisto unico, sblocca:
 • Questo mese accanto allo stesso mese dell’anno prima.
 • Ritmo del sonno: quanto sono regolari i tuoi orari di sonno e risveglio.
 • Un tipo di allenamento nell’arco dell’anno: velocità o passo e frequenza cardiaca.
+• Minuti attivi rispetto ai 150 settimanali dell’OMS, stimati dalla tua frequenza cardiaca.
 • Più riquadri per valore, colori dei riquadri, composizione corporea, due valori su un unico asse del tempo, percorsi come file GPX.
 • Tutte le future funzioni Pro, senza costi aggiuntivi.
-
-Gli acquisti seguono il tuo account Google su un nuovo telefono.
 
 OPEN SOURCE
 
