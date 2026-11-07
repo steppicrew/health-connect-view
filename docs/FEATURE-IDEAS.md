@@ -159,9 +159,27 @@ Sketch:
 - **Wording:** "estimated from your heart rate", with the thresholds behind an "i". Neutral
   name ("Aktive Minuten"), never the other app's term for its points.
 
-Open questions to measure first: whether stress or caffeine at rest puts minutes over 40 %
-of reserve (perhaps require two minutes in a row); how many readings an hour the common
-writers leave outside workouts; how long a week's read takes on the phone. A later second
+Measured on the phone 07.11.2026 (`ActivityMinutesActivity`, 7 and 28 days, three heart-rate
+writers):
+
+- **Sampling outside workouts:** the watch's own app writes every 120 s, Health Sync every
+  15 s, both steady (p90 = median). The gap cap must therefore follow the writer, not be one
+  constant: at a 60 s cap the 120 s writer covers only half the day and every active minute
+  comes out "lone". At a cap of at least its interval both writers cover 96 % of the waking
+  day and agree on the share of active minutes and its vigorous part to the percent. So the
+  sparse writer is enough, and it is the cheap one to read.
+- **Lone minutes:** 6-9 % of the active minutes outside workouts, at 15 s sampling. A
+  two-minute rule would cut little; not worth it yet.
+- **Without steps:** over 28 days 27 % of the active minutes outside workouts had no step
+  record within a minute either side (0 % over 7 days). Either rides or other movement logged
+  without a session, or a raised pulse at rest. This is the real uncertainty; look at which
+  before shipping.
+- **Most active minutes fall in workouts** (70-85 %), so the session zones already give most
+  of the figure.
+- **Read time:** 7 days 1.1 s; 28 days 18 s over every writer (223,000 samples). Reading only
+  the one chosen writer (`origins`), ideally the sparse one, is required for four weeks.
+
+A later second
 source: step cadence (100 steps a minute or more is moderate) for days without heart rate,
 though minute-level steps run into the intraday double-counting in `CLAUDE.md`.
 
