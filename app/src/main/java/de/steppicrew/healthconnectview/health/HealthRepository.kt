@@ -330,14 +330,27 @@ class HealthRepository private constructor(
         also: Set<AggregateMetric<*>> = emptySet(),
     ): List<AggregationResultGroupedByPeriod> = ask({ periods }, listOf("periods", setOf(metric) + also, range, bucket, origins)) {
         withContext(Dispatchers.IO) {
-            client.aggregateGroupByPeriod(
-                AggregateGroupByPeriodRequest(
-                    metrics = setOf(metric) + also,
-                    timeRangeFilter = range,
-                    timeRangeSlicer = bucket,
-                    dataOriginFilter = origins,
-                ),
-            )
+            val start = range.localStartTime
+            val end = range.localEndTime
+            val pieces = if (start != null && end != null) aggregationPieces(start, end, bucket) else null
+            if (pieces == null) {
+                client.aggregateGroupByPeriod(
+                    AggregateGroupByPeriodRequest(setOf(metric) + also, range, bucket, origins),
+                )
+            } else {
+                // One after another: Health Connect answers them one at a time anyway, and
+                // between two pieces another tile's call gets its turn.
+                pieces.flatMap { piece ->
+                    client.aggregateGroupByPeriod(
+                        AggregateGroupByPeriodRequest(
+                            metrics = setOf(metric) + also,
+                            timeRangeFilter = TimeRangeFilter.between(piece.from, piece.to),
+                            timeRangeSlicer = bucket,
+                            dataOriginFilter = origins,
+                        ),
+                    ).filter { it.startTime >= piece.keepFrom }
+                }
+            }
         }
     }
 
