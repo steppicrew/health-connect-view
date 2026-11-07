@@ -28,7 +28,7 @@ Izin diminta per jenis data, dan tidak ada yang dipilih secara default. Izinkan 
 
 TOTAL YANG TEPAT
 
-Saat beberapa aplikasi mencatat hal yang sama — ponsel dan jam tangan yang sama-sama menghitung langkah — catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali.
+Saat beberapa aplikasi mencatat hal yang sama, catatannya tumpang tindih. Aplikasi ini memakai agregasi Health Connect sendiri untuk menghapus duplikat, sehingga total harian tidak terhitung dua kali.
 
 Health Connect tidak mengaitkan latihan dengan hasil ukur selama latihan itu. Aplikasi mencocokkannya menurut waktu dan menyebutkannya.
 
@@ -44,10 +44,9 @@ Semua yang di atas gratis dan akan tetap gratis. Pro, sekali beli, membuka:
 • Bulan ini di samping bulan yang sama tahun lalu.
 • Ritme tidur: seberapa teratur jam tidur dan bangun Anda.
 • Satu jenis latihan selama setahun: kecepatan atau pace, dan detak jantung.
+• Menit aktif dibandingkan 150 menit per minggu dari WHO, diperkirakan dari detak jantung Anda.
 • Beberapa kartu per angka, warna kartu, komposisi tubuh, dua angka pada satu sumbu waktu, rute sebagai file GPX.
 • Semua fitur Pro mendatang, tanpa biaya tambahan.
-
-Pembelian ikut pindah bersama akun Google Anda ke ponsel baru.
 
 OPEN SOURCE
 

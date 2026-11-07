@@ -28,7 +28,7 @@ Los permisos se piden tipo por tipo y no hay nada seleccionado de antemano. Perm
 
 TOTALES CORRECTOS
 
-Cuando varias apps registran lo mismo — un teléfono y un reloj contando pasos —, sus registros se solapan. Esta aplicación usa la agregación de Health Connect para eliminar duplicados, así que los totales diarios no se cuentan dos veces.
+Cuando varias apps registran lo mismo, sus registros se solapan. Esta aplicación usa la agregación de Health Connect para eliminar duplicados, así que los totales diarios no se cuentan dos veces.
 
 Health Connect no vincula un entrenamiento con las mediciones tomadas durante él. Esta aplicación las asigna por la hora y lo dice.
 
@@ -44,10 +44,9 @@ Todo lo anterior es gratis y lo seguirá siendo. Pro, un pago único, desbloquea
 • Este mes junto al mismo mes del año anterior.
 • Ritmo de sueño: lo regulares que son tus horas de acostarte y levantarte.
 • Un tipo de entrenamiento a lo largo del año: velocidad o ritmo y frecuencia cardíaca.
+• Minutos activos frente a los 150 semanales de la OMS, estimados a partir de tu frecuencia cardíaca.
 • Varios mosaicos por cifra, colores de mosaico, composición corporal, dos cifras en un mismo eje de tiempo, rutas como archivos GPX.
 • Todas las funciones Pro futuras, sin coste adicional.
-
-Las compras siguen a tu cuenta de Google a un teléfono nuevo.
 
 CÓDIGO ABIERTO
 

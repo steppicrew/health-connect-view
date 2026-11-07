@@ -44,10 +44,9 @@ Everything above is free and stays free. Pro is a single in-app purchase that un
 • This month beside the same month last year, on one chart.
 • Sleep rhythm: how regular your bedtimes and wake times are.
 • One kind of workout across the year: speed or pace and heart rate.
+• Active minutes against the WHO's 150 a week, estimated from your heart rate.
 • Several tiles per figure, tile colours, body composition, two figures on one time axis, routes as GPX files.
 • Every future Pro feature, with no further charge.
-
-Purchases follow your Google account to a new phone.
 
 OPEN SOURCE
 

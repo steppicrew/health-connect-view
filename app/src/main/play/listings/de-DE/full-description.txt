@@ -28,7 +28,7 @@ Berechtigungen werden pro Datentyp angefragt, nichts ist vorausgewählt. Geben S
 
 KORREKTE SUMMEN
 
-Wenn mehrere Apps dasselbe aufzeichnen — Handy und Uhr zählen beide Schritte —, überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, damit nichts doppelt zählt.
+Wenn mehrere Apps dasselbe aufzeichnen, überschneiden sich ihre Datensätze. Diese App nutzt die Entdopplung von Health Connect, damit nichts doppelt zählt.
 
 Health Connect verknüpft ein Training nicht mit den dabei erfassten Messwerten. Diese App ordnet sie über die Zeit zu und sagt das.
 
@@ -44,10 +44,9 @@ Alles oben ist kostenlos und bleibt es. Pro schaltet mit einem einmaligen Kauf f
 • Dieser Monat neben demselben Monat des Vorjahres, in einem Diagramm.
 • Schlafrhythmus: wie regelmäßig Sie zu Bett gehen und aufstehen.
 • Eine Trainingsart über das Jahr: Geschwindigkeit oder Tempo und Herzfrequenz.
+• Aktive Minuten, gemessen an den 150 pro Woche der WHO, aus Ihrer Herzfrequenz geschätzt.
 • Mehrere Kacheln pro Wert, Kachelfarben, Körperzusammensetzung, zwei Werte auf einer Zeitachse, Routen als GPX-Datei.
 • Alle künftigen Pro-Funktionen, ohne weitere Kosten.
-
-Der Kauf zieht mit Ihrem Google-Konto auf ein neues Handy um.
 
 OPEN SOURCE
 

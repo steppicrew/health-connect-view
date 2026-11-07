@@ -44,10 +44,9 @@ Tudo acima é gratuito e vai continuar assim. O Pro, uma compra única, desbloqu
 • Este mês ao lado do mesmo mês do ano anterior.
 • Ritmo do sono: o quanto são regulares seus horários de dormir e acordar.
 • Um tipo de treino ao longo do ano: velocidade ou ritmo e frequência cardíaca.
+• Minutos ativos em relação aos 150 semanais da OMS, estimados pela sua frequência cardíaca.
 • Vários blocos por número, cores de bloco, composição corporal, dois números em um mesmo eixo de tempo, trajetos como arquivos GPX.
 • Todos os recursos Pro futuros, sem custo adicional.
-
-As compras acompanham sua conta do Google em um novo smartphone.
 
 CÓDIGO ABERTO
 
