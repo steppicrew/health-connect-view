@@ -7,6 +7,7 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.aggregate.AggregateMetric
 import androidx.health.connect.client.aggregate.AggregationResultGroupedByPeriod
 import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.time.TimeRangeFilter
@@ -26,7 +27,11 @@ import java.time.Period
  * twelve monthly ones 5.4 s, and every other call waited behind the single request. Steps took
  * about a second either way.
  *
+ * It also times a year of monthly heart-rate maxima, which stays one request: 5.2 s, against
+ * 14.7 s month by month (07.11.2026) -- for heart rate each request costs more than the range.
+ *
  *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.YearSplitActivity
+ *   adb shell am start -n <pkg>/de.steppicrew.healthconnectview.debug.YearSplitActivity -e only hr
  *
  * Logs times, bucket counts, dates and relative differences -- never a value. Stays open until
  * done: Health Connect refuses aggregates once the activity is in the background.
@@ -42,11 +47,13 @@ class YearSplitActivity : ComponentActivity() {
             val end = LocalDate.now()
             val start = end.minusDays(YEAR_DAYS)
             val range = TimeRangeFilter.between(start.atStartOfDay(), end.atStartOfDay())
-            val cases = listOf(
+            val cases = mutableListOf(
                 Triple("distance daily", DistanceRecord.DISTANCE_TOTAL, Period.ofDays(1)),
                 Triple("distance weekly", DistanceRecord.DISTANCE_TOTAL, Period.ofWeeks(1)),
                 Triple("steps daily", StepsRecord.COUNT_TOTAL, Period.ofDays(1)),
             )
+            heartRateMaxima(client)
+            if (intent.getStringExtra("only") == "hr") cases.clear()
             for ((name, metric, bucket) in cases) {
                 val whole = timed("$name one request") {
                     client.aggregateGroupByPeriod(AggregateGroupByPeriodRequest(setOf(metric), range, bucket))
@@ -57,6 +64,37 @@ class YearSplitActivity : ComponentActivity() {
             Log.i(TAG, "done")
             finish()
         }
+    }
+
+    /**
+     * A year of monthly heart-rate maxima, as [de.steppicrew.healthconnectview.health.observedMaxHeartRate]
+     * asks for it: one request (5 s on the owner's phone, on every cold start), against a month
+     * per request without and with a month of lead-in that is dropped.
+     */
+    private suspend fun heartRateMaxima(client: HealthConnectClient) {
+        val metric = HeartRateRecord.BPM_MAX
+        val today = LocalDate.now()
+        val start = today.minusYears(1).withDayOfMonth(1).atStartOfDay()
+        val end = today.plusDays(1).atStartOfDay()
+        val month = Period.ofMonths(1)
+        val starts = generateSequence(start) { it.plus(month) }.takeWhile { it.isBefore(end) }.toList()
+        suspend fun ask(from: java.time.LocalDateTime, to: java.time.LocalDateTime) =
+            client.aggregateGroupByPeriod(
+                AggregateGroupByPeriodRequest(setOf(metric), TimeRangeFilter.between(from, to), month),
+            )
+        val whole = timed("hr max one request") { ask(start, end) }
+        val single = timed("hr max month by month") {
+            starts.flatMap { ask(it, minOf(it.plus(month), end)) }
+        }
+        val lead = timed("hr max month by month with lead-in") {
+            starts.flatMap { from ->
+                val asked = if (from == start) from else from.minus(month)
+                ask(asked, minOf(from.plus(month), end)).filter { it.startTime >= from }
+            }
+        }
+        Log.i(TAG, "hr max buckets one=${whole.size} single=${single.size} lead=${lead.size}")
+        Log.i(TAG, "hr max single: ${agree(whole, single, metric)}")
+        Log.i(TAG, "hr max lead-in: ${agree(whole, lead, metric)}")
     }
 
     private suspend fun <T> timed(label: String, block: suspend () -> T): T {
