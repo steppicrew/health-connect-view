@@ -15,6 +15,7 @@ import androidx.health.connect.client.records.metadata.DataOrigin
 import de.steppicrew.healthconnectview.dashboard.DashboardStore
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.endDay
 import de.steppicrew.healthconnectview.health.widenToSessions
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.DIASTOLIC_ZONES
@@ -572,7 +573,7 @@ internal class TileChartLoader(
             val first = span.startDate(offset, today)
             sessions
                 .groupBy { session ->
-                    val day = session.end.atZone(zone).toLocalDate()
+                    val day = session.endDay(zone)
                     first.plusDays(ChronoUnit.DAYS.between(first, day) / bucketDays * bucketDays)
                 }
                 .toSortedMap()
@@ -581,7 +582,7 @@ internal class TileChartLoader(
                         time = bucket.atStartOfDay(zone).toInstant(),
                         value = when (sessionKind) {
                             Session.Kind.SLEEP -> {
-                                val nights = ofBucket.groupBy { it.end.atZone(zone).toLocalDate() }.size
+                                val nights = ofBucket.groupBy { it.endDay(zone) }.size
                                 (numericAggregate(ofBucket.totalDuration()) ?: 0.0) / nights
                             }
                             // Mindfulness is asked like sleep, how long, but summed: two short
@@ -604,7 +605,7 @@ internal class TileChartLoader(
             val first = span.startDate(offset, today)
             sessions
                 .groupBy { session ->
-                    val day = session.end.atZone(zone).toLocalDate()
+                    val day = session.endDay(zone)
                     first.plusDays(ChronoUnit.DAYS.between(first, day) / bucketDays * bucketDays)
                 }
                 .toSortedMap()
@@ -643,7 +644,7 @@ internal class TileChartLoader(
         val headlineTotal = if (spec.tile.form == TileSpec.Form.SESSIONS && sessions.isNotEmpty()) {
             // Across days, sleep's figure is a night's: a year's 2836 h summed answered nothing
             // anyone asks. Per recorded night, credited like the bars to the morning it ended.
-            val nights = sessions.groupBy { it.end.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate() }.size
+            val nights = sessions.groupBy { it.endDay(HealthRepository.DEFAULT_ZONE) }.size
             val perNight = sessionKind == Session.Kind.SLEEP && span.intradayBucket == null
             numericAggregate(sessions.totalDuration())?.let { if (perNight) it / nights else it }
         } else {
@@ -677,9 +678,9 @@ internal class TileChartLoader(
                                 first.atStartOfDay(zone).toInstant(),
                                 setOf(Session.Kind.SLEEP),
                             )
-                                .filter { it.end.atZone(zone).toLocalDate().isBefore(first) }
+                                .filter { it.endDay(zone).isBefore(first) }
                             (before + sessions)
-                                .groupBy { it.end.atZone(zone).toLocalDate() }
+                                .groupBy { it.endDay(zone) }
                                 .mapValues { (_, nights) -> numericAggregate(nights.totalDuration()) ?: 0.0 }
                         }
                         metric != null -> repository.bucketedTotals(

@@ -13,6 +13,9 @@ import de.steppicrew.healthconnectview.registry.RecordTypeSpec
 import java.time.Duration
 import kotlinx.coroutines.CancellationException
 import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZoneId
+import java.time.LocalDate
 import de.steppicrew.healthconnectview.util.catching
 
 /**
@@ -70,6 +73,14 @@ data class Session(
     val breaks: List<Break> = emptyList(),
     /** The time spent moving, where it was read; null leaves the session counted whole. */
     val moving: Duration? = null,
+    /**
+     * The UTC offsets where the session began and ended, as its writer recorded them; null
+     * where it did not. What day a session belongs to is decided by these, not by the phone's
+     * zone now: seen from Ecuador, a walk early in the morning in Germany fell on the day
+     * before, and a streak broke over a day that had its workout (07.11.2026).
+     */
+    val startOffset: ZoneOffset? = null,
+    val endOffset: ZoneOffset? = null,
 ) {
     enum class Kind { SLEEP, EXERCISE, MINDFULNESS }
 }
@@ -201,6 +212,8 @@ fun List<Session>.night(): Session? =
 fun ExerciseSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
+    startOffset = startZoneOffset,
+    endOffset = endZoneOffset,
     title = title,
     kind = Session.Kind.EXERCISE,
     origin = metadata.dataOrigin.packageName,
@@ -225,6 +238,8 @@ fun ExerciseSessionRecord.toSession(): Session = Session(
 fun MindfulnessSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
+    startOffset = startZoneOffset,
+    endOffset = endZoneOffset,
     title = title,
     kind = Session.Kind.MINDFULNESS,
     origin = metadata.dataOrigin.packageName,
@@ -234,12 +249,33 @@ fun MindfulnessSessionRecord.toSession(): Session = Session(
 fun SleepSessionRecord.toSession(): Session = Session(
     start = startTime,
     end = endTime,
+    startOffset = startZoneOffset,
+    endOffset = endZoneOffset,
     title = title,
     kind = Session.Kind.SLEEP,
     origin = metadata.dataOrigin.packageName,
     recordId = metadata.id,
     stages = stages.mapNotNull { it.toSleepStage() },
 )
+
+/** The day a session began on, where it happened; [zone] stands in where no offset was recorded. */
+fun Session.startDay(zone: ZoneId): LocalDate = start.atOffset(startOffset ?: zone.rules.getOffset(start)).toLocalDate()
+
+/** The day a session ended on, where it happened; see [startDay]. */
+fun Session.endDay(zone: ZoneId): LocalDate = end.atOffset(endOffset ?: zone.rules.getOffset(end)).toLocalDate()
+
+/**
+ * [start] moved to the same clock time in [zone] as it read where the session happened: what a
+ * window of days in [zone] is tested against, so a session falls in the window of its own day.
+ * Only for choosing days -- anything drawn against readings keeps [start] itself.
+ */
+fun Session.localStart(zone: ZoneId): Instant = onLocalClock(start, startOffset, zone)
+
+/** [end] on the local clock; see [localStart]. */
+fun Session.localEnd(zone: ZoneId): Instant = onLocalClock(end, endOffset, zone)
+
+private fun onLocalClock(instant: Instant, offset: ZoneOffset?, zone: ZoneId): Instant =
+    if (offset == null) instant else instant.atOffset(offset).toLocalDateTime().atZone(zone).toInstant()
 
 /** How long a session lasted, start to end. */
 val Session.duration: Duration get() = Duration.between(start, end)
@@ -279,7 +315,9 @@ suspend fun HealthRepository.sessionsIn(
     end: Instant,
     kinds: Set<Session.Kind>,
 ): List<Session> {
-    val range = TimeRangeFilter.between(start.minus(SESSION_MARGIN), end.plus(SESSION_MARGIN))
+    // Wider still by the largest step between two zones, so a session from elsewhere whose own
+    // day is in the window is read before it is chosen by its local clock below.
+    val range = TimeRangeFilter.between(start.minus(SESSION_MARGIN + ZONE_SPREAD), end.plus(SESSION_MARGIN + ZONE_SPREAD))
 
 
     val exercise = if (Session.Kind.EXERCISE in kinds) {
@@ -323,8 +361,10 @@ suspend fun HealthRepository.sessionsIn(
     val (sleepSessions, otherSessions) = dedupeSessions(exercise + mindfulness + sleep)
         .partition { it.kind == Session.Kind.SLEEP }
 
-    val kept = otherSessions.filter { it.start < end && it.end > start } +
-        sleepSessions.filter { it.end > start && it.end <= end }
+    // By the clock where each session happened: a window of days is days where the user was.
+    val zone = HealthRepository.DEFAULT_ZONE
+    val kept = otherSessions.filter { it.localStart(zone) < end && it.localEnd(zone) > start } +
+        sleepSessions.filter { it.localEnd(zone) > start && it.localEnd(zone) <= end }
 
     return kept.sortedBy { it.start }
 }
@@ -389,6 +429,9 @@ suspend fun HealthRepository.recordsIn(
  * previous evening without dragging in the night before that.
  */
 val SESSION_MARGIN: Duration = Duration.ofHours(12)
+
+/** UTC-12 to UTC+14: no two places are further apart on the clock. */
+private val ZONE_SPREAD: Duration = Duration.ofHours(26)
 
 /**
  * A day's plot range, widened backwards to contain any session that began before it.

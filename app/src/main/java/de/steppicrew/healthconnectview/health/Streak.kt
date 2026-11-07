@@ -131,7 +131,7 @@ fun HealthRepository.dailyActivities(): DailyValues = { start, end ->
         start.atStartOfDay(zone).toInstant(),
         end.atStartOfDay(zone).toInstant(),
         setOf(Session.Kind.EXERCISE),
-    ).groupingBy { it.end.atZone(zone).toLocalDate() }.eachCount()
+    ).groupingBy { it.endDay(zone) }.eachCount()
     val lookup: (LocalDate) -> Double? = { day -> (counts[day] ?: 0).toDouble() }
     lookup
 }

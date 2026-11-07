@@ -12,6 +12,7 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
 import de.steppicrew.healthconnectview.health.currentStreak
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.endDay
 import de.steppicrew.healthconnectview.health.night
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Point
@@ -143,7 +144,7 @@ data class TileData(
      */
     val nightlyDuration: Duration
         get() {
-            val nights = sessions.groupBy { it.end.atZone(HealthRepository.DEFAULT_ZONE).toLocalDate() }.size
+            val nights = sessions.groupBy { it.endDay(HealthRepository.DEFAULT_ZONE) }.size
             return if (nights == 0) Duration.ZERO else sessionDuration.dividedBy(nights.toLong())
         }
 
