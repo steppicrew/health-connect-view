@@ -592,16 +592,58 @@ class DashboardViewModel(
         _state.update { it.copy(tiles = shown, loading = false) }
         tilesDate = date
 
+        // Keep the previous arrows and streaks until the new ones arrive, as with the values
+        // above -- the streak only while the goal is the same, since a new goal is a new count.
+        fun withCarried(tile: TileData): TileData {
+            val carried = previous[tile.tile.id]
+            return if (carried != null && carried.source == tile.source) {
+                tile.copy(
+                    trend = carried.trend,
+                    streak = carried.streak.takeIf { carried.tile.goalKey == tile.tile.goalKey } ?: 0,
+                    adaptiveGoal = carried.adaptiveGoal.takeIf { carried.tile.goalKey == tile.tile.goalKey },
+                )
+            } else {
+                tile
+            }
+        }
+
         val started = System.currentTimeMillis()
         val gate = Semaphore(MAX_CONCURRENT_TILES)
         val loaded = coroutineScope {
-            placeholders.map { placeholder ->
+            placeholders.mapIndexed { index, placeholder ->
                 async {
                     if (!placeholder.granted) {
                         placeholder.copy(loading = false)
                     } else {
                         gate.withPermit {
-                            load(placeholder, date, RecordRegistry.HISTORY_PERMISSION in granted)
+                            val tileStarted = System.currentTimeMillis()
+                            load(placeholder, date, RecordRegistry.HISTORY_PERMISSION in granted).also {
+                                val now = System.currentTimeMillis()
+                                // Times only: which tile waited and which one read slowly.
+                                Log.i(TAG, "tile $index ${placeholder.tile.typeName} waited ${tileStarted - started} took ${now - tileStarted} done ${now - started} ms failed=${it.failed}")
+                            }
+                        }
+                    }.also { tile ->
+                        // Each tile as soon as it is read: waiting for all of them kept the
+                        // first ones, ready after 1-4 s, behind a stalled read for 29 s on the
+                        // owner's phone (07.11.2026), and a cold start showed nothing but
+                        // "loading" meanwhile. A cancelled load publishes nothing; see below.
+                        currentCoroutineContext().ensureActive()
+                        val shownTile = withCarried(tile)
+                        _state.update { state ->
+                            if (state.date != date) {
+                                state
+                            } else {
+                                state.copy(
+                                    tiles = state.tiles.map { current ->
+                                        if (current.tile.id == shownTile.tile.id) {
+                                            shownTile.copy(tile = current.tile)
+                                        } else {
+                                            current
+                                        }
+                                    },
+                                )
+                            }
                         }
                     }
                 }
@@ -612,21 +654,7 @@ class DashboardViewModel(
         // ON_RESUME cancels the load `init` began -- and the cache below kept those dashes
         // on screen when returning from a tile.
         currentCoroutineContext().ensureActive()
-        // Keep the previous arrows and streaks until the new ones arrive, as with the values
-        // above -- the streak only while the goal is the same, since a new goal is a new count.
-        val withCarried = loaded.map { tile ->
-            val carried = previous[tile.tile.id]
-            if (carried != null && carried.source == tile.source) {
-                tile.copy(
-                    trend = carried.trend,
-                    streak = carried.streak.takeIf { carried.tile.goalKey == tile.tile.goalKey } ?: 0,
-                    adaptiveGoal = carried.adaptiveGoal.takeIf { carried.tile.goalKey == tile.tile.goalKey },
-                )
-            } else {
-                tile
-            }
-        }
-        _state.update { it.copy(tiles = withCurrentLayout(withCarried)) }
+        _state.update { it.copy(tiles = withCurrentLayout(loaded.map(::withCarried))) }
         // Timing and count only, never a value: how long the dashboard takes to fill is the
         // cost every per-tile read adds to, so it is worth being able to measure from adb.
         Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
@@ -1179,6 +1207,7 @@ private class Reads {
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
+        Log.w("Dashboard", "read failed: ${e.javaClass.name}: ${e.message?.take(160)}")
         failed = true
         null
     }
