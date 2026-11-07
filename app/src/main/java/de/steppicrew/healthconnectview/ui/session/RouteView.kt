@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -211,7 +212,7 @@ fun RouteView(points: List<RoutePoint>, recordedSpeed: List<Point>?, pace: Boole
 
         val km = Quantity.DISTANCE
         val readout = listOfNotNull(
-            Formatting.time(here.time),
+            Formatting.time(here.time, LocalClockZone.current),
             Formatting.number(km.convert(distances[index] / 1000)) + Formatting.UNIT_SPACE + km.symbol(),
             speeds?.let { speedText(it[index], asPace) },
             here.altitude?.let { Formatting.number(m.convert(it)) + Formatting.UNIT_SPACE + m.symbol() },

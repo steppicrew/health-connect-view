@@ -1493,9 +1493,10 @@ private fun TimeAxis(
     // gave labels like 06:02 and 16:51. Across days the ticks used to be snapped to points of
     // the whole series and only stretched by the zoom, so zoomed between two of them there was
     // no label at all and no way to tell where the chart was.
-    val ticks = remember(intraday, visibleStart, visibleEnd) {
+    val zone = LocalClockZone.current
+    val ticks = remember(intraday, visibleStart, visibleEnd, zone) {
         if (intraday) {
-            hourlyTicks(visibleStart, visibleEnd)
+            hourlyTicks(visibleStart, visibleEnd, zone)
         } else {
             calendarTicks(visibleStart, visibleEnd)
         }.filter { it.fraction in 0f..1f }
@@ -1504,12 +1505,12 @@ private fun TimeAxis(
     Layout(
         content = {
             ticks.forEachIndexed { index, tick ->
-                val dated = datesOnDayChange && (index == 0 || tick.time.isLocalMidnight())
+                val dated = datesOnDayChange && (index == 0 || tick.time.isLocalMidnight(zone))
                 Text(
                     text = when {
                         !intraday -> Formatting.dayAndMonth(tick.time)
-                        dated -> Formatting.time(tick.time) + "\n" + Formatting.dayAndMonth(tick.time)
-                        else -> Formatting.time(tick.time)
+                        dated -> Formatting.time(tick.time, zone) + "\n" + Formatting.dayAndMonth(tick.time, zone)
+                        else -> Formatting.time(tick.time, zone)
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -1545,9 +1546,9 @@ private fun TimeAxis(
     }
 }
 
-/** Whether a moment is the start of a day in the device's zone. */
-private fun Instant.isLocalMidnight(): Boolean =
-    atZone(java.time.ZoneId.systemDefault()).toLocalTime() == java.time.LocalTime.MIDNIGHT
+/** Whether a moment is the start of a day in [zone]. */
+private fun Instant.isLocalMidnight(zone: java.time.ZoneId): Boolean =
+    atZone(zone).toLocalTime() == java.time.LocalTime.MIDNIGHT
 
 /**
  * Ticks at round hours across the window, positioned by time.
@@ -1556,7 +1557,7 @@ private fun Instant.isLocalMidnight(): Boolean =
  * at 06:02 and 16:51 reads as arbitrary. The interval is chosen so the labels stay legible on
  * a phone-width chart.
  */
-private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
+private fun hourlyTicks(start: Instant, end: Instant, zone: java.time.ZoneId): List<AxisTick> {
     val spanMillis = (end.toEpochMilli() - start.toEpochMilli()).takeIf { it > 0L }
         ?: return emptyList()
 
@@ -1564,13 +1565,12 @@ private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
     // workout may contain none at all -- so it is ticked at round minutes instead. Without
     // this such a chart got no ticks and fell back to showing its date over and over.
     if (Duration.between(start, end) < Duration.ofHours(MINUTE_TICK_BELOW_HOURS)) {
-        return minuteTicks(start, end, spanMillis)
+        return minuteTicks(start, end, spanMillis, zone)
     }
 
     val spanHours = Duration.between(start, end).toHours().coerceAtLeast(1L)
     val stepHours = TICK_HOUR_STEPS.firstOrNull { spanHours / it <= AXIS_TICKS } ?: spanHours
 
-    val zone = java.time.ZoneId.systemDefault()
     var tick = start.atZone(zone)
         .truncatedTo(java.time.temporal.ChronoUnit.HOURS)
         .let { if (it.toInstant() < start) it.plusHours(1) else it }
@@ -1593,11 +1593,10 @@ private fun hourlyTicks(start: Instant, end: Instant): List<AxisTick> {
  * The step is chosen so the labels stay legible rather than crowding: a half-hour session
  * gets five-minute marks, a two-hour one gets fifteen.
  */
-private fun minuteTicks(start: Instant, end: Instant, spanMillis: Long): List<AxisTick> {
+private fun minuteTicks(start: Instant, end: Instant, spanMillis: Long, zone: java.time.ZoneId): List<AxisTick> {
     val spanMinutes = Duration.between(start, end).toMinutes().coerceAtLeast(1L)
     val step = TICK_MINUTE_STEPS.firstOrNull { spanMinutes / it <= AXIS_TICKS } ?: spanMinutes
 
-    val zone = java.time.ZoneId.systemDefault()
     var tick = start.atZone(zone).truncatedTo(java.time.temporal.ChronoUnit.MINUTES)
     if (tick.toInstant() < start) tick = tick.plusMinutes(1)
 
@@ -1880,6 +1879,7 @@ private fun SelectionReadout(
 ) {
     val unit = unitText ?: unitRes?.let { stringResource(it) }
     fun text(value: Double) = valueText?.invoke(value) ?: Formatting.number(value, decimals)
+    val zone = LocalClockZone.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -1895,7 +1895,7 @@ private fun SelectionReadout(
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = point?.let { if (dateOnly) Formatting.date(it.time) else Formatting.dateTime(it.time) } ?: idleDetail.orEmpty(),
+            text = point?.let { if (dateOnly) Formatting.date(it.time, zone) else Formatting.dateTime(it.time, zone) } ?: idleDetail.orEmpty(),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.weight(1f),

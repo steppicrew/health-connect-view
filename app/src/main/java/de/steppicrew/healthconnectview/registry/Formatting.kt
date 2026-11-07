@@ -146,6 +146,17 @@ object Formatting {
             .withZone(zone)
             .format(instant)
 
+    /**
+     * " GMT+1" where [zone] -- where a moment happened -- is not on the phone's clock at that
+     * moment, so a time shown where it happened is not taken for one on the phone's clock;
+     * empty where the two agree, the usual case.
+     */
+    fun zoneMark(instant: Instant, zone: ZoneId): String {
+        val offset = zone.rules.getOffset(instant)
+        if (offset == ZoneId.systemDefault().rules.getOffset(instant)) return ""
+        return " " + DateTimeFormatter.ofPattern("O", Locale.getDefault()).format(instant.atOffset(offset))
+    }
+
     /** A clock time given as minutes of the day, in the locale's own form: "23:10", "11:10 PM". */
     fun clock(minutes: Int): String =
         DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)

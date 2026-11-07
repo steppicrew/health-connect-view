@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.endZone
+import de.steppicrew.healthconnectview.health.startZone
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -73,9 +75,9 @@ internal fun SessionCaption(session: Session, onClick: () -> Unit) {
                 sessionName(session),
                 stringResource(
                     R.string.session_span,
-                    Formatting.time(session.start),
-                    Formatting.time(session.end),
-                ),
+                    Formatting.time(session.start, session.startZone),
+                    Formatting.time(session.end, session.endZone),
+                ) + Formatting.zoneMark(session.end, session.endZone),
             ).joinToString("  "),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -164,9 +166,9 @@ internal fun SessionRow(
                 Text(
                     text = stringResource(
                         R.string.session_span,
-                        Formatting.time(session.start),
-                        Formatting.time(session.end),
-                    ),
+                        Formatting.time(session.start, session.startZone),
+                        Formatting.time(session.end, session.endZone),
+                    ) + Formatting.zoneMark(session.end, session.endZone),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
