@@ -277,6 +277,12 @@ fun Session.localEnd(zone: ZoneId): Instant = onLocalClock(end, endOffset, zone)
 private fun onLocalClock(instant: Instant, offset: ZoneOffset?, zone: ZoneId): Instant =
     if (offset == null) instant else instant.atOffset(offset).toLocalDateTime().atZone(zone).toInstant()
 
+/** The zone a session's start is shown in: the offset where it happened, else the phone's. */
+val Session.startZone: ZoneId get() = startOffset ?: HealthRepository.DEFAULT_ZONE
+
+/** The zone a session's end is shown in; see [startZone]. */
+val Session.endZone: ZoneId get() = endOffset ?: HealthRepository.DEFAULT_ZONE
+
 /** How long a session lasted, start to end. */
 val Session.duration: Duration get() = Duration.between(start, end)
 

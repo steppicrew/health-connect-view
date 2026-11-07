@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import de.steppicrew.healthconnectview.health.endZone
+import de.steppicrew.healthconnectview.health.startZone
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.foundation.layout.height
 import de.steppicrew.healthconnectview.health.AFTER_END
 import de.steppicrew.healthconnectview.health.Drift
@@ -190,12 +194,16 @@ fun SessionScreen(viewModel: SessionViewModel, onBack: () -> Unit) {
                     body = current.message,
                     modifier = inner,
                 )
-                is UiState.Data -> SessionContent(
-                    detail = current.value,
-                    onRouteGranted = viewModel::routeGranted,
-                    onExportRoute = viewModel::exportRoute,
-                    modifier = inner,
-                )
+                // Every clock time on the page where the workout happened: the header, the
+                // breaks, the charts' axes and the route's readout alike.
+                is UiState.Data -> CompositionLocalProvider(LocalClockZone provides current.value.session.startZone) {
+                    SessionContent(
+                        detail = current.value,
+                        onRouteGranted = viewModel::routeGranted,
+                        onExportRoute = viewModel::exportRoute,
+                        modifier = inner,
+                    )
+                }
             }
         }
     }
@@ -312,11 +320,11 @@ private fun Header(session: Session) {
         Column(Modifier.padding(top = firstLineTextInset(style, HEADER_ICON.dp))) {
             Text(text = sessionName(session), style = style)
             Text(
-                text = Formatting.date(session.start) + "  " + stringResource(
+                text = Formatting.date(session.start, session.startZone) + "  " + stringResource(
                     R.string.session_span,
-                    Formatting.time(session.start),
-                    Formatting.time(session.end),
-                ) + "  " + Formatting.duration(session.duration),
+                    Formatting.time(session.start, session.startZone),
+                    Formatting.time(session.end, session.endZone),
+                ) + Formatting.zoneMark(session.end, session.endZone) + "  " + Formatting.duration(session.duration),
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
@@ -657,7 +665,7 @@ private fun Stats(detail: SessionDetail) {
         StatRow(
             label = stringResource(R.string.session_break),
             value = Formatting.duration(pause.duration),
-            detail = stringResource(R.string.session_span, Formatting.time(pause.start), Formatting.time(pause.end)),
+            detail = stringResource(R.string.session_span, Formatting.time(pause.start, LocalClockZone.current), Formatting.time(pause.end, LocalClockZone.current)),
         )
     }
     if (detail.stats.isEmpty()) {

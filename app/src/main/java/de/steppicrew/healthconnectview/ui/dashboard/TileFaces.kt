@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.endZone
+import de.steppicrew.healthconnectview.health.startZone
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
 import de.steppicrew.healthconnectview.ui.components.WeekdayRhythm
 import de.steppicrew.healthconnectview.ui.components.heatmapValue
@@ -541,7 +543,7 @@ private fun CompanionCurves(
                             modifier = Modifier.size(COMPANION_ICON_SIZE.dp),
                         )
                         Text(
-                            text = Formatting.time(session.start) + "–" + Formatting.time(session.end) + " · " + Formatting.duration(session.counted),
+                            text = Formatting.time(session.start, session.startZone) + "–" + Formatting.time(session.end, session.endZone) + Formatting.zoneMark(session.end, session.endZone) + " · " + Formatting.duration(session.counted),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

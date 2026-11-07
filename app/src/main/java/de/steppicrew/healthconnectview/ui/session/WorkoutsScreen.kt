@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import de.steppicrew.healthconnectview.health.endZone
+import de.steppicrew.healthconnectview.health.startZone
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -248,11 +250,11 @@ private fun WorkoutRow(session: Session, onClick: () -> Unit) {
         Column(Modifier.weight(1f)) {
             Text(text = sessionName(session), style = style)
             Text(
-                text = Formatting.date(session.start) + "  " + stringResource(
+                text = Formatting.date(session.start, session.startZone) + "  " + stringResource(
                     R.string.session_span,
-                    Formatting.time(session.start),
-                    Formatting.time(session.end),
-                ),
+                    Formatting.time(session.start, session.startZone),
+                    Formatting.time(session.end, session.endZone),
+                ) + Formatting.zoneMark(session.end, session.endZone),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
