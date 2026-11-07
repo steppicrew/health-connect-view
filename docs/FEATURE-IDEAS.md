@@ -166,7 +166,8 @@ writers):
   15 s, both steady (p90 = median). The gap cap must therefore follow the writer, not be one
   constant: at a 60 s cap the 120 s writer covers only half the day and every active minute
   comes out "lone". At a cap of at least its interval both writers cover 96 % of the waking
-  day and agree on the share of active minutes and its vigorous part to the percent. So the
+  day and agree on the share of active minutes and its vigorous part: to the percent over 28 days,
+  within two points over 7. So the
   sparse writer is enough, and it is the cheap one to read.
 - **Lone minutes:** 6-9 % of the active minutes outside workouts, at 15 s sampling. A
   two-minute rule would cut little; not worth it yet.
