@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.compare
 
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
+import androidx.compose.runtime.CompositionLocalProvider
 import java.time.LocalDate
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -127,7 +129,9 @@ fun CompareScreen(
                     title = stringResource(R.string.detail_error_title),
                     body = current.message,
                 )
-                is UiState.Data -> Charts(current.value, windowLabel(span, 0, end), historyNeeded, onOpenPermissions)
+                is UiState.Data -> CompositionLocalProvider(LocalClockZone provides current.value.first.zone) {
+                    Charts(current.value, windowLabel(span, 0, end), historyNeeded, onOpenPermissions)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.detail
 
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,7 +80,8 @@ internal fun RecordRow(
             )
         }
         Text(
-            text = Formatting.timeSpan(spec.timeOf(record), spec.endTimeOf(record)),
+            // On the clock the screen's day is drawn on, like the chart above the list.
+            text = Formatting.timeSpan(spec.timeOf(record), spec.endTimeOf(record), LocalClockZone.current),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

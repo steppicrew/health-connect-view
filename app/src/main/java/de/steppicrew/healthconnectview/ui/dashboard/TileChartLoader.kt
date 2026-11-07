@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.dayZone
+import java.time.ZoneId
 import java.time.LocalDateTime
 import de.steppicrew.healthconnectview.health.sessionDays
 import de.steppicrew.healthconnectview.health.rollingUsualRange
@@ -79,6 +81,12 @@ internal class TileChartLoader(
      */
     private val today: LocalDate = LocalDate.now(),
 ) {
+    /**
+     * The clock this load's days are taken on: a day view's own (see [dayZone]), so a day from
+     * before a flight is drawn on the clock it was lived on; the phone's for longer windows,
+     * whose days come from daily totals that already follow each record's offset.
+     */
+    private var dayZone: ZoneId = HealthRepository.DEFAULT_ZONE
 
     suspend fun chart(
         spec: RecordTypeSpec<*>,
@@ -109,6 +117,11 @@ internal class TileChartLoader(
         tile: Tile? = null,
         onProgress: (Float) -> Unit = {},
     ): TileDetailData = coroutineScope {
+        dayZone = if (span == Span.DAY) {
+            catching { repository.dayZone(span.startDate(offset, today)) }.getOrDefault(HealthRepository.DEFAULT_ZONE)
+        } else {
+            HealthRepository.DEFAULT_ZONE
+        }
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
 
@@ -149,8 +162,8 @@ internal class TileChartLoader(
         }
         onProgress(0f)
 
-        val windowStart = windowStart(span, offset, today)
-        val windowEnd = windowEnd(span, offset, today)
+        val windowStart = windowStart(span, offset, today, dayZone)
+        val windowEnd = windowEnd(span, offset, today, dayZone)
 
         // Filled in by the bucketed branch below; empty for every other shape of series.
         var emptyBuckets: List<Instant> = emptyList()
@@ -189,7 +202,7 @@ internal class TileChartLoader(
         var dailyReadings: DailyReadings? = null
         val points = if (hrvSeries != null) {
             seriesAggregated = false
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             rangeBand = hrvSeries.days.mapNotNull { day ->
                 val low = day.usualLow ?: return@mapNotNull null
                 val high = day.usualHigh ?: return@mapNotNull null
@@ -226,14 +239,14 @@ internal class TileChartLoader(
                 duration != null && spec.shape != RecordTypeSpec.Shape.INTERVAL -> {
                     seriesAggregated = false
                     val readings = countingWindow { progress ->
-                        repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
+                        repository.readForChart(spec.type, span.instantFilter(offset, today, dayZone), origins = origins, progress = progress)
                     }
                     secondaryPoints = readings.flatMap { spec.secondaryPointsOf(it) }.sortedBy { it.time }
                     readings.flatMap { spec.pointsOf(it) }.sortedBy { it.time }
                 }
 
                 duration != null -> repository
-                    .intradayTotals(metric, span.instantFilter(offset, today), duration, origins)
+                    .intradayTotals(metric, span.instantFilter(offset, today, dayZone), duration, origins)
                     .mapNotNull { bucket ->
                         val value = bucket.result[metric]?.let { numericAggregate(it, metric) }
                             ?: return@mapNotNull null
@@ -283,7 +296,7 @@ internal class TileChartLoader(
                             }
                             StackedBucket(
                                 time = bucket.startTime
-                                    .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                    .atZone(dayZone).toInstant(),
                                 parts = parts,
                             )
                         }
@@ -301,7 +314,7 @@ internal class TileChartLoader(
                                 if (low == null || high == null) return@mapNotNull null
                                 ValueBand(
                                     time = bucket.startTime
-                                        .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                        .atZone(dayZone).toInstant(),
                                     low = low,
                                     high = high,
                                 )
@@ -348,7 +361,7 @@ internal class TileChartLoader(
                         buckets
                             .filter { it.result[metric] == null }
                             .filter { it.startTime > firstRecorded && it.startTime < lastRecorded }
-                            .map { it.startTime.atZone(HealthRepository.DEFAULT_ZONE).toInstant() }
+                            .map { it.startTime.atZone(dayZone).toInstant() }
                     }
 
                     fun series(of: AggregateMetric<*>): List<Point> = buckets.mapNotNull { bucket ->
@@ -356,7 +369,7 @@ internal class TileChartLoader(
                             ?: return@mapNotNull null
                         Point(
                             time = bucket.startTime
-                                .atZone(HealthRepository.DEFAULT_ZONE).toInstant(),
+                                .atZone(dayZone).toInstant(),
                             value = value,
                         )
                     }
@@ -372,7 +385,7 @@ internal class TileChartLoader(
             // not every reading -- see DailyReadings. Read from four weeks earlier where a
             // rolling mean is drawn, so its first day already has its weeks behind it.
             seriesAggregated = false
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             val first = span.startDate(offset, today)
             val readFrom = if (spec.tile.rollingBaseline || spec.tile.usualRange) first.minusDays(ROLLING_DAYS.toLong()) else first
             val daily = DailyReadings(zone, first, bucketDays)
@@ -403,7 +416,7 @@ internal class TileChartLoader(
             // No aggregate metric: chart the readings themselves, via the path that spans the
             // whole window rather than stopping at the newest records.
             countingWindow { progress ->
-                repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
+                repository.readForChart(spec.type, span.instantFilter(offset, today, dayZone), origins = origins, progress = progress)
             }
                 .flatMap { spec.pointsOf(it) }
                 .sortedBy { it.time }
@@ -419,7 +432,7 @@ internal class TileChartLoader(
             if (metric != null && source != null) {
                 catching {
                     countingWindow { progress ->
-                        repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
+                        repository.readForChart(spec.type, span.instantFilter(offset, today, dayZone), origins = origins, progress = progress)
                     }
                         .flatMap { spec.pointsOf(it) }
                         .sortedBy { it.time }
@@ -569,7 +582,7 @@ internal class TileChartLoader(
         // Workouts are counted per week, mindfulness summed.
         val bucketDays = span.bucket?.days ?: 1
         val perDayPoints = if (sessionKind != null && span.intradayBucket == null) {
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             val first = span.startDate(offset, today)
             sessions
                 .groupBy { session ->
@@ -601,7 +614,7 @@ internal class TileChartLoader(
         // (a week or four), whole durations across a year, where reading every workout's
         // movement would be hundreds of reads. In hours, like sleep's bars.
         val timePoints = if (sessionKind == Session.Kind.EXERCISE && perDayPoints.isNotEmpty()) {
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             val first = span.startDate(offset, today)
             sessions
                 .groupBy { session ->
@@ -644,7 +657,7 @@ internal class TileChartLoader(
         val headlineTotal = if (spec.tile.form == TileSpec.Form.SESSIONS && sessions.isNotEmpty()) {
             // Across days, sleep's figure is a night's: a year's 2836 h summed answered nothing
             // anyone asks. Per recorded night, credited like the bars to the morning it ended.
-            val nights = sessions.groupBy { it.endDay(HealthRepository.DEFAULT_ZONE) }.size
+            val nights = sessions.groupBy { it.endDay(dayZone) }.size
             val perNight = sessionKind == Session.Kind.SLEEP && span.intradayBucket == null
             numericAggregate(sessions.totalDuration())?.let { if (perNight) it / nights else it }
         } else {
@@ -663,7 +676,7 @@ internal class TileChartLoader(
                 span.bucket != null && shownPoints.isNotEmpty()
             val daily: Map<LocalDate, Double> = if (wantsDaily) {
                 catching {
-                    val zone = HealthRepository.DEFAULT_ZONE
+                    val zone = dayZone
                     val first = span.startDate(offset, today)
                     val lookback = first.minusDays(ROLLING_DAYS.toLong())
                     when {
@@ -677,6 +690,7 @@ internal class TileChartLoader(
                                 lookback.atStartOfDay(zone).toInstant(),
                                 first.atStartOfDay(zone).toInstant(),
                                 setOf(Session.Kind.SLEEP),
+                                zone,
                             )
                                 .filter { it.endDay(zone).isBefore(first) }
                             (before + sessions)
@@ -699,7 +713,7 @@ internal class TileChartLoader(
             } else {
                 emptyMap()
             }
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             val baseline = if (spec.tile.rollingBaseline && daily.isNotEmpty()) {
                 // A year of a counted quantity is drawn as weekly totals, so the mean is read
                 // in the same units -- a week's worth -- or it would lie along the bars' feet.
@@ -772,7 +786,7 @@ internal class TileChartLoader(
         val dayValues: Map<LocalDate, Double> = if (span != Span.YEAR) {
             emptyMap()
         } else {
-            val zone = HealthRepository.DEFAULT_ZONE
+            val zone = dayZone
             when {
                 hrv != null -> hrv.nights.associate { it.date to it.mean }
                 dailyReadings != null -> dailyReadings.dailyMeans()
@@ -786,6 +800,7 @@ internal class TileChartLoader(
         }
 
         val chart = TileDetailData(
+            zone = dayZone,
             spec = spec,
             points = shownPoints,
             // Bars wherever a point is a whole bucket rather than a moment: a sessions window
@@ -836,7 +851,7 @@ internal class TileChartLoader(
                 val first = span.startDate(offset, today)
                 hrvSeries.nights
                     .filter { !it.date.isBefore(first) }
-                    .map { Point(it.date.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(), it.mean) }
+                    .map { Point(it.date.atStartOfDay(dayZone).toInstant(), it.mean) }
             } else {
                 emptyList()
             },
@@ -882,9 +897,9 @@ internal class TileChartLoader(
         progress: PageProgress<Record>,
     ): List<Point> {
         val windowStart = span.startDate(offset, today)
-            .atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+            .atStartOfDay(dayZone).toInstant()
         val allRecords = catching {
-            repository.readForChart(spec.type, span.instantFilter(offset, today), origins = origins, progress = progress)
+            repository.readForChart(spec.type, span.instantFilter(offset, today, dayZone), origins = origins, progress = progress)
         }.getOrDefault(emptyList())
 
         // Several writers describing the same activity interleave: measured on a real device,
@@ -905,7 +920,7 @@ internal class TileChartLoader(
         // itemised when ranking writers must not then be dropped when building the shape.
         val windowSpan = Duration.between(
             windowStart,
-            span.endDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+            span.endDate(offset, today).atStartOfDay(dayZone).toInstant(),
         )
         val summaryThreshold = windowSpan.multipliedBy(SUMMARY_PERCENT).dividedBy(100)
 
@@ -1010,7 +1025,7 @@ internal class TileChartLoader(
             // Carry the final level to the end of the window so the day does not appear to
             // stop at the last recorded activity.
             val windowEnd = minOf(
-                span.endDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+                span.endDate(offset, today).atStartOfDay(dayZone).toInstant(),
                 now,
             )
             if (windowEnd.isAfter(lastTime)) {
@@ -1169,7 +1184,7 @@ internal class TileChartLoader(
         sessions: List<Session>,
     ): ClosedRange<Instant>? {
         if (span.intradayBucket == null) return null
-        val zone = HealthRepository.DEFAULT_ZONE
+        val zone = dayZone
         val start = span.startDate(offset, today).atStartOfDay(zone).toInstant()
         val end = span.endDate(offset, today).atStartOfDay(zone).toInstant()
 
@@ -1190,7 +1205,7 @@ internal class TileChartLoader(
         origins: Set<DataOrigin>,
         dayPoints: List<Point>,
     ): ReadingContext? {
-        val zone = HealthRepository.DEFAULT_ZONE
+        val zone = dayZone
         val records = repository.recordsIn(
             spec,
             windowEnd.minus(CONTEXT_LOOKBACK),
@@ -1227,9 +1242,10 @@ internal class TileChartLoader(
         offset: Int,
         kinds: Set<Session.Kind>,
     ): List<Session> = repository.sessionsIn(
-        start = span.startDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
-        end = span.endDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant(),
+        start = span.startDate(offset, today).atStartOfDay(dayZone).toInstant(),
+        end = span.endDate(offset, today).atStartOfDay(dayZone).toInstant(),
         kinds = kinds,
+        zone = dayZone,
     )
 
     /**
@@ -1313,12 +1329,12 @@ private const val CHART_WEIGHT = 8
 /** The sessions' own read within their step, before each workout's movement is read. */
 private const val SESSION_LIST_SHARE = 0.2f
 
-internal fun windowStart(span: Span, offset: Int, today: LocalDate = LocalDate.now()): Instant =
-    span.startDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+internal fun windowStart(span: Span, offset: Int, today: LocalDate = LocalDate.now(), zone: ZoneId = HealthRepository.DEFAULT_ZONE): Instant =
+    span.startDate(offset, today).atStartOfDay(zone).toInstant()
 
 /** The window's end, exclusive. */
-internal fun windowEnd(span: Span, offset: Int, today: LocalDate = LocalDate.now()): Instant =
-    span.endDate(offset, today).atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
+internal fun windowEnd(span: Span, offset: Int, today: LocalDate = LocalDate.now(), zone: ZoneId = HealthRepository.DEFAULT_ZONE): Instant =
+    span.endDate(offset, today).atStartOfDay(zone).toInstant()
 
 /** How many days with a reading a context strip shows. */
 private const val CONTEXT_DAYS = 10

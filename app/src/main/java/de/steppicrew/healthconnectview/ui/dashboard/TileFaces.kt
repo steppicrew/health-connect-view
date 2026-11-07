@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
+import androidx.compose.runtime.CompositionLocalProvider
 import de.steppicrew.healthconnectview.health.endZone
 import de.steppicrew.healthconnectview.health.startZone
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
@@ -282,6 +284,19 @@ private const val BODY_PARTS_WEIGHT = 1.6f
  */
 @Composable
 private fun TileChart(
+    chart: TileDetailData,
+    modifier: Modifier,
+    compactAxis: Boolean = false,
+    companion: Pair<SessionLine, List<Pair<Session, List<Point>>>>? = null,
+    workoutTap: WorkoutTap? = null,
+    mean: Double? = null,
+) = CompositionLocalProvider(LocalClockZone provides chart.zone) {
+    TileChartOnClock(chart, modifier, compactAxis, companion, workoutTap, mean)
+}
+
+/** [TileChart] on the clock its day was lived on. */
+@Composable
+private fun TileChartOnClock(
     chart: TileDetailData,
     modifier: Modifier,
     compactAxis: Boolean = false,

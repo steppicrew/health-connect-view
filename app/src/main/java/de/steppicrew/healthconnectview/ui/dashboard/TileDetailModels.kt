@@ -49,6 +49,11 @@ data class TileDetailData(
     val spec: RecordTypeSpec<*>,
     val points: List<Point>,
     val total: Double?,
+    /**
+     * The clock the chart's times are read on: a day's own where it was lived elsewhere (see
+     * `dayZone`), else the phone's.
+     */
+    val zone: java.time.ZoneId = HealthRepository.DEFAULT_ZONE,
     /** The type's second value where it has one -- diastolic beside systolic -- else empty. */
     val secondaryPoints: List<Point> = emptyList(),
     val secondaryTotal: Double? = null,

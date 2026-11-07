@@ -320,6 +320,8 @@ suspend fun HealthRepository.sessionsIn(
     start: Instant,
     end: Instant,
     kinds: Set<Session.Kind>,
+    /** The zone [start] and [end] were taken in: a day's own where it is drawn on it. */
+    zone: ZoneId = HealthRepository.DEFAULT_ZONE,
 ): List<Session> {
     // Wider still by the largest step between two zones, so a session from elsewhere whose own
     // day is in the window is read before it is chosen by its local clock below.
@@ -368,7 +370,6 @@ suspend fun HealthRepository.sessionsIn(
         .partition { it.kind == Session.Kind.SLEEP }
 
     // By the clock where each session happened: a window of days is days where the user was.
-    val zone = HealthRepository.DEFAULT_ZONE
     val kept = otherSessions.filter { it.localStart(zone) < end && it.localEnd(zone) > start } +
         sleepSessions.filter { it.localEnd(zone) > start && it.localEnd(zone) <= end }
 

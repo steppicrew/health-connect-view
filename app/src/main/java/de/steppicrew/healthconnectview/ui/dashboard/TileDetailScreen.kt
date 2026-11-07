@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import java.time.LocalTime
+import de.steppicrew.healthconnectview.ui.components.LocalClockZone
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -221,8 +223,11 @@ fun TileDetailScreen(
                 .swipeToStep(end.isBefore(LocalDate.now()), viewModel::stepBack, viewModel::stepForward),
         ) {
             SpanSelector(selected = span, onSelect = viewModel::setSpan)
+            // A day drawn on another clock than the phone's says which.
+            val dayZone = (state as? UiState.Data)?.value?.zone?.takeIf { span == Span.DAY }
             WindowStepper(
-                label = windowLabel(span, 0, end),
+                label = windowLabel(span, 0, end) +
+                    dayZone?.let { Formatting.zoneMark(end.atTime(NOON).atZone(it).toInstant(), it) }.orEmpty(),
                 canStepForward = end.isBefore(LocalDate.now()),
                 onBack = viewModel::stepBack,
                 onForward = viewModel::stepForward,
@@ -289,7 +294,7 @@ fun TileDetailScreen(
                             body = current.message,
                         )
     
-                        is UiState.Data -> SpanContent(
+                        is UiState.Data -> CompositionLocalProvider(LocalClockZone provides current.value.zone) { SpanContent(
                             listState = listState,
                             data = current.value,
                             period = windowLabel(span, 0, end),
@@ -298,7 +303,7 @@ fun TileDetailScreen(
                             loadCurve = viewModel::curveFor,
                             onVisibleRange = viewModel::showListFor,
                             onOpenRecord = { openRecord = it },
-                        )
+                        ) }
                     }
                 }
             }
@@ -590,6 +595,9 @@ internal fun ReadingContextStrip(data: TileDetailData, context: ReadingContext) 
 }
 
 /** The types whose screen offers weight and its parts together. */
+/** Where a day's offset is read for its mark: away from either end, which a clock change moves. */
+private val NOON: LocalTime = LocalTime.NOON
+
 private val BODY_TYPES = setOf(
     WeightRecord::class,
     BodyFatRecord::class,
