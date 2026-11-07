@@ -15,8 +15,9 @@ import android.util.Log
  *         -e route "tile/SleepSessionRecord?date=2026-08-29"
  *
  * The route is a NavHost route string, so anything [de.steppicrew.healthconnectview.ui.nav.Routes]
- * can express is reachable. An unknown route is left to the NavHost, which throws -- loudly, in
- * a debug build, which is the right outcome for a typo in a developer tool.
+ * can express is reachable. An unknown route logs a warning under this tag and stays on the
+ * dashboard: crashing on it also crashed the app whenever a build without that route had been
+ * installed over this one, which read as a broken screen rather than a missing one.
  *
  * `-e expand <text>` also opens full screen the first chart whose title contains the text,
  * since a double tap cannot be sent either.

@@ -1,6 +1,7 @@
 package de.steppicrew.healthconnectview.ui.nav
 
 import android.net.Uri
+import android.util.Log
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.ui.body.BodyCompositionScreen
@@ -92,8 +93,15 @@ fun HealthNavGraph(
     // Navigated to rather than used as the start destination, so Back still reaches the
     // dashboard: landing with an empty back stack would trap the screen with no way out, and
     // the point of the backdoor is to inspect the app, not to replace it.
+    // A route this build does not know -- a typo, or another build installed over this one --
+    // stays on the dashboard with a log line instead of crashing the app on launch.
     LaunchedEffect(startRoute) {
-        startRoute?.let(navController::navigate)
+        val route = startRoute ?: return@LaunchedEffect
+        try {
+            navController.navigate(route)
+        } catch (e: IllegalArgumentException) {
+            Log.w("DebugNav", "no such route, staying on the dashboard: $route", e)
+        }
     }
 
     NavHost(navController = navController, startDestination = Routes.DASHBOARD) {
