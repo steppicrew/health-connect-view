@@ -97,10 +97,10 @@ suspend fun HealthRepository.personalRecord(
             val end = today.atStartOfDay(zone).toInstant()
             // Credited like the lists credit a session: by the day it ended on.
             val sessions = sessionsIn(start, end, setOf(Session.Kind.EXERCISE))
-                .filter { !it.end.isBefore(start) && it.end.isBefore(end) }
+                .filter { !it.localEnd(zone).isBefore(start) && it.localEnd(zone).isBefore(end) }
             longestMoving(sessions)?.let { longest ->
                 bestDay(
-                    mapOf(longest.end.atZone(zone).toLocalDate() to longest.counted.seconds.toDouble()),
+                    mapOf(longest.endDay(zone) to longest.counted.seconds.toDouble()),
                     lowest = false,
                 )
             }

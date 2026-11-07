@@ -57,7 +57,7 @@ fun nightlyHrv(readings: List<HrvReading>, sleeps: List<Session>, zone: ZoneId):
     val sorted = readings.sortedBy { it.time }
     return sleeps
         .filter { it.kind == Session.Kind.SLEEP }
-        .groupBy { it.end.atZone(zone).toLocalDate() }
+        .groupBy { it.endDay(zone) }
         .mapNotNull { (date, nights) ->
             val inside = nights.flatMap { night ->
                 sorted.filter { !it.time.isBefore(night.start) && !it.time.isAfter(night.end) }

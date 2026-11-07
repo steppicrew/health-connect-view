@@ -70,7 +70,7 @@ fun sessionDays(sessions: List<Session>, kind: Session.Kind, zone: ZoneId): Map<
         .mapValues { (_, night) -> Duration.between(night.start, night.end).toMinutes() / MINUTES_PER_HOUR }
     else -> sessions
         .filter { it.kind == kind }
-        .groupBy { it.start.atZone(zone).toLocalDate() }
+        .groupBy { it.startDay(zone) }
         .mapValues { (_, day) -> day.sumOf { (it.moving ?: Duration.between(it.start, it.end)).toMinutes() } / MINUTES_PER_HOUR }
 }
 

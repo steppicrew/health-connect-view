@@ -20,14 +20,14 @@ data class TrainingNights(val afterTraining: Group?, val afterRest: Group?) {
 fun trainingDays(sessions: List<Session>, zone: ZoneId): Set<LocalDate> =
     sessions
         .filter { it.kind == Session.Kind.EXERCISE && Duration.between(it.start, it.end) >= MIN_TRAINING }
-        .map { it.start.atZone(zone).toLocalDate() }
+        .map { it.startDay(zone) }
         .toSet()
 
 /** Each morning's night -- its longest sleep, as on the sleep tile -- by the day it ended on. */
 fun nightsByMorning(sessions: List<Session>, zone: ZoneId): Map<LocalDate, Session> =
     sessions
         .filter { it.kind == Session.Kind.SLEEP }
-        .groupBy { it.end.atZone(zone).toLocalDate() }
+        .groupBy { it.endDay(zone) }
         .mapNotNull { (morning, sleeps) -> sleeps.night()?.let { morning to it } }
         .toMap()
 
