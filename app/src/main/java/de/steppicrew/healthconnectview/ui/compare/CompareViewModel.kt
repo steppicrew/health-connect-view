@@ -179,7 +179,8 @@ private fun TileDetailData.isBlank(): Boolean = points.isEmpty() && total == nul
  * bucket early: a point stamped at a day's start lands in the middle of that day's slot.
  */
 internal fun sharedExtent(span: Span, last: LocalDate, first: TileDetailData, second: TileDetailData): ClosedRange<Instant> {
-    val zone = HealthRepository.DEFAULT_ZONE
+    // A day on the clock it was lived on, as each chart drew it; longer windows on the phone's.
+    val zone = if (span.bucket == null) first.zone else HealthRepository.DEFAULT_ZONE
     val start = span.startDate(0, last).atStartOfDay(zone).toInstant()
     val end = span.endDate(0, last).atStartOfDay(zone).toInstant()
     val bucket = span.bucket ?: return listOfNotNull(first.extent, second.extent, start..end).let { ranges ->

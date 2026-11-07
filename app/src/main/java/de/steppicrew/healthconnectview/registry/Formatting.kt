@@ -147,13 +147,13 @@ object Formatting {
             .format(instant)
 
     /**
-     * " GMT+1" where [zone] -- where a moment happened -- is not on the phone's clock at that
-     * moment, so a time shown where it happened is not taken for one on the phone's clock;
-     * empty where the two agree, the usual case.
+     * " GMT+1" where [zone] -- where a moment happened -- is not on the clock of [against] at
+     * that moment, the phone's unless a screen reads its times elsewhere, so a time shown where
+     * it happened is not taken for one on that clock; empty where the two agree, the usual case.
      */
-    fun zoneMark(instant: Instant, zone: ZoneId): String {
+    fun zoneMark(instant: Instant, zone: ZoneId, against: ZoneId = ZoneId.systemDefault()): String {
         val offset = zone.rules.getOffset(instant)
-        if (offset == ZoneId.systemDefault().rules.getOffset(instant)) return ""
+        if (offset == against.rules.getOffset(instant)) return ""
         return " " + DateTimeFormatter.ofPattern("O", Locale.getDefault()).format(instant.atOffset(offset))
     }
 

@@ -685,12 +685,12 @@ class TileDetailViewModel(
     ): TileDetailData = coroutineScope {
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
-        val windowStart = windowStart(span, offset, shownEnd)
-        val windowEnd = windowEnd(span, offset, shownEnd)
-
         val loader = TileChartLoader(repository, dashboardStore, today = shownEnd)
         val chart = loader
             .chart(spec, span, offset, historyCapped, source, deferExtras = true) { _progress.value = it }
+        // The list covers the day the chart drew, on the clock it drew it on.
+        val windowStart = windowStart(span, offset, shownEnd, chart.zone)
+        val windowEnd = windowEnd(span, offset, shownEnd, chart.zone)
 
         // The chart first, then the list and the picker.
         //
@@ -735,7 +735,7 @@ class TileDetailViewModel(
                 val (from, to) = dayPartWindow(
                     span.startDate(offset, shownEnd),
                     span.endDate(offset, shownEnd).minusDays(1),
-                    HealthRepository.DEFAULT_ZONE,
+                    chart.zone,
                 )
                 catching {
                     val readings = repository.recordsIn(spec, from, to, origins)
@@ -747,7 +747,7 @@ class TileDetailViewModel(
                                 it.diastolic.inMillimetersOfMercury,
                             )
                         }
-                    splitByDayPart(readings, HealthRepository.DEFAULT_ZONE)
+                    splitByDayPart(readings, chart.zone)
                 }.getOrNull()
             }
         } else {
