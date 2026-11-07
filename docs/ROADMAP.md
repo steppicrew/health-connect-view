@@ -1026,6 +1026,21 @@ doctor report and the year heatmap; the rest unranked.
     workout list (`LatestSessionActivity` gives the script the seeded session's id), and the
     listing's workout bullet names sets, notes and plans, room made by shorter backup and
     "matched by time" sentences.
+105. [x] **A dashboard in 13 s, not 30** -- 07.11.2026, after a one-star review of 1.9.1 calling
+    the app sluggish on every open. Measured on the owner's phone, 37 tiles, cold start: 29-31 s,
+    against 4.6 s on 11.10. Most calls took under 200 ms; the time was one request, the distance
+    tile's year of daily totals for its adaptive goal as a single aggregateGroupByPeriod, 19-23 s
+    (steps: 1 s), and Health Connect answered every other call only after it, so the tiles started
+    beside it looked stalled too. It was neither a rate limit nor the Play version reading at the
+    same time: both were ruled out on the phone. Two fixes. Each tile is shown as soon as it is
+    read, not after the slowest (`DashboardViewModel`): steps and floors after 1-4 s. A year of
+    day or week buckets is asked as monthly pieces, one after another (`aggregationPieces`):
+    distance 23.5 -> 5.7 s daily, 20.1 -> 6.8 s weekly. A request's first bucket comes out
+    differently from the same bucket inside a longer one -- split at the 7th, eleven 7ths
+    differed by up to 30 % -- so every piece but the first asks one bucket early and drops it;
+    then all 365 daily and 53 weekly buckets match the single request exactly
+    (`YearSplitActivity`). Month buckets stay one request. After both: 13.2-13.4 s, insights
+    14.6 s, distance still the slowest tile at 7 s.
 
 ### Refactoring, 25.10.2026
 
