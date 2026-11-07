@@ -917,4 +917,24 @@
     <plurals name="plan_goal_steps">
         <item quantity="other">%d 步</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">活動分鐘</string>
+    <string name="active_tile_caption">最近 7 天 · 世界衛生組織目標</string>
+    <string name="active_tile_of">/ %1$s</string>
+    <string name="active_none">這幾天沒有心率資料</string>
+    <string name="active_no_access">活動分鐘是根據心率估算的。允許應用程式讀取心率即可查看。</string>
+    <string name="active_no_max_title">沒有最大心率</string>
+    <string name="active_no_max">活動分鐘以你的最大心率為基準。請在「設定」中填寫；否則應用程式會從一年的心率資料中讀取，而目前資料還不夠。</string>
+    <string name="active_week_total">這 7 天的加權分鐘數（世界衛生組織建議每週 %1$s 分鐘）</string>
+    <string name="active_week_mean">每週平均加權分鐘數（世界衛生組織建議 %1$s 分鐘）</string>
+    <string name="active_of">%1$s / %2$s</string>
+    <string name="active_moderate">中等強度：%1$s</string>
+    <string name="active_vigorous">高強度：%1$s，以兩倍計算</string>
+    <string name="active_left_out">有 %1$s 心率升高但未計入：它們不在運動期間，附近也沒有記錄步數或距離，例如旅途中久坐時。</string>
+    <string name="active_how_title">這些分鐘如何計算</string>
+    <string name="active_guideline">世界衛生組織建議每週至少進行 150 分鐘中等強度或 75 分鐘高強度活動，或兩者結合。這裡 1 分鐘高強度以 2 分鐘計算。這是根據你的心率估算的，並非測量值。</string>
+    <string name="active_limits_reserve">心率達到 %1$s bpm 起算作中等強度，達到 %2$s bpm 起算作高強度：即你的心率儲備（靜止心率與最大心率之差）的 40 %% 和 60 %%。</string>
+    <string name="active_limits_max">心率達到 %1$s bpm 起算作中等強度，達到 %2$s bpm 起算作高強度：即你最大心率的 64 %% 和 77 %%。一旦記錄了靜止心率，門檻將改為依心率儲備計算。</string>
+    <string name="active_counted">依據 %1$s 記錄的心率，涵蓋這幾天的 %2$s。在運動以外，只有附近記錄了步數或距離的分鐘才會計入。</string>
 </resources>

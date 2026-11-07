@@ -977,4 +977,24 @@
         <item quantity="many">%d pas</item>
         <item quantity="other">%d pas</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Minutes actives</string>
+    <string name="active_tile_caption">7 derniers jours · objectif OMS</string>
+    <string name="active_tile_of">sur %1$s</string>
+    <string name="active_none">Aucune fréquence cardiaque ces jours-ci</string>
+    <string name="active_no_access">Les minutes actives sont estimées à partir de la fréquence cardiaque. Autorisez l’application à lire la fréquence cardiaque pour les voir.</string>
+    <string name="active_no_max_title">Aucune fréquence cardiaque maximale</string>
+    <string name="active_no_max">Les minutes actives se mesurent par rapport à votre fréquence cardiaque maximale. Définissez-la dans les paramètres ; sinon l’application la déduit d’une année de fréquence cardiaque, et il n’y en a pas encore assez.</string>
+    <string name="active_week_total">minutes pondérées ces 7 jours, sur les %1$s par semaine que recommande l’OMS</string>
+    <string name="active_week_mean">minutes pondérées par semaine en moyenne, sur les %1$s que recommande l’OMS</string>
+    <string name="active_of">%1$s sur %2$s</string>
+    <string name="active_moderate">Modérée : %1$s</string>
+    <string name="active_vigorous">Intense : %1$s, comptée double</string>
+    <string name="active_left_out">%1$s avec un pouls élevé n’ont pas été comptées : hors entraînement, sans pas ni distance enregistrés à proximité, comme assis pendant un voyage.</string>
+    <string name="active_how_title">Comment ces minutes sont calculées</string>
+    <string name="active_guideline">L’OMS recommande au moins 150 minutes d’activité modérée ou 75 minutes d’activité intense par semaine, ou un mélange des deux. Ici, une minute intense compte double. Estimé à partir de votre fréquence cardiaque, pas mesuré.</string>
+    <string name="active_limits_reserve">Une minute compte comme modérée à partir de %1$s bpm et comme intense à partir de %2$s bpm : 40 %% et 60 %% de votre réserve cardiaque, l’écart entre votre fréquence cardiaque au repos et maximale.</string>
+    <string name="active_limits_max">Une minute compte comme modérée à partir de %1$s bpm et comme intense à partir de %2$s bpm : 64 %% et 77 %% de votre fréquence cardiaque maximale. Dès qu’une fréquence cardiaque au repos est enregistrée, les seuils suivent plutôt votre réserve cardiaque.</string>
+    <string name="active_counted">D’après la fréquence cardiaque enregistrée par %1$s, qui couvre %2$s de ces jours. Hors entraînement, une minute ne compte que si des pas ou une distance ont été enregistrés à proximité.</string>
 </resources>

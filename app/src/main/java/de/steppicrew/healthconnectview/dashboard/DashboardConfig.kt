@@ -100,6 +100,9 @@ data class Tile(
     /** A tile that is not a type: the running cycle, from the menstruation types together. */
     val isCycle: Boolean get() = typeName == CYCLE
 
+    /** A tile that is not a type: the week's active minutes, estimated from heart rate. */
+    val isActive: Boolean get() = typeName == ACTIVE
+
     /** The next size in [SIZES], wrapping; an unknown stored size starts over at 1x1. */
     fun nextSize(): Tile {
         val next = SIZES[(SIZES.indexOf(width to height) + 1) % SIZES.size]
@@ -128,6 +131,9 @@ data class Tile(
 
         /** Nor this one. */
         const val CYCLE = "Cycle"
+
+        /** Nor this one. */
+        const val ACTIVE = "ActiveMinutes"
     }
 }
 
@@ -187,16 +193,17 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
     /**
      * Drops tiles whose type no longer exists, so a removed type cannot break the screen, and
-     * any insights or cycle tile after the first;
+     * any insights, cycle or active-minutes tile after the first;
      * gives a repeated id a fresh one, and each type's goal and zones to all its tiles, so a
      * hand-edited or merged layout cannot break the rules the edits keep.
      */
     fun sanitised(): DashboardConfig {
-        // One insights tile and one cycle tile at most: a second would show the same.
+        // One insights, cycle and active-minutes tile at most: a second would show the same.
         val insightsAt = tiles.indexOfFirst { it.isInsights }
         val cycleAt = tiles.indexOfFirst { it.isCycle }
+        val activeAt = tiles.indexOfFirst { it.isActive }
         val known = tiles.withIndex()
-            .filter { (index, tile) -> tile.spec != null || index == insightsAt || index == cycleAt }
+            .filter { (index, tile) -> tile.spec != null || index == insightsAt || index == cycleAt || index == activeAt }
             .map { (_, tile) -> tile }
         val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
         val seen = mutableSetOf<String>()

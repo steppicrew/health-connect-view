@@ -1,6 +1,8 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
 import de.steppicrew.healthconnectview.ui.SharedDate
+import de.steppicrew.healthconnectview.ui.active.readActive
+import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.health.readsHeatmap
 import de.steppicrew.healthconnectview.health.calendarHeadline
 import de.steppicrew.healthconnectview.health.readHeatmap
@@ -110,6 +112,7 @@ class DashboardViewModel(
     private var repository = base
     private val store = DashboardStore(application)
     private val sourceStore = SourceStore(application)
+    private val settingsStore = SettingsStore(application)
 
     private val _state = MutableStateFlow(
         DashboardUiState(
@@ -299,6 +302,7 @@ class DashboardViewModel(
                 // The insights and cycle tiles are kept apart from the type tiles, as for a resize.
                 insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
                 cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
+                active = state.active?.let { shown -> after?.takeIf { it.isActive }?.let { shown.copy(tile = it) } ?: shown },
             )
         }
         viewModelScope.launch { store.save(config) }
@@ -317,8 +321,8 @@ class DashboardViewModel(
      * the tile [before], the first in view, so it does not land out of sight at the end.
      */
     fun addTile(typeName: String, before: String? = null) {
-        // One insights tile and one cycle tile: a second would repeat the same.
-        if ((typeName == Tile.INSIGHTS || typeName == Tile.CYCLE) && config.has(typeName)) return
+        // One insights, cycle and active-minutes tile: a second would repeat the same.
+        if (typeName in SINGLE_TILES && config.has(typeName)) return
         if (config.has(typeName) && !AppEntitlements.current.pro.value.allows(Feature.TILE_REPEAT)) return
         config = config.adding(typeName, before)
         viewModelScope.launch { store.save(config) }
@@ -370,6 +374,7 @@ class DashboardViewModel(
                 // The insights tile is kept apart from the type tiles, so its size is set here.
                 insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
                 cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
+                active = state.active?.let { shown -> after?.takeIf { it.isActive }?.let { shown.copy(tile = it) } ?: shown },
             )
         }
         viewModelScope.launch { store.save(config) }
@@ -401,6 +406,9 @@ class DashboardViewModel(
 
     /** Whether the cycle tile is on the dashboard; there is only ever one. */
     val hasCycleTile: Boolean get() = config.has(Tile.CYCLE)
+
+    /** Whether the active-minutes tile is on the dashboard; there is only ever one. */
+    val hasActiveTile: Boolean get() = config.has(Tile.ACTIVE)
 
     private val _cycleRecorded = MutableStateFlow(false)
 
@@ -488,11 +496,15 @@ class DashboardViewModel(
         val sameDay = tilesDate == date
         val insightsTile = config.tiles.firstOrNull { it.isInsights }
         val cycleTile = config.tiles.firstOrNull { it.isCycle }
+        val activeTile = config.tiles.firstOrNull { it.isActive }
         _state.update { state ->
             state.copy(
                 layout = config.tiles.map(Tile::id),
                 cycle = cycleTile?.let { tile ->
                     state.cycle?.takeIf { sameDay }?.copy(tile = tile) ?: CycleTileData(tile)
+                },
+                active = activeTile?.let { tile ->
+                    ActiveTileData(tile, state.active?.read?.takeIf { sameDay }, locked = !AppEntitlements.current.pro.value.allows(Feature.ACTIVE_MINUTES))
                 },
                 insights = insightsTile?.let { tile ->
                     InsightsTileData(tile, state.insights?.insights?.takeIf { sameDay }, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
@@ -686,6 +698,17 @@ class DashboardViewModel(
             )
             _state.update { state ->
                 state.cycle?.takeIf { it.tile.id == cycle.tile.id }?.let { state.copy(cycle = shown.copy(tile = it.tile)) } ?: state
+            }
+        }
+
+        // The seven days up to the day shown, after the numbers: four reads, one of them a week
+        // of heart rate.
+        val active = _state.value.active
+        if (active != null && !active.locked) {
+            val read = readActive(repository, sourceStore, settingsStore, granted, date.minusDays(ACTIVE_DAYS - 1L), date)
+            currentCoroutineContext().ensureActive()
+            _state.update { state ->
+                state.active?.takeIf { it.tile.id == active.tile.id }?.let { state.copy(active = it.copy(read = read)) } ?: state
             }
         }
 
@@ -1189,6 +1212,12 @@ class DashboardViewModel(
 
         /** Workouts a tall tile draws the chosen curve for; one row has room for one. */
         const val MAX_COMPANION_SESSIONS = 2
+
+        /** The active-minutes tile's window: the week up to the day shown, as the guideline's. */
+        const val ACTIVE_DAYS = 7
+
+        /** The tiles that are no type's, of which the dashboard holds one each. */
+        val SINGLE_TILES = setOf(Tile.INSIGHTS, Tile.CYCLE, Tile.ACTIVE)
     }
 }
 

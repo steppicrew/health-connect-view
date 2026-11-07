@@ -917,4 +917,24 @@
     <plurals name="plan_goal_steps">
         <item quantity="other">%d 歩</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">アクティブな時間</string>
+    <string name="active_tile_caption">過去7日間 · WHOの目標</string>
+    <string name="active_tile_of">/ %1$s</string>
+    <string name="active_none">この期間の心拍数がありません</string>
+    <string name="active_no_access">アクティブな時間は心拍数から推定します。表示するには、アプリに心拍数の読み取りを許可してください。</string>
+    <string name="active_no_max_title">最大心拍数がありません</string>
+    <string name="active_no_max">アクティブな時間は最大心拍数を基準に測ります。設定で入力してください。入力しない場合は1年分の心拍数から読み取りますが、まだ十分なデータがありません。</string>
+    <string name="active_week_total">この7日間の加重分数（WHOが推奨する週%1$s分に対して）</string>
+    <string name="active_week_mean">週あたりの平均加重分数（WHOが推奨する%1$s分に対して）</string>
+    <string name="active_of">%1$s / %2$s</string>
+    <string name="active_moderate">中強度: %1$s</string>
+    <string name="active_vigorous">高強度: %1$s（2倍で計算）</string>
+    <string name="active_left_out">心拍数が上がっていた%1$sは計算に含めていません。ワークアウト外で、近くに歩数や距離の記録がなかったためです（移動中に座っていたときなど）。</string>
+    <string name="active_how_title">この時間の算出方法</string>
+    <string name="active_guideline">WHOは、週に150分以上の中強度の運動、または75分以上の高強度の運動、あるいはその組み合わせを推奨しています。ここでは高強度の1分を2分として計算します。測定値ではなく、心拍数からの推定です。</string>
+    <string name="active_limits_reserve">%1$s bpm以上で中強度、%2$s bpm以上で高強度とみなします。予備心拍数（安静時心拍数と最大心拍数の差）の40 %%と60 %%です。</string>
+    <string name="active_limits_max">%1$s bpm以上で中強度、%2$s bpm以上で高強度とみなします。最大心拍数の64 %%と77 %%です。安静時心拍数が記録されると、代わりに予備心拍数に基づいて判定します。</string>
+    <string name="active_counted">%1$sが記録した心拍数に基づきます（この期間の%2$sをカバー）。ワークアウト外では、近くに歩数や距離の記録がある分のみ計算します。</string>
 </resources>

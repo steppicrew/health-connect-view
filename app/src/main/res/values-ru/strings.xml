@@ -1007,4 +1007,24 @@
         <item quantity="many">%d шагов</item>
         <item quantity="other">%d шага</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Активные минуты</string>
+    <string name="active_tile_caption">Последние 7 дней · цель ВОЗ</string>
+    <string name="active_tile_of">из %1$s</string>
+    <string name="active_none">Нет данных о пульсе за эти дни</string>
+    <string name="active_no_access">Активные минуты оцениваются по пульсу. Разрешите приложению читать пульс, чтобы увидеть их.</string>
+    <string name="active_no_max_title">Нет максимального пульса</string>
+    <string name="active_no_max">Активные минуты считаются относительно вашего максимального пульса. Укажите его в настройках; иначе приложение определит его по пульсу за год, а таких данных пока недостаточно.</string>
+    <string name="active_week_total">взвешенных минут за эти 7 дней из %1$s в неделю, рекомендованных ВОЗ</string>
+    <string name="active_week_mean">взвешенных минут в неделю в среднем из %1$s, рекомендованных ВОЗ</string>
+    <string name="active_of">%1$s из %2$s</string>
+    <string name="active_moderate">Умеренная: %1$s</string>
+    <string name="active_vigorous">Интенсивная: %1$s, считается вдвойне</string>
+    <string name="active_left_out">Не учтено %1$s с повышенным пульсом: вне тренировки, без шагов или расстояния поблизости, как при сидении в поездке.</string>
+    <string name="active_how_title">Как считаются эти минуты</string>
+    <string name="active_guideline">ВОЗ рекомендует не менее 150 минут умеренной или 75 минут интенсивной активности в неделю либо их сочетание. Здесь интенсивная минута считается вдвойне. Это оценка по вашему пульсу, а не измерение.</string>
+    <string name="active_limits_reserve">Минута считается умеренной от %1$s bpm и интенсивной от %2$s bpm: 40 %% и 60 %% вашего резерва пульса — диапазона между пульсом в покое и максимальным.</string>
+    <string name="active_limits_max">Минута считается умеренной от %1$s bpm и интенсивной от %2$s bpm: 64 %% и 77 %% вашего максимального пульса. Как только будет записан пульс в покое, пороги будут рассчитываться по резерву пульса.</string>
+    <string name="active_counted">По пульсу, записанному приложением %1$s; он охватывает %2$s этих дней. Вне тренировки минута учитывается, только если рядом записаны шаги или расстояние.</string>
 </resources>

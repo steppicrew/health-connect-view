@@ -947,4 +947,24 @@
         <item quantity="one">%d adım</item>
         <item quantity="other">%d adım</item>
     </plurals>
+
+    <!-- Active minutes against the WHO guideline, estimated from heart rate. -->
+    <string name="active_title">Aktif dakikalar</string>
+    <string name="active_tile_caption">Son 7 gün · DSÖ hedefi</string>
+    <string name="active_tile_of">%1$s üzerinden</string>
+    <string name="active_none">Bu günlerde nabız verisi yok</string>
+    <string name="active_no_access">Aktif dakikalar nabızdan tahmin edilir. Bunları görmek için uygulamanın nabzı okumasına izin verin.</string>
+    <string name="active_no_max_title">Maksimum nabız yok</string>
+    <string name="active_no_max">Aktif dakikalar maksimum nabzınıza göre ölçülür. Bunu Ayarlar’da belirleyin; aksi halde uygulama onu bir yıllık nabız verisinden okur ve bunun için henüz yeterli veri yok.</string>
+    <string name="active_week_total">bu 7 günde ağırlıklı dakika; DSÖ haftada %1$s dakika önerir</string>
+    <string name="active_week_mean">haftada ortalama ağırlıklı dakika; DSÖ %1$s dakika önerir</string>
+    <string name="active_of">%1$s / %2$s</string>
+    <string name="active_moderate">Orta: %1$s</string>
+    <string name="active_vigorous">Yüksek: %1$s, iki kat sayılır</string>
+    <string name="active_left_out">Nabzın yüksek olduğu %1$s sayılmadı: antrenman dışındaydı ve yakınında adım ya da mesafe kaydı yoktu, yolculukta otururken olduğu gibi.</string>
+    <string name="active_how_title">Bu dakikalar nasıl hesaplanır</string>
+    <string name="active_guideline">DSÖ haftada en az 150 dakika orta veya 75 dakika yüksek yoğunluklu aktivite ya da ikisinin bir karışımını önerir. Burada yüksek yoğunluklu bir dakika iki kat sayılır. Ölçülmez, nabzınızdan tahmin edilir.</string>
+    <string name="active_limits_reserve">Bir dakika %1$s bpm’den itibaren orta, %2$s bpm’den itibaren yüksek yoğunluklu sayılır: nabız rezervinizin, yani dinlenme ile maksimum nabzınız arasındaki aralığın %%40’ı ve %%60’ı.</string>
+    <string name="active_limits_max">Bir dakika %1$s bpm’den itibaren orta, %2$s bpm’den itibaren yüksek yoğunluklu sayılır: maksimum nabzınızın %%64’ü ve %%77’si. Dinlenme nabzı kaydedildiğinde sınırlar bunun yerine nabız rezervinize göre belirlenir.</string>
+    <string name="active_counted">%1$s tarafından kaydedilen nabızdan; bu günlerin %2$s kadarını kapsar. Antrenman dışında bir dakika yalnızca yakınında adım veya mesafe kaydı varsa sayılır.</string>
 </resources>
