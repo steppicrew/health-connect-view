@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.registry
 
+import android.text.format.DateFormat
 import androidx.annotation.StringRes
 import de.steppicrew.healthconnectview.R
 import java.text.NumberFormat
@@ -163,9 +164,12 @@ object Formatting {
             .withLocale(Locale.getDefault())
             .format(LocalTime.of(minutes / MINUTES_PER_HOUR % HOURS_PER_DAY, minutes % MINUTES_PER_HOUR))
 
-    /** Day and month without a year, for an axis tick where the year is already established. */
+    /**
+     * Day and month without a year, for an axis tick where the year is already established, in
+     * the locale's own order and punctuation: "11. Okt.", "Oct 11", "11 oct.".
+     */
     fun dayAndMonth(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
-        DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(Locale.getDefault(), "dMMM") ?: "d MMM", Locale.getDefault())
             .withZone(zone)
             .format(instant)
 
