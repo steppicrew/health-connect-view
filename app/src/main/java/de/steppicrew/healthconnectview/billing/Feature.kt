@@ -57,4 +57,7 @@ enum class Feature(val isPremium: Boolean) {
 
     /** Minutes of moderate and vigorous activity a week, estimated from heart rate, against the WHO's 150. */
     ACTIVE_MINUTES(isPremium = true),
+
+    /** Several types' figures for the day on one tile, each against its own usual range. */
+    OVERVIEW(isPremium = true),
 }
