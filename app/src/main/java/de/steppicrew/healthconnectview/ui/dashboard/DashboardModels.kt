@@ -11,6 +11,7 @@ import de.steppicrew.healthconnectview.health.Availability
 import de.steppicrew.healthconnectview.health.CycleNow
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Trend
+import de.steppicrew.healthconnectview.health.TrendResult
 import de.steppicrew.healthconnectview.health.currentStreak
 import de.steppicrew.healthconnectview.health.Session
 import de.steppicrew.healthconnectview.health.endDay
@@ -196,6 +197,8 @@ data class DashboardUiState(
     val cycle: CycleTileData? = null,
     /** The active-minutes tile where one is pinned; placed by [layout] like the insights tile. */
     val active: ActiveTileData? = null,
+    /** The overview tile where one is pinned; placed by [layout] like the insights tile. */
+    val overview: OverviewTileData? = null,
     /** Every tile's id in the stored order, the insights tile's among them. */
     val layout: List<String> = emptyList(),
 ) {
@@ -242,6 +245,47 @@ data class ActiveTileData(
     val read: ActiveRead? = null,
     val locked: Boolean = false,
 )
+
+/**
+ * The overview tile: several types' figures for the dashboard's day. [rows] is null while
+ * they are read; [locked] without Pro, where the tile offers the purchase instead.
+ */
+data class OverviewTileData(
+    val tile: Tile,
+    val rows: List<OverviewRow>? = null,
+    val locked: Boolean = false,
+)
+
+/**
+ * One type on the overview tile: the day's figure as the type's own tile reads it, so the two
+ * never disagree, and where it can be judged, the day against the 30 days before it.
+ *
+ * [usual] carries the day as its `recent` and the 30 days' mean and spread as its baseline --
+ * the trend arrow's own numbers -- so the strip drawn from it is the insights tile's strip
+ * for one day. Null where the day cannot be judged: a running total part-way through today, a
+ * carried reading from another day, sessions, and types with too few days before.
+ *
+ * [dayMean] where the figure is the day's mean of readings rather than the latest one, as for
+ * breathing: its own tile shows the latest reading, so the overview says which it is.
+ */
+data class OverviewRow(
+    val data: TileData,
+    val usual: TrendResult? = null,
+    val dayMean: Boolean = false,
+) {
+    /** How far the day sits from the 30 days' mean, in their day-to-day spreads; signed. */
+    val spreads: Double?
+        get() = usual?.takeIf { it.spread > 0.0 }?.let { (it.recent - it.baseline) / it.spread }
+
+    /**
+     * Outside the reader's own usual range: two day-to-day spreads or more from the mean, a
+     * day or two in a month by chance. A position, never a verdict -- more steps are unusual too.
+     */
+    val unusual: Boolean get() = spreads?.let { kotlin.math.abs(it) >= UNUSUAL_SPREADS } == true
+}
+
+/** Where a day counts as unusual for its type; see [OverviewRow.unusual]. */
+internal const val UNUSUAL_SPREADS = 2.0
 
 /** A type the add picker offers, and whether a tile of it is already pinned. */
 data class AddCandidate(val spec: RecordTypeSpec<*>, val pinned: Boolean)
