@@ -89,6 +89,8 @@ data class Tile(
      * The insights tile's own choice of types, by name, in the order shown; empty shows the
      * week's largest changes first. Someone who follows three numbers keeps them in view
      * whether they moved or not -- the owner's request, 11.10.2026.
+     *
+     * On the overview tile the types it lists, in order; empty is [OVERVIEW_PICKS].
      */
     val picks: List<String> = emptyList(),
 ) {
@@ -102,6 +104,12 @@ data class Tile(
 
     /** A tile that is not a type: the week's active minutes, estimated from heart rate. */
     val isActive: Boolean get() = typeName == ACTIVE
+
+    /** A tile that is not a type: the day's figures of several types at once. */
+    val isOverview: Boolean get() = typeName == OVERVIEW
+
+    /** The types the overview tile lists: the reader's choice, else [OVERVIEW_PICKS]. */
+    val overviewPicks: List<String> get() = picks.ifEmpty { OVERVIEW_PICKS }
 
     /** The next size in [SIZES], wrapping; an unknown stored size starts over at 1x1. */
     fun nextSize(): Tile {
@@ -134,6 +142,22 @@ data class Tile(
 
         /** Nor this one. */
         const val ACTIVE = "ActiveMinutes"
+
+        /** Nor this one. */
+        const val OVERVIEW = "Overview"
+
+        /**
+         * What an overview lists until the reader chooses: the day's figures the owner named,
+         * 11.11.2026 -- steps, floors, resting heart rate, breathing and workouts -- with sleep.
+         */
+        val OVERVIEW_PICKS = listOf(
+            "StepsRecord",
+            "FloorsClimbedRecord",
+            "RestingHeartRateRecord",
+            "RespiratoryRateRecord",
+            "ExerciseSessionRecord",
+            "SleepSessionRecord",
+        )
     }
 }
 
@@ -193,17 +217,20 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
 
     /**
      * Drops tiles whose type no longer exists, so a removed type cannot break the screen, and
-     * any insights, cycle or active-minutes tile after the first;
+     * any insights, cycle, active-minutes or overview tile after the first;
      * gives a repeated id a fresh one, and each type's goal and zones to all its tiles, so a
      * hand-edited or merged layout cannot break the rules the edits keep.
      */
     fun sanitised(): DashboardConfig {
-        // One insights, cycle and active-minutes tile at most: a second would show the same.
+        // One insights, cycle, active-minutes and overview tile at most: a second would show the same.
         val insightsAt = tiles.indexOfFirst { it.isInsights }
         val cycleAt = tiles.indexOfFirst { it.isCycle }
         val activeAt = tiles.indexOfFirst { it.isActive }
+        val overviewAt = tiles.indexOfFirst { it.isOverview }
         val known = tiles.withIndex()
-            .filter { (index, tile) -> tile.spec != null || index == insightsAt || index == cycleAt || index == activeAt }
+            .filter { (index, tile) ->
+                tile.spec != null || index == insightsAt || index == cycleAt || index == activeAt || index == overviewAt
+            }
             .map { (_, tile) -> tile }
         val first = known.groupBy { it.typeName }.mapValues { it.value.first() }
         val seen = mutableSetOf<String>()
@@ -270,7 +297,10 @@ data class DashboardConfig(val tiles: List<Tile> = emptyList()) {
         },
     )
 
-    /** Sets the insights tile's chosen types, in order; empty goes back to the largest changes. */
+    /**
+     * Sets the insights or overview tile's chosen types, in order; empty goes back to the
+     * largest changes, or to the overview's [Tile.OVERVIEW_PICKS].
+     */
     fun withPicks(id: String, picks: List<String>): DashboardConfig = DashboardConfig(
         tiles.map { if (it.id == id) it.copy(picks = picks) else it },
     )

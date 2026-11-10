@@ -7,6 +7,7 @@ import de.steppicrew.healthconnectview.dashboard.TileFace
 import de.steppicrew.healthconnectview.dashboard.facesFor
 import de.steppicrew.healthconnectview.dashboard.offersMean
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.registry.RecordRegistry
 import de.steppicrew.healthconnectview.registry.TileSpec
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -313,6 +314,26 @@ class DashboardConfigTest {
         )
         assertEquals(listOf("StepsRecord"), edited.tiles.single().picks)
         assertEquals(emptyList<String>(), stored.withPicks(Tile.INSIGHTS, emptyList()).tiles.single().picks)
+    }
+
+    @Test
+    fun `the overview tile survives sanitising once, and keeps its picks`() {
+        val stored = DashboardConfig(
+            listOf(
+                Tile(Tile.OVERVIEW, width = 2, picks = listOf("WeightRecord", "StepsRecord")),
+                Tile(Tile.OVERVIEW, id = "Overview#2"),
+            ),
+        )
+        val clean = stored.sanitised()
+        assertEquals(listOf(Tile.OVERVIEW), clean.tiles.map { it.typeName })
+        assertEquals(listOf("WeightRecord", "StepsRecord"), clean.tiles.single().overviewPicks)
+        assertEquals(clean, DashboardJson.decode(DashboardJson.encode(clean)).sanitised())
+    }
+
+    @Test
+    fun `an overview with nothing chosen lists the default types, all of them known`() {
+        assertEquals(Tile.OVERVIEW_PICKS, Tile(Tile.OVERVIEW).overviewPicks)
+        Tile.OVERVIEW_PICKS.forEach { assertTrue(it, RecordRegistry.specOrNull(it) != null) }
     }
 
     @Test
