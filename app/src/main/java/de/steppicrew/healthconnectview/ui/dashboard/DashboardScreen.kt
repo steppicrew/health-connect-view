@@ -135,6 +135,7 @@ fun DashboardScreen(
     var editingZonesFor by remember { mutableStateOf<TileData?>(null) }
     var editingOptionsFor by remember { mutableStateOf<TileData?>(null) }
     var editingPicksFor by remember { mutableStateOf<InsightsTileData?>(null) }
+    var editingOverviewFor by remember { mutableStateOf<OverviewTileData?>(null) }
     var editing by remember { mutableStateOf(false) }
     val scroll = rememberScrollState()
     val drag = remember(scroll) { TileDragState(scroll) }
@@ -168,6 +169,8 @@ fun DashboardScreen(
             cycleOffered = cycleRecorded && !viewModel.hasCycleTile,
             activeOffered = !viewModel.hasActiveTile,
             activeUnlocked = pro.allows(Feature.ACTIVE_MINUTES),
+            overviewOffered = !viewModel.hasOverviewTile,
+            overviewUnlocked = pro.allows(Feature.OVERVIEW),
         )
     }
 
@@ -222,6 +225,15 @@ fun DashboardScreen(
             current = editing.tile.picks,
             onDismiss = { editingPicksFor = null },
             onSave = { viewModel.setInsightPicks(editing.tile.id, it) },
+        )
+    }
+    editingOverviewFor?.let { editing ->
+        InsightPicksDialog(
+            candidates = viewModel.addableTypes().map { it.spec.type.simpleName.orEmpty() },
+            current = editing.tile.picks,
+            onDismiss = { editingOverviewFor = null },
+            onSave = { viewModel.setOverviewPicks(editing.tile.id, it) },
+            autoLabel = R.string.overview_pick_default,
         )
     }
     editingOptionsFor?.let { editing ->
@@ -353,7 +365,7 @@ fun DashboardScreen(
                     modifier = Modifier.padding(padding),
                 )
     
-                state.tiles.isEmpty() && state.insights == null && state.cycle == null && state.active == null -> MessageView(
+                state.tiles.isEmpty() && state.insights == null && state.cycle == null && state.active == null && state.overview == null -> MessageView(
                     icon = Icons.AutoMirrored.Filled.List,
                     title = stringResource(R.string.dashboard_empty_title),
                     body = stringResource(R.string.dashboard_empty_body),
@@ -362,7 +374,7 @@ fun DashboardScreen(
     
                 // Distinct from "no tiles": the dashboard is configured, but nothing on it may be
                 // read yet. Sending the user to the type list would be a dead end.
-                state.insights == null && state.cycle == null && state.active == null && state.tiles.none { it.granted } -> MessageView(
+                state.insights == null && state.cycle == null && state.active == null && state.overview == null && state.tiles.none { it.granted } -> MessageView(
                     icon = Icons.Default.Lock,
                     title = stringResource(R.string.detail_no_permission_title),
                     body = stringResource(R.string.detail_no_permission_body),
@@ -372,12 +384,13 @@ fun DashboardScreen(
                 else -> {
                     // Every tile in the stored order, the insights tile among the types'; during a
                     // drag, in the order the drag has reached.
-                    val entries = remember(state.tiles, state.insights, state.cycle, state.active, state.layout) {
+                    val entries = remember(state.tiles, state.insights, state.cycle, state.active, state.overview, state.layout) {
                         val all = state.tiles.map(GridEntry::Type) +
                             listOfNotNull(
                                 state.insights?.let(GridEntry::Insights),
                                 state.cycle?.let(GridEntry::Cycle),
                                 state.active?.let(GridEntry::Active),
+                                state.overview?.let(GridEntry::Overview),
                             )
                         val position = state.layout.withIndex().associate { (index, id) -> id to index }
                         all.sortedBy { position[it.id] ?: Int.MAX_VALUE }
@@ -494,6 +507,46 @@ fun DashboardScreen(
                                             if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
                                         },
                                     ) { width, height -> ActiveTileBody(entry.data, width, height) } }
+                                } else if (entry is GridEntry.Overview) {
+                                    TileColored(if (colorsUnlocked) entry.data.tile.color else TileColor.DEFAULT) { SharedTileCard(
+                                        tile = entry.data.tile,
+                                        title = stringResource(R.string.overview_tile_title),
+                                        colorsUnlocked = colorsUnlocked,
+                                        onSetColor = {
+                                            if (colorsUnlocked) {
+                                                editingColorFor = entry.data.tile to R.string.overview_tile_title
+                                            } else {
+                                                activity?.let(AppEntitlements.current::buy)
+                                            }
+                                        },
+                                        caption = dayLabel(state.date),
+                                        modifier = placed,
+                                        editing = editing,
+                                        onDragStart = startDrag,
+                                        onDrag = drag::drag,
+                                        onDragEnd = { drag.end()?.let(viewModel::reorder) },
+                                        // A figure opens its own type; the tile around them only the purchase.
+                                        onClick = { if (!editing && entry.data.locked) activity?.let(AppEntitlements.current::buy) },
+                                        onLongClick = { editing = true },
+                                        onMoveUp = { viewModel.moveTile(id, forward = false) },
+                                        onMoveDown = { viewModel.moveTile(id, forward = true) },
+                                        onRemove = { viewModel.removeTile(id) },
+                                        resizable = resizable,
+                                        canSetOptions = !entry.data.locked,
+                                        onSetOptions = { editingOverviewFor = entry.data },
+                                        onResize = {
+                                            if (resizable) viewModel.resizeTile(id) else activity?.let(AppEntitlements.current::buy)
+                                        },
+                                    ) { width, height ->
+                                        OverviewTileBody(
+                                            entry.data,
+                                            width,
+                                            height,
+                                            editing = editing,
+                                            onOpen = { type -> onOpenType(type, state.date.toString(), Span.DAY) },
+                                            onLongClick = { editing = true },
+                                        )
+                                    } }
                                 } else if (entry is GridEntry.Insights) {
                                     TileColored(if (colorsUnlocked) entry.data.tile.color else TileColor.DEFAULT) { SharedTileCard(
                                         tile = entry.data.tile,
@@ -896,7 +949,7 @@ private fun SharedTileCard(
     }
 }
 
-/** One cell of the grid: a type's tile, or the insights, cycle or active-minutes tile that belongs to none. */
+/** One cell of the grid: a type's tile, or the insights, cycle, active-minutes or overview tile that belongs to none. */
 private sealed interface GridEntry {
     val tile: Tile
     val id: String get() = tile.id
@@ -914,6 +967,10 @@ private sealed interface GridEntry {
     }
 
     data class Active(val data: ActiveTileData) : GridEntry {
+        override val tile: Tile get() = data.tile
+    }
+
+    data class Overview(val data: OverviewTileData) : GridEntry {
         override val tile: Tile get() = data.tile
     }
 }

@@ -845,6 +845,12 @@
         <item quantity="one">+%1$d और</item>
         <item quantity="other">+%1$d और</item>
     </plurals>
+    <string name="overview_tile_title">अवलोकन</string>
+    <string name="overview_unusual_high">आपके सामान्य से अधिक</string>
+    <string name="overview_unusual_low">आपके सामान्य से कम</string>
+    <string name="overview_usual_range">%1$s, आमतौर पर %2$s–%3$s</string>
+    <string name="overview_mean">औसत %1$s</string>
+    <string name="overview_pick_default">डिफ़ॉल्ट चयन</string>
     <string name="field_meal">भोजन</string>
     <string name="nutrients_title">पोषक तत्व</string>
     <string name="nutrient_fat">वसा</string>

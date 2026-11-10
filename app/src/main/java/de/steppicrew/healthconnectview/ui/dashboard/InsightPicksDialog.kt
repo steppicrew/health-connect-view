@@ -40,6 +40,8 @@ import de.steppicrew.healthconnectview.ui.components.firstLineTextInset
  * What the insights tile shows: the week's largest changes, or chosen types in a chosen order,
  * moved or not. [candidates] are the type names that have a week to compare, by name; a type
  * chosen earlier that has none this week stays listed, so choosing it is never lost.
+ *
+ * The overview tile's too, with its default types in place of the largest changes.
  */
 @Composable
 fun InsightPicksDialog(
@@ -48,6 +50,8 @@ fun InsightPicksDialog(
     onDismiss: () -> Unit,
     /** The chosen types in order; empty for the largest changes. */
     onSave: (List<String>) -> Unit,
+    /** What choosing nothing shows. */
+    @StringRes autoLabel: Int = R.string.insights_pick_auto,
 ) {
     var own by remember { mutableStateOf(current.isNotEmpty()) }
     var picks by remember { mutableStateOf(current) }
@@ -60,7 +64,7 @@ fun InsightPicksDialog(
         title = { Text(stringResource(R.string.insights_pick_title)) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                ModeRow(R.string.insights_pick_auto, selected = !own) { own = false }
+                ModeRow(autoLabel, selected = !own) { own = false }
                 ModeRow(R.string.insights_pick_own, selected = own) { own = true }
                 if (own) {
                     Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {

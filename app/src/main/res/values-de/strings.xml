@@ -845,6 +845,12 @@
         <item quantity="one">+%1$d weitere</item>
         <item quantity="other">+%1$d weitere</item>
     </plurals>
+    <string name="overview_tile_title">Überblick</string>
+    <string name="overview_unusual_high">Über Ihrem Üblichen</string>
+    <string name="overview_unusual_low">Unter Ihrem Üblichen</string>
+    <string name="overview_usual_range">%1$s, sonst %2$s–%3$s</string>
+    <string name="overview_mean">Ø %1$s</string>
+    <string name="overview_pick_default">Standardauswahl</string>
     <string name="field_meal">Mahlzeit</string>
     <string name="nutrients_title">Nährstoffe</string>
     <string name="nutrient_fat">Fett</string>

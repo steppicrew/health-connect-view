@@ -818,6 +818,12 @@
     <plurals name="insights_tile_more">
         <item quantity="other">另有 %1$d 項</item>
     </plurals>
+    <string name="overview_tile_title">概覽</string>
+    <string name="overview_unusual_high">高於您的平常水準</string>
+    <string name="overview_unusual_low">低於您的平常水準</string>
+    <string name="overview_usual_range">%1$s，平常 %2$s–%3$s</string>
+    <string name="overview_mean">平均 %1$s</string>
+    <string name="overview_pick_default">預設選擇</string>
     <string name="field_meal">餐點</string>
     <string name="nutrients_title">營養素</string>
     <string name="nutrient_fat">脂肪</string>

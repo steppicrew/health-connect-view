@@ -818,6 +818,12 @@
     <plurals name="insights_tile_more">
         <item quantity="other">외 %1$d개</item>
     </plurals>
+    <string name="overview_tile_title">개요</string>
+    <string name="overview_unusual_high">평소보다 높음</string>
+    <string name="overview_unusual_low">평소보다 낮음</string>
+    <string name="overview_usual_range">%1$s, 평소 %2$s~%3$s</string>
+    <string name="overview_mean">평균 %1$s</string>
+    <string name="overview_pick_default">기본 선택</string>
     <string name="field_meal">식사</string>
     <string name="nutrients_title">영양소</string>
     <string name="nutrient_fat">지방</string>
