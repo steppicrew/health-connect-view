@@ -38,6 +38,9 @@ import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.cycleNow
 import de.steppicrew.healthconnectview.health.mergeCycleDays
 import de.steppicrew.healthconnectview.health.trendBefore
+import de.steppicrew.healthconnectview.health.trendOf
+import de.steppicrew.healthconnectview.health.TREND_DAYS
+import de.steppicrew.healthconnectview.health.DailyReadings
 import de.steppicrew.healthconnectview.health.currentStreak
 import de.steppicrew.healthconnectview.health.resolveGoal
 import de.steppicrew.healthconnectview.health.dailyActivities
@@ -274,6 +277,17 @@ class DashboardViewModel(
         viewModelScope.launch { store.save(config) }
     }
 
+    /**
+     * Sets the overview tile's types, in order; empty goes back to the default ones. Read
+     * again, unlike the insights tile's, which has every type's week already: the overview
+     * reads only the types it lists.
+     */
+    fun setOverviewPicks(id: String, picks: List<String>) {
+        config = config.withPicks(id, picks)
+        viewModelScope.launch { store.save(config) }
+        reload()
+    }
+
     /** Sets a large tile's window and face, and persists them. */
     fun setOptions(
         id: String,
@@ -303,6 +317,7 @@ class DashboardViewModel(
                 insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
                 cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
                 active = state.active?.let { shown -> after?.takeIf { it.isActive }?.let { shown.copy(tile = it) } ?: shown },
+                overview = state.overview?.let { shown -> after?.takeIf { it.isOverview }?.let { shown.copy(tile = it) } ?: shown },
             )
         }
         viewModelScope.launch { store.save(config) }
@@ -375,6 +390,7 @@ class DashboardViewModel(
                 insights = state.insights?.let { shown -> after?.takeIf { it.isInsights }?.let { shown.copy(tile = it) } ?: shown },
                 cycle = state.cycle?.let { shown -> after?.takeIf { it.isCycle }?.let { shown.copy(tile = it) } ?: shown },
                 active = state.active?.let { shown -> after?.takeIf { it.isActive }?.let { shown.copy(tile = it) } ?: shown },
+                overview = state.overview?.let { shown -> after?.takeIf { it.isOverview }?.let { shown.copy(tile = it) } ?: shown },
             )
         }
         viewModelScope.launch { store.save(config) }
@@ -409,6 +425,9 @@ class DashboardViewModel(
 
     /** Whether the active-minutes tile is on the dashboard; there is only ever one. */
     val hasActiveTile: Boolean get() = config.has(Tile.ACTIVE)
+
+    /** Whether the overview tile is on the dashboard; there is only ever one. */
+    val hasOverviewTile: Boolean get() = config.has(Tile.OVERVIEW)
 
     private val _cycleRecorded = MutableStateFlow(false)
 
@@ -497,6 +516,7 @@ class DashboardViewModel(
         val insightsTile = config.tiles.firstOrNull { it.isInsights }
         val cycleTile = config.tiles.firstOrNull { it.isCycle }
         val activeTile = config.tiles.firstOrNull { it.isActive }
+        val overviewTile = config.tiles.firstOrNull { it.isOverview }
         _state.update { state ->
             state.copy(
                 layout = config.tiles.map(Tile::id),
@@ -508,6 +528,15 @@ class DashboardViewModel(
                 },
                 insights = insightsTile?.let { tile ->
                     InsightsTileData(tile, state.insights?.insights?.takeIf { sameDay }, locked = !AppEntitlements.current.pro.value.allows(Feature.INSIGHTS))
+                },
+                // The rows only for the same day and the same types: another day's figures must
+                // not stand under the new date, nor last choice's under this one's.
+                overview = overviewTile?.let { tile ->
+                    OverviewTileData(
+                        tile,
+                        state.overview?.takeIf { sameDay && it.tile.overviewPicks == tile.overviewPicks }?.rows,
+                        locked = !AppEntitlements.current.pro.value.allows(Feature.OVERVIEW),
+                    )
                 },
             )
         }
@@ -544,21 +573,7 @@ class DashboardViewModel(
 
         val previous = if (sameDay) _state.value.tiles.associateBy { it.tile.id } else emptyMap()
         val placeholders = config.tiles.mapNotNull { tile ->
-            val spec = tile.spec ?: return@mapNotNull null
-            val requested = when (val chosen = sources[tile.typeName]) {
-                SourceStore.ALL_SOURCES -> null
-                null -> preferred
-                else -> chosen
-            }
-            TileData(
-                tile = tile,
-                spec = spec,
-                granted = spec.permission in granted,
-                // The preference is provisional here: load() drops it for a type the
-                // preferred app never wrote, and reports back what it actually used.
-                source = requested,
-                requestedSource = requested,
-            )
+            tile.spec?.let { placeholderOf(tile, it, granted) }
         }
 
         // Only the first load of a day has nothing to show. Afterwards the previous values stay
@@ -684,6 +699,19 @@ class DashboardViewModel(
         }
         Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
 
+        // After the numbers and their arrows, whose reads it shares: a type on a tile of its own
+        // and on the overview is read once, and cannot show two figures.
+        val overview = _state.value.overview
+        if (overview != null && !overview.locked) {
+            val rows = readOverview(overview.tile, granted, date, gate)
+            currentCoroutineContext().ensureActive()
+            _state.update { state ->
+                state.overview?.takeIf { it.tile.id == overview.tile.id && state.date == date }
+                    ?.let { state.copy(overview = it.copy(rows = rows)) } ?: state
+            }
+            Log.i(TAG, "overview (${rows.size} types) in ${System.currentTimeMillis() - started} ms")
+        }
+
         // The cycle on the day shown: two reads of a few records a month, after the numbers.
         val cycle = _state.value.cycle
         if (cycle != null) {
@@ -728,6 +756,104 @@ class DashboardViewModel(
         }
         // A failed tile is not an answer worth keeping: the next resume must read it again.
         if (loaded.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
+    }
+
+    /**
+     * A tile of [spec] before it is read: whether it may be, and the app it asks for. The
+     * preference is provisional here: [load] drops it for a type the preferred app never
+     * wrote, and reports back what it actually used.
+     */
+    private fun placeholderOf(tile: Tile, spec: RecordTypeSpec<*>, granted: Set<String>): TileData {
+        val requested = when (val chosen = sources[tile.typeName]) {
+            SourceStore.ALL_SOURCES -> null
+            null -> preferred
+            else -> chosen
+        }
+        return TileData(
+            tile = tile,
+            spec = spec,
+            granted = spec.permission in granted,
+            source = requested,
+            requestedSource = requested,
+        )
+    }
+
+    /**
+     * The overview's rows, in the order chosen: each type's day as its own single cell reads it,
+     * through [loadDay], with the day set against the 30 days before. A type no longer known is
+     * left out; one not granted keeps its row, to say so.
+     */
+    private suspend fun readOverview(tile: Tile, granted: Set<String>, date: LocalDate, gate: Semaphore): List<OverviewRow> =
+        coroutineScope {
+            tile.overviewPicks.mapNotNull { name ->
+                val spec = RecordRegistry.specOrNull(name) ?: return@mapNotNull null
+                val placeholder = placeholderOf(Tile(name), spec, granted)
+                async {
+                    if (!placeholder.granted) {
+                        OverviewRow(placeholder.copy(loading = false))
+                    } else {
+                        gate.withPermit { overviewRow(placeholder, date) }
+                    }
+                }
+            }.awaitAll()
+        }
+
+    private suspend fun overviewRow(placeholder: TileData, date: LocalDate): OverviewRow {
+        val spec = placeholder.spec
+        if (spec.tile.dailyMeans && spec.aggregate == null) return dailyMeanRow(placeholder, date)
+        // The single cell's own path, so the figure is the one the type's tile shows. Its curve
+        // is dropped: the overview draws none.
+        val day = loadDay(placeholder, date).copy(curve = emptyList())
+        val value = day.value
+        val metric = spec.aggregate
+        // A running total part-way through today is below its usual day by nature, a carried
+        // reading is another day's, and a week's HRV is judged by its own standing.
+        val judged = value != null &&
+            metric != null &&
+            day.valueDate == null &&
+            spec.tile.form != TileSpec.Form.SESSIONS &&
+            !spec.tile.nightlyStatus &&
+            !(spec.tile.cumulativeIntraday && date == LocalDate.now())
+        if (!judged) return OverviewRow(day)
+        val origins = day.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        // The arrow's own read of the 30 days, shared with it where the type has a tile.
+        val before = catching { repository.trendBefore(requireNotNull(metric), date, origins) }.getOrNull()
+        return OverviewRow(day, before?.copy(recent = requireNotNull(value)))
+    }
+
+    /**
+     * A type with readings and no aggregate -- breathing: the day's mean of its readings, one
+     * writer a day as its chart takes them, against the 30 days before from the same read.
+     * The latest reading, which its own tile shows, said little about a night of them.
+     */
+    private suspend fun dailyMeanRow(placeholder: TileData, date: LocalDate): OverviewRow {
+        val spec = placeholder.spec
+        val zone = HealthRepository.DEFAULT_ZONE
+        val first = date.minusDays(TREND_DAYS.toLong())
+        val source = resolveSource(placeholder, dayInstants(date))
+        val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val daily = DailyReadings(zone, first)
+        val reads = Reads()
+        reads.attempt {
+            repository.forEachPage(
+                spec.type,
+                TimeRangeFilter.between(first.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant()),
+                origins,
+            ) { page ->
+                page.forEach { record ->
+                    val origin = record.metadata.dataOrigin.packageName
+                    spec.pointsOf(record).forEach { daily.add(it.time, it.value, origin) }
+                }
+            }
+        }
+        val means = daily.dailyMeans()
+        val value = means[date]
+        val usual = value?.let { mean -> trendOf(List(TREND_DAYS) { means[first.plusDays(it.toLong())] })?.copy(recent = mean) }
+        return OverviewRow(
+            placeholder.copy(source = source, value = value, loading = false, failed = value == null && reads.failed),
+            usual,
+            dayMean = true,
+        )
     }
 
     /**
@@ -1219,7 +1345,7 @@ class DashboardViewModel(
         const val ACTIVE_DAYS = 7
 
         /** The tiles that are no type's, of which the dashboard holds one each. */
-        val SINGLE_TILES = setOf(Tile.INSIGHTS, Tile.CYCLE, Tile.ACTIVE)
+        val SINGLE_TILES = setOf(Tile.INSIGHTS, Tile.CYCLE, Tile.ACTIVE, Tile.OVERVIEW)
     }
 }
 
