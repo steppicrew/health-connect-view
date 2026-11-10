@@ -899,6 +899,12 @@
         <item quantity="many">+%1$d kolejnych</item>
         <item quantity="other">+%1$d kolejnego</item>
     </plurals>
+    <string name="overview_tile_title">Przegląd</string>
+    <string name="overview_unusual_high">Powyżej Twojego zwykłego poziomu</string>
+    <string name="overview_unusual_low">Poniżej Twojego zwykłego poziomu</string>
+    <string name="overview_usual_range">%1$s, zwykle %2$s–%3$s</string>
+    <string name="overview_mean">śr. %1$s</string>
+    <string name="overview_pick_default">Wybór domyślny</string>
     <string name="field_meal">Posiłek</string>
     <string name="nutrients_title">Składniki odżywcze</string>
     <string name="nutrient_fat">Tłuszcz</string>

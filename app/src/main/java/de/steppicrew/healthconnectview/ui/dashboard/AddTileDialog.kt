@@ -49,6 +49,9 @@ fun AddTileDialog(
     /** Whether the active-minutes tile may be offered: not while one is pinned. */
     activeOffered: Boolean = false,
     activeUnlocked: Boolean = false,
+    /** Whether the overview tile may be offered: not while one is pinned. */
+    overviewOffered: Boolean = false,
+    overviewUnlocked: Boolean = false,
 ) {
     val (pinned, fresh) = candidates.partition { it.pinned }
     AlertDialog(
@@ -76,6 +79,14 @@ fun AddTileDialog(
                         }
                     }
                 }
+                if (overviewOffered) {
+                    item(key = "overview") {
+                        NamedRow(stringResource(R.string.overview_tile_title), locked = !overviewUnlocked) {
+                            if (overviewUnlocked) onAdd(Tile.OVERVIEW) else onBuy()
+                            onDismiss()
+                        }
+                    }
+                }
                 if (activeOffered) {
                     item(key = "active") {
                         NamedRow(stringResource(R.string.active_title), locked = !activeUnlocked) {
@@ -84,7 +95,7 @@ fun AddTileDialog(
                         }
                     }
                 }
-                if (fresh.isEmpty() && !insightsOffered && !cycleOffered && !activeOffered) {
+                if (fresh.isEmpty() && !insightsOffered && !cycleOffered && !activeOffered && !overviewOffered) {
                     item(key = "all-pinned") {
                         Text(
                             text = stringResource(R.string.dashboard_add_none),

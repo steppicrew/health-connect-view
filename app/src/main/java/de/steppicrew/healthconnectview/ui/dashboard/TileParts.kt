@@ -272,7 +272,7 @@ internal fun GoalShare(data: TileData) {
 private const val PERCENT = 100.0
 
 /** "128/82" for a pair, whole numbers as a cuff shows them; the plain number otherwise. */
-private fun tileValueText(value: Double, secondary: Double?, decimals: Int? = null): String =
+internal fun tileValueText(value: Double, secondary: Double?, decimals: Int? = null): String =
     if (secondary == null) Formatting.number(value, decimals) else "${value.roundToInt()}/${secondary.roundToInt()}"
 
 @Composable

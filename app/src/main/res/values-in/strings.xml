@@ -818,6 +818,12 @@
     <plurals name="insights_tile_more">
         <item quantity="other">+%1$d lainnya</item>
     </plurals>
+    <string name="overview_tile_title">Ringkasan</string>
+    <string name="overview_unusual_high">Di atas biasanya Anda</string>
+    <string name="overview_unusual_low">Di bawah biasanya Anda</string>
+    <string name="overview_usual_range">%1$s, biasanya %2$s–%3$s</string>
+    <string name="overview_mean">rata-rata %1$s</string>
+    <string name="overview_pick_default">Pilihan default</string>
     <string name="field_meal">Makanan</string>
     <string name="nutrients_title">Nutrisi</string>
     <string name="nutrient_fat">Lemak</string>

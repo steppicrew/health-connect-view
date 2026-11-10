@@ -953,6 +953,12 @@
         <item quantity="many">+%1$d أخرى</item>
         <item quantity="other">+%1$d أخرى</item>
     </plurals>
+    <string name="overview_tile_title">نظرة عامة</string>
+    <string name="overview_unusual_high">أعلى من المعتاد لديك</string>
+    <string name="overview_unusual_low">أدنى من المعتاد لديك</string>
+    <string name="overview_usual_range">%1$s، عادةً %2$s–%3$s</string>
+    <string name="overview_mean">متوسط %1$s</string>
+    <string name="overview_pick_default">الاختيار الافتراضي</string>
     <string name="field_meal">الوجبة</string>
     <string name="nutrients_title">العناصر الغذائية</string>
     <string name="nutrient_fat">الدهون</string>

@@ -872,6 +872,12 @@
         <item quantity="many">+%1$d outros</item>
         <item quantity="other">+%1$d outros</item>
     </plurals>
+    <string name="overview_tile_title">Visão geral</string>
+    <string name="overview_unusual_high">Acima do seu habitual</string>
+    <string name="overview_unusual_low">Abaixo do seu habitual</string>
+    <string name="overview_usual_range">%1$s, normalmente %2$s–%3$s</string>
+    <string name="overview_mean">média %1$s</string>
+    <string name="overview_pick_default">Seleção padrão</string>
     <string name="field_meal">Refeição</string>
     <string name="nutrients_title">Nutrientes</string>
     <string name="nutrient_fat">Gorduras</string>

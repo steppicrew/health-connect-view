@@ -845,6 +845,12 @@
         <item quantity="one">+%1$d andere</item>
         <item quantity="other">+%1$d andere</item>
     </plurals>
+    <string name="overview_tile_title">Overzicht</string>
+    <string name="overview_unusual_high">Boven je gebruikelijke niveau</string>
+    <string name="overview_unusual_low">Onder je gebruikelijke niveau</string>
+    <string name="overview_usual_range">%1$s, meestal %2$s–%3$s</string>
+    <string name="overview_mean">gem. %1$s</string>
+    <string name="overview_pick_default">Standaardselectie</string>
     <string name="field_meal">Maaltijd</string>
     <string name="nutrients_title">Voedingsstoffen</string>
     <string name="nutrient_fat">Vet</string>

@@ -818,6 +818,12 @@
     <plurals name="insights_tile_more">
         <item quantity="other">ほか%1$d件</item>
     </plurals>
+    <string name="overview_tile_title">概要</string>
+    <string name="overview_unusual_high">いつもより高め</string>
+    <string name="overview_unusual_low">いつもより低め</string>
+    <string name="overview_usual_range">%1$s（普段は %2$s～%3$s）</string>
+    <string name="overview_mean">平均 %1$s</string>
+    <string name="overview_pick_default">標準の選択</string>
     <string name="field_meal">食事</string>
     <string name="nutrients_title">栄養素</string>
     <string name="nutrient_fat">脂質</string>
