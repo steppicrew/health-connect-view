@@ -1041,6 +1041,23 @@ doctor report and the year heatmap; the rest unranked.
     then all 365 daily and 53 weekly buckets match the single request exactly
     (`YearSplitActivity`). Month buckets stay one request. After both: 13.2-13.4 s, insights
     14.6 s, distance still the slowest tile at 7 s.
+106. [x] **Overview tile** (Pro) -- the owner, 11.11.2026: one tile with the day's steps, floors,
+    resting heart rate, breathing, workouts and what is out of the ordinary. Two forms, the
+    owner's pick of four: at 2x1 three figures a row, each with its type's icon and a dot in the
+    strip's colour where the day is unusual; at 2x2 two a row, each over the insights tile's
+    strip, and what is unusual named beneath -- "Schritte · Über Ihrem Üblichen / 12.157
+    Schritte, sonst 8.906-11.226". A single cell lists them one a row. Stored as type name
+    `Overview`, one at most; its types are `Tile.picks`, chosen and ordered in the insights
+    tile's dialog, default `Tile.OVERVIEW_PICKS`. Each figure is read by the single cell's own
+    `loadDay`, so it shares the read with a tile of its type and cannot disagree with it, and it
+    follows the dashboard's day. "Unusual" is the reader's own: the day two day-to-day spreads
+    or more from the 30 days before, from the trend arrow's own read -- never a clinical range,
+    worded as a position. Not judged: a running total on today (always below a whole day by
+    noon), a carried reading, sessions, HRV (its own standing). Breathing has no aggregate, so
+    its figure is the day's mean of readings ("Ø 14,2"), not the latest as on its own tile,
+    and its 30 days come from one paged read. A figure's tap opens its type on the day. Seen on
+    the seeded emulator at 2x1 and 2x2, the notes with the threshold lowered for the shot;
+    breathing not seeded there, so its mean is unseen -- check on the phone.
 
 ### Refactoring, 25.10.2026
 
