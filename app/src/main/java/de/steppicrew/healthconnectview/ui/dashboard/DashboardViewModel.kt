@@ -638,10 +638,11 @@ class DashboardViewModel(
         val gate = Semaphore(MAX_CONCURRENT_TILES)
         val read = coroutineScope {
             // The overview with the tiles, not after them: it heads the owner's dashboard, and
-            // waiting for every tile and arrow left it a spinner for 15-21 s (10.11.2026). Asked
-            // first, it queues ahead of the tiles at the gate; a type that also has a tile of its
-            // own is still read once, since the reads are shared, so both show the same figure.
-            launch { loadOverview(granted, date, gate, started) }
+            // waiting for every tile and arrow left it a spinner for 15-21 s (10.11.2026). Its own
+            // gate, not the tiles': sharing theirs, the weeks read after each figure queued behind
+            // all 37 tiles and came 15 s late, breathing's month later still (11.11.2026). A type
+            // that also has a tile of its own is still read once, since the reads are shared.
+            launch { loadOverview(granted, date, Semaphore(OVERVIEW_CONCURRENT_READS), started) }
             val loaded = coroutineScope {
                 placeholders.mapIndexed { index, placeholder ->
                     async {
@@ -1387,6 +1388,9 @@ class DashboardViewModel(
         const val TAG = "Dashboard"
         const val KEY_DATE = "date"
         const val MAX_CONCURRENT_TILES = 4
+
+        /** The overview's reads at once, beside the tiles' own [MAX_CONCURRENT_TILES]. */
+        const val OVERVIEW_CONCURRENT_READS = 2
 
         /**
          * How long loaded values stay good. Long enough to cover leaving the dashboard and
