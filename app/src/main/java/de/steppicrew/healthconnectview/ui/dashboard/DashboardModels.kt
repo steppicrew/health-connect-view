@@ -267,11 +267,15 @@ data class OverviewTileData(
  *
  * [dayMean] where the figure is the day's mean of readings rather than the latest one, as for
  * breathing: its own tile shows the latest reading, so the overview says which it is.
+ *
+ * [week] is the day shown and the six before it, oldest first, a day without a value null: the
+ * 2x2 tile's small chart under each figure. Null until read, and never read for a smaller tile.
  */
 data class OverviewRow(
     val data: TileData,
     val usual: TrendResult? = null,
     val dayMean: Boolean = false,
+    val week: List<Double?>? = null,
 ) {
     /** How far the day sits from the 30 days' mean, in their day-to-day spreads; signed. */
     val spreads: Double?
@@ -283,6 +287,9 @@ data class OverviewRow(
      */
     val unusual: Boolean get() = spreads?.let { kotlin.math.abs(it) >= UNUSUAL_SPREADS } == true
 }
+
+/** The days in an overview row's [OverviewRow.week]: the day shown and the six before. */
+internal const val WEEK_DAYS = 7
 
 /** Where a day counts as unusual for its type; see [OverviewRow.unusual]. */
 internal const val UNUSUAL_SPREADS = 2.0
