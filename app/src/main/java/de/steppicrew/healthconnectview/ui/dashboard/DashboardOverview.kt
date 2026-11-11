@@ -27,10 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -263,15 +260,15 @@ private fun OverviewCell(
  * The day's figure as the type's own single cell writes it, one line: a carried reading muted,
  * a pair as "128/82", a night's sleep as its length and workouts as their count -- with their
  * time where a 2x2 tile has room -- and breathing marked as the day's mean. The unit and a
- * workout's time are small and muted beside the number, as on the type's own tile, so the
- * number can be large in the room a tile has.
+ * workout's time stand small beneath the number, as on the type's own tile: a 2x2 tile has
+ * height to spare and not width, and beside it "Atemzüge/min" held every number at the
+ * smallest size on the owner's phone (11.11.2026).
  */
 @Composable
 private fun CellValue(row: OverviewRow, style: TextStyle, icon: Dp, withUnit: Boolean, modifier: Modifier = Modifier) {
     val data = row.data
     val spec = data.spec
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    val small = SpanStyle(fontSize = MaterialTheme.typography.labelLarge.fontSize, color = muted)
     val iconAt = Modifier.padding(top = firstLineInset(style, icon)).size(icon)
     when {
         !data.granted -> Icon(Icons.Default.Lock, stringResource(R.string.tile_locked), modifier = iconAt, tint = muted)
@@ -280,14 +277,14 @@ private fun CellValue(row: OverviewRow, style: TextStyle, icon: Dp, withUnit: Bo
         else -> {
             val sessions = spec.tile.form == TileSpec.Form.SESSIONS
             val unit = spec.displayUnitRes?.takeIf { withUnit && !sessions && data.secondaryValue == null }
-                ?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
-            // The figure, and what is set small beside it.
+                ?.let { stringResource(it) }.orEmpty()
+            // The figure, and what is set small beneath it.
             val (text, after) = when {
                 sessions && spec.tile.sessionKind == Session.Kind.SLEEP ->
                     data.sessions.takeIf { it.isNotEmpty() }?.let { Formatting.duration(it.totalDuration()) } to ""
                 sessions -> when {
                     data.sessions.isEmpty() -> stringResource(R.string.sessions_none) to ""
-                    withUnit -> stringResource(R.string.sessions_count, data.sessions.size) to " · " + Formatting.duration(data.sessionDuration)
+                    withUnit -> stringResource(R.string.sessions_count, data.sessions.size) to Formatting.duration(data.sessionDuration)
                     else -> stringResource(R.string.sessions_count, data.sessions.size) to ""
                 }
                 else -> data.value?.let { value ->
@@ -295,17 +292,18 @@ private fun CellValue(row: OverviewRow, style: TextStyle, icon: Dp, withUnit: Bo
                     if (row.dayMean) stringResource(R.string.overview_mean, figure) else figure
                 } to unit
             }
-            Text(
-                text = buildAnnotatedString {
-                    append(text ?: stringResource(R.string.tile_no_data))
-                    if (text != null) withStyle(small) { append(after) }
-                },
-                style = style,
-                color = if (text == null || data.valueDate != null || data.sessions.isEmpty() && sessions) muted else MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = modifier,
-            )
+            Column(modifier) {
+                Text(
+                    text = text ?: stringResource(R.string.tile_no_data),
+                    style = style,
+                    color = if (text == null || data.valueDate != null || data.sessions.isEmpty() && sessions) muted else MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (text != null && after.isNotEmpty()) {
+                    Text(after, style = MaterialTheme.typography.labelMedium, color = muted, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
         }
     }
 }
