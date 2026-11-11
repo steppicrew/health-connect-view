@@ -1059,6 +1059,26 @@ doctor report and the year heatmap; the rest unranked.
     the seeded emulator at 2x1 and 2x2, the notes with the threshold lowered for the shot;
     breathing not seeded there, so its mean is unseen -- check on the phone.
 
+    Revised the same day on the owner's phone. Figures grown to fill the tile showed nothing
+    more ("larger icons do not use the space more efficiently"), so the text stays at its own
+    size and the 2x2 content moved to 2x1: two a row with units and strips. The 2x2 tile, the
+    owner's pick of three, draws each figure's week under it -- bars from zero for what adds
+    up, a line across the week's range for a level, the day itself in the accent colour --
+    grown into the height left once figures and notes have theirs; a chart opens the type's
+    week. The week is the calendar's own read (`readHeatmap`: nights by their morning,
+    workouts by day), breathing's from its month of means. A trophy marks a figure whose day met
+    its goal, the goal taken from the type's own tile, adaptive ones included. Tapping the tile
+    opens `OverviewScreen`: each figure large, "Üblich: 48-53 bpm", the strip, the week with
+    its days named; it uses the dashboard's view model, so it shows the tile's own figures and
+    reads nothing again.
+
+    Speed, measured on the phone: reading the overview after every tile and arrow left it a
+    spinner for 21 s. It now starts with the tiles on two read slots of its own; each figure is
+    shown as it arrives, then its week. Breathing reads the day's mean alone before the month
+    behind its strip (the month took 15-17 s). Figures in at 1.3-2.9 s, weeks at 4.3 s, the
+    tiles at 9.7 s against 14.8 before. The dashboard is marked loaded only once the overview
+    is in: otherwise a load cancelled mid-read left a figure spinning that no resume re-read.
+
 ### Refactoring, 25.10.2026
 
 The app grew to 153 Kotlin files and about 33,000 lines in a few weeks. The owner asked what
