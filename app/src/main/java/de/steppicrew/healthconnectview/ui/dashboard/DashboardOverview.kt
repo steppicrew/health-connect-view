@@ -275,7 +275,7 @@ private fun OverviewCell(
  * gap. Drawn only, like the strip: the figure above is what a screen reader says.
  */
 @Composable
-private fun WeekChart(week: List<Double?>?, fromZero: Boolean, modifier: Modifier) {
+internal fun WeekChart(week: List<Double?>?, fromZero: Boolean, modifier: Modifier) {
     val past = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = WEEK_PAST_ALPHA)
     val shown = MaterialTheme.colorScheme.primary
     Canvas(modifier.clearAndSetSemantics { }) {
@@ -318,7 +318,7 @@ private fun WeekChart(week: List<Double?>?, fromZero: Boolean, modifier: Modifie
  * time where a wide tile has room -- and breathing marked as the day's mean.
  */
 @Composable
-private fun CellValue(row: OverviewRow, style: TextStyle, withUnit: Boolean, modifier: Modifier = Modifier) {
+internal fun CellValue(row: OverviewRow, style: TextStyle, withUnit: Boolean, modifier: Modifier = Modifier) {
     val data = row.data
     val spec = data.spec
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -359,18 +359,10 @@ private fun CellValue(row: OverviewRow, style: TextStyle, withUnit: Boolean, mod
 /** "Atemfrequenz -- über Ihrem Üblichen / 14,2, sonst 12,1-13,4": the day and the reader's own range. */
 @Composable
 private fun UnusualNote(row: OverviewRow) {
-    val usual = row.usual ?: return
     val spreads = row.spreads ?: return
     val spec = row.data.spec
     val style = MaterialTheme.typography.bodySmall
-    val decimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else null
-    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
-    val day = stringResource(
-        R.string.overview_usual_range,
-        Formatting.number(usual.recent, decimals) + unit,
-        Formatting.number(usual.baseline - usual.spread, decimals),
-        Formatting.number(usual.baseline + usual.spread, decimals) + unit,
-    )
+    val day = usualRange(row) ?: return
     Row(verticalAlignment = Alignment.Top) {
         Box(
             Modifier
@@ -395,6 +387,35 @@ private fun UnusualNote(row: OverviewRow) {
             )
         }
     }
+}
+
+/** "14,2, sonst 12,1-13,4": the day against the reader's usual range, one spread either side. */
+@Composable
+internal fun usualRange(row: OverviewRow): String? {
+    val usual = row.usual ?: return null
+    val spec = row.data.spec
+    val decimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else null
+    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
+    return stringResource(
+        R.string.overview_usual_range,
+        Formatting.number(usual.recent, decimals) + unit,
+        Formatting.number(usual.baseline - usual.spread, decimals),
+        Formatting.number(usual.baseline + usual.spread, decimals) + unit,
+    )
+}
+
+/** "Üblich: 12,1-13,4": the range alone, under a figure already shown large. */
+@Composable
+internal fun usualOnly(row: OverviewRow): String? {
+    val usual = row.usual ?: return null
+    val spec = row.data.spec
+    val decimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else null
+    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
+    return stringResource(
+        R.string.overview_usual_only,
+        Formatting.number(usual.baseline - usual.spread, decimals),
+        Formatting.number(usual.baseline + usual.spread, decimals) + unit,
+    )
 }
 
 /** Between the figures' rows: tight, since every line is more of the day shown. */

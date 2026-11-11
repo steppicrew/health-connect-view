@@ -876,6 +876,7 @@
     <string name="overview_unusual_high">Sopra il tuo solito</string>
     <string name="overview_unusual_low">Sotto il tuo solito</string>
     <string name="overview_usual_range">%1$s, di solito %2$s–%3$s</string>
+    <string name="overview_usual_only">Di solito %1$s–%2$s</string>
     <string name="overview_mean">media %1$s</string>
     <string name="overview_pick_default">Selezione predefinita</string>
     <string name="field_meal">Pasto</string>

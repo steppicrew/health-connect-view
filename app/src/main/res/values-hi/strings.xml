@@ -849,6 +849,7 @@
     <string name="overview_unusual_high">आपके सामान्य से अधिक</string>
     <string name="overview_unusual_low">आपके सामान्य से कम</string>
     <string name="overview_usual_range">%1$s, आमतौर पर %2$s–%3$s</string>
+    <string name="overview_usual_only">आमतौर पर %1$s–%2$s</string>
     <string name="overview_mean">औसत %1$s</string>
     <string name="overview_pick_default">डिफ़ॉल्ट चयन</string>
     <string name="field_meal">भोजन</string>

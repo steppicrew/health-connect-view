@@ -876,6 +876,7 @@
     <string name="overview_unusual_high">Por encima de lo habitual para ti</string>
     <string name="overview_unusual_low">Por debajo de lo habitual para ti</string>
     <string name="overview_usual_range">%1$s, normalmente %2$s–%3$s</string>
+    <string name="overview_usual_only">Lo habitual: %1$s–%2$s</string>
     <string name="overview_mean">media %1$s</string>
     <string name="overview_pick_default">Selección predeterminada</string>
     <string name="field_meal">Comida</string>

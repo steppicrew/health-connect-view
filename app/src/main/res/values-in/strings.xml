@@ -822,6 +822,7 @@
     <string name="overview_unusual_high">Di atas biasanya Anda</string>
     <string name="overview_unusual_low">Di bawah biasanya Anda</string>
     <string name="overview_usual_range">%1$s, biasanya %2$s–%3$s</string>
+    <string name="overview_usual_only">Biasanya %1$s–%2$s</string>
     <string name="overview_mean">rata-rata %1$s</string>
     <string name="overview_pick_default">Pilihan default</string>
     <string name="field_meal">Makanan</string>

@@ -883,6 +883,7 @@
     <string name="overview_unusual_high">Above your usual</string>
     <string name="overview_unusual_low">Below your usual</string>
     <string name="overview_usual_range">%1$s, usually %2$s–%3$s</string>
+    <string name="overview_usual_only">Usually %1$s–%2$s</string>
     <string name="overview_mean">avg %1$s</string>
     <string name="overview_pick_default">Default selection</string>
     <string name="unit_g" translatable="false">g</string>

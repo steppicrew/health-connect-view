@@ -269,7 +269,7 @@ data class OverviewTileData(
  * breathing: its own tile shows the latest reading, so the overview says which it is.
  *
  * [week] is the day shown and the six before it, oldest first, a day without a value null: the
- * 2x2 tile's small chart under each figure. Null until read, and never read for a smaller tile.
+ * 2x2 tile's small chart under each figure, and the overview screen's. Null until read.
  */
 data class OverviewRow(
     val data: TileData,

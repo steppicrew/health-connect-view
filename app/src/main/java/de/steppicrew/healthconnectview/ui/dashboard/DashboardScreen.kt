@@ -113,6 +113,8 @@ fun DashboardScreen(
     onOpenCycle: () -> Unit = {},
     /** The active-minutes screen, on the dashboard's day. */
     onOpenActive: (String) -> Unit = {},
+    /** The overview tile's own screen: its figures at length, on the dashboard's day. */
+    onOpenOverview: () -> Unit = {},
     /** The body composition screen, which a weight tile's body face opens. */
     onOpenBody: () -> Unit = {},
     /** One workout's screen, which a workout tile showing a single workout opens. */
@@ -525,8 +527,15 @@ fun DashboardScreen(
                                         onDragStart = startDrag,
                                         onDrag = drag::drag,
                                         onDragEnd = { drag.end()?.let(viewModel::reorder) },
-                                        // A figure opens its own type; the tile around them only the purchase.
-                                        onClick = { if (!editing && entry.data.locked) activity?.let(AppEntitlements.current::buy) },
+                                        // A figure opens its own type, its week the type's week; the tile
+                                        // around them the overview at length.
+                                        onClick = {
+                                            when {
+                                                editing -> Unit
+                                                entry.data.locked -> activity?.let(AppEntitlements.current::buy)
+                                                else -> onOpenOverview()
+                                            }
+                                        },
                                         onLongClick = { editing = true },
                                         onMoveUp = { viewModel.moveTile(id, forward = false) },
                                         onMoveDown = { viewModel.moveTile(id, forward = true) },
