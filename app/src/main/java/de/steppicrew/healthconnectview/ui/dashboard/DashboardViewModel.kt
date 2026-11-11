@@ -797,14 +797,37 @@ class DashboardViewModel(
         coroutineScope {
             picks.forEachIndexed { index, placeholder ->
                 launch {
-                    val row = if (!placeholder.granted) {
-                        OverviewRow(placeholder.copy(loading = false))
-                    } else {
-                        gate.withPermit { overviewRow(placeholder, date) }
+                    suspend fun show(read: suspend () -> OverviewRow) {
+                        val row = gate.withPermit {
+                            val rowStarted = System.currentTimeMillis()
+                            read().also {
+                                val now = System.currentTimeMillis()
+                                // Times only, as for the tiles: which figure waited, which read slowly.
+                                Log.i(TAG, "overview $index ${placeholder.spec.type.simpleName} waited ${rowStarted - started} took ${now - rowStarted} done ${now - started} ms")
+                            }
+                        }
+                        // A cancelled read comes back empty, and must not replace a figure.
+                        currentCoroutineContext().ensureActive()
+                        publish { rows -> rows.mapIndexed { at, shown -> if (at == index) row else shown } }
                     }
-                    // A cancelled read comes back empty, and must not replace a figure.
-                    currentCoroutineContext().ensureActive()
-                    publish { rows -> rows.mapIndexed { at, shown -> if (at == index) row else shown } }
+                    val spec = placeholder.spec
+                    when {
+                        !placeholder.granted -> publish { rows ->
+                            rows.mapIndexed { at, shown -> if (at == index) OverviewRow(placeholder.copy(loading = false)) else shown }
+                        }
+                        // The day's mean first, then the month for its usual range: on the owner's
+                        // phone the month of breathing took 15 s while every other figure was in
+                        // after 2 (11.11.2026). A month that fails keeps the day's figure.
+                        spec.tile.dailyMeans && spec.aggregate == null -> {
+                            var day: OverviewRow? = null
+                            show { dailyMeanRow(placeholder, date, withUsual = false).also { day = it } }
+                            show {
+                                val month = dailyMeanRow(placeholder, date, withUsual = true)
+                                month.takeUnless { it.data.failed } ?: requireNotNull(day)
+                            }
+                        }
+                        else -> show { overviewRow(placeholder, date) }
+                    }
                 }
             }
         }
@@ -813,7 +836,6 @@ class DashboardViewModel(
 
     private suspend fun overviewRow(placeholder: TileData, date: LocalDate): OverviewRow {
         val spec = placeholder.spec
-        if (spec.tile.dailyMeans && spec.aggregate == null) return dailyMeanRow(placeholder, date)
         // The single cell's own path, so the figure is the one the type's tile shows. Its curve
         // is dropped: the overview draws none.
         val day = loadDay(placeholder, date).copy(curve = emptyList())
@@ -837,12 +859,13 @@ class DashboardViewModel(
     /**
      * A type with readings and no aggregate -- breathing: the day's mean of its readings, one
      * writer a day as its chart takes them, against the 30 days before from the same read.
-     * The latest reading, which its own tile shows, said little about a night of them.
+     * The latest reading, which its own tile shows, said little about a night of them. Without
+     * [withUsual], the day alone: the figure, quickly, before the month behind its strip.
      */
-    private suspend fun dailyMeanRow(placeholder: TileData, date: LocalDate): OverviewRow {
+    private suspend fun dailyMeanRow(placeholder: TileData, date: LocalDate, withUsual: Boolean): OverviewRow {
         val spec = placeholder.spec
         val zone = HealthRepository.DEFAULT_ZONE
-        val first = date.minusDays(TREND_DAYS.toLong())
+        val first = if (withUsual) date.minusDays(TREND_DAYS.toLong()) else date
         val source = resolveSource(placeholder, dayInstants(date))
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
         val daily = DailyReadings(zone, first)
@@ -861,7 +884,7 @@ class DashboardViewModel(
         }
         val means = daily.dailyMeans()
         val value = means[date]
-        val usual = value?.let { mean -> trendOf(List(TREND_DAYS) { means[first.plusDays(it.toLong())] })?.copy(recent = mean) }
+        val usual = value?.takeIf { withUsual }?.let { mean -> trendOf(List(TREND_DAYS) { means[first.plusDays(it.toLong())] })?.copy(recent = mean) }
         return OverviewRow(
             placeholder.copy(source = source, value = value, loading = false, failed = value == null && reads.failed),
             usual,
