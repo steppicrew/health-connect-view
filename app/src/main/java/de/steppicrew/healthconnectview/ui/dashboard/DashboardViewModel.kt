@@ -636,126 +636,123 @@ class DashboardViewModel(
 
         val started = System.currentTimeMillis()
         val gate = Semaphore(MAX_CONCURRENT_TILES)
-        val loaded = coroutineScope {
-            placeholders.mapIndexed { index, placeholder ->
-                async {
-                    if (!placeholder.granted) {
-                        placeholder.copy(loading = false)
-                    } else {
-                        gate.withPermit {
-                            val tileStarted = System.currentTimeMillis()
-                            load(placeholder, date, RecordRegistry.HISTORY_PERMISSION in granted).also {
-                                val now = System.currentTimeMillis()
-                                // Times only: which tile waited and which one read slowly.
-                                Log.i(TAG, "tile $index ${placeholder.tile.typeName} waited ${tileStarted - started} took ${now - tileStarted} done ${now - started} ms failed=${it.failed}")
+        val read = coroutineScope {
+            // The overview with the tiles, not after them: it heads the owner's dashboard, and
+            // waiting for every tile and arrow left it a spinner for 15-21 s (10.11.2026). Asked
+            // first, it queues ahead of the tiles at the gate; a type that also has a tile of its
+            // own is still read once, since the reads are shared, so both show the same figure.
+            launch { loadOverview(granted, date, gate, started) }
+            val loaded = coroutineScope {
+                placeholders.mapIndexed { index, placeholder ->
+                    async {
+                        if (!placeholder.granted) {
+                            placeholder.copy(loading = false)
+                        } else {
+                            gate.withPermit {
+                                val tileStarted = System.currentTimeMillis()
+                                load(placeholder, date, RecordRegistry.HISTORY_PERMISSION in granted).also {
+                                    val now = System.currentTimeMillis()
+                                    // Times only: which tile waited and which one read slowly.
+                                    Log.i(TAG, "tile $index ${placeholder.tile.typeName} waited ${tileStarted - started} took ${now - tileStarted} done ${now - started} ms failed=${it.failed}")
+                                }
                             }
-                        }
-                    }.also { tile ->
-                        // Each tile as soon as it is read: waiting for all of them kept the
-                        // first ones, ready after 1-4 s, behind a stalled read for 29 s on the
-                        // owner's phone (07.11.2026), and a cold start showed nothing but
-                        // "loading" meanwhile. A cancelled load publishes nothing; see below.
-                        currentCoroutineContext().ensureActive()
-                        val shownTile = withCarried(tile)
-                        _state.update { state ->
-                            if (state.date != date) {
-                                state
-                            } else {
-                                state.copy(
-                                    tiles = state.tiles.map { current ->
-                                        if (current.tile.id == shownTile.tile.id) {
-                                            shownTile.copy(tile = current.tile)
-                                        } else {
-                                            current
-                                        }
-                                    },
-                                )
+                        }.also { tile ->
+                            // Each tile as soon as it is read: waiting for all of them kept the
+                            // first ones, ready after 1-4 s, behind a stalled read for 29 s on the
+                            // owner's phone (07.11.2026), and a cold start showed nothing but
+                            // "loading" meanwhile. A cancelled load publishes nothing; see below.
+                            currentCoroutineContext().ensureActive()
+                            val shownTile = withCarried(tile)
+                            _state.update { state ->
+                                if (state.date != date) {
+                                    state
+                                } else {
+                                    state.copy(
+                                        tiles = state.tiles.map { current ->
+                                            if (current.tile.id == shownTile.tile.id) {
+                                                shownTile.copy(tile = current.tile)
+                                            } else {
+                                                current
+                                            }
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
+                }.awaitAll()
+            }
+            // A cancelled load must stop here. Its reads swallow the cancellation and come back
+            // empty, so publishing them put a dash in every tile -- on each cold start, where
+            // ON_RESUME cancels the load `init` began -- and the cache below kept those dashes
+            // on screen when returning from a tile.
+            currentCoroutineContext().ensureActive()
+            _state.update { it.copy(tiles = withCurrentLayout(loaded.map(::withCarried))) }
+            // Timing and count only, never a value: how long the dashboard takes to fill is the
+            // cost every per-tile read adds to, so it is worth being able to measure from adb.
+            Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
+
+            val trended = withCurrentLayout(loadTrends(loaded, date, gate))
+            currentCoroutineContext().ensureActive()
+            // Only if nothing has replaced these tiles in the meantime -- a day step or a source
+            // change starts a new load, and its tiles must not receive this load's arrows.
+            _state.update { state ->
+                if (state.date == date && state.tiles.map { it.tile } == trended.map { it.tile }) {
+                    state.copy(tiles = trended)
+                } else {
+                    state
                 }
-            }.awaitAll()
-        }
-        // A cancelled load must stop here. Its reads swallow the cancellation and come back
-        // empty, so publishing them put a dash in every tile -- on each cold start, where
-        // ON_RESUME cancels the load `init` began -- and the cache below kept those dashes
-        // on screen when returning from a tile.
-        currentCoroutineContext().ensureActive()
-        _state.update { it.copy(tiles = withCurrentLayout(loaded.map(::withCarried))) }
-        // Timing and count only, never a value: how long the dashboard takes to fill is the
-        // cost every per-tile read adds to, so it is worth being able to measure from adb.
-        Log.i(TAG, "loaded ${loaded.size} tiles in ${System.currentTimeMillis() - started} ms")
-
-        val trended = withCurrentLayout(loadTrends(loaded, date, gate))
-        currentCoroutineContext().ensureActive()
-        // Only if nothing has replaced these tiles in the meantime -- a day step or a source
-        // change starts a new load, and its tiles must not receive this load's arrows.
-        _state.update { state ->
-            if (state.date == date && state.tiles.map { it.tile } == trended.map { it.tile }) {
-                state.copy(tiles = trended)
-            } else {
-                state
             }
-        }
-        Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
+            Log.i(TAG, "trends in ${System.currentTimeMillis() - started} ms")
 
-        // After the numbers and their arrows, whose reads it shares: a type on a tile of its own
-        // and on the overview is read once, and cannot show two figures.
-        val overview = _state.value.overview
-        if (overview != null && !overview.locked) {
-            val rows = readOverview(overview.tile, granted, date, gate)
-            currentCoroutineContext().ensureActive()
-            _state.update { state ->
-                state.overview?.takeIf { it.tile.id == overview.tile.id && state.date == date }
-                    ?.let { state.copy(overview = it.copy(rows = rows)) } ?: state
+            // The cycle on the day shown: two reads of a few records a month, after the numbers.
+            val cycle = _state.value.cycle
+            if (cycle != null) {
+                val read = catching { readCycleDays(granted, date) }
+                currentCoroutineContext().ensureActive()
+                val shown = read.fold(
+                    onSuccess = { days ->
+                        if (days == null) cycle.copy(now = null, loaded = true, noAccess = true, failed = false)
+                        else cycle.copy(now = cycleNow(days, date), loaded = true, noAccess = false, failed = false)
+                    },
+                    onFailure = { cycle.copy(now = null, loaded = true, failed = true) },
+                )
+                _state.update { state ->
+                    state.cycle?.takeIf { it.tile.id == cycle.tile.id }?.let { state.copy(cycle = shown.copy(tile = it.tile)) } ?: state
+                }
             }
-            Log.i(TAG, "overview (${rows.size} types) in ${System.currentTimeMillis() - started} ms")
-        }
 
-        // The cycle on the day shown: two reads of a few records a month, after the numbers.
-        val cycle = _state.value.cycle
-        if (cycle != null) {
-            val read = catching { readCycleDays(granted, date) }
-            currentCoroutineContext().ensureActive()
-            val shown = read.fold(
-                onSuccess = { days ->
-                    if (days == null) cycle.copy(now = null, loaded = true, noAccess = true, failed = false)
-                    else cycle.copy(now = cycleNow(days, date), loaded = true, noAccess = false, failed = false)
-                },
-                onFailure = { cycle.copy(now = null, loaded = true, failed = true) },
-            )
-            _state.update { state ->
-                state.cycle?.takeIf { it.tile.id == cycle.tile.id }?.let { state.copy(cycle = shown.copy(tile = it.tile)) } ?: state
+            // After the numbers and their arrows, so the tile never holds up a figure. Always this
+            // week, whatever day the dashboard shows -- the tile says "this week".
+            val insights = _state.value.insights
+            if (insights != null && !insights.locked) {
+                val read = readInsights(repository, sourceStore, insightTypes(granted), LocalDate.now(), gate)
+                currentCoroutineContext().ensureActive()
+                _state.update { state ->
+                    state.insights?.takeIf { it.tile.id == insights.tile.id }
+                        ?.let { state.copy(insights = it.copy(insights = read)) } ?: state
+                }
+                Log.i(TAG, "insights (${read.size} types) in ${System.currentTimeMillis() - started} ms")
             }
-        }
 
-        // After the numbers and their arrows, so the tile never holds up a figure. Always this
-        // week, whatever day the dashboard shows -- the tile says "this week".
-        val insights = _state.value.insights
-        if (insights != null && !insights.locked) {
-            val read = readInsights(repository, sourceStore, insightTypes(granted), LocalDate.now(), gate)
-            currentCoroutineContext().ensureActive()
-            _state.update { state ->
-                state.insights?.takeIf { it.tile.id == insights.tile.id }
-                    ?.let { state.copy(insights = it.copy(insights = read)) } ?: state
+            // Last: the seven days up to the day shown, four reads, one of them a week of heart rate.
+            // Without a maximum set in the settings it first looks one up from a year of monthly
+            // maxima, about 5 s on a cold start on the owner's phone (07.11.2026) -- the insights
+            // tile above, about 1.5 s, waited behind it while this came before it.
+            val active = _state.value.active
+            if (active != null && !active.locked) {
+                val read = readActive(repository, sourceStore, settingsStore, granted, date.minusDays(ACTIVE_DAYS - 1L), date)
+                currentCoroutineContext().ensureActive()
+                _state.update { state ->
+                    state.active?.takeIf { it.tile.id == active.tile.id }?.let { state.copy(active = it.copy(read = read)) } ?: state
+                }
             }
-            Log.i(TAG, "insights (${read.size} types) in ${System.currentTimeMillis() - started} ms")
+            loaded
         }
-
-        // Last: the seven days up to the day shown, four reads, one of them a week of heart rate.
-        // Without a maximum set in the settings it first looks one up from a year of monthly
-        // maxima, about 5 s on a cold start on the owner's phone (07.11.2026) -- the insights
-        // tile above, about 1.5 s, waited behind it while this came before it.
-        val active = _state.value.active
-        if (active != null && !active.locked) {
-            val read = readActive(repository, sourceStore, settingsStore, granted, date.minusDays(ACTIVE_DAYS - 1L), date)
-            currentCoroutineContext().ensureActive()
-            _state.update { state ->
-                state.active?.takeIf { it.tile.id == active.tile.id }?.let { state.copy(active = it.copy(read = read)) } ?: state
-            }
-        }
-        // A failed tile is not an answer worth keeping: the next resume must read it again.
-        if (loaded.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
+        // A failed tile is not an answer worth keeping: the next resume must read it again. Only
+        // once the overview is in too: a load cancelled while it read left a figure spinning,
+        // and the next resume, finding this, read nothing (11.11.2026).
+        if (read.none(TileData::failed)) cache = key.copy(loadedAt = System.currentTimeMillis())
     }
 
     /**
@@ -781,22 +778,38 @@ class DashboardViewModel(
     /**
      * The overview's rows, in the order chosen: each type's day as its own single cell reads it,
      * through [loadDay], with the day set against the 30 days before. A type no longer known is
-     * left out; one not granted keeps its row, to say so.
+     * left out; one not granted keeps its row, to say so. Each row is shown as it is read, as
+     * the tiles are, so a slow one -- breathing pages through a month of readings -- holds up
+     * only its own figure. Same-day rows already on screen stay until their new ones arrive.
      */
-    private suspend fun readOverview(tile: Tile, granted: Set<String>, date: LocalDate, gate: Semaphore): List<OverviewRow> =
+    private suspend fun loadOverview(granted: Set<String>, date: LocalDate, gate: Semaphore, started: Long) {
+        val overview = _state.value.overview?.takeIf { !it.locked } ?: return
+        val picks = overview.tile.overviewPicks.mapNotNull { name ->
+            RecordRegistry.specOrNull(name)?.let { placeholderOf(Tile(name), it, granted) }
+        }
+        fun publish(change: (List<OverviewRow>) -> List<OverviewRow>) = _state.update { state ->
+            val current = state.overview?.takeIf { it.tile.id == overview.tile.id && it.tile.overviewPicks == overview.tile.overviewPicks }
+            if (current == null || state.date != date) state else state.copy(overview = current.copy(rows = change(current.rows.orEmpty())))
+        }
+        publish { shown ->
+            shown.takeIf { it.size == picks.size } ?: picks.map { OverviewRow(it.copy(loading = it.granted)) }
+        }
         coroutineScope {
-            tile.overviewPicks.mapNotNull { name ->
-                val spec = RecordRegistry.specOrNull(name) ?: return@mapNotNull null
-                val placeholder = placeholderOf(Tile(name), spec, granted)
-                async {
-                    if (!placeholder.granted) {
+            picks.forEachIndexed { index, placeholder ->
+                launch {
+                    val row = if (!placeholder.granted) {
                         OverviewRow(placeholder.copy(loading = false))
                     } else {
                         gate.withPermit { overviewRow(placeholder, date) }
                     }
+                    // A cancelled read comes back empty, and must not replace a figure.
+                    currentCoroutineContext().ensureActive()
+                    publish { rows -> rows.mapIndexed { at, shown -> if (at == index) row else shown } }
                 }
-            }.awaitAll()
+            }
         }
+        Log.i(TAG, "overview (${picks.size} types) in ${System.currentTimeMillis() - started} ms")
+    }
 
     private suspend fun overviewRow(placeholder: TileData, date: LocalDate): OverviewRow {
         val spec = placeholder.spec
