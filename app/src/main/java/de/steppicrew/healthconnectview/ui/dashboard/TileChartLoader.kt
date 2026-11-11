@@ -179,6 +179,7 @@ internal class TileChartLoader(
         // Cleared per load: a value left over from the previous span would name a writer that
         // had nothing to do with the series now on screen.
         chosenShapeWriter = null
+        dailyLookback = null
         shapeFromWholeDayOnly = false
         rangeBand = emptyList()
         secondaryRangeBand = emptyList()
@@ -385,40 +386,22 @@ internal class TileChartLoader(
             // Readings with no aggregate, across days: one mean per bucket with its spread,
             // not every reading -- see DailyReadings. Read from four weeks earlier where a
             // rolling mean is drawn, so its first day already has its weeks behind it.
+            //
+            // Where the extras are deferred, those weeks are read with them: on the phone a week
+            // of respiratory rate read 41,856 records for its 7,637, and the chart waited 15 s
+            // behind a band it does not need to be drawn.
             seriesAggregated = false
             val zone = dayZone
             val first = span.startDate(offset, today)
-            val readFrom = if (spec.tile.rollingBaseline || spec.tile.usualRange) first.minusDays(ROLLING_DAYS.toLong()) else first
+            val lookback = spec.tile.rollingBaseline || spec.tile.usualRange
+            val readFrom = if (lookback && !deferExtras) first.minusDays(ROLLING_DAYS.toLong()) else first
             val daily = DailyReadings(zone, first, bucketDays)
-            var inWindow = 0
-            var readings = 0
-            var pages = 0
-            val readStarted = System.currentTimeMillis()
-            val read = catching {
-                repository.forEachPage(
-                    spec.type,
-                    TimeRangeFilter.between(readFrom.atStartOfDay(zone).toInstant(), windowEnd),
-                    origins,
-                    readProgress,
-                ) { page ->
-                    pages++
-                    readings += page.size
-                    page.forEach { record ->
-                        val origin = record.metadata.dataOrigin.packageName
-                        if (!spec.timeOf(record).isBefore(windowStart)) inWindow++
-                        spec.pointsOf(record).forEach { daily.add(it.time, it.value, origin) }
-                    }
-                }
-                windowRecordCount = inWindow
+            if (lookback && deferExtras) {
+                dailyLookback = { readDailyMeans(spec, span, daily, first.minusDays(ROLLING_DAYS.toLong()), windowStart, windowStart, origins, null) }
             }
+            readDailyMeans(spec, span, daily, readFrom, windowEnd, windowStart, origins, readProgress)?.let { windowRecordCount = it }
             dailyReadings = daily
             val buckets = daily.buckets()
-            // Counts and time only, never a reading: what a long or failed month read gave.
-            Log.i(
-                TAG,
-                "daily means ${spec.type.simpleName} ${span.name}: $readings records ($inWindow in window) in $pages pages, " +
-                    "${buckets.size} buckets, ${System.currentTimeMillis() - readStarted} ms, failed=${read.exceptionOrNull()?.javaClass?.simpleName}",
-            )
             rangeBand = buckets
                 .map { ValueBand(it.start.atStartOfDay(zone).toInstant(), it.low, it.high) }
                 .takeIf { bands -> bands.any { it.high > it.low } }
@@ -692,7 +675,10 @@ internal class TileChartLoader(
                     val first = span.startDate(offset, today)
                     val lookback = first.minusDays(ROLLING_DAYS.toLong())
                     when {
-                        dailyReadings != null -> dailyReadings.dailyMeans()
+                        dailyReadings != null -> {
+                            dailyLookback?.invoke()
+                            dailyReadings.dailyMeans()
+                        }
                         // Sleep's bars come from its sessions, so its weeks before the window do
                         // too, credited like the bars to the morning each night ended on. Night
                         // by night inside the window as well: a year's bars are weekly means, and
@@ -1133,6 +1119,46 @@ internal class TileChartLoader(
 
     /** Set by a [chart] that deferred its extras; read once by [extras]. */
     private var pendingExtras: (suspend () -> ChartExtras)? = null
+
+    /** The weeks before a daily-means window, left for the extras; see [readDailyMeans]. */
+    private var dailyLookback: (suspend () -> Unit)? = null
+
+    /**
+     * Reads [spec]'s readings from [from] to [until] into [daily], logging counts and time only,
+     * never a reading. Returns how many fell from [windowStart] on, or null where the read failed.
+     */
+    private suspend fun readDailyMeans(
+        spec: RecordTypeSpec<*>,
+        span: Span,
+        daily: DailyReadings,
+        from: LocalDate,
+        until: Instant,
+        windowStart: Instant,
+        origins: Set<DataOrigin>,
+        progress: PageProgress<Record>?,
+    ): Int? {
+        var inWindow = 0
+        var readings = 0
+        var pages = 0
+        val readStarted = System.currentTimeMillis()
+        val read = catching {
+            repository.forEachPage(spec.type, TimeRangeFilter.between(from.atStartOfDay(dayZone).toInstant(), until), origins, progress) { page ->
+                pages++
+                readings += page.size
+                page.forEach { record ->
+                    val origin = record.metadata.dataOrigin.packageName
+                    if (!spec.timeOf(record).isBefore(windowStart)) inWindow++
+                    spec.pointsOf(record).forEach { daily.add(it.time, it.value, origin) }
+                }
+            }
+        }
+        Log.i(
+            TAG,
+            "daily means ${spec.type.simpleName} ${span.name} from $from: $readings records in $pages pages, " +
+                "${System.currentTimeMillis() - readStarted} ms, failed=${read.exceptionOrNull()?.javaClass?.simpleName}",
+        )
+        return inWindow.takeIf { read.isSuccess }
+    }
 
     /** What a [chart] with `deferExtras` left out, or nothing if it left nothing. */
     suspend fun extras(): ChartExtras = pendingExtras?.invoke() ?: ChartExtras()
