@@ -114,7 +114,11 @@ private fun OverviewDetailRow(row: OverviewRow, date: LocalDate, onOpenDay: () -
             )
             Column(Modifier.weight(1f).padding(top = firstLineTextInset(titleStyle, DETAIL_ICON.dp))) {
                 Text(stringResource(spec.displayNameRes), style = titleStyle)
-                CellValue(row, MaterialTheme.typography.headlineSmall, withUnit = true)
+                Row(verticalAlignment = Alignment.Top) {
+                    CellValue(row, MaterialTheme.typography.headlineSmall, withUnit = true, modifier = Modifier.weight(1f, fill = false))
+                    if (row.goalReached) GoalMark(row, MaterialTheme.typography.headlineSmall, DETAIL_ICON.dp)
+                }
+                goalReachedText(row)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary) }
                 val spreads = row.spreads
                 if (row.unusual && spreads != null) {
                     Text(

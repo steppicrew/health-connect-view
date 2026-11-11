@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.CircularProgressIndicator
@@ -233,6 +234,7 @@ private fun OverviewCell(
                     .size(OVERVIEW_ICON.dp),
             )
             CellValue(row, style, withUnit = strip, modifier = Modifier.weight(1f, fill = false))
+            if (row.goalReached) GoalMark(row, style)
             // In a single cell the dot alone, in the strip's colour where the day sits; a wide tile
             // draws the strip and names the type beneath.
             val spreads = row.spreads
@@ -387,6 +389,34 @@ private fun UnusualNote(row: OverviewRow) {
             )
         }
     }
+}
+
+/**
+ * A trophy beside a figure whose day met its goal -- the mark a streak wears on the type's own
+ * tile -- saying which goal to a screen reader.
+ */
+@Composable
+internal fun GoalMark(row: OverviewRow, style: TextStyle, size: Dp = OVERVIEW_ICON.dp) {
+    val goal = goalReachedText(row) ?: return
+    Icon(
+        imageVector = Icons.Default.EmojiEvents,
+        contentDescription = goal,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .padding(start = 4.dp, top = firstLineInset(style, size))
+            .size(size),
+    )
+}
+
+/** "Ziel von 10.000 Schritte erreicht", where the day met it. */
+@Composable
+internal fun goalReachedText(row: OverviewRow): String? {
+    if (!row.goalReached) return null
+    val goal = row.data.dayGoal ?: return null
+    val spec = row.data.spec
+    val unit = spec.displayUnitRes?.let { Formatting.unitSpace(it) + stringResource(it) }.orEmpty()
+    val decimals = spec.valueDecimals ?: if (spec.tile.integralValues) 0 else null
+    return stringResource(R.string.chart_goal_reached, Formatting.number(goal, decimals) + unit)
 }
 
 /** "14,2, sonst 12,1-13,4": the day against the reader's usual range, one spread either side. */

@@ -785,8 +785,12 @@ class DashboardViewModel(
      */
     private suspend fun loadOverview(granted: Set<String>, date: LocalDate, gate: Semaphore, started: Long) {
         val overview = _state.value.overview?.takeIf { !it.locked } ?: return
+        // Each type's goal as its own tile keeps it -- a goal is the person's, the same on every
+        // tile of a type -- or the type's default where it has no tile.
         val picks = overview.tile.overviewPicks.mapNotNull { name ->
-            RecordRegistry.specOrNull(name)?.let { placeholderOf(Tile(name), it, granted) }
+            val own = config.tiles.firstOrNull { it.typeName == name }
+            val tile = own?.let { Tile(name, goal = it.goal, adaptiveGoal = it.adaptiveGoal, goalFloor = it.goalFloor) } ?: Tile(name)
+            RecordRegistry.specOrNull(name)?.let { placeholderOf(tile, it, granted) }
         }
         fun publish(change: (List<OverviewRow>) -> List<OverviewRow>) = _state.update { state ->
             val current = state.overview?.takeIf { it.tile.id == overview.tile.id && it.tile.overviewPicks == overview.tile.overviewPicks }
@@ -849,7 +853,9 @@ class DashboardViewModel(
         val spec = placeholder.spec
         // The single cell's own path, so the figure is the one the type's tile shows. Its curve
         // is dropped: the overview draws none.
-        val day = loadDay(placeholder, date).copy(curve = emptyList())
+        val read = loadDay(placeholder, date).copy(curve = emptyList())
+        // The day's adaptive goal as the type's ring reads it, from the same shared year.
+        val day = adaptiveGoalOf(read, date)?.let { read.copy(adaptiveGoal = it) } ?: read
         val value = day.value
         val metric = spec.aggregate
         // A running total part-way through today is below its usual day by nature, a carried
