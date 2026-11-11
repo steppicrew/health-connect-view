@@ -832,14 +832,22 @@ class DashboardViewModel(
                                 month.takeUnless { it.data.failed } ?: requireNotNull(day)
                             }
                         }
-                        // The figure first, then its week: a second, smaller read that need not
-                        // hold the figure up.
+                        // The figure first, then its week and its goal: reads that need not hold
+                        // the figure up. The week for any size -- the 2x2 tile draws it, and the
+                        // overview's own screen at every size. The goal, where it adapts, as the
+                        // type's ring reads it from a year of days: ahead of the figure it kept
+                        // steps waiting 10 s on the owner's phone (11.11.2026).
                         else -> {
                             val row = show { overviewRow(placeholder, date) }
-                            // For any size: the 2x2 tile draws it, and the overview's own screen
-                            // at every size -- a small read a type, on the overview's own gate.
-                            if (readsHeatmap(spec) && !row.data.failed) {
-                                show { row.copy(week = weekOf(row, date)) }
+                            val week = readsHeatmap(spec) && !row.data.failed
+                            if (week || row.data.tile.goalRule != null) {
+                                show {
+                                    val goal = adaptiveGoalOf(row.data, date)
+                                    row.copy(
+                                        data = goal?.let { row.data.copy(adaptiveGoal = it) } ?: row.data,
+                                        week = if (week) weekOf(row, date) else null,
+                                    )
+                                }
                             }
                         }
                     }
@@ -853,9 +861,7 @@ class DashboardViewModel(
         val spec = placeholder.spec
         // The single cell's own path, so the figure is the one the type's tile shows. Its curve
         // is dropped: the overview draws none.
-        val read = loadDay(placeholder, date).copy(curve = emptyList())
-        // The day's adaptive goal as the type's ring reads it, from the same shared year.
-        val day = adaptiveGoalOf(read, date)?.let { read.copy(adaptiveGoal = it) } ?: read
+        val day = loadDay(placeholder, date).copy(curve = emptyList())
         val value = day.value
         val metric = spec.aggregate
         // A running total part-way through today is below its usual day by nature, a carried
