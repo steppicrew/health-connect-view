@@ -286,6 +286,9 @@ data class OverviewRow(
      * day or two in a month by chance. A position, never a verdict -- more steps are unusual too.
      */
     val unusual: Boolean get() = spreads?.let { kotlin.math.abs(it) >= UNUSUAL_SPREADS } == true
+
+    /** The day's goal met, as the type's ring would show it full: the overview's trophy. */
+    val goalReached: Boolean get() = (data.progress ?: 0f) >= 1f
 }
 
 /** The days in an overview row's [OverviewRow.week]: the day shown and the six before. */
