@@ -17,12 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.dashboard.Tile
+import java.text.Collator
 
 /**
  * Picks a type to pin.
@@ -32,6 +35,9 @@ import de.steppicrew.healthconnectview.dashboard.Tile
  * Types already on the dashboard come last under a heading of their own: another tile of one
  * is for a different window or face, and without Pro they are shown locked, a tap starting the
  * purchase, as the export menu's locked entries do.
+ *
+ * The rest stand under their categories, each in the reader's alphabet: sorted by class name,
+ * as they were, forty types in German came in no order anyone could search (owner, 11.11.2026).
  */
 @Composable
 fun AddTileDialog(
@@ -53,7 +59,12 @@ fun AddTileDialog(
     overviewOffered: Boolean = false,
     overviewUnlocked: Boolean = false,
 ) {
-    val (pinned, fresh) = candidates.partition { it.pinned }
+    val collator = rememberCollator()
+    val names = candidates.associateWith { stringResource(it.spec.displayNameRes) }
+    val byName = compareBy(collator) { candidate: AddCandidate -> names.getValue(candidate) }
+    val (pinnedUnsorted, fresh) = candidates.partition { it.pinned }
+    val pinned = pinnedUnsorted.sortedWith(byName)
+    val groups = fresh.groupBy { it.spec.category }.toSortedMap().mapValues { (_, types) -> types.sortedWith(byName) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.dashboard_add_tile)) },
@@ -104,10 +115,20 @@ fun AddTileDialog(
                         )
                     }
                 }
-                items(fresh, key = { it.spec.type.simpleName.orEmpty() }) { candidate ->
-                    CandidateRow(candidate, locked = false) {
-                        onAdd(candidate.spec.type.simpleName.orEmpty())
-                        onDismiss()
+                groups.forEach { (category, types) ->
+                    item(key = "category-" + category.name) {
+                        Text(
+                            text = stringResource(category.labelRes),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 12.dp, bottom = 2.dp),
+                        )
+                    }
+                    items(types, key = { it.spec.type.simpleName.orEmpty() }) { candidate ->
+                        NamedRow(names.getValue(candidate), locked = false) {
+                            onAdd(candidate.spec.type.simpleName.orEmpty())
+                            onDismiss()
+                        }
                     }
                 }
                 if (pinned.isNotEmpty()) {
@@ -120,7 +141,7 @@ fun AddTileDialog(
                         )
                     }
                     items(pinned, key = { "again-" + it.spec.type.simpleName.orEmpty() }) { candidate ->
-                        CandidateRow(candidate, locked = !repeatUnlocked) {
+                        NamedRow(names.getValue(candidate), locked = !repeatUnlocked) {
                             if (repeatUnlocked) onAdd(candidate.spec.type.simpleName.orEmpty()) else onBuy()
                             onDismiss()
                         }
@@ -135,10 +156,6 @@ fun AddTileDialog(
         },
     )
 }
-
-@Composable
-private fun CandidateRow(candidate: AddCandidate, locked: Boolean, onClick: () -> Unit) =
-    NamedRow(stringResource(candidate.spec.displayNameRes), locked, onClick)
 
 @Composable
 private fun NamedRow(name: String, locked: Boolean, onClick: () -> Unit) {
@@ -165,6 +182,13 @@ private fun NamedRow(name: String, locked: Boolean, onClick: () -> Unit) {
             )
         }
     }
+}
+
+/** The reader's alphabet: "Ö" with "O" in German, not after "Z" as plain string order puts it. */
+@Composable
+internal fun rememberCollator(): Collator {
+    val locale = LocalConfiguration.current.locales[0]
+    return remember(locale) { Collator.getInstance(locale) }
 }
 
 private const val LIST_MAX_HEIGHT = 400

@@ -57,7 +57,8 @@ fun InsightPicksDialog(
     var picks by remember { mutableStateOf(current) }
     val names = (current + candidates).distinct().filter { RecordRegistry.specOrNull(it) != null }
     val label = @Composable { name: String -> stringResource(RecordRegistry.specOrNull(name)!!.displayNameRes) }
-    val others = names.filter { it !in picks }.map { it to label(it) }.sortedBy { it.second }
+    val collator = rememberCollator()
+    val others = names.filter { it !in picks }.map { it to label(it) }.sortedWith(compareBy(collator) { it.second })
 
     AlertDialog(
         onDismissRequest = onDismiss,
