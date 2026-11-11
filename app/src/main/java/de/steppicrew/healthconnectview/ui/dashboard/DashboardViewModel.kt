@@ -784,6 +784,8 @@ class DashboardViewModel(
      */
     private suspend fun loadOverview(granted: Set<String>, date: LocalDate, gate: Semaphore, started: Long) {
         val overview = _state.value.overview?.takeIf { !it.locked } ?: return
+        // The week behind each figure only where a 2x2 tile draws it: a read a type more.
+        val withWeek = overview.tile.height > 1
         val picks = overview.tile.overviewPicks.mapNotNull { name ->
             RecordRegistry.specOrNull(name)?.let { placeholderOf(Tile(name), it, granted) }
         }
@@ -797,7 +799,7 @@ class DashboardViewModel(
         coroutineScope {
             picks.forEachIndexed { index, placeholder ->
                 launch {
-                    suspend fun show(read: suspend () -> OverviewRow) {
+                    suspend fun show(read: suspend () -> OverviewRow): OverviewRow {
                         val row = gate.withPermit {
                             val rowStarted = System.currentTimeMillis()
                             read().also {
@@ -809,6 +811,7 @@ class DashboardViewModel(
                         // A cancelled read comes back empty, and must not replace a figure.
                         currentCoroutineContext().ensureActive()
                         publish { rows -> rows.mapIndexed { at, shown -> if (at == index) row else shown } }
+                        return row
                     }
                     val spec = placeholder.spec
                     when {
@@ -826,7 +829,14 @@ class DashboardViewModel(
                                 month.takeUnless { it.data.failed } ?: requireNotNull(day)
                             }
                         }
-                        else -> show { overviewRow(placeholder, date) }
+                        // The figure first, then its week: a second, smaller read that need not
+                        // hold the figure up.
+                        else -> {
+                            val row = show { overviewRow(placeholder, date) }
+                            if (withWeek && readsHeatmap(spec) && !row.data.failed) {
+                                show { row.copy(week = weekOf(row, date)) }
+                            }
+                        }
                     }
                 }
             }
@@ -854,6 +864,24 @@ class DashboardViewModel(
         // The arrow's own read of the 30 days, shared with it where the type has a tile.
         val before = catching { repository.trendBefore(requireNotNull(metric), date, origins) }.getOrNull()
         return OverviewRow(day, before?.copy(recent = requireNotNull(value)))
+    }
+
+    /**
+     * The week behind [row]'s figure, as the type's calendar reads its days: each night by the
+     * morning it ended on, workouts summed by the day, any other type from its daily aggregate.
+     * The day shown is the figure itself where it is that day's own, so the last bar is the
+     * number above it: today's total ends at now there, and the calendar's would not. Read from
+     * a day early, so the first morning's night, begun the evening before, is whole.
+     */
+    private suspend fun weekOf(row: OverviewRow, date: LocalDate): List<Double?>? {
+        val data = row.data
+        val origins = data.source?.let { setOf(DataOrigin(it)) } ?: emptySet()
+        val days = repository.readHeatmap(data.spec, date.minusDays(WEEK_DAYS.toLong()), date, origins)?.values ?: return null
+        val own = data.value.takeIf { data.valueDate == null && data.spec.tile.form != TileSpec.Form.SESSIONS }
+        return List(WEEK_DAYS) { at ->
+            val day = date.minusDays((WEEK_DAYS - 1 - at).toLong())
+            if (day == date && own != null) own else days[day]
+        }
     }
 
     /**
@@ -889,6 +917,8 @@ class DashboardViewModel(
             placeholder.copy(source = source, value = value, loading = false, failed = value == null && reads.failed),
             usual,
             dayMean = true,
+            // The week from the same month's means, at no further read.
+            week = if (withUsual) List(WEEK_DAYS) { means[date.minusDays((WEEK_DAYS - 1 - it).toLong())] } else null,
         )
     }
 

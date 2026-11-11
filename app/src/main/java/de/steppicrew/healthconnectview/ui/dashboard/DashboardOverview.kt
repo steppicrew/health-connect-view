@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,9 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +38,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.countsFromZero
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Formatting
 import de.steppicrew.healthconnectview.registry.TileSpec
@@ -44,7 +52,8 @@ import de.steppicrew.healthconnectview.ui.insights.colourAt
 /**
  * The overview's figures as a grid. A wide tile holds two a row, each with its type's icon and
  * unit over the insights tile's strip, and names beneath what is unusual, with the reader's
- * usual range, where there is room. A single cell lists them one a row, with a dot where the
+ * usual range, where there is room; a 2x2 tile adds the week behind each figure as a small
+ * chart (owner's choice, 11.11.2026). A single cell lists them one a row, with a dot where the
  * day is unusual. At the text's own size, not grown to fill a taller tile: larger figures
  * showed nothing more (owner, 11.11.2026).
  *
@@ -56,6 +65,7 @@ import de.steppicrew.healthconnectview.ui.insights.colourAt
 internal fun OverviewTileBody(
     data: OverviewTileData,
     width: Int,
+    height: Int,
     editing: Boolean,
     onOpen: (String) -> Unit,
     onLongClick: () -> Unit,
@@ -70,6 +80,7 @@ internal fun OverviewTileBody(
                 rows = rows,
                 columns = if (wide) 2 else 1,
                 strips = wide,
+                weeks = wide && height > 1,
                 unusual = if (wide) rows.filter { it.unusual && !it.data.loading } else emptyList(),
                 enabled = !editing,
                 onOpen = onOpen,
@@ -90,6 +101,7 @@ private fun OverviewGrid(
     rows: List<OverviewRow>,
     columns: Int,
     strips: Boolean,
+    weeks: Boolean,
     unusual: List<OverviewRow>,
     enabled: Boolean,
     onOpen: (String) -> Unit,
@@ -98,11 +110,12 @@ private fun OverviewGrid(
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     SubcomposeLayout(Modifier.fillMaxSize()) { constraints ->
         val width = constraints.maxWidth
-        val gap = OVERVIEW_GAP.dp.roundToPx()
+        // Wider between rows with a week under each, or a chart reads as the next row's.
+        val gap = (if (weeks) OVERVIEW_WEEK_GAP else OVERVIEW_GAP).dp.roundToPx()
         val columnGap = OVERVIEW_COLUMN_GAP.dp.roundToPx()
         val cellWidth = ((width - columnGap * (columns - 1)) / columns).coerceAtLeast(0)
         val cells = rows.mapIndexed { index, row ->
-            subcompose("cell$index") { OverviewCell(row, strips, enabled, onOpen, onLongClick) }
+            subcompose("cell$index") { OverviewCell(row, strips, weeks, enabled, onOpen, onLongClick) }
                 .single().measure(Constraints(minWidth = cellWidth, maxWidth = cellWidth, maxHeight = constraints.maxHeight))
         }
         val lines = cells.chunked(columns)
@@ -169,7 +182,14 @@ private fun OverviewGrid(
 /** One type's figure: its icon, the day's value, and the day's place against the usual. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun OverviewCell(row: OverviewRow, strip: Boolean, enabled: Boolean, onOpen: (String) -> Unit, onLongClick: () -> Unit) {
+private fun OverviewCell(
+    row: OverviewRow,
+    strip: Boolean,
+    week: Boolean,
+    enabled: Boolean,
+    onOpen: (String) -> Unit,
+    onLongClick: () -> Unit,
+) {
     val spec = row.data.spec
     val name = stringResource(spec.displayNameRes)
     val style = MaterialTheme.typography.titleSmall
@@ -208,6 +228,58 @@ private fun OverviewCell(row: OverviewRow, strip: Boolean, enabled: Boolean, onO
         }
         val usual = row.usual
         if (strip && usual != null) InsightStrip(usual, Modifier.padding(top = 2.dp))
+        // Its room kept while the week is read, so the grid does not jump when it arrives.
+        if (week) {
+            WeekChart(
+                row.week.takeIf { row.data.granted && !row.data.failed },
+                fromZero = countsFromZero(row.data.spec),
+                modifier = Modifier.padding(top = 4.dp).fillMaxWidth().height(OVERVIEW_WEEK_HEIGHT.dp),
+            )
+        }
+    }
+}
+
+/**
+ * The day shown and the six before it, the day itself in the accent colour: bars from zero for
+ * what adds up -- steps, a day's training -- and a line across the week's own range for a
+ * level, where from zero 50 and 57 bpm would stand the same height. A day without a value is a
+ * gap. Drawn only, like the strip: the figure above is what a screen reader says.
+ */
+@Composable
+private fun WeekChart(week: List<Double?>?, fromZero: Boolean, modifier: Modifier) {
+    val past = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = WEEK_PAST_ALPHA)
+    val shown = MaterialTheme.colorScheme.primary
+    Canvas(modifier.clearAndSetSemantics { }) {
+        val values = week ?: return@Canvas
+        val known = values.filterNotNull()
+        if (known.isEmpty()) return@Canvas
+        val slot = size.width / values.size
+        val radius = WEEK_DOT_RADIUS.dp.toPx()
+        if (fromZero) {
+            val top = known.max().takeIf { it > 0.0 } ?: return@Canvas
+            val barWidth = slot * WEEK_BAR_SHARE
+            values.forEachIndexed { at, value ->
+                if (value == null || value <= 0.0) return@forEachIndexed
+                val barHeight = (value / top).toFloat() * size.height
+                drawRoundRect(
+                    color = if (at == values.lastIndex) shown else past,
+                    topLeft = Offset(at * slot + (slot - barWidth) / 2, size.height - barHeight),
+                    size = Size(barWidth, barHeight),
+                    cornerRadius = CornerRadius(barWidth / 4),
+                )
+            }
+        } else {
+            val low = known.min()
+            val range = known.max() - low
+            fun y(value: Double) = if (range > 0.0) radius + ((1 - (value - low) / range).toFloat()) * (size.height - 2 * radius) else size.height / 2
+            val points = values.mapIndexed { at, value -> value?.let { Offset(at * slot + slot / 2, y(it)) } }
+            points.zipWithNext().forEach { (from, to) ->
+                if (from != null && to != null) drawLine(past, from, to, strokeWidth = WEEK_LINE_WIDTH.dp.toPx())
+            }
+            points.forEachIndexed { at, point ->
+                if (point != null) drawCircle(if (at == points.lastIndex) shown else past, radius, point)
+            }
+        }
     }
 }
 
@@ -301,8 +373,17 @@ private const val OVERVIEW_GAP = 6
 
 private const val OVERVIEW_COLUMN_GAP = 8
 
+private const val OVERVIEW_WEEK_GAP = 16
+
 /** Above the unusual ones named beneath the figures, to set them apart from the grid. */
 private const val OVERVIEW_NOTES_GAP = 10
 
 private const val OVERVIEW_ICON = 16
 private const val OVERVIEW_DOT = 8
+
+/** The week under a figure on a 2x2 tile: about two lines of text high. */
+private const val OVERVIEW_WEEK_HEIGHT = 28
+private const val WEEK_BAR_SHARE = 0.6f
+private const val WEEK_PAST_ALPHA = 0.5f
+private const val WEEK_DOT_RADIUS = 2.5f
+private const val WEEK_LINE_WIDTH = 1.5f

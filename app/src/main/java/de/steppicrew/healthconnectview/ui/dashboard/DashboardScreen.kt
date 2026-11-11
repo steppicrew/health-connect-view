@@ -541,6 +541,7 @@ fun DashboardScreen(
                                         OverviewTileBody(
                                             entry.data,
                                             width,
+                                            height,
                                             editing = editing,
                                             onOpen = { type -> onOpenType(type, state.date.toString(), Span.DAY) },
                                             onLongClick = { editing = true },
