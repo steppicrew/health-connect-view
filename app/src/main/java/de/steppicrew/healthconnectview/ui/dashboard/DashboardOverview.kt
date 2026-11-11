@@ -35,9 +35,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import de.steppicrew.healthconnectview.R
 import de.steppicrew.healthconnectview.health.Session
+import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.countsFromZero
 import de.steppicrew.healthconnectview.health.totalDuration
 import de.steppicrew.healthconnectview.registry.Formatting
@@ -67,7 +69,7 @@ internal fun OverviewTileBody(
     width: Int,
     height: Int,
     editing: Boolean,
-    onOpen: (String) -> Unit,
+    onOpen: (String, Span) -> Unit,
     onLongClick: () -> Unit,
 ) {
     val rows = data.rows
@@ -104,7 +106,7 @@ private fun OverviewGrid(
     weeks: Boolean,
     unusual: List<OverviewRow>,
     enabled: Boolean,
-    onOpen: (String) -> Unit,
+    onOpen: (String, Span) -> Unit,
     onLongClick: () -> Unit,
 ) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -114,12 +116,28 @@ private fun OverviewGrid(
         val gap = (if (weeks) OVERVIEW_WEEK_GAP else OVERVIEW_GAP).dp.roundToPx()
         val columnGap = OVERVIEW_COLUMN_GAP.dp.roundToPx()
         val cellWidth = ((width - columnGap * (columns - 1)) / columns).coerceAtLeast(0)
-        val cells = rows.mapIndexed { index, row ->
-            subcompose("cell$index") { OverviewCell(row, strips, weeks, enabled, onOpen, onLongClick) }
+        val loose = Constraints(maxWidth = width, maxHeight = constraints.maxHeight)
+        fun cellsWith(chart: Dp?, key: String) = rows.mapIndexed { index, row ->
+            subcompose("$key$index") { OverviewCell(row, strips, chart, enabled, onOpen, onLongClick) }
                 .single().measure(Constraints(minWidth = cellWidth, maxWidth = cellWidth, maxHeight = constraints.maxHeight))
         }
+        val base = OVERVIEW_WEEK_HEIGHT.dp
+        var cells = cellsWith(base.takeIf { weeks }, "cell")
+        // The charts take what height is left once the figures and the notes beneath have
+        // theirs: at a fixed size the 2x2 tile kept a band of nothing (owner, 11.11.2026).
+        if (weeks && cells.isNotEmpty()) {
+            val lineCount = cells.chunked(columns).size
+            val figures = cells.chunked(columns).sumOf { line -> line.maxOf { it.height } + gap } - gap
+            val noteHeights = unusual.mapIndexed { index, row -> subcompose("room$index") { UnusualNote(row) }.single().measure(loose).height }
+            val notesRoom = if (noteHeights.isEmpty()) 0 else noteHeights.sumOf { it + gap } - gap + OVERVIEW_NOTES_GAP.dp.roundToPx()
+            // A row's gap kept above and below, or the charts run up to the title and caption.
+            val spare = constraints.maxHeight - figures - notesRoom - 2 * gap
+            if (spare > 0) {
+                val grown = (base + (spare / lineCount).toDp()).coerceAtMost(OVERVIEW_WEEK_MAX.dp)
+                cells = cellsWith(grown, "grown")
+            }
+        }
         val lines = cells.chunked(columns)
-        val loose = Constraints(maxWidth = width, maxHeight = constraints.maxHeight)
         fun moreLine(count: Int) = subcompose("more$count") {
             Text(pluralStringResource(R.plurals.insights_tile_more, count, count), style = MaterialTheme.typography.labelSmall, color = muted)
         }.single().measure(loose)
@@ -185,9 +203,10 @@ private fun OverviewGrid(
 private fun OverviewCell(
     row: OverviewRow,
     strip: Boolean,
-    week: Boolean,
+    /** The week chart's height, where the tile draws one. */
+    week: Dp?,
     enabled: Boolean,
-    onOpen: (String) -> Unit,
+    onOpen: (String, Span) -> Unit,
     onLongClick: () -> Unit,
 ) {
     val spec = row.data.spec
@@ -199,7 +218,7 @@ private fun OverviewCell(
             .combinedClickable(
                 enabled = enabled,
                 onClickLabel = name,
-                onClick = { onOpen(spec.type.simpleName.orEmpty()) },
+                onClick = { onOpen(spec.type.simpleName.orEmpty(), Span.DAY) },
                 onLongClick = onLongClick,
             )
             .semantics(mergeDescendants = true) {},
@@ -229,11 +248,21 @@ private fun OverviewCell(
         val usual = row.usual
         if (strip && usual != null) InsightStrip(usual, Modifier.padding(top = 2.dp))
         // Its room kept while the week is read, so the grid does not jump when it arrives.
-        if (week) {
+        // The week opens the type's week, as the figure opens its day.
+        if (week != null) {
             WeekChart(
                 row.week.takeIf { row.data.granted && !row.data.failed },
                 fromZero = countsFromZero(row.data.spec),
-                modifier = Modifier.padding(top = 4.dp).fillMaxWidth().height(OVERVIEW_WEEK_HEIGHT.dp),
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .fillMaxWidth()
+                    .height(week)
+                    .combinedClickable(
+                        enabled = enabled,
+                        onClickLabel = name,
+                        onClick = { onOpen(spec.type.simpleName.orEmpty(), Span.WEEK) },
+                        onLongClick = onLongClick,
+                    ),
             )
         }
     }
@@ -383,6 +412,9 @@ private const val OVERVIEW_DOT = 8
 
 /** The week under a figure on a 2x2 tile: about two lines of text high. */
 private const val OVERVIEW_WEEK_HEIGHT = 28
+
+/** The most a week chart grows to on a tall tile, so a few figures do not get towering bars. */
+private const val OVERVIEW_WEEK_MAX = 96
 private const val WEEK_BAR_SHARE = 0.6f
 private const val WEEK_PAST_ALPHA = 0.5f
 private const val WEEK_DOT_RADIUS = 2.5f
