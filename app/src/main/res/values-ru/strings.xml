@@ -903,6 +903,7 @@
     <string name="overview_unusual_high">Выше вашего обычного уровня</string>
     <string name="overview_unusual_low">Ниже вашего обычного уровня</string>
     <string name="overview_usual_range">%1$s, обычно %2$s–%3$s</string>
+    <string name="overview_usual_only">Обычно %1$s–%2$s</string>
     <string name="overview_mean">ср. %1$s</string>
     <string name="overview_pick_default">Выбор по умолчанию</string>
     <string name="field_meal">Приём пищи</string>

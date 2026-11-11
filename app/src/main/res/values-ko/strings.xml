@@ -822,6 +822,7 @@
     <string name="overview_unusual_high">평소보다 높음</string>
     <string name="overview_unusual_low">평소보다 낮음</string>
     <string name="overview_usual_range">%1$s, 평소 %2$s~%3$s</string>
+    <string name="overview_usual_only">평소 %1$s~%2$s</string>
     <string name="overview_mean">평균 %1$s</string>
     <string name="overview_pick_default">기본 선택</string>
     <string name="field_meal">식사</string>

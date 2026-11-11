@@ -957,6 +957,7 @@
     <string name="overview_unusual_high">أعلى من المعتاد لديك</string>
     <string name="overview_unusual_low">أدنى من المعتاد لديك</string>
     <string name="overview_usual_range">%1$s، عادةً %2$s–%3$s</string>
+    <string name="overview_usual_only">عادةً %1$s–%2$s</string>
     <string name="overview_mean">متوسط %1$s</string>
     <string name="overview_pick_default">الاختيار الافتراضي</string>
     <string name="field_meal">الوجبة</string>

@@ -849,6 +849,7 @@
     <string name="overview_unusual_high">Olağan değerinizin üzerinde</string>
     <string name="overview_unusual_low">Olağan değerinizin altında</string>
     <string name="overview_usual_range">%1$s, genelde %2$s–%3$s</string>
+    <string name="overview_usual_only">Genellikle %1$s–%2$s</string>
     <string name="overview_mean">ort. %1$s</string>
     <string name="overview_pick_default">Varsayılan seçim</string>
     <string name="field_meal">Öğün</string>

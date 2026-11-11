@@ -785,8 +785,6 @@ class DashboardViewModel(
      */
     private suspend fun loadOverview(granted: Set<String>, date: LocalDate, gate: Semaphore, started: Long) {
         val overview = _state.value.overview?.takeIf { !it.locked } ?: return
-        // The week behind each figure only where a 2x2 tile draws it: a read a type more.
-        val withWeek = overview.tile.height > 1
         val picks = overview.tile.overviewPicks.mapNotNull { name ->
             RecordRegistry.specOrNull(name)?.let { placeholderOf(Tile(name), it, granted) }
         }
@@ -834,7 +832,9 @@ class DashboardViewModel(
                         // hold the figure up.
                         else -> {
                             val row = show { overviewRow(placeholder, date) }
-                            if (withWeek && readsHeatmap(spec) && !row.data.failed) {
+                            // For any size: the 2x2 tile draws it, and the overview's own screen
+                            // at every size -- a small read a type, on the overview's own gate.
+                            if (readsHeatmap(spec) && !row.data.failed) {
                                 show { row.copy(week = weekOf(row, date)) }
                             }
                         }

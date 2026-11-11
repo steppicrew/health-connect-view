@@ -19,6 +19,7 @@ import de.steppicrew.healthconnectview.ui.session.WorkoutsViewModel
 import de.steppicrew.healthconnectview.health.WorkoutFamily
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -32,6 +33,7 @@ import de.steppicrew.healthconnectview.ui.cycle.CycleScreen
 import de.steppicrew.healthconnectview.ui.cycle.CycleViewModel
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardScreen
 import de.steppicrew.healthconnectview.ui.dashboard.DashboardViewModel
+import de.steppicrew.healthconnectview.ui.dashboard.OverviewScreen
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailScreen
 import de.steppicrew.healthconnectview.ui.dashboard.TileDetailViewModel
 import de.steppicrew.healthconnectview.ui.permissions.PermissionsScreen
@@ -64,6 +66,9 @@ object Routes {
     const val INSIGHTS = "insights?date={date}"
 
     const val ACTIVE = "active?date={date}"
+
+    /** The overview tile at length, on the dashboard's own day and figures. */
+    const val OVERVIEW = "overview"
 
     fun active(date: String = "") = "active?date=$date"
 
@@ -118,9 +123,22 @@ fun HealthNavGraph(
                 onOpenInsights = { navController.navigate(Routes.insights()) },
                 onOpenCycle = { navController.navigate(Routes.cycle()) },
                 onOpenActive = { navController.navigate(Routes.active(it)) },
+                onOpenOverview = { navController.navigate(Routes.OVERVIEW) },
                 onGrantAccess = { navController.navigate(Routes.PERMISSIONS) },
                 onOpenBody = { navController.navigate(Routes.BODY) },
                 onOpenSession = { navController.navigate(Routes.session(it)) },
+            )
+        }
+
+        // The dashboard's own view model, not one of its own: the figures are the ones just read
+        // for the tile, so the screen opens on them instead of reading them all again.
+        composable(Routes.OVERVIEW) { entry ->
+            val dashboard = remember(entry) { navController.getBackStackEntry(Routes.DASHBOARD) }
+            val viewModel: DashboardViewModel = viewModel(dashboard)
+            OverviewScreen(
+                viewModel = viewModel,
+                onOpenType = { type, date, span -> navController.navigate(Routes.tileDetail(type, date, span)) },
+                onBack = { navController.popBackStack() },
             )
         }
 
