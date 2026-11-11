@@ -543,7 +543,7 @@ fun DashboardScreen(
                                             width,
                                             height,
                                             editing = editing,
-                                            onOpen = { type -> onOpenType(type, state.date.toString(), Span.DAY) },
+                                            onOpen = { type, span -> onOpenType(type, state.date.toString(), span) },
                                             onLongClick = { editing = true },
                                         )
                                     } }
