@@ -53,6 +53,7 @@ import de.steppicrew.healthconnectview.registry.ValueZones
 import de.steppicrew.healthconnectview.registry.TileSpec
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import android.util.Log
 import java.time.Duration
 import java.time.Instant
 import de.steppicrew.healthconnectview.health.recordsIn
@@ -390,13 +391,18 @@ internal class TileChartLoader(
             val readFrom = if (spec.tile.rollingBaseline || spec.tile.usualRange) first.minusDays(ROLLING_DAYS.toLong()) else first
             val daily = DailyReadings(zone, first, bucketDays)
             var inWindow = 0
-            catching {
+            var readings = 0
+            var pages = 0
+            val readStarted = System.currentTimeMillis()
+            val read = catching {
                 repository.forEachPage(
                     spec.type,
                     TimeRangeFilter.between(readFrom.atStartOfDay(zone).toInstant(), windowEnd),
                     origins,
                     readProgress,
                 ) { page ->
+                    pages++
+                    readings += page.size
                     page.forEach { record ->
                         val origin = record.metadata.dataOrigin.packageName
                         if (!spec.timeOf(record).isBefore(windowStart)) inWindow++
@@ -407,6 +413,12 @@ internal class TileChartLoader(
             }
             dailyReadings = daily
             val buckets = daily.buckets()
+            // Counts and time only, never a reading: what a long or failed month read gave.
+            Log.i(
+                TAG,
+                "daily means ${spec.type.simpleName} ${span.name}: $readings records ($inWindow in window) in $pages pages, " +
+                    "${buckets.size} buckets, ${System.currentTimeMillis() - readStarted} ms, failed=${read.exceptionOrNull()?.javaClass?.simpleName}",
+            )
             rangeBand = buckets
                 .map { ValueBand(it.start.atStartOfDay(zone).toInstant(), it.low, it.high) }
                 .takeIf { bands -> bands.any { it.high > it.low } }
@@ -1307,6 +1319,8 @@ private fun scaleToTotal(points: List<Point>, target: Double?): List<Point> {
 
 /** Below this the aggregate and the bucket sum agree, allowing for floating point. */
 private const val TOTAL_TOLERANCE = 0.01
+
+private const val TAG = "TileChart"
 
 private fun List<Point>.runningTotal(): List<Point> {
     var sum = 0.0
