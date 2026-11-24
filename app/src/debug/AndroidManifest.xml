@@ -59,6 +59,9 @@
             android:name="de.steppicrew.healthconnectview.debug.LatestSessionActivity"
             android:exported="true" />
         <activity
+            android:name="de.steppicrew.healthconnectview.debug.MaxPeaksActivity"
+            android:exported="true" />
+        <activity
             android:name="de.steppicrew.healthconnectview.debug.YearSplitActivity"
             android:exported="true" />
         <activity
