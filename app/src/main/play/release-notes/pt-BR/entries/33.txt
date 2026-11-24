@@ -1,0 +1,1 @@
+1.12.0 — Frequência cardíaca máxima: escolha como ela é obtida – pelo seu ano de nascimento, pelos seus dados, o maior dos dois ou manualmente. Os minutos ativos, as zonas de treino e as faixas do bloco de frequência cardíaca a seguem. Minutos ativos: uma escala e os minutos de cada dia no gráfico; toque em um dia com treino para abrir os treinos.

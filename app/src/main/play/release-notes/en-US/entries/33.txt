@@ -1,0 +1,1 @@
+1.12.0 — Maximum heart rate: choose how it is found – from your year of birth, from your data, the higher of the two, or set by hand. Active minutes, workout zones and the heart-rate tile’s bands follow it. Active minutes: a scale and each day’s minutes on the chart; tap a day with a workout to open its workouts.

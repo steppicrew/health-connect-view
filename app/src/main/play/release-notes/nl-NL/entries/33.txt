@@ -1,0 +1,1 @@
+1.12.0 — Maximale hartslag: kies hoe die wordt bepaald – uit je geboortejaar, uit je gegevens, de hoogste van de twee of zelf ingesteld. Actieve minuten, trainingszones en de banden van de hartslagtegel volgen hem. Actieve minuten: een schaal en de minuten van elke dag in de grafiek; tik op een dag met een training om de trainingen te openen.

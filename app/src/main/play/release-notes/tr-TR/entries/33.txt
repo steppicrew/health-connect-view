@@ -1,0 +1,1 @@
+1.12.0 — Maksimum nabız: nasıl belirleneceğini seçin – doğum yılınızdan, verilerinizden, ikisinden yüksek olanı veya elle. Aktif dakikalar, antrenman bölgeleri ve nabız kutucuğunun aralıkları ona göre ayarlanır. Aktif dakikalar: grafikte bir ölçek ve her günün dakikaları; antrenmanlarını açmak için antrenman yapılan bir güne dokunun.

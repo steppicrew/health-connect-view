@@ -1,0 +1,1 @@
+1.12.0 — Maximale Herzfrequenz: Wählen Sie, wie sie bestimmt wird – aus Ihrem Geburtsjahr, aus Ihren Daten, der höhere Wert von beiden oder von Hand. Aktive Minuten, Trainingszonen und die Bereiche der Herzfrequenz-Kachel richten sich danach. Aktive Minuten: eine Skala und die Minuten jedes Tages im Diagramm; tippen Sie auf einen Tag mit Training, um seine Trainings zu öffnen.
