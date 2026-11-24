@@ -16,6 +16,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.steppicrew.healthconnectview.health.HealthRepository
+import de.steppicrew.healthconnectview.health.MaxRule
+import de.steppicrew.healthconnectview.health.observedMaxHeartRate
 import de.steppicrew.healthconnectview.settings.Settings
 import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.TimeRange
@@ -41,6 +43,13 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import de.steppicrew.healthconnectview.util.catching
+
+/** The data's peak heart rate as the settings screen knows it. */
+sealed interface ObservedMax {
+    data object Reading : ObservedMax
+    data object TooLittle : ObservedMax
+    data class Known(val bpm: Int) : ObservedMax
+}
 
 /** How a backup action went, for a one-line message. */
 enum class BackupEvent { Exported, Restored, NotABackup, NewerFormat, Failed }
@@ -74,8 +83,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
      */
     val writers: StateFlow<List<String>> = _writers.asStateFlow()
 
+    private val _observedMax = MutableStateFlow<ObservedMax>(ObservedMax.Reading)
+
+    /** The data's peak, beside each rule in the maximum's dialog; it takes seconds to read. */
+    val observedMax: StateFlow<ObservedMax> = _observedMax.asStateFlow()
+
     init {
         refresh()
+        viewModelScope.launch {
+            _observedMax.value = catching { repository.observedMaxHeartRate() }.getOrNull()
+                ?.let(ObservedMax::Known) ?: ObservedMax.TooLittle
+        }
     }
 
     /** Granted permissions are re-read rather than cached; they change outside this app. */
@@ -156,8 +174,16 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
     /** A workout's zones' maximum; null leaves it to the data. */
-    fun setMaxHeartRate(bpm: Int?) {
-        viewModelScope.launch { store.setMaxHeartRate(bpm) }
+    /** Saves the rule and, with it, the number set by hand, which another rule keeps. */
+    fun setMaxHeartRate(rule: MaxRule, bpm: Int?) {
+        viewModelScope.launch {
+            store.setMaxRule(rule)
+            if (bpm != null) store.setMaxHeartRate(bpm)
+        }
+    }
+
+    fun setBirthYear(year: Int?) {
+        viewModelScope.launch { store.setBirthYear(year) }
     }
 
     fun setGlucose(glucose: GlucoseChoice) {

@@ -565,9 +565,25 @@
     <string name="session_drift_note">Molalar hariç hareket süresi, eşit uzunlukta iki yarıya bölündü. Aynı hızda kilometre başına daha fazla atım, kalbin ikinci yarıda daha çok çalıştığı anlamına gelir: sıcaklık, sıvı kaybı ya da yorgunluk nedeniyle, ama yokuşlar ya da rüzgâr nedeniyle de. Isınma ilk yarıya düşer.</string>
     <string name="session_zones_note_data">Bölgeler, son bir yılda en az üç ayda ulaşılan en yüksek nabız olan %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlardan kendi değerinizi belirleyebilirsiniz.</string>
     <string name="session_zones_note_set">Bölgeler, ayarlarda belirlenen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır.</string>
+    <string name="session_zones_note_age">Bölgeler, doğum yılınızdan 208 − 0,7 × yaş olarak tahmin edilen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlarda başka bir yol seçebilirsiniz.</string>
     <string name="settings_max_hr">Maksimum nabız</string>
     <string name="settings_max_hr_auto">Verilerinizden</string>
-    <string name="settings_max_hr_body">Antrenmanlarınızın nabız bölgelerini belirler. Verilerinizden alındığında, son bir yılda en az üç gün ulaşılan en yüksek nabızdır.</string>
+    <string name="settings_max_hr_body">Aktif dakikaların sınırlarını ve antrenmanlarınızın nabız bölgelerini belirler. Her tahmin gerçek maksimumunuzdan 10 bpm veya daha fazla sapabilir; en iyisi bir testten gelen değerdir.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">İkisinden yüksek olanı</string>
+    <string name="settings_max_hr_higher_body">Doğum yılınızdan veya verilerinizden, hangisi daha yüksekse. Hiç sınıra zorlamadığınız bir zirve onu düşürmez.</string>
+    <string name="settings_max_hr_age">Doğum yılınızdan</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × yaş. Birçok kişide maksimum bunun 10 bpm üstünde veya altında, bazılarında daha uzakta.</string>
+    <string name="settings_max_hr_data_body">Son bir yılın üçüncü en yüksek aylık zirvesi. Nadiren sınıra zorluyorsanız çok düşük, sensörünüz sıçrıyorsa çok yüksek.</string>
+    <string name="settings_max_hr_set">Elle</string>
+    <string name="settings_max_hr_set_body">Bildiğiniz bir değer, örneğin bir testten.</string>
+    <string name="settings_max_hr_needs_year">Doğum yılınız gerekir</string>
+    <string name="settings_max_hr_no_data">Henüz yeterli nabız verisi yok</string>
+    <string name="settings_max_hr_reading">Okunuyor…</string>
+    <string name="settings_birth_year">Doğum yılı</string>
+    <string name="settings_birth_year_none">Ayarlanmadı</string>
+    <string name="settings_birth_year_body">Yalnızca maksimum nabzınızı tahmin etmek için kullanılır. Bu telefonda kalır.</string>
+    <string name="settings_birth_year_remove">Kaldır</string>
     <string name="whats_new_title">Yenilikler</string>
     <string name="whats_new_18">• Antrenmanlar: molalar algılanıp düşülür, yalnızca hareket süresi sayılır ve istatistikler en düşük ve en yüksek nabzı gösterir.\n• Her antrenman için nabız bölgeleri: her bölgedeki süre ve süre ile eforden bir yük değeri.\n• Antrenmandan sonra: beş dakika daha nabız ve ölçümlerin yettiği yerde bir ve iki dakika sonra ne kadar düştüğü. Turlar grafikte işaretlenir.\n• Bir grafikte birden çok çizgi, çiplerle açılıp kapatılır: bisiklet sürüşünde hız ve yükseklikle nabız; gece boyunca solunum hızı, SpO₂ ve HRV.\n• Büyük kutucuklar (Pro): dün geceki uyku evreleri seçtiğiniz bir eğriyle ve son antrenmanlarınız eğri olarak.\n• Takvimden bir gün seçmek için tarihe dokunun, yeniden yüklemek için sayfayı aşağı çekin.</string>
     <string name="whats_new_32">• Genel bakış (Pro): seçtiğiniz günlük değerleri – adımlar, dinlenme nabzı, solunum hızı, uyku ve daha fazlası – tek kutucukta gösterir; gün sizin için olağan dışıysa işaretler, bir hedefe ulaşıldığında kupa koyar ve 2x2 boyutta her değerin haftasını çizer. Genel bakışı tam ekran görmek için dokunun.\n• “Kutucuk ekle” türleri alana göre ve alfabetik sıralar.\n• Birkaç günlük solunum hızı ve oksijen satürasyonu daha hızlı görünür.</string>
@@ -964,7 +980,7 @@
     <string name="active_none">Bu günlerde nabız verisi yok</string>
     <string name="active_no_access">Aktif dakikalar nabızdan tahmin edilir. Bunları görmek için uygulamanın nabzı okumasına izin verin.</string>
     <string name="active_no_max_title">Maksimum nabız yok</string>
-    <string name="active_no_max">Aktif dakikalar maksimum nabzınıza göre ölçülür. Bunu Ayarlar’da belirleyin; aksi halde uygulama onu bir yıllık nabız verisinden okur ve bunun için henüz yeterli veri yok.</string>
+    <string name="active_no_max">Aktif dakikalar maksimum nabzınıza göre ölçülür. Ayarlar’da doğum yılınızı veya maksimumunuzu girin.</string>
     <string name="active_week_total">bu 7 günde ağırlıklı dakika; DSÖ haftada %1$s dakika önerir</string>
     <string name="active_week_mean">haftada ortalama ağırlıklı dakika; DSÖ %1$s dakika önerir</string>
     <string name="active_of">%1$s / %2$s</string>
@@ -975,5 +991,9 @@
     <string name="active_guideline">DSÖ haftada en az 150 dakika orta veya 75 dakika yüksek yoğunluklu aktivite ya da ikisinin bir karışımını önerir. Burada yüksek yoğunluklu bir dakika iki kat sayılır. Ölçülmez, nabzınızdan tahmin edilir.</string>
     <string name="active_limits_reserve">Bir dakika %1$s bpm’den itibaren orta, %2$s bpm’den itibaren yüksek yoğunluklu sayılır: nabız rezervinizin, yani dinlenme ile maksimum nabzınız arasındaki aralığın %%40’ı ve %%60’ı.</string>
     <string name="active_limits_max">Bir dakika %1$s bpm’den itibaren orta, %2$s bpm’den itibaren yüksek yoğunluklu sayılır: maksimum nabzınızın %%64’ü ve %%77’si. Dinlenme nabzı kaydedildiğinde sınırlar bunun yerine nabız rezervinize göre belirlenir.</string>
+    <string name="active_max_set">Maksimum nabzınız: %1$s bpm, Ayarlar’da belirlendiği gibi.</string>
+    <string name="active_max_age">Maksimum nabzınız: %1$s bpm, doğum yılınızdan (208 − 0,7 × yaş).</string>
+    <string name="active_max_data">Maksimum nabzınız: %1$s bpm, verilerinizde son bir yılın üçüncü en yüksek aylık zirvesi.</string>
+    <string name="active_max_data_alone">Sınırlar, verilerinizdeki en yüksek nabız olan %1$s bpm’ye dayanır. Nadiren sınıra zorluyorsanız gerçek maksimumunuz daha yüksektir ve çok fazla dakika sayılır. Ayarlar’da doğum yılınızı veya maksimumunuzu girin.</string>
     <string name="active_counted">%1$s tarafından kaydedilen nabızdan; bu günlerin %2$s kadarını kapsar. Antrenman dışında bir dakika yalnızca yakınında adım veya mesafe kaydı varsa sayılır.</string>
 </resources>

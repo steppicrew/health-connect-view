@@ -559,9 +559,25 @@
     <string name="session_drift_note">Die bewegte Zeit, ohne Pausen, in zwei gleich lange Hälften geteilt. Mehr Schläge pro Kilometer bei gleicher Geschwindigkeit heißt: Das Herz hat in der zweiten Hälfte mehr gearbeitet – durch Wärme, Flüssigkeitsverlust oder Ermüdung, aber auch durch Steigungen oder Wind. Das Aufwärmen fällt in die erste Hälfte.</string>
     <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten in mindestens drei Monaten des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen.</string>
     <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt.</string>
+    <string name="session_zones_note_age">Die Zonen reichen von 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, geschätzt aus Ihrem Geburtsjahr als 208 − 0,7 × Alter; in den Einstellungen können Sie einen anderen Weg wählen.</string>
     <string name="settings_max_hr">Maximale Herzfrequenz</string>
     <string name="settings_max_hr_auto">Aus Ihren Daten</string>
-    <string name="settings_max_hr_body">Legt die Herzfrequenzzonen Ihrer Trainings fest. Aus Ihren Daten ist es die höchste Herzfrequenz, die an mindestens drei Tagen des vergangenen Jahres erreicht wurde.</string>
+    <string name="settings_max_hr_body">Bestimmt die Grenzen der aktiven Minuten und die Herzfrequenzzonen Ihrer Trainings. Jede Schätzung kann Ihr echtes Maximum um 10 bpm oder mehr verfehlen; ein Wert aus einem Test ist am besten.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">Der höhere von beiden</string>
+    <string name="settings_max_hr_higher_body">Aus Ihrem Geburtsjahr oder Ihren Daten, je nachdem, was mehr ergibt. Ein Höchstwert, bei dem Sie nie ans Limit gegangen sind, zieht ihn nicht nach unten.</string>
+    <string name="settings_max_hr_age">Aus Ihrem Geburtsjahr</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × Alter. Bei vielen liegt das Maximum 10 bpm darüber oder darunter, bei manchen weiter.</string>
+    <string name="settings_max_hr_data_body">Der dritthöchste Monatshöchstwert des letzten Jahres. Zu niedrig, wenn Sie selten ans Limit gehen, zu hoch, wenn Ihr Sensor springt.</string>
+    <string name="settings_max_hr_set">Von Hand</string>
+    <string name="settings_max_hr_set_body">Ein Wert, den Sie kennen, etwa aus einem Test.</string>
+    <string name="settings_max_hr_needs_year">Braucht Ihr Geburtsjahr</string>
+    <string name="settings_max_hr_no_data">Noch zu wenig Herzfrequenz</string>
+    <string name="settings_max_hr_reading">Wird gelesen…</string>
+    <string name="settings_birth_year">Geburtsjahr</string>
+    <string name="settings_birth_year_none">Nicht festgelegt</string>
+    <string name="settings_birth_year_body">Dient nur dazu, Ihre maximale Herzfrequenz zu schätzen. Es bleibt auf diesem Telefon.</string>
+    <string name="settings_birth_year_remove">Entfernen</string>
     <string name="whats_new_title">Neuigkeiten</string>
     <string name="whats_new_18">• Trainings: Pausen werden erkannt und herausgerechnet, gezählt wird nur die Zeit in Bewegung, und die Statistik zeigt die niedrigste und höchste Herzfrequenz.\n• Herzfrequenzzonen für jedes Training: die Zeit in jeder Zone und eine Belastung aus Dauer und Anstrengung.\n• Nach einem Training: die Herzfrequenz fünf Minuten weiter und, wo die Messwerte reichen, wie weit sie nach einer und zwei Minuten fiel. Runden sind im Diagramm markiert.\n• Mehrere Linien in einem Diagramm, per Chip ein- und ausgeschaltet: Herzfrequenz mit Geschwindigkeit und Höhe bei einer Radfahrt, Atemfrequenz, SpO₂ und HRV durch die Nacht.\n• Große Kacheln (Pro): die Schlafphasen der letzten Nacht mit einer Kurve Ihrer Wahl und Ihre letzten Trainings als Kurven.\n• Tippen Sie auf das Datum, um einen Tag im Kalender zu wählen, und ziehen Sie eine Seite nach unten, um sie neu zu laden.</string>
     <string name="whats_new_32">• Überblick (Pro): eine Kachel mit den Werten des Tages, die Sie wählen – Schritte, Ruhepuls, Atemfrequenz, Schlaf und mehr –, markiert, wo der Tag für Sie ungewöhnlich ist, mit einem Pokal, wo ein Ziel erreicht ist, und in 2x2 mit der Woche jedes Werts. Tippen Sie darauf für den Überblick in voller Größe.\n• „Kachel hinzufügen“ ordnet die Typen nach Bereichen und alphabetisch.\n• Atemfrequenz und Sauerstoffsättigung über mehrere Tage erscheinen schneller.</string>
@@ -966,7 +982,7 @@
     <string name="active_none">Keine Herzfrequenz an diesen Tagen</string>
     <string name="active_no_access">Aktive Minuten werden aus der Herzfrequenz geschätzt. Geben Sie der App die Herzfrequenz frei, um sie zu sehen.</string>
     <string name="active_no_max_title">Keine maximale Herzfrequenz</string>
-    <string name="active_no_max">Aktive Minuten werden an Ihrer maximalen Herzfrequenz gemessen. Legen Sie sie in den Einstellungen fest; sonst liest die App sie aus einem Jahr Herzfrequenz, und dafür gibt es noch nicht genug Daten.</string>
+    <string name="active_no_max">Aktive Minuten werden an Ihrer maximalen Herzfrequenz gemessen. Geben Sie in den Einstellungen Ihr Geburtsjahr oder Ihr Maximum an.</string>
     <string name="active_week_total">gewichtete Minuten in diesen 7 Tagen, von den %1$s pro Woche, die die WHO empfiehlt</string>
     <string name="active_week_mean">gewichtete Minuten pro Woche im Mittel, von den %1$s, die die WHO empfiehlt</string>
     <string name="active_of">%1$s von %2$s</string>
@@ -977,5 +993,9 @@
     <string name="active_guideline">Die WHO empfiehlt mindestens 150 Minuten moderate oder 75 Minuten intensive Bewegung pro Woche oder eine Mischung aus beidem. Eine intensive Minute zählt hier doppelt. Aus Ihrer Herzfrequenz geschätzt, nicht gemessen.</string>
     <string name="active_limits_reserve">Eine Minute zählt als moderat ab %1$s bpm und als intensiv ab %2$s bpm: 40 %% und 60 %% Ihrer Herzfrequenzreserve, der Spanne zwischen Ruhe- und maximaler Herzfrequenz.</string>
     <string name="active_limits_max">Eine Minute zählt als moderat ab %1$s bpm und als intensiv ab %2$s bpm: 64 %% und 77 %% Ihrer maximalen Herzfrequenz. Sobald eine Ruheherzfrequenz erfasst ist, richten sich die Grenzen stattdessen nach Ihrer Herzfrequenzreserve.</string>
+    <string name="active_max_set">Ihre maximale Herzfrequenz: %1$s bpm, wie in den Einstellungen festgelegt.</string>
+    <string name="active_max_age">Ihre maximale Herzfrequenz: %1$s bpm, aus Ihrem Geburtsjahr (208 − 0,7 × Alter).</string>
+    <string name="active_max_data">Ihre maximale Herzfrequenz: %1$s bpm, der dritthöchste Monatshöchstwert des letzten Jahres in Ihren Daten.</string>
+    <string name="active_max_data_alone">Die Grenzen beruhen auf %1$s bpm, der höchsten Herzfrequenz in Ihren Daten. Gehen Sie selten ans Limit, liegt Ihr echtes Maximum höher, und es zählen zu viele Minuten. Geben Sie in den Einstellungen Ihr Geburtsjahr oder Ihr Maximum an.</string>
     <string name="active_counted">Aus der Herzfrequenz, die %1$s erfasst hat; sie deckt %2$s dieser Tage ab. Außerhalb eines Trainings zählt eine Minute nur, wenn in ihrer Nähe Schritte oder Strecke erfasst wurden.</string>
 </resources>

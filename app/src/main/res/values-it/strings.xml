@@ -579,9 +579,25 @@
     <string name="session_drift_note">Il tempo in movimento, senza pause, diviso in due metà uguali. Più battiti per chilometro alla stessa velocità significa che il cuore ha lavorato di più nella seconda metà: per il caldo, la perdita di liquidi o la stanchezza, ma anche per salite o vento. Il riscaldamento cade nella prima metà.</string>
     <string name="session_zones_note_data">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, la più alta raggiunta in almeno tre mesi dell’ultimo anno; puoi impostare la tua nelle impostazioni.</string>
     <string name="session_zones_note_set">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, impostata nelle impostazioni.</string>
+    <string name="session_zones_note_age">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, stimata dal tuo anno di nascita come 208 − 0,7 × età; puoi scegliere un altro modo nelle impostazioni.</string>
     <string name="settings_max_hr">Frequenza cardiaca massima</string>
     <string name="settings_max_hr_auto">Dai tuoi dati</string>
-    <string name="settings_max_hr_body">Definisce le zone di frequenza cardiaca dei tuoi allenamenti. Dai tuoi dati, è la più alta raggiunta in almeno tre giorni dell’ultimo anno.</string>
+    <string name="settings_max_hr_body">Definisce le soglie dei minuti attivi e le zone di frequenza cardiaca dei tuoi allenamenti. Ogni stima può scostarsi dal tuo vero massimo di 10 bpm o più; un valore da un test è il migliore.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">La più alta delle due</string>
+    <string name="settings_max_hr_higher_body">Dal tuo anno di nascita o dai tuoi dati, quella che dà di più. Un picco in cui non hai mai dato il massimo non la abbassa.</string>
+    <string name="settings_max_hr_age">Dal tuo anno di nascita</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × età. Per molti il massimo sta 10 bpm sopra o sotto, per alcuni di più.</string>
+    <string name="settings_max_hr_data_body">Il terzo picco mensile più alto dell’ultimo anno. Troppo basso se dai raramente il massimo, troppo alto se il sensore fa salti.</string>
+    <string name="settings_max_hr_set">A mano</string>
+    <string name="settings_max_hr_set_body">Un valore che conosci, per esempio da un test.</string>
+    <string name="settings_max_hr_needs_year">Serve il tuo anno di nascita</string>
+    <string name="settings_max_hr_no_data">Frequenza cardiaca ancora insufficiente</string>
+    <string name="settings_max_hr_reading">Lettura…</string>
+    <string name="settings_birth_year">Anno di nascita</string>
+    <string name="settings_birth_year_none">Non impostato</string>
+    <string name="settings_birth_year_body">Serve solo a stimare la tua frequenza cardiaca massima. Resta su questo telefono.</string>
+    <string name="settings_birth_year_remove">Rimuovi</string>
     <string name="whats_new_title">Novità</string>
     <string name="whats_new_18">• Allenamenti: le pause vengono riconosciute ed escluse, conta solo il tempo in movimento, e le statistiche mostrano la frequenza cardiaca minima e massima.\n• Zone di frequenza cardiaca per ogni allenamento: il tempo in ciascuna zona e un carico da durata e sforzo.\n• Dopo un allenamento: la frequenza cardiaca per altri cinque minuti e, dove le misurazioni lo consentono, quanto è scesa dopo uno e due minuti. I giri sono segnati sul grafico.\n• Più linee in un grafico, attivate e disattivate con i chip: frequenza cardiaca con velocità e altitudine in bici; frequenza respiratoria, SpO₂ e HRV durante la notte.\n• Riquadri grandi (Pro): le fasi del sonno della notte scorsa con una curva a tua scelta, e i tuoi ultimi allenamenti come curve.\n• Tocca la data per scegliere un giorno dal calendario, e trascina una pagina verso il basso per ricaricarla.</string>
     <string name="whats_new_32">• Panoramica (Pro): un riquadro con i valori del giorno che scegli – passi, frequenza cardiaca a riposo, frequenza respiratoria, sonno e altro –, segnalati quando la giornata è insolita per te, con un trofeo quando un obiettivo è raggiunto, e in 2x2 con la settimana di ogni valore. Toccalo per la panoramica a schermo intero.\n• «Aggiungi riquadro» ordina i tipi per area e in ordine alfabetico.\n• La frequenza respiratoria e la saturazione di ossigeno su più giorni compaiono prima.</string>
@@ -994,7 +1010,7 @@
     <string name="active_none">Nessuna frequenza cardiaca in questi giorni</string>
     <string name="active_no_access">I minuti attivi sono stimati dalla frequenza cardiaca. Consenti all’app di leggere la frequenza cardiaca per vederli.</string>
     <string name="active_no_max_title">Nessuna frequenza cardiaca massima</string>
-    <string name="active_no_max">I minuti attivi si misurano rispetto alla tua frequenza cardiaca massima. Impostala nelle Impostazioni; altrimenti l’app la ricava da un anno di frequenza cardiaca, e non ce n’è ancora abbastanza.</string>
+    <string name="active_no_max">I minuti attivi si misurano rispetto alla tua frequenza cardiaca massima. Inserisci il tuo anno di nascita o il tuo massimo nelle Impostazioni.</string>
     <string name="active_week_total">minuti ponderati in questi 7 giorni, sui %1$s a settimana raccomandati dall’OMS</string>
     <string name="active_week_mean">minuti ponderati a settimana in media, sui %1$s raccomandati dall’OMS</string>
     <string name="active_of">%1$s su %2$s</string>
@@ -1005,5 +1021,9 @@
     <string name="active_guideline">L’OMS raccomanda almeno 150 minuti di attività moderata o 75 di attività intensa a settimana, o un mix di entrambe. Qui un minuto intenso conta doppio. Stimato dalla tua frequenza cardiaca, non misurato.</string>
     <string name="active_limits_reserve">Un minuto conta come moderato da %1$s bpm e come intenso da %2$s bpm: il 40 %% e il 60 %% della tua riserva cardiaca, l’intervallo tra la frequenza cardiaca a riposo e quella massima.</string>
     <string name="active_limits_max">Un minuto conta come moderato da %1$s bpm e come intenso da %2$s bpm: il 64 %% e il 77 %% della tua frequenza cardiaca massima. Appena viene registrata una frequenza a riposo, le soglie seguono invece la tua riserva cardiaca.</string>
+    <string name="active_max_set">La tua frequenza cardiaca massima: %1$s bpm, impostata nelle Impostazioni.</string>
+    <string name="active_max_age">La tua frequenza cardiaca massima: %1$s bpm, dal tuo anno di nascita (208 − 0,7 × età).</string>
+    <string name="active_max_data">La tua frequenza cardiaca massima: %1$s bpm, il terzo picco mensile più alto dell’ultimo anno nei tuoi dati.</string>
+    <string name="active_max_data_alone">Le soglie si basano su %1$s bpm, la frequenza cardiaca più alta nei tuoi dati. Se dai raramente il massimo, il tuo vero massimo è più alto e si contano troppi minuti. Inserisci il tuo anno di nascita o il tuo massimo nelle Impostazioni.</string>
     <string name="active_counted">Dalla frequenza cardiaca registrata da %1$s, che copre il %2$s di questi giorni. Fuori da un allenamento un minuto conta solo se vicino sono stati registrati passi o distanza.</string>
 </resources>

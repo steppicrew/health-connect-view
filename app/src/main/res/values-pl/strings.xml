@@ -593,9 +593,25 @@
     <string name="session_drift_note">Czas w ruchu, bez przerw, podzielony na dwie równe połowy. Więcej uderzeń na kilometr przy tej samej prędkości oznacza, że serce pracowało ciężej w drugiej połowie: przez ciepło, utratę płynów lub zmęczenie, ale też przez podjazdy lub wiatr. Rozgrzewka przypada na pierwszą połowę.</string>
     <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech miesiącach ostatniego roku; własne możesz ustawić w ustawieniach.</string>
     <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach.</string>
+    <string name="session_zones_note_age">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, oszacowanego z roku urodzenia jako 208 − 0,7 × wiek; w ustawieniach możesz wybrać inny sposób.</string>
     <string name="settings_max_hr">Tętno maksymalne</string>
     <string name="settings_max_hr_auto">Z Twoich danych</string>
-    <string name="settings_max_hr_body">Określa strefy tętna Twoich treningów. Z Twoich danych to najwyższe tętno osiągnięte w co najmniej trzech dniach ostatniego roku.</string>
+    <string name="settings_max_hr_body">Określa progi aktywnych minut i strefy tętna Twoich treningów. Każde oszacowanie może odbiegać od Twojego prawdziwego maksimum o 10 bpm lub więcej; najlepsza jest wartość z testu.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">Wyższa z dwóch</string>
+    <string name="settings_max_hr_higher_body">Z roku urodzenia lub z Twoich danych, zależnie od tego, co daje więcej. Szczyt, przy którym nigdy nie dałeś z siebie wszystkiego, jej nie obniża.</string>
+    <string name="settings_max_hr_age">Z roku urodzenia</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × wiek. U wielu osób maksimum leży 10 bpm wyżej lub niżej, u niektórych dalej.</string>
+    <string name="settings_max_hr_data_body">Trzeci najwyższy miesięczny szczyt z ostatniego roku. Za niski, jeśli rzadko dajesz z siebie wszystko, za wysoki, jeśli czujnik skacze.</string>
+    <string name="settings_max_hr_set">Ręcznie</string>
+    <string name="settings_max_hr_set_body">Wartość, którą znasz, np. z testu.</string>
+    <string name="settings_max_hr_needs_year">Wymaga roku urodzenia</string>
+    <string name="settings_max_hr_no_data">Jeszcze za mało danych tętna</string>
+    <string name="settings_max_hr_reading">Odczytywanie…</string>
+    <string name="settings_birth_year">Rok urodzenia</string>
+    <string name="settings_birth_year_none">Nie ustawiono</string>
+    <string name="settings_birth_year_body">Służy wyłącznie do oszacowania Twojego tętna maksymalnego. Pozostaje na tym telefonie.</string>
+    <string name="settings_birth_year_remove">Usuń</string>
     <string name="whats_new_title">Co nowego</string>
     <string name="whats_new_18">• Treningi: przerwy są wykrywane i pomijane, liczy się tylko czas w ruchu, a statystyki pokazują najniższe i najwyższe tętno.\n• Strefy tętna dla każdego treningu: czas w każdej strefie i obciążenie z czasu i wysiłku.\n• Po treningu: tętno przez kolejne pięć minut i, gdzie pozwalają na to pomiary, o ile spadło po jednej i dwóch minutach. Okrążenia są zaznaczone na wykresie.\n• Kilka linii na jednym wykresie, włączanych i wyłączanych chipami: tętno z prędkością i wysokością podczas jazdy rowerem; częstość oddechów, SpO₂ i HRV przez noc.\n• Duże kafelki (Pro): fazy snu z ostatniej nocy z wybraną krzywą oraz ostatnie treningi jako krzywe.\n• Dotknij daty, aby wybrać dzień w kalendarzu, i przeciągnij stronę w dół, aby ją odświeżyć.</string>
     <string name="whats_new_32">• Przegląd (Pro): jeden kafelek z wybranymi wartościami dnia – kroki, tętno spoczynkowe, częstość oddechów, sen i inne – oznaczonymi, gdy dzień odbiega od zwykłego, z pucharem przy osiągniętym celu, a w rozmiarze 2x2 z tygodniem każdej wartości. Dotknięcie otwiera przegląd na pełnym ekranie.\n• „Dodaj kafelek” porządkuje typy według obszarów i alfabetycznie.\n• Częstość oddechów i saturacja z wielu dni pojawiają się szybciej.</string>
@@ -1024,7 +1040,7 @@
     <string name="active_none">Brak tętna w tych dniach</string>
     <string name="active_no_access">Aktywne minuty są szacowane na podstawie tętna. Zezwól aplikacji na odczyt tętna, aby je zobaczyć.</string>
     <string name="active_no_max_title">Brak tętna maksymalnego</string>
-    <string name="active_no_max">Aktywne minuty mierzy się względem tętna maksymalnego. Ustaw je w Ustawieniach; w przeciwnym razie aplikacja odczyta je z roku pomiarów tętna, a na to jest jeszcze za mało danych.</string>
+    <string name="active_no_max">Aktywne minuty mierzy się względem tętna maksymalnego. Podaj rok urodzenia lub swoje maksimum w Ustawieniach.</string>
     <string name="active_week_total">ważonych minut w tych 7 dniach, z %1$s tygodniowo zalecanych przez WHO</string>
     <string name="active_week_mean">ważonych minut tygodniowo średnio, z %1$s zalecanych przez WHO</string>
     <string name="active_of">%1$s z %2$s</string>
@@ -1035,5 +1051,9 @@
     <string name="active_guideline">WHO zaleca co najmniej 150 minut umiarkowanej lub 75 minut intensywnej aktywności tygodniowo albo połączenie obu. Tutaj minuta intensywna liczy się podwójnie. Szacowane na podstawie tętna, nie mierzone.</string>
     <string name="active_limits_reserve">Minuta liczy się jako umiarkowana od %1$s bpm, a jako intensywna od %2$s bpm: 40 %% i 60 %% rezerwy tętna, czyli zakresu między tętnem spoczynkowym a maksymalnym.</string>
     <string name="active_limits_max">Minuta liczy się jako umiarkowana od %1$s bpm, a jako intensywna od %2$s bpm: 64 %% i 77 %% tętna maksymalnego. Gdy zostanie zapisane tętno spoczynkowe, progi będą wynikać z rezerwy tętna.</string>
+    <string name="active_max_set">Twoje tętno maksymalne: %1$s bpm, ustawione w Ustawieniach.</string>
+    <string name="active_max_age">Twoje tętno maksymalne: %1$s bpm, z roku urodzenia (208 − 0,7 × wiek).</string>
+    <string name="active_max_data">Twoje tętno maksymalne: %1$s bpm, trzeci najwyższy miesięczny szczyt z ostatniego roku w Twoich danych.</string>
+    <string name="active_max_data_alone">Progi opierają się na %1$s bpm, najwyższym tętnie w Twoich danych. Jeśli rzadko dajesz z siebie wszystko, Twoje prawdziwe maksimum jest wyższe i liczy się za dużo minut. Podaj rok urodzenia lub swoje maksimum w Ustawieniach.</string>
     <string name="active_counted">Na podstawie tętna zapisanego przez %1$s, które obejmuje %2$s tych dni. Poza treningiem minuta liczy się tylko wtedy, gdy w pobliżu zapisano kroki lub dystans.</string>
 </resources>

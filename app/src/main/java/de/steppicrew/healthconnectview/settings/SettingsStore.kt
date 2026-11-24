@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.settings
 
+import de.steppicrew.healthconnectview.health.MaxRule
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -73,12 +74,18 @@ data class Settings(
      * chart: a second line is clutter to anyone not looking for their own level.
      */
     val showRollingMean: Boolean = false,
+    /** How the maximum heart rate is found; see [maxHeartRate] in `health/HeartZones.kt`. */
+    val maxRule: MaxRule = MaxRule.HIGHER,
     /**
-     * The maximum heart rate a workout's zones are shares of, where set; null reads it from
-     * the data (see observedMaxHeartRate). A number the person chooses, like a tile's bands --
-     * not a reading.
+     * The maximum heart rate set by hand, used where [maxRule] is [MaxRule.SET] and kept while
+     * another rule is chosen. A number the person chooses, like a tile's bands -- not a reading.
      */
     val maxHeartRate: Int? = null,
+    /**
+     * The year of birth, for a maximum heart rate by formula where none is set by hand. The
+     * year alone: it is all the formula needs.
+     */
+    val birthYear: Int? = null,
 )
 
 /**
@@ -106,13 +113,28 @@ class SettingsStore(private val context: Context) {
                 ?: GlucoseChoice.SYSTEM,
             showSingleNights = prefs[KEY_SINGLE_NIGHTS] ?: true,
             showRollingMean = prefs[KEY_ROLLING_MEAN] ?: false,
+            // Before the rules, a number set meant it was used.
+            maxRule = prefs[KEY_MAX_RULE]
+                ?.let { stored -> catching { MaxRule.valueOf(stored) }.getOrNull() }
+                ?: if (prefs[KEY_MAX_HEART_RATE] != null) MaxRule.SET else MaxRule.HIGHER,
             maxHeartRate = prefs[KEY_MAX_HEART_RATE],
+            birthYear = prefs[KEY_BIRTH_YEAR],
         )
     }
 
     suspend fun setMaxHeartRate(bpm: Int?) {
         context.settingsDataStore.edit { prefs ->
             if (bpm == null) prefs.remove(KEY_MAX_HEART_RATE) else prefs[KEY_MAX_HEART_RATE] = bpm
+        }
+    }
+
+    suspend fun setMaxRule(rule: MaxRule) {
+        context.settingsDataStore.edit { it[KEY_MAX_RULE] = rule.name }
+    }
+
+    suspend fun setBirthYear(year: Int?) {
+        context.settingsDataStore.edit { prefs ->
+            if (year == null) prefs.remove(KEY_BIRTH_YEAR) else prefs[KEY_BIRTH_YEAR] = year
         }
     }
 
@@ -157,7 +179,9 @@ class SettingsStore(private val context: Context) {
             prefs[KEY_GLUCOSE] = settings.glucose.name
             prefs[KEY_SINGLE_NIGHTS] = settings.showSingleNights
             prefs[KEY_ROLLING_MEAN] = settings.showRollingMean
+            prefs[KEY_MAX_RULE] = settings.maxRule.name
             settings.maxHeartRate?.let { prefs[KEY_MAX_HEART_RATE] = it } ?: prefs.remove(KEY_MAX_HEART_RATE)
+            settings.birthYear?.let { prefs[KEY_BIRTH_YEAR] = it } ?: prefs.remove(KEY_BIRTH_YEAR)
         }
     }
 
@@ -170,5 +194,7 @@ class SettingsStore(private val context: Context) {
         val KEY_SINGLE_NIGHTS = booleanPreferencesKey("show_single_nights")
         val KEY_ROLLING_MEAN = booleanPreferencesKey("show_rolling_mean")
         val KEY_MAX_HEART_RATE = intPreferencesKey("max_heart_rate")
+        val KEY_BIRTH_YEAR = intPreferencesKey("birth_year")
+        val KEY_MAX_RULE = stringPreferencesKey("max_heart_rate_rule")
     }
 }

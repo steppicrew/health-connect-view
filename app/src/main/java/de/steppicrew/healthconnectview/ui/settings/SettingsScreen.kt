@@ -1,6 +1,13 @@
 package de.steppicrew.healthconnectview.ui.settings
 
 import de.steppicrew.healthconnectview.registry.Formatting
+import de.steppicrew.healthconnectview.health.MaxRule
+import de.steppicrew.healthconnectview.health.predictedMaxHeartRate
+import de.steppicrew.healthconnectview.settings.Settings
+import de.steppicrew.healthconnectview.ui.components.firstLineInset
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.RadioButton
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -93,6 +100,8 @@ fun SettingsScreen(
     val context = LocalContext.current
     var confirmRevoke by remember { mutableStateOf(false) }
     var editingMaxHeartRate by remember { mutableStateOf(false) }
+    var editingBirthYear by remember { mutableStateOf(false) }
+    val observedMax by viewModel.observedMax.collectAsStateWithLifecycle()
     val pendingRestore by viewModel.pendingRestore.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -328,22 +337,42 @@ fun SettingsScreen(
                 )
             }
 
-            // The maximum a workout's heart-rate zones are shares of. Left to the data unless
-            // someone knows better -- from a test, say -- since no formula of age fits everyone.
+            // The maximum the limits of active minutes and a workout's zones are shares of. No
+            // one rule fits everyone, so each is offered with what it gives today.
+            val maxValues = MaxValues(settings, observedMax)
             LinkRow(
                 title = stringResource(R.string.settings_max_hr),
-                body = settings.maxHeartRate
-                    ?.let { Formatting.number(it.toDouble()) + Formatting.UNIT_SPACE + stringResource(R.string.unit_bpm) }
-                    ?: stringResource(R.string.settings_max_hr_auto),
+                body = stringResource(
+                    R.string.settings_max_hr_row,
+                    stringResource(settings.maxRule.label),
+                    maxValues.text(settings.maxRule),
+                ),
                 onClick = { editingMaxHeartRate = true },
             )
             if (editingMaxHeartRate) {
                 MaxHeartRateDialog(
-                    current = settings.maxHeartRate,
+                    rule = settings.maxRule,
+                    set = settings.maxHeartRate,
+                    values = maxValues,
                     onDismiss = { editingMaxHeartRate = false },
-                    onSave = {
-                        viewModel.setMaxHeartRate(it)
+                    onSave = { rule, bpm ->
+                        viewModel.setMaxHeartRate(rule, bpm)
                         editingMaxHeartRate = false
+                    },
+                )
+            }
+            LinkRow(
+                title = stringResource(R.string.settings_birth_year),
+                body = settings.birthYear?.toString() ?: stringResource(R.string.settings_birth_year_none),
+                onClick = { editingBirthYear = true },
+            )
+            if (editingBirthYear) {
+                BirthYearDialog(
+                    current = settings.birthYear,
+                    onDismiss = { editingBirthYear = false },
+                    onSave = {
+                        viewModel.setBirthYear(it)
+                        editingBirthYear = false
                     },
                 )
             }
@@ -414,22 +443,127 @@ fun SettingsScreen(
  * The maximum heart rate as a number, or left to the data. Only a plausible one is taken: a
  * typo of 1800 would put every workout below the first zone.
  */
+/** What each rule for the maximum heart rate gives today, for the row and the dialog. */
+private class MaxValues(private val settings: Settings, private val observed: ObservedMax) {
+    @Composable
+    fun text(rule: MaxRule): String {
+        val byAge = settings.birthYear?.let { predictedMaxHeartRate(it) }
+        val byData = (observed as? ObservedMax.Known)?.bpm
+        val bpm = when (rule) {
+            MaxRule.SET -> settings.maxHeartRate
+            MaxRule.AGE -> byAge
+            MaxRule.DATA -> byData
+            MaxRule.HIGHER -> if (observed == ObservedMax.Reading) null else listOfNotNull(byAge, byData).maxOrNull()
+        }
+        return when {
+            bpm != null -> Formatting.number(bpm.toDouble()) + Formatting.UNIT_SPACE + stringResource(R.string.unit_bpm)
+            rule == MaxRule.AGE -> stringResource(R.string.settings_max_hr_needs_year)
+            rule == MaxRule.SET -> stringResource(R.string.settings_birth_year_none)
+            observed == ObservedMax.Reading -> stringResource(R.string.settings_max_hr_reading)
+            else -> stringResource(R.string.settings_max_hr_no_data)
+        }
+    }
+}
+
+private val MaxRule.label: Int
+    get() = when (this) {
+        MaxRule.HIGHER -> R.string.settings_max_hr_higher
+        MaxRule.AGE -> R.string.settings_max_hr_age
+        MaxRule.DATA -> R.string.settings_max_hr_auto
+        MaxRule.SET -> R.string.settings_max_hr_set
+    }
+
+private val MaxRule.explanation: Int
+    get() = when (this) {
+        MaxRule.HIGHER -> R.string.settings_max_hr_higher_body
+        MaxRule.AGE -> R.string.settings_max_hr_age_body
+        MaxRule.DATA -> R.string.settings_max_hr_data_body
+        MaxRule.SET -> R.string.settings_max_hr_set_body
+    }
+
 @Composable
-private fun MaxHeartRateDialog(current: Int?, onDismiss: () -> Unit, onSave: (Int?) -> Unit) {
-    var text by remember { mutableStateOf(current?.toString().orEmpty()) }
+private fun MaxHeartRateDialog(
+    rule: MaxRule,
+    set: Int?,
+    values: MaxValues,
+    onDismiss: () -> Unit,
+    onSave: (MaxRule, Int?) -> Unit,
+) {
+    var chosen by remember { mutableStateOf(rule) }
+    var text by remember { mutableStateOf(set?.toString().orEmpty()) }
     val value = text.toIntOrNull()?.takeIf { it in MAX_HR_RANGE }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.settings_max_hr)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.settings_max_hr_body), style = MaterialTheme.typography.bodyMedium)
+                MaxRule.entries.forEach { option ->
+                    RuleRow(option, values.text(option), chosen == option) { chosen = option }
+                }
+                if (chosen == MaxRule.SET) {
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { input -> text = input.filter(Char::isDigit).take(3) },
+                        label = { Text(stringResource(R.string.unit_bpm)) },
+                        singleLine = true,
+                        isError = text.isNotEmpty() && value == null,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(chosen, value) }, enabled = chosen != MaxRule.SET || value != null) {
+                Text(stringResource(R.string.action_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
+        },
+    )
+}
+
+/** One rule: its name and what it gives today, and beneath them how it is made. */
+@Composable
+private fun RuleRow(rule: MaxRule, value: String, selected: Boolean, onClick: () -> Unit) {
+    val style = MaterialTheme.typography.bodyLarge
+    Row(
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
+            .padding(vertical = 4.dp),
+    ) {
+        RadioButton(selected = selected, onClick = null, modifier = Modifier.padding(top = firstLineInset(style, TOGGLE_SIZE.dp)))
+        Column(Modifier.padding(start = 12.dp, top = firstLineTextInset(style, TOGGLE_SIZE.dp))) {
+            Text(stringResource(R.string.settings_max_hr_row, stringResource(rule.label), value), style = style)
+            Text(
+                stringResource(rule.explanation),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BirthYearDialog(current: Int?, onDismiss: () -> Unit, onSave: (Int?) -> Unit) {
+    var text by remember { mutableStateOf(current?.toString().orEmpty()) }
+    val thisYear = LocalDate.now().year
+    val value = text.toIntOrNull()?.takeIf { it in thisYear - OLDEST..thisYear - YOUNGEST }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.settings_birth_year)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(R.string.settings_birth_year_body), style = MaterialTheme.typography.bodyMedium)
                 OutlinedTextField(
                     value = text,
-                    onValueChange = { input -> text = input.filter(Char::isDigit).take(3) },
-                    label = { Text(stringResource(R.string.unit_bpm)) },
+                    onValueChange = { input -> text = input.filter(Char::isDigit).take(4) },
+                    label = { Text(stringResource(R.string.settings_birth_year)) },
                     singleLine = true,
-                    isError = text.isNotEmpty() && value == null,
+                    isError = text.length == 4 && value == null,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 )
             }
@@ -441,12 +575,20 @@ private fun MaxHeartRateDialog(current: Int?, onDismiss: () -> Unit, onSave: (In
         },
         dismissButton = {
             Row {
-                TextButton(onClick = { onSave(null) }) { Text(stringResource(R.string.settings_max_hr_auto)) }
+                if (current != null) {
+                    TextButton(onClick = { onSave(null) }) { Text(stringResource(R.string.settings_birth_year_remove)) }
+                }
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
             }
         },
     )
 }
+
+/** Ages the formula was fitted over, roughly; outside them a year is more likely a typo. */
+private const val OLDEST = 100
+private const val YOUNGEST = 10
+
+private const val TOGGLE_SIZE = 24
 
 /** Beats per minute a maximum heart rate can plausibly be. */
 private val MAX_HR_RANGE = 100..230

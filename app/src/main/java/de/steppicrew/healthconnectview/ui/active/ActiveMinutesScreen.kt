@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MonitorHeart
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.steppicrew.healthconnectview.R
+import de.steppicrew.healthconnectview.health.MaxSource
 import de.steppicrew.healthconnectview.health.ActiveDay
 import de.steppicrew.healthconnectview.health.ActiveMinutes
 import de.steppicrew.healthconnectview.health.Span
@@ -127,7 +129,7 @@ fun ActiveMinutesScreen(
                 )
                 ActiveRead.Empty -> Message(stringResource(R.string.active_none), body)
                 ActiveRead.Failed -> Message(stringResource(R.string.tile_failed), body)
-                is ActiveRead.Data -> Figures(read.minutes, state.span, body)
+                is ActiveRead.Data -> Figures(read, state.span, body, onOpenSettings)
             }
         }
     }
@@ -141,7 +143,8 @@ private fun Message(text: String, modifier: Modifier) {
 }
 
 @Composable
-private fun Figures(minutes: ActiveMinutes, span: Span, modifier: Modifier) {
+private fun Figures(read: ActiveRead.Data, span: Span, modifier: Modifier, onOpenSettings: () -> Unit) {
+    val minutes = read.minutes
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val weeks = minutes.days.chunked(DAYS_PER_WEEK)
     Column(modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)) {
@@ -197,6 +200,16 @@ private fun Figures(minutes: ActiveMinutes, span: Span, modifier: Modifier) {
                 )
             }
         }
+        // Open, not behind the "i": a peak never pushed to the limit counts twice the minutes.
+        if (read.maxSource == MaxSource.DATA && !read.hasBirthYear) {
+            InfoGroup {
+                Text(
+                    text = stringResource(R.string.active_max_data_alone, Formatting.integer(read.max.toLong())),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.settings_title)) }
+            }
+        }
         val explanation = rememberExplanation("active_minutes")
         InfoGroup {
             InfoTitle(stringResource(R.string.active_how_title), explanation)
@@ -210,6 +223,18 @@ private fun Figures(minutes: ActiveMinutes, span: Span, modifier: Modifier) {
                         if (minutes.limits.fromReserve) R.string.active_limits_reserve else R.string.active_limits_max,
                         Formatting.integer(kotlin.math.round(minutes.limits.moderate).toLong()),
                         Formatting.integer(kotlin.math.round(minutes.limits.vigorous).toLong()),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+                Text(
+                    text = stringResource(
+                        when (read.maxSource) {
+                            MaxSource.SET -> R.string.active_max_set
+                            MaxSource.AGE -> R.string.active_max_age
+                            MaxSource.DATA -> R.string.active_max_data
+                        },
+                        Formatting.integer(read.max.toLong()),
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(top = 8.dp),

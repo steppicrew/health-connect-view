@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import de.steppicrew.healthconnectview.health.MaxSource
 import de.steppicrew.healthconnectview.health.endZone
 import de.steppicrew.healthconnectview.health.startZone
 import de.steppicrew.healthconnectview.ui.components.LocalClockZone
@@ -736,7 +737,11 @@ private fun Zones(zones: HeartZones, @StringRes unitRes: Int?, explained: Boolea
     if (explained) {
         Note(
             stringResource(
-                if (zones.maxFromSettings) R.string.session_zones_note_set else R.string.session_zones_note_data,
+                when (zones.maxSource) {
+                    MaxSource.SET -> R.string.session_zones_note_set
+                    MaxSource.AGE -> R.string.session_zones_note_age
+                    MaxSource.DATA -> R.string.session_zones_note_data
+                },
                 Formatting.number(zones.max.toDouble()) + unit,
             ),
         )

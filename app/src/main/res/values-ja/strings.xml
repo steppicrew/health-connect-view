@@ -551,9 +551,25 @@
     <string name="session_drift_note">休憩を除いた動いていた時間を、同じ長さの前半と後半に分けています。同じ速度で1キロあたりの拍数が多いほど、後半に心臓がより多く働いたことを意味します。暑さ、水分の喪失、疲労のほか、上り坂や風によっても起こります。ウォームアップは前半に入ります。</string>
     <string name="session_zones_note_data">ゾーンは最大心拍数 %1$s の 50–60 %% から 90–100 %% です。最大心拍数は過去 1 年間に少なくとも 3 か月で到達した最高値で、設定で独自に指定できます。</string>
     <string name="session_zones_note_set">ゾーンは設定で指定した最大心拍数 %1$s の 50–60 %% から 90–100 %% です。</string>
+    <string name="session_zones_note_age">ゾーンは最大心拍数%1$sの50–60 %%から90–100 %%です。最大心拍数は生まれ年から208 − 0.7 × 年齢として推定しました。設定で別の方法を選べます。</string>
     <string name="settings_max_hr">最大心拍数</string>
     <string name="settings_max_hr_auto">データから</string>
-    <string name="settings_max_hr_body">ワークアウトの心拍ゾーンを決めます。データから求める場合は、過去 1 年間に少なくとも 3 日到達した最高心拍数です。</string>
+    <string name="settings_max_hr_body">アクティブ時間のしきい値とワークアウトの心拍ゾーンを決めます。どの推定も実際の最大値から10 bpm以上ずれることがあります。テストで測った値が最も確実です。</string>
+    <string name="settings_max_hr_row">%1$s：%2$s</string>
+    <string name="settings_max_hr_higher">2つのうち高い方</string>
+    <string name="settings_max_hr_higher_body">生まれ年とデータのうち、高い方を使います。全力を出し切らなかったピークで下がることはありません。</string>
+    <string name="settings_max_hr_age">生まれ年から</string>
+    <string name="settings_max_hr_age_body">208 − 0.7 × 年齢。多くの人の最大値はこれより10 bpm前後上下し、さらに離れる人もいます。</string>
+    <string name="settings_max_hr_data_body">過去1年間で3番目に高い月間ピークです。全力を出すことが少なければ低すぎ、センサーが跳ねれば高すぎます。</string>
+    <string name="settings_max_hr_set">手動で設定</string>
+    <string name="settings_max_hr_set_body">テストなどで分かっている値。</string>
+    <string name="settings_max_hr_needs_year">生まれ年が必要です</string>
+    <string name="settings_max_hr_no_data">心拍数のデータがまだ足りません</string>
+    <string name="settings_max_hr_reading">読み込み中…</string>
+    <string name="settings_birth_year">生まれ年</string>
+    <string name="settings_birth_year_none">未設定</string>
+    <string name="settings_birth_year_body">最大心拍数の推定にのみ使います。このスマートフォンから出ることはありません。</string>
+    <string name="settings_birth_year_remove">削除</string>
     <string name="whats_new_title">新機能</string>
     <string name="whats_new_18">• ワークアウト：休憩を検出して除外し、移動時間だけを数えます。統計には心拍数の最低値と最高値も表示されます。\n• すべてのワークアウトに心拍ゾーン：各ゾーンの時間と、時間と強度から求めた負荷。\n• ワークアウト後：さらに 5 分間の心拍数と、測定値が十分な場合は 1 分後と 2 分後の低下幅。ラップはグラフに表示されます。\n• 1つのグラフに複数の線を表示し、チップでオン・オフを切り替えられます：サイクリングでは心拍数と速度・標高、夜間は呼吸数・SpO₂・HRV。\n• 大きいタイル（Pro）：昨夜の睡眠段階と選んだ曲線、最近のワークアウトの曲線を表示します。\n• 日付をタップするとカレンダーから日を選べます。ページを下に引くと再読み込みします。</string>
     <string name="whats_new_32">• 概要（Pro）: 選んだ1日の数値（歩数、安静時心拍数、呼吸数、睡眠など）を1つのタイルに表示します。いつもと違う日には印を、目標を達成した数値にはトロフィーを付け、2x2では各数値の1週間も表示します。タップすると概要を大きく表示します。\n• 「タイルを追加」では種類が分野別、名前順に並びます。\n• 複数日の呼吸数と血中酸素飽和度がより早く表示されます。</string>
@@ -934,7 +950,7 @@
     <string name="active_none">この期間の心拍数がありません</string>
     <string name="active_no_access">アクティブな時間は心拍数から推定します。表示するには、アプリに心拍数の読み取りを許可してください。</string>
     <string name="active_no_max_title">最大心拍数がありません</string>
-    <string name="active_no_max">アクティブな時間は最大心拍数を基準に測ります。設定で入力してください。入力しない場合は1年分の心拍数から読み取りますが、まだ十分なデータがありません。</string>
+    <string name="active_no_max">アクティブ時間は最大心拍数を基準に計算します。設定で生まれ年か最大心拍数を入力してください。</string>
     <string name="active_week_total">この7日間の加重分数（WHOが推奨する週%1$s分に対して）</string>
     <string name="active_week_mean">週あたりの平均加重分数（WHOが推奨する%1$s分に対して）</string>
     <string name="active_of">%1$s / %2$s</string>
@@ -945,5 +961,9 @@
     <string name="active_guideline">WHOは、週に150分以上の中強度の運動、または75分以上の高強度の運動、あるいはその組み合わせを推奨しています。ここでは高強度の1分を2分として計算します。測定値ではなく、心拍数からの推定です。</string>
     <string name="active_limits_reserve">%1$s bpm以上で中強度、%2$s bpm以上で高強度とみなします。予備心拍数（安静時心拍数と最大心拍数の差）の40 %%と60 %%です。</string>
     <string name="active_limits_max">%1$s bpm以上で中強度、%2$s bpm以上で高強度とみなします。最大心拍数の64 %%と77 %%です。安静時心拍数が記録されると、代わりに予備心拍数に基づいて判定します。</string>
+    <string name="active_max_set">最大心拍数：%1$s bpm（設定で指定）。</string>
+    <string name="active_max_age">最大心拍数：%1$s bpm（生まれ年から、208 − 0.7 × 年齢）。</string>
+    <string name="active_max_data">最大心拍数：%1$s bpm（データ内の過去1年間で3番目に高い月間ピーク）。</string>
+    <string name="active_max_data_alone">しきい値はデータ内の最高心拍数%1$s bpmに基づいています。全力を出すことが少なければ実際の最大値はもっと高く、時間が多く数えられます。設定で生まれ年か最大心拍数を入力してください。</string>
     <string name="active_counted">%1$sが記録した心拍数に基づきます（この期間の%2$sをカバー）。ワークアウト外では、近くに歩数や距離の記録がある分のみ計算します。</string>
 </resources>

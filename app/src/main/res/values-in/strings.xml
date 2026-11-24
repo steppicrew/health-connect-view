@@ -551,9 +551,25 @@
     <string name="session_drift_note">Waktu bergerak, tanpa jeda, dibagi menjadi dua paruh yang sama panjang. Lebih banyak detak per kilometer pada kecepatan yang sama berarti jantung bekerja lebih keras di paruh kedua: karena panas, kehilangan cairan, atau kelelahan, tetapi juga karena tanjakan atau angin. Pemanasan jatuh di paruh pertama.</string>
     <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga bulan dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan.</string>
     <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan.</string>
+    <string name="session_zones_note_age">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, diperkirakan dari tahun lahir Anda sebagai 208 − 0,7 × usia; Anda dapat memilih cara lain di setelan.</string>
     <string name="settings_max_hr">Detak jantung maksimum</string>
     <string name="settings_max_hr_auto">Dari data Anda</string>
-    <string name="settings_max_hr_body">Menentukan zona detak jantung latihan Anda. Dari data Anda, ini adalah detak jantung tertinggi yang dicapai pada setidaknya tiga hari dalam setahun terakhir.</string>
+    <string name="settings_max_hr_body">Menentukan batas menit aktif dan zona detak jantung latihan Anda. Setiap perkiraan bisa meleset 10 bpm atau lebih dari maksimum Anda yang sebenarnya; nilai dari tes adalah yang terbaik.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">Yang lebih tinggi dari keduanya</string>
+    <string name="settings_max_hr_higher_body">Dari tahun lahir atau data Anda, mana yang lebih tinggi. Puncak yang tidak pernah Anda capai dengan usaha penuh tidak menurunkannya.</string>
+    <string name="settings_max_hr_age">Dari tahun lahir Anda</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × usia. Pada banyak orang maksimumnya 10 bpm di atas atau di bawahnya, pada sebagian lebih jauh.</string>
+    <string name="settings_max_hr_data_body">Puncak bulanan tertinggi ketiga dalam setahun terakhir. Terlalu rendah jika Anda jarang berusaha penuh, terlalu tinggi jika sensor Anda melonjak.</string>
+    <string name="settings_max_hr_set">Manual</string>
+    <string name="settings_max_hr_set_body">Nilai yang Anda ketahui, misalnya dari tes.</string>
+    <string name="settings_max_hr_needs_year">Memerlukan tahun lahir Anda</string>
+    <string name="settings_max_hr_no_data">Data detak jantung belum cukup</string>
+    <string name="settings_max_hr_reading">Membaca…</string>
+    <string name="settings_birth_year">Tahun lahir</string>
+    <string name="settings_birth_year_none">Belum diatur</string>
+    <string name="settings_birth_year_body">Hanya digunakan untuk memperkirakan detak jantung maksimum Anda. Tetap di ponsel ini.</string>
+    <string name="settings_birth_year_remove">Hapus</string>
     <string name="whats_new_title">Yang baru</string>
     <string name="whats_new_18">• Latihan: jeda dikenali dan tidak dihitung, hanya waktu bergerak yang dihitung, dan statistik menampilkan detak jantung terendah dan tertinggi.\n• Zona detak jantung untuk setiap latihan: waktu di setiap zona, dan nilai beban dari durasi dan upaya.\n• Setelah latihan: detak jantung lima menit berikutnya dan, jika pengukuran memungkinkan, seberapa jauh turun setelah satu dan dua menit. Putaran ditandai pada grafik.\n• Beberapa garis dalam satu grafik, dinyalakan dan dimatikan dengan chip: detak jantung dengan kecepatan dan ketinggian saat bersepeda; laju pernapasan, SpO₂, dan HRV sepanjang malam.\n• Kartu besar (Pro): tahap tidur semalam dengan kurva pilihan Anda, dan latihan terakhir Anda sebagai kurva.\n• Sentuh tanggal untuk memilih hari dari kalender, dan tarik halaman ke bawah untuk memuat ulang.</string>
     <string name="whats_new_32">• Ringkasan (Pro): satu kartu dengan angka hari ini yang Anda pilih – langkah, detak jantung istirahat, laju pernapasan, tidur, dan lainnya – ditandai saat hari itu tidak biasa bagi Anda, dengan piala saat target tercapai, dan pada ukuran 2x2 dengan minggu tiap angka. Ketuk untuk melihat ringkasan penuh.\n• “Tambahkan kartu” mengurutkan jenis menurut bidang dan abjad.\n• Laju pernapasan dan saturasi oksigen selama beberapa hari tampil lebih cepat.</string>
@@ -934,7 +950,7 @@
     <string name="active_none">Tidak ada detak jantung pada hari-hari ini</string>
     <string name="active_no_access">Menit aktif diperkirakan dari detak jantung. Izinkan aplikasi membaca detak jantung untuk melihatnya.</string>
     <string name="active_no_max_title">Tidak ada detak jantung maksimum</string>
-    <string name="active_no_max">Menit aktif diukur terhadap detak jantung maksimum Anda. Atur di Setelan; jika tidak, aplikasi membacanya dari data detak jantung setahun, dan datanya belum cukup.</string>
+    <string name="active_no_max">Menit aktif diukur terhadap detak jantung maksimum Anda. Masukkan tahun lahir atau maksimum Anda di Setelan.</string>
     <string name="active_week_total">menit berbobot dalam 7 hari ini, dari %1$s per minggu yang dianjurkan WHO</string>
     <string name="active_week_mean">menit berbobot per minggu rata-rata, dari %1$s yang dianjurkan WHO</string>
     <string name="active_of">%1$s dari %2$s</string>
@@ -945,5 +961,9 @@
     <string name="active_guideline">WHO menganjurkan setidaknya 150 menit aktivitas sedang atau 75 menit aktivitas berat per minggu, atau campuran keduanya. Di sini satu menit berat dihitung dua kali. Diperkirakan dari detak jantung Anda, bukan diukur.</string>
     <string name="active_limits_reserve">Satu menit dihitung sedang mulai %1$s bpm dan berat mulai %2$s bpm: 40 %% dan 60 %% dari cadangan detak jantung Anda, yaitu rentang antara detak jantung istirahat dan maksimum.</string>
     <string name="active_limits_max">Satu menit dihitung sedang mulai %1$s bpm dan berat mulai %2$s bpm: 64 %% dan 77 %% dari detak jantung maksimum Anda. Setelah detak jantung istirahat tercatat, batasnya mengikuti cadangan detak jantung Anda.</string>
+    <string name="active_max_set">Detak jantung maksimum Anda: %1$s bpm, sesuai Setelan.</string>
+    <string name="active_max_age">Detak jantung maksimum Anda: %1$s bpm, dari tahun lahir Anda (208 − 0,7 × usia).</string>
+    <string name="active_max_data">Detak jantung maksimum Anda: %1$s bpm, puncak bulanan tertinggi ketiga dalam setahun terakhir di data Anda.</string>
+    <string name="active_max_data_alone">Batas ini berasal dari %1$s bpm, detak jantung tertinggi di data Anda. Jika Anda jarang berusaha penuh, maksimum Anda yang sebenarnya lebih tinggi dan terlalu banyak menit yang dihitung. Masukkan tahun lahir atau maksimum Anda di Setelan.</string>
     <string name="active_counted">Dari detak jantung yang dicatat %1$s, yang mencakup %2$s dari hari-hari ini. Di luar latihan, satu menit hanya dihitung jika ada langkah atau jarak tercatat di dekatnya.</string>
 </resources>

@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview
 
+import de.steppicrew.healthconnectview.health.MaxRule
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import de.steppicrew.healthconnectview.dashboard.Tile
 import de.steppicrew.healthconnectview.dashboard.TileFace
@@ -39,6 +40,9 @@ class SettingsBackupTest {
             glucose = GlucoseChoice.MG_PER_DL,
             showSingleNights = false,
             showRollingMean = true,
+            maxRule = MaxRule.AGE,
+            maxHeartRate = 185,
+            birthYear = 1972,
         ),
     )
 

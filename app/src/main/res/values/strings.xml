@@ -597,10 +597,26 @@
     <string name="session_drift_per_distance">%1$s beats/%2$s</string>
     <string name="session_drift_note">The moving time, without breaks, cut into two halves of equal length. More beats per kilometre at the same speed means the heart worked harder in the second half: warmth, lost fluid or tiredness, but also climbs or wind. The warm-up falls into the first half.</string>
     <string name="session_zones_note_data">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, the highest reached in at least three months of the past year; you can set your own in settings.</string>
+    <string name="session_zones_note_age">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, estimated from your year of birth as 208 − 0.7 × age; you can choose another way in settings.</string>
     <string name="session_zones_note_set">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, as set in settings.</string>
     <string name="settings_max_hr">Maximum heart rate</string>
     <string name="settings_max_hr_auto">From your data</string>
-    <string name="settings_max_hr_body">Sets the heart-rate zones of your workouts. From your data, it is the highest heart rate reached on at least three days of the past year.</string>
+    <string name="settings_max_hr_body">Sets the limits of active minutes and the heart-rate zones of your workouts. Any estimate can miss your real maximum by 10 bpm or more; a value from a test is best.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">Higher of the two</string>
+    <string name="settings_max_hr_higher_body">Your year of birth or your data, whichever gives more. A peak you never pushed to the limit does not pull it down.</string>
+    <string name="settings_max_hr_age">From your year of birth</string>
+    <string name="settings_max_hr_age_body">208 − 0.7 × age. Many people’s maximum lies 10 bpm above or below it, some further.</string>
+    <string name="settings_max_hr_data_body">The third-highest monthly peak of the past year. Too low if you rarely go all out, too high if your sensor jumps.</string>
+    <string name="settings_max_hr_set">Set by hand</string>
+    <string name="settings_max_hr_set_body">A value you know, from a test, say.</string>
+    <string name="settings_max_hr_needs_year">Needs your year of birth</string>
+    <string name="settings_max_hr_no_data">Not enough heart rate yet</string>
+    <string name="settings_max_hr_reading">Reading…</string>
+    <string name="settings_birth_year">Year of birth</string>
+    <string name="settings_birth_year_none">Not set</string>
+    <string name="settings_birth_year_body">Used only to estimate your maximum heart rate. It stays on this phone.</string>
+    <string name="settings_birth_year_remove">Remove</string>
     <string name="whats_new_title">What’s new</string>
     <string name="whats_new_18">• Workouts: breaks are found and left out, only time moving is counted, and the statistics show the lowest and highest heart rate.\n• Heart-rate zones for every workout: the time in each zone, and a load figure from time and effort.\n• After a workout: its heart rate five minutes on, and how far it fell after one and two minutes where the readings allow. Laps are marked on the chart.\n• Several lines in one chart, switched on and off by chips: heart rate with speed and height on a ride; breath rate, SpO₂ and HRV through a night.\n• Large tiles (Pro): last night’s stages with a curve of your choice, and your latest workouts as curves.\n• Tap the date to pick a day from the calendar, and pull a page down to reload it.</string>
     <string name="whats_new_32">• Overview (Pro): one tile with the day’s figures you choose – steps, resting heart rate, respiratory rate, sleep and more – marked where the day is unusual for you, with a trophy where a goal is met, and at 2x2 with each figure’s week. Tap it for the overview at full size.\n• Add tile lists the types by area, in alphabetical order.\n• Respiratory rate and oxygen saturation across days appear sooner.</string>
@@ -1002,7 +1018,7 @@
     <string name="active_none">No heart rate in these days</string>
     <string name="active_no_access">Active minutes are estimated from heart rate. Allow the app to read heart rate to see them.</string>
     <string name="active_no_max_title">No maximum heart rate</string>
-    <string name="active_no_max">Active minutes are measured against your maximum heart rate. Set it in Settings; otherwise the app reads it from a year of heart rate, and there is not enough of that yet.</string>
+    <string name="active_no_max">Active minutes are measured against your maximum heart rate. Enter your year of birth or your maximum in Settings.</string>
     <string name="active_week_total">weighted minutes these 7 days, of the %1$s a week the WHO recommends</string>
     <string name="active_week_mean">weighted minutes a week on average, of the %1$s the WHO recommends</string>
     <string name="active_of">%1$s of %2$s</string>
@@ -1013,5 +1029,9 @@
     <string name="active_guideline">The WHO recommends at least 150 minutes of moderate or 75 minutes of vigorous activity a week, or a mix of both. Here a vigorous minute counts twice. Estimated from your heart rate, not measured.</string>
     <string name="active_limits_reserve">A minute counts as moderate from %1$s bpm and as vigorous from %2$s bpm: 40 %% and 60 %% of your heart-rate reserve, the range between your resting and your maximum heart rate.</string>
     <string name="active_limits_max">A minute counts as moderate from %1$s bpm and as vigorous from %2$s bpm: 64 %% and 77 %% of your maximum heart rate. Once a resting heart rate is recorded, the limits follow your heart-rate reserve instead.</string>
+    <string name="active_max_set">Your maximum heart rate: %1$s bpm, as set in Settings.</string>
+    <string name="active_max_age">Your maximum heart rate: %1$s bpm, from your year of birth (208 − 0.7 × age).</string>
+    <string name="active_max_data">Your maximum heart rate: %1$s bpm, the third-highest monthly peak of the past year in your data.</string>
+    <string name="active_max_data_alone">The limits come from %1$s bpm, the highest heart rate in your data. If you rarely go all out, your real maximum is higher and too many minutes count. Enter your year of birth or your maximum in Settings.</string>
     <string name="active_counted">From the heart rate %1$s recorded, which covers %2$s of these days. Outside a workout a minute counts only where steps or distance were recorded near it.</string>
 </resources>

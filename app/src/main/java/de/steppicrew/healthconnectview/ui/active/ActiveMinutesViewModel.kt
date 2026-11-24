@@ -10,6 +10,8 @@ import de.steppicrew.healthconnectview.dashboard.SourceStore
 import de.steppicrew.healthconnectview.health.ActiveMinutes
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
+import de.steppicrew.healthconnectview.health.MaxSource
+import de.steppicrew.healthconnectview.health.maxHeartRate
 import de.steppicrew.healthconnectview.health.observedMaxHeartRate
 import de.steppicrew.healthconnectview.health.readActiveMinutes
 import de.steppicrew.healthconnectview.settings.SettingsStore
@@ -28,7 +30,7 @@ sealed interface ActiveRead {
     /** Not allowed to read heart rate, which every minute starts from. */
     data object NoAccess : ActiveRead
 
-    /** No maximum heart rate set and too little of a year to read one from. */
+    /** The maximum heart rate's rule has nothing to go on: no number, no year of birth, too little data. */
     data object NoMax : ActiveRead
 
     /** No heart rate in the window. */
@@ -36,7 +38,8 @@ sealed interface ActiveRead {
 
     data object Failed : ActiveRead
 
-    data class Data(val minutes: ActiveMinutes) : ActiveRead
+    /** [max] is the maximum heart rate the limits come from, and [maxSource] where it came from. */
+    data class Data(val minutes: ActiveMinutes, val max: Int, val maxSource: MaxSource, val hasBirthYear: Boolean) : ActiveRead
 }
 
 /**
@@ -54,7 +57,8 @@ suspend fun readActive(
     if (HEART_RATE_PERMISSION !in granted) return ActiveRead.NoAccess
     val started = System.currentTimeMillis()
     return catching {
-        val max = settingsStore.settings.first().maxHeartRate ?: repository.observedMaxHeartRate(last)
+        val settings = settingsStore.settings.first()
+        val (max, source) = maxHeartRate(settings.maxRule, settings.maxHeartRate, settings.birthYear, { repository.observedMaxHeartRate(last) })
             ?: return ActiveRead.NoMax
         Log.i(TAG, "maximum in ${System.currentTimeMillis() - started} ms")
         val typeName = HeartRateRecord::class.simpleName.orEmpty()
@@ -63,9 +67,9 @@ suspend fun readActive(
             null -> sourceStore.preferred.first()
             else -> chosen
         }
-        repository.readActiveMinutes(first, last, max, preferred)
+        repository.readActiveMinutes(first, last, max, preferred)?.let { ActiveRead.Data(it, max, source, settings.birthYear != null) } ?: ActiveRead.Empty
     }.fold(
-        onSuccess = { read -> read?.let(ActiveRead::Data) ?: ActiveRead.Empty },
+        onSuccess = { it },
         onFailure = { ActiveRead.Failed },
     ).also {
         // Timing and outcome only, never a minute.

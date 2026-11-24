@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.settings
 
+import de.steppicrew.healthconnectview.health.MaxRule
 import de.steppicrew.healthconnectview.dashboard.DashboardConfig
 import de.steppicrew.healthconnectview.dashboard.DashboardJson
 import org.json.JSONArray
@@ -57,7 +58,9 @@ object SettingsBackupCodec {
                 put(FIELD_GLUCOSE, backup.settings.glucose.name)
                 put(FIELD_SINGLE_NIGHTS, backup.settings.showSingleNights)
                 put(FIELD_ROLLING_MEAN, backup.settings.showRollingMean)
+                put(FIELD_MAX_RULE, backup.settings.maxRule.name)
                 backup.settings.maxHeartRate?.let { put(FIELD_MAX_HEART_RATE, it) }
+                backup.settings.birthYear?.let { put(FIELD_BIRTH_YEAR, it) }
                 put(FIELD_EXPLANATIONS, JSONArray().apply { backup.settings.expandedExplanations.sorted().forEach { put(it) } })
             },
         )
@@ -103,9 +106,15 @@ object SettingsBackupCodec {
                     ?: GlucoseChoice.SYSTEM,
                 showSingleNights = settings?.optBoolean(FIELD_SINGLE_NIGHTS, true) ?: true,
                 showRollingMean = settings?.optBoolean(FIELD_ROLLING_MEAN, false) ?: false,
+                // Absent in backups from before the rules, where a number set meant it was used.
+                maxRule = settings?.optString(FIELD_MAX_RULE)
+                    ?.let { catching { MaxRule.valueOf(it) }.getOrNull() }
+                    ?: if (settings?.has(FIELD_MAX_HEART_RATE) == true) MaxRule.SET else MaxRule.HIGHER,
                 // Absent where it was left to the data, and in backups from before it existed.
                 maxHeartRate = settings?.takeIf { it.has(FIELD_MAX_HEART_RATE) }
                     ?.optInt(FIELD_MAX_HEART_RATE)?.takeIf { it > 0 },
+                birthYear = settings?.takeIf { it.has(FIELD_BIRTH_YEAR) }
+                    ?.optInt(FIELD_BIRTH_YEAR)?.takeIf { it > 0 },
                 expandedExplanations = explanations
                     ?.let { list -> (0 until list.length()).mapNotNull { list.optString(it).takeIf(String::isNotEmpty) } }
                     ?.toSet()
@@ -132,5 +141,7 @@ object SettingsBackupCodec {
     private const val FIELD_SINGLE_NIGHTS = "showSingleNights"
     private const val FIELD_ROLLING_MEAN = "showRollingMean"
     private const val FIELD_MAX_HEART_RATE = "maxHeartRate"
+    private const val FIELD_BIRTH_YEAR = "birthYear"
+    private const val FIELD_MAX_RULE = "maxHeartRateRule"
     private const val FIELD_EXPLANATIONS = "openExplanations"
 }

@@ -26,8 +26,8 @@ data class HeartZones(
     val load: Int,
     /** The maximum the zones are shares of, in beats per minute. */
     val max: Int,
-    /** True where the maximum was set in settings rather than read from the data. */
-    val maxFromSettings: Boolean,
+    /** Where [max] came from. */
+    val maxSource: MaxSource,
 ) {
     /** The lower and upper bound of zone [index] (0 to 4) in beats per minute. */
     fun boundsOf(index: Int): Pair<Int, Int> =
@@ -45,7 +45,7 @@ fun heartZones(
     points: List<Point>,
     breaks: List<Break>,
     max: Int?,
-    maxFromSettings: Boolean,
+    maxSource: MaxSource,
     longest: Duration = LONGEST_SAMPLE,
 ): HeartZones? {
     if (max == null || max <= 0 || points.size < 2) return null
@@ -56,8 +56,62 @@ fun heartZones(
         val span = Duration.between(a.time, b.time)
         times[zone] = times[zone] + if (span > longest) longest else span
     }
-    return HeartZones(times, loadOf(times), max, maxFromSettings)
+    return HeartZones(times, loadOf(times), max, maxSource)
 }
+
+/** Where a maximum heart rate came from: set by hand, from the year of birth, or from the data. */
+enum class MaxSource { SET, AGE, DATA }
+
+/**
+ * The maximum heart rate for someone born in [birthYear]: Tanaka's 208 - 0.7 x age, which
+ * fits large studies better than 220 - age, above all past 40. The year alone is enough: a
+ * year of age moves it by less than one beat.
+ */
+fun predictedMaxHeartRate(birthYear: Int, today: LocalDate = LocalDate.now()): Int =
+    (TANAKA_BASE - TANAKA_PER_YEAR * (today.year - birthYear)).roundToInt()
+
+/** How the maximum heart rate is found, as chosen in settings. */
+enum class MaxRule {
+    /** The higher of [AGE] and [DATA], or [DATA] alone without a year of birth. */
+    HIGHER,
+    AGE,
+    DATA,
+    SET,
+}
+
+/**
+ * The maximum heart rate by [rule], and where it came from, or null where the rule has nothing
+ * to go on. [observed] is the data's peak, asked for only where the rule needs it: it takes
+ * Health Connect seconds.
+ *
+ * Higher of the two is the default since neither alone fits everyone, both measured
+ * 24.11.2026: a customer who never pushed to the limit had a peak far below his maximum and
+ * twice the active minutes, and the owner's peak of 201 at 54 -- 31 above the formula,
+ * reached on four mountain-bike rides, climbing and falling smoothly -- was real. A peak can
+ * only fall short of a maximum, so the higher one is the better guess; a sensor's spikes in
+ * three separate months would fool it, and then the person can choose another rule.
+ */
+suspend fun maxHeartRate(
+    rule: MaxRule,
+    set: Int?,
+    birthYear: Int?,
+    observed: suspend () -> Int?,
+    today: LocalDate = LocalDate.now(),
+): Pair<Int, MaxSource>? {
+    val byAge = birthYear?.let { predictedMaxHeartRate(it, today) to MaxSource.AGE }
+    return when (rule) {
+        MaxRule.SET -> set?.let { it to MaxSource.SET }
+        MaxRule.AGE -> byAge
+        MaxRule.DATA -> observed()?.let { it to MaxSource.DATA }
+        MaxRule.HIGHER -> {
+            val byData = observed()?.let { it to MaxSource.DATA }
+            listOfNotNull(byAge, byData).maxByOrNull { it.first }
+        }
+    }
+}
+
+/** Whether the rule reads the data's peak, which takes Health Connect seconds. */
+val MaxRule.needsData: Boolean get() = this == MaxRule.DATA || this == MaxRule.HIGHER
 
 /** Zone 0 to 4 for [bpm] against [max], or null below the first. */
 fun zoneOf(bpm: Double, max: Int): Int? {
@@ -108,6 +162,9 @@ private object ObservedMax {
 
 private val ZONE_SHARES = listOf(0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
 private const val ZONES = 5
+
+private const val TANAKA_BASE = 208.0
+private const val TANAKA_PER_YEAR = 0.7
 
 /** Monthly maxima passed over as possible spikes; see [observedMaxHeartRate]. */
 private const val SPIKE_MONTHS = 2

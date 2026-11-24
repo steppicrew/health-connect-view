@@ -565,9 +565,25 @@
     <string name="session_drift_note">De tijd in beweging, zonder pauzes, in twee even lange helften gedeeld. Meer slagen per kilometer bij dezelfde snelheid betekent dat je hart in de tweede helft harder werkte: door warmte, vochtverlies of vermoeidheid, maar ook door hellingen of wind. De warming-up valt in de eerste helft.</string>
     <string name="session_zones_note_data">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, de hoogste die in minstens drie maanden van het afgelopen jaar werd bereikt; je kunt je eigen instellen in de instellingen.</string>
     <string name="session_zones_note_set">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, zoals ingesteld.</string>
+    <string name="session_zones_note_age">De zones lopen van 50–60 %% tot 90–100 %% van een maximale hartslag van %1$s, geschat uit je geboortejaar als 208 − 0,7 × leeftijd; in de instellingen kun je een andere manier kiezen.</string>
     <string name="settings_max_hr">Maximale hartslag</string>
     <string name="settings_max_hr_auto">Uit je gegevens</string>
-    <string name="settings_max_hr_body">Bepaalt de hartslagzones van je trainingen. Uit je gegevens is het de hoogste hartslag die op minstens drie dagen van het afgelopen jaar werd bereikt.</string>
+    <string name="settings_max_hr_body">Bepaalt de grenzen van actieve minuten en de hartslagzones van je trainingen. Elke schatting kan 10 bpm of meer naast je echte maximum zitten; een waarde uit een test is het beste.</string>
+    <string name="settings_max_hr_row">%1$s: %2$s</string>
+    <string name="settings_max_hr_higher">De hoogste van de twee</string>
+    <string name="settings_max_hr_higher_body">Uit je geboortejaar of je gegevens, welke het meeste geeft. Een piek waarbij je nooit tot het uiterste ging, trekt hem niet omlaag.</string>
+    <string name="settings_max_hr_age">Uit je geboortejaar</string>
+    <string name="settings_max_hr_age_body">208 − 0,7 × leeftijd. Bij veel mensen ligt het maximum 10 bpm hoger of lager, bij sommigen verder.</string>
+    <string name="settings_max_hr_data_body">De op twee na hoogste maandpiek van het afgelopen jaar. Te laag als je zelden tot het uiterste gaat, te hoog als je sensor verspringt.</string>
+    <string name="settings_max_hr_set">Zelf instellen</string>
+    <string name="settings_max_hr_set_body">Een waarde die je kent, bijvoorbeeld uit een test.</string>
+    <string name="settings_max_hr_needs_year">Heeft je geboortejaar nodig</string>
+    <string name="settings_max_hr_no_data">Nog niet genoeg hartslag</string>
+    <string name="settings_max_hr_reading">Bezig met lezen…</string>
+    <string name="settings_birth_year">Geboortejaar</string>
+    <string name="settings_birth_year_none">Niet ingesteld</string>
+    <string name="settings_birth_year_body">Wordt alleen gebruikt om je maximale hartslag te schatten. Het blijft op deze telefoon.</string>
+    <string name="settings_birth_year_remove">Verwijderen</string>
     <string name="whats_new_title">Wat is er nieuw</string>
     <string name="whats_new_18">• Trainingen: pauzes worden herkend en weggelaten, alleen tijd in beweging telt, en de statistieken tonen de laagste en hoogste hartslag.\n• Hartslagzones bij elke training: de tijd in elke zone en een belasting uit duur en inspanning.\n• Na een training: de hartslag nog vijf minuten verder en, waar de metingen het toelaten, hoeveel hij na één en twee minuten daalde. Ronden staan gemarkeerd in de grafiek.\n• Meerdere lijnen in één grafiek, aan- en uitgezet met chips: hartslag met snelheid en hoogte bij een fietsrit; ademhalingsfrequentie, SpO₂ en HRV door de nacht.\n• Grote tegels (Pro): de slaapfasen van afgelopen nacht met een curve naar keuze, en je laatste trainingen als curves.\n• Tik op de datum om een dag in de kalender te kiezen, en trek een pagina omlaag om hem opnieuw te laden.</string>
     <string name="whats_new_32">• Overzicht (Pro): één tegel met de waarden van de dag die je kiest – stappen, rusthartslag, ademhalingsfrequentie, slaap en meer –, gemarkeerd waar de dag voor jou ongewoon is, met een trofee waar een doel is gehaald, en in 2x2 met de week van elke waarde. Tik erop voor het overzicht op volledig scherm.\n• ‘Tegel toevoegen’ ordent de typen per gebied en alfabetisch.\n• Ademhalingsfrequentie en zuurstofverzadiging over meerdere dagen verschijnen sneller.</string>
@@ -964,7 +980,7 @@
     <string name="active_none">Geen hartslag op deze dagen</string>
     <string name="active_no_access">Actieve minuten worden geschat uit de hartslag. Geef de app toegang tot je hartslag om ze te zien.</string>
     <string name="active_no_max_title">Geen maximale hartslag</string>
-    <string name="active_no_max">Actieve minuten worden afgemeten aan je maximale hartslag. Stel die in bij Instellingen; anders haalt de app hem uit een jaar hartslag, en daarvoor is er nog niet genoeg.</string>
+    <string name="active_no_max">Actieve minuten worden afgemeten aan je maximale hartslag. Vul bij Instellingen je geboortejaar of je maximum in.</string>
     <string name="active_week_total">gewogen minuten deze 7 dagen, van de %1$s per week die de WHO aanraadt</string>
     <string name="active_week_mean">gewogen minuten per week gemiddeld, van de %1$s die de WHO aanraadt</string>
     <string name="active_of">%1$s van %2$s</string>
@@ -975,5 +991,9 @@
     <string name="active_guideline">De WHO raadt minstens 150 minuten matige of 75 minuten intensieve beweging per week aan, of een mix van beide. Een intensieve minuut telt hier dubbel. Geschat uit je hartslag, niet gemeten.</string>
     <string name="active_limits_reserve">Een minuut telt als matig vanaf %1$s bpm en als intensief vanaf %2$s bpm: 40 %% en 60 %% van je hartslagreserve, het bereik tussen je rust- en je maximale hartslag.</string>
     <string name="active_limits_max">Een minuut telt als matig vanaf %1$s bpm en als intensief vanaf %2$s bpm: 64 %% en 77 %% van je maximale hartslag. Zodra er een rusthartslag is vastgelegd, volgen de grenzen in plaats daarvan je hartslagreserve.</string>
+    <string name="active_max_set">Je maximale hartslag: %1$s bpm, zoals ingesteld.</string>
+    <string name="active_max_age">Je maximale hartslag: %1$s bpm, uit je geboortejaar (208 − 0,7 × leeftijd).</string>
+    <string name="active_max_data">Je maximale hartslag: %1$s bpm, de op twee na hoogste maandpiek van het afgelopen jaar in je gegevens.</string>
+    <string name="active_max_data_alone">De grenzen komen van %1$s bpm, de hoogste hartslag in je gegevens. Ga je zelden tot het uiterste, dan ligt je echte maximum hoger en tellen er te veel minuten. Vul bij Instellingen je geboortejaar of je maximum in.</string>
     <string name="active_counted">Uit de hartslag die %1$s heeft vastgelegd, die %2$s van deze dagen beslaat. Buiten een training telt een minuut alleen als er in de buurt stappen of afstand zijn vastgelegd.</string>
 </resources>

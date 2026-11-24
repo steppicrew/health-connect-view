@@ -551,9 +551,25 @@
     <string name="session_drift_note">不含休息的運動時間，分成長度相等的兩半。同樣速度下每公里心跳更多，表示心臟在後半段做功更多：可能因為炎熱、失水或疲勞，也可能因為上坡或風。熱身落在前半段。</string>
     <string name="session_zones_note_data">區間為最大心率 %1$s 的 50–60 %% 至 90–100 %%，最大心率是過去一年中至少三個月中達到的最高心率；您可以在設定中自行設定。</string>
     <string name="session_zones_note_set">區間為設定中指定的最大心率 %1$s 的 50–60 %% 至 90–100 %%。</string>
+    <string name="session_zones_note_age">區間為最大心率 %1$s 的 50–60 %% 至 90–100 %%，該最大心率依出生年份以 208 − 0.7 × 年齡估算；您可以在設定中選擇其他方式。</string>
     <string name="settings_max_hr">最大心率</string>
     <string name="settings_max_hr_auto">根據您的資料</string>
-    <string name="settings_max_hr_body">決定您運動的心率區間。根據您的資料時，它是過去一年中至少三天達到的最高心率。</string>
+    <string name="settings_max_hr_body">決定活動分鐘的門檻和您運動的心率區間。任何估算都可能與您的真實最大值相差 10 bpm 或更多；測試得出的值最好。</string>
+    <string name="settings_max_hr_row">%1$s：%2$s</string>
+    <string name="settings_max_hr_higher">取兩者中較高者</string>
+    <string name="settings_max_hr_higher_body">取出生年份與資料中較高的一個。從未全力以赴時的峰值不會把它拉低。</string>
+    <string name="settings_max_hr_age">依出生年份</string>
+    <string name="settings_max_hr_age_body">208 − 0.7 × 年齡。許多人的最大值比它高或低 10 bpm 左右，有些人差得更多。</string>
+    <string name="settings_max_hr_data_body">過去一年中第三高的月度峰值。如果您很少全力以赴則偏低，如果感應器跳動則偏高。</string>
+    <string name="settings_max_hr_set">手動設定</string>
+    <string name="settings_max_hr_set_body">您已知的值，例如來自測試。</string>
+    <string name="settings_max_hr_needs_year">需要您的出生年份</string>
+    <string name="settings_max_hr_no_data">心率資料還不夠</string>
+    <string name="settings_max_hr_reading">正在讀取…</string>
+    <string name="settings_birth_year">出生年份</string>
+    <string name="settings_birth_year_none">未設定</string>
+    <string name="settings_birth_year_body">僅用於估算您的最大心率。它只保存在這支手機上。</string>
+    <string name="settings_birth_year_remove">移除</string>
     <string name="whats_new_title">新功能</string>
     <string name="whats_new_18">• 運動：偵測並扣除休息，只計算運動時間，統計中顯示最低和最高心率。\n• 每次運動的心率區間：每個區間的時間，以及由時長和強度得出的負荷。\n• 運動之後：之後五分鐘的心率，以及在測量足夠時 1 分鐘和 2 分鐘後下降了多少。各圈在圖表上標出。\n• 一張圖表中可顯示多條線，用標籤開關：騎乘時的心率、速度和海拔；夜間的呼吸速率、SpO₂ 和 HRV。\n• 較大資訊卡（Pro）：昨晚的睡眠階段搭配您選擇的曲線，以及以曲線顯示的最近運動。\n• 輕觸日期可從日曆中選擇一天，向下拉動頁面可重新載入。</string>
     <string name="whats_new_32">• 概覽（Pro）：在一張資訊卡上顯示您選擇的當天數值（步數、靜止心率、呼吸速率、睡眠等），當天與平時不同時加以標示，達成目標時顯示獎盃，2x2 尺寸下還會顯示每項數值的一週。輕觸即可查看完整概覽。\n• 「新增資訊卡」依類別並按名稱排列各類型。\n• 多日的呼吸速率和血氧飽和度顯示得更快。</string>
@@ -934,7 +950,7 @@
     <string name="active_none">這幾天沒有心率資料</string>
     <string name="active_no_access">活動分鐘是根據心率估算的。允許應用程式讀取心率即可查看。</string>
     <string name="active_no_max_title">沒有最大心率</string>
-    <string name="active_no_max">活動分鐘以你的最大心率為基準。請在「設定」中填寫；否則應用程式會從一年的心率資料中讀取，而目前資料還不夠。</string>
+    <string name="active_no_max">活動分鐘以您的最大心率為基準。請在「設定」中填寫出生年份或最大心率。</string>
     <string name="active_week_total">這 7 天的加權分鐘數（世界衛生組織建議每週 %1$s 分鐘）</string>
     <string name="active_week_mean">每週平均加權分鐘數（世界衛生組織建議 %1$s 分鐘）</string>
     <string name="active_of">%1$s / %2$s</string>
@@ -945,5 +961,9 @@
     <string name="active_guideline">世界衛生組織建議每週至少進行 150 分鐘中等強度或 75 分鐘高強度活動，或兩者結合。這裡 1 分鐘高強度以 2 分鐘計算。這是根據你的心率估算的，並非測量值。</string>
     <string name="active_limits_reserve">心率達到 %1$s bpm 起算作中等強度，達到 %2$s bpm 起算作高強度：即你的心率儲備（靜止心率與最大心率之差）的 40 %% 和 60 %%。</string>
     <string name="active_limits_max">心率達到 %1$s bpm 起算作中等強度，達到 %2$s bpm 起算作高強度：即你最大心率的 64 %% 和 77 %%。一旦記錄了靜止心率，門檻將改為依心率儲備計算。</string>
+    <string name="active_max_set">您的最大心率：%1$s bpm，在設定中指定。</string>
+    <string name="active_max_age">您的最大心率：%1$s bpm，依出生年份（208 − 0.7 × 年齡）。</string>
+    <string name="active_max_data">您的最大心率：%1$s bpm，即您資料中過去一年第三高的月度峰值。</string>
+    <string name="active_max_data_alone">門檻基於 %1$s bpm，即您資料中的最高心率。如果您很少全力以赴，您的真實最大值更高，計入的分鐘會過多。請在「設定」中填寫出生年份或最大心率。</string>
     <string name="active_counted">依據 %1$s 記錄的心率，涵蓋這幾天的 %2$s。在運動以外，只有附近記錄了步數或距離的分鐘才會計入。</string>
 </resources>

@@ -24,6 +24,8 @@ import de.steppicrew.healthconnectview.health.afterUntil
 import de.steppicrew.healthconnectview.health.sessionsIn
 import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.heartZones
+import de.steppicrew.healthconnectview.health.maxHeartRate
+import de.steppicrew.healthconnectview.health.needsData
 import de.steppicrew.healthconnectview.health.observedMaxHeartRate
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.health.movementDuring
@@ -199,13 +201,14 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
             ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
             ?: spec?.tile?.defaultZones
 
-        // A workout's zones, where the maximum is set in settings; the one the data shows
-        // takes seconds to read and follows in [observedZones].
+        // A workout's zones, where the rule needs no data; the data's peak takes seconds to
+        // read, so a rule that needs it follows in [observedZones].
         val heartPoints = heartRate.await()
         val heartZones = if (session.kind == Session.Kind.EXERCISE && heartPoints != null) {
-            catching { settingsStore.settings.first().maxHeartRate }.getOrNull()?.let { chosen ->
-                heartZones(heartPoints, movement.await()?.breaks.orEmpty(), chosen, maxFromSettings = true)
-            }
+            catching { settingsStore.settings.first() }.getOrNull()
+                ?.takeUnless { it.maxRule.needsData }
+                ?.let { maxHeartRate(it.maxRule, it.maxHeartRate, it.birthYear, { null }) }
+                ?.let { (max, source) -> heartZones(heartPoints, movement.await()?.breaks.orEmpty(), max, source) }
         } else {
             null
         }
@@ -237,19 +240,17 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * A workout's zones by the maximum its data shows, added to a page already on screen: a
-     * year of heart rate takes Health Connect seconds to search, and everything else on the
-     * page is ready long before.
+     * A workout's zones by a rule that reads the data's peak, added to a page already on
+     * screen: a year of heart rate takes Health Connect seconds to search, and everything else
+     * on the page is ready long before.
      */
     private suspend fun observedZones(detail: SessionDetail?): HeartZones? {
         val points = detail?.heartRate ?: return null
         if (detail.session.kind != Session.Kind.EXERCISE || detail.heartZones != null) return null
-        return heartZones(
-            points = points,
-            breaks = detail.movement?.breaks.orEmpty(),
-            max = repository.observedMaxHeartRate(),
-            maxFromSettings = false,
-        )
+        val settings = catching { settingsStore.settings.first() }.getOrNull() ?: return null
+        val (max, source) = maxHeartRate(settings.maxRule, settings.maxHeartRate, settings.birthYear, { repository.observedMaxHeartRate() })
+            ?: return null
+        return heartZones(points, detail.movement?.breaks.orEmpty(), max, source)
     }
 
     /** The system's consent dialog handed this one route back: show it without a second read. */
