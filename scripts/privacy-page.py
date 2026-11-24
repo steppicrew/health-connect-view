@@ -23,6 +23,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# The contact section says the source is public so every claim can be checked; this is where.
+SOURCE = "https://github.com/steppicrew/health-connect-view"
 RES = ROOT / "app/src/main/res"
 
 # Order matters: it is the reading order of the page, and mirrors the in-app screen.
@@ -106,7 +108,7 @@ def render(values: dict[str, str], lang: str, updated: str) -> str:
   <p class="lede">{html.escape(summary)}</p>
 {chr(10).join(body)}
   <footer>
-    <p>Last updated: {updated}</p>
+    <p>Last updated: {updated} · <a href="{SOURCE}">{SOURCE.removeprefix("https://")}</a></p>
   </footer>
 </body>
 </html>

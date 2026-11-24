@@ -1,0 +1,47 @@
+# Publishes the privacy page to GitHub Pages from the app's own privacy strings.
+#
+# The Play listing links to the page and the app shows the same text on its Privacy screen, so
+# the live page must say what main says. It is built here rather than committed: the strings
+# are its only source, and the commit history shows what it said when -- next to the code that
+# keeps the promises it makes.
+name: Privacy page
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/src/main/res/values*/strings.xml'
+      - 'scripts/privacy-page.py'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The whole history, so the page is dated by the last change to its own text, not by
+          # whichever release last touched strings.xml.
+          fetch-depth: 0
+      - name: Build
+        run: |
+          updated="$(git log -1 --format=%cs -G 'name="privacy_' -- 'app/src/main/res/values*/strings.xml' scripts/privacy-page.py)"
+          python3 scripts/privacy-page.py _site "$updated"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
