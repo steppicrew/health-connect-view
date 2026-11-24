@@ -580,6 +580,15 @@
     <string name="session_zones_note_data">Las zonas son del 50–60 %% al 90–100 %% de una frecuencia cardíaca máxima de %1$s, la más alta alcanzada en al menos tres meses del último año; puedes fijar la tuya en los ajustes.</string>
     <string name="session_zones_note_set">Las zonas son del 50–60 %% al 90–100 %% de una frecuencia cardíaca máxima de %1$s, fijada en los ajustes.</string>
     <string name="session_zones_note_age">Las zonas son del 50–60 %% al 90–100 %% de una frecuencia cardíaca máxima de %1$s, estimada a partir de tu año de nacimiento como 208 − 0,7 × edad; puedes elegir otra forma en los ajustes.</string>
+    <string name="clock_change_title">Cambio de hora</string>
+    <string name="clock_change">El reloj cambió de %1$s a %2$s, así que este día dura %3$s.</string>
+    <string name="clock_change_shaded">El reloj cambió de %1$s a %2$s en el tramo marcado bajo el gráfico, así que este día dura %3$s.</string>
+    <string name="clock_change_end_doubled">Este día se dibuja con %1$s y el siguiente con %2$s, así que sus últimas %3$s aparecen también al inicio del siguiente.</string>
+    <string name="clock_change_end_missing">Este día se dibuja con %1$s y el siguiente con %2$s, así que las %3$s tras su final no aparecen en el gráfico de ningún día.</string>
+    <string name="clock_change_shift">El reloj cambió de %1$s a %2$s entre %3$s y %4$s: tu último entrenamiento o noche con la hora antigua y el primero con la nueva.</string>
+    <string name="clock_change_start_doubled">El día anterior se dibuja con %1$s y este día con %2$s, así que sus primeras %3$s aparecen también al final del día anterior.</string>
+    <string name="clock_change_start_missing">El día anterior se dibuja con %1$s y este día con %2$s, así que las %3$s antes de su inicio no aparecen en el gráfico de ningún día.</string>
+    <string name="clock_change_marked">Bajo el gráfico, el color marca dónde cambió el reloj y el gris las horas que aparecen dos veces. Los totales diarios cuentan cada medición una vez.</string>
     <string name="settings_max_hr">Frecuencia cardíaca máxima</string>
     <string name="settings_max_hr_auto">Según tus datos</string>
     <string name="settings_max_hr_body">Define los límites de los minutos activos y las zonas de frecuencia cardiaca de tus entrenamientos. Cualquier estimación puede desviarse 10 lpm o más de tu máximo real; lo mejor es un valor de una prueba.</string>

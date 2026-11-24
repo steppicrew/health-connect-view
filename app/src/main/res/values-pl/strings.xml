@@ -594,6 +594,15 @@
     <string name="session_zones_note_data">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, najwyższego osiągniętego w co najmniej trzech miesiącach ostatniego roku; własne możesz ustawić w ustawieniach.</string>
     <string name="session_zones_note_set">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, ustawionego w ustawieniach.</string>
     <string name="session_zones_note_age">Strefy to od 50–60 %% do 90–100 %% tętna maksymalnego %1$s, oszacowanego z roku urodzenia jako 208 − 0,7 × wiek; w ustawieniach możesz wybrać inny sposób.</string>
+    <string name="clock_change_title">Zmiana czasu</string>
+    <string name="clock_change">Zegar zmienił się z %1$s na %2$s, więc ten dzień trwa %3$s.</string>
+    <string name="clock_change_shaded">Zegar zmienił się z %1$s na %2$s w odcinku zaznaczonym pod wykresem, więc ten dzień trwa %3$s.</string>
+    <string name="clock_change_end_doubled">Ten dzień jest rysowany według %1$s, a następny według %2$s, więc ostatnie %3$s tego dnia pojawiają się też na początku następnego.</string>
+    <string name="clock_change_end_missing">Ten dzień jest rysowany według %1$s, a następny według %2$s, więc %3$s po końcu tego dnia nie pojawiają się na wykresie żadnego dnia.</string>
+    <string name="clock_change_shift">Zegar zmienił się z %1$s na %2$s między %3$s a %4$s: Twoim ostatnim treningiem lub nocą według starego czasu a pierwszym według nowego.</string>
+    <string name="clock_change_start_doubled">Poprzedni dzień jest rysowany według %1$s, a ten według %2$s, więc pierwsze %3$s tego dnia pojawiają się też na końcu poprzedniego.</string>
+    <string name="clock_change_start_missing">Poprzedni dzień jest rysowany według %1$s, a ten według %2$s, więc %3$s przed początkiem tego dnia nie pojawiają się na wykresie żadnego dnia.</string>
+    <string name="clock_change_marked">Pod wykresem kolor zaznacza, gdzie zmienił się zegar, a szary godziny pokazane dwa razy. Sumy dzienne liczą każdy pomiar raz.</string>
     <string name="settings_max_hr">Tętno maksymalne</string>
     <string name="settings_max_hr_auto">Z Twoich danych</string>
     <string name="settings_max_hr_body">Określa progi aktywnych minut i strefy tętna Twoich treningów. Każde oszacowanie może odbiegać od Twojego prawdziwego maksimum o 10 bpm lub więcej; najlepsza jest wartość z testu.</string>

@@ -552,6 +552,15 @@
     <string name="session_zones_note_data">ゾーンは最大心拍数 %1$s の 50–60 %% から 90–100 %% です。最大心拍数は過去 1 年間に少なくとも 3 か月で到達した最高値で、設定で独自に指定できます。</string>
     <string name="session_zones_note_set">ゾーンは設定で指定した最大心拍数 %1$s の 50–60 %% から 90–100 %% です。</string>
     <string name="session_zones_note_age">ゾーンは最大心拍数%1$sの50–60 %%から90–100 %%です。最大心拍数は生まれ年から208 − 0.7 × 年齢として推定しました。設定で別の方法を選べます。</string>
+    <string name="clock_change_title">時刻の変更</string>
+    <string name="clock_change">時刻が%1$sから%2$sに変わったため、この日は%3$sです。</string>
+    <string name="clock_change_shaded">グラフの下に示した区間で時刻が%1$sから%2$sに変わったため、この日は%3$sです。</string>
+    <string name="clock_change_end_doubled">この日は%1$s、翌日は%2$sで描かれているため、この日の最後の%3$sは翌日の始めにも表示されます。</string>
+    <string name="clock_change_end_missing">この日は%1$s、翌日は%2$sで描かれているため、この日の終わりの後の%3$sはどの日のグラフにも表示されません。</string>
+    <string name="clock_change_shift">時刻は%3$sから%4$sの間に%1$sから%2$sに変わりました。旧時刻での最後のワークアウトまたは睡眠と、新時刻での最初のものの間です。</string>
+    <string name="clock_change_start_doubled">前日は%1$s、この日は%2$sで描かれているため、この日の最初の%3$sは前日の終わりにも表示されます。</string>
+    <string name="clock_change_start_missing">前日は%1$s、この日は%2$sで描かれているため、この日の始まりの前の%3$sはどの日のグラフにも表示されません。</string>
+    <string name="clock_change_marked">グラフの下で、色は時刻が変わった区間を、灰色は2回表示される時間帯を示します。1日の合計では各測定値を1回だけ数えます。</string>
     <string name="settings_max_hr">最大心拍数</string>
     <string name="settings_max_hr_auto">データから</string>
     <string name="settings_max_hr_body">アクティブ時間のしきい値とワークアウトの心拍ゾーンを決めます。どの推定も実際の最大値から10 bpm以上ずれることがあります。テストで測った値が最も確実です。</string>

@@ -1,5 +1,11 @@
 package de.steppicrew.healthconnectview
 
+import java.time.Duration
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import de.steppicrew.healthconnectview.health.ClockChange
+import de.steppicrew.healthconnectview.health.clockChanges
+import de.steppicrew.healthconnectview.health.clockShifts
 import de.steppicrew.healthconnectview.health.zoneOfDay
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -61,5 +67,65 @@ class DayZoneTest {
         val day = LocalDate.of(2026, 10, 29)
         val moments = (0..23).map { at(day.minusDays(1), it, germany) } + listOf(at(day, 12, here))
         assertEquals(ecuador, zoneOfDay(day, moments, ecuador))
+    }
+
+    @Test
+    fun `flying east, the last hours of the day also open the next`() {
+        // Back from Ecuador: the 22nd on -05:00, the 23rd on Germany's clock.
+        val ecuador = ZoneOffset.ofHours(-5)
+        val berlin = ZoneId.of("Europe/Berlin")
+        val change = clockChanges(LocalDate.of(2026, 11, 22), ecuador, previous = ecuador, next = berlin).single()
+        assertEquals(ClockChange.Kind.DOUBLED_AT_END, change.kind)
+        assertEquals(Duration.ofHours(6), change.length)
+        assertEquals(LocalDate.of(2026, 11, 23).atStartOfDay(berlin).toInstant(), change.span.start)
+        // The 23rd sees the same six hours from its side.
+        val next = clockChanges(LocalDate.of(2026, 11, 23), berlin, previous = ecuador, next = berlin).single()
+        assertEquals(ClockChange.Kind.DOUBLED_AT_START, next.kind)
+        assertEquals(change.span, next.span)
+    }
+
+    @Test
+    fun `flying west, hours fall between the two days`() {
+        val berlin = ZoneId.of("Europe/Berlin")
+        val change = clockChanges(LocalDate.of(2026, 11, 7), berlin, previous = berlin, next = ZoneOffset.ofHours(-5)).single()
+        assertEquals(ClockChange.Kind.MISSING_AFTER, change.kind)
+        assertEquals(Duration.ofHours(6), change.length)
+        assertFalse(change.onChart)
+    }
+
+    @Test
+    fun `winter time marks the hour that came twice, and a plain day nothing`() {
+        val berlin = ZoneId.of("Europe/Berlin")
+        val change = clockChanges(LocalDate.of(2026, 10, 25), berlin, berlin, berlin).single()
+        assertEquals(ClockChange.Kind.SUMMER_TIME, change.kind)
+        assertEquals(Duration.ofHours(25), change.dayLength)
+        assertEquals(Duration.ofHours(1), change.length)
+        assertTrue(clockChanges(LocalDate.of(2026, 11, 24), berlin, berlin, berlin).isEmpty())
+        assertTrue(clockChanges(LocalDate.of(2026, 11, 22), ZoneOffset.ofHours(-5), null, null).isEmpty())
+    }
+
+    @Test
+    fun `the clock changed between the last workout or night on the old clock and the first on the new`() {
+        val galapagos = ZoneOffset.ofHours(-6)
+        val ecuador = ZoneOffset.ofHours(-5)
+        val berlin = ZoneOffset.ofHours(1)
+        val day = LocalDate.of(2026, 11, 22)
+        fun at(hour: Int, minute: Int, offset: ZoneOffset, date: LocalDate = day) = date.atTime(hour, minute).atOffset(offset).toInstant()
+        val moments = listOf(
+            at(6, 16, galapagos) to galapagos, // the night on the islands ends
+            at(16, 51, ecuador) to ecuador, // the hike near Quito
+            at(17, 43, ecuador) to ecuador,
+            at(6, 36, berlin, day.plusDays(1)) to berlin, // the night in Berlin begins
+        )
+        val shown = day.atStartOfDay(ecuador).toInstant()..day.plusDays(1).atStartOfDay(ecuador).toInstant()
+        val shifts = clockShifts(moments, shown)
+        assertEquals(2, shifts.size)
+        assertEquals(galapagos, shifts[0].from)
+        assertEquals(at(6, 16, galapagos)..at(16, 51, ecuador), shifts[0].window)
+        // The second runs past the day's end, into the 23rd.
+        assertEquals(at(17, 43, ecuador)..at(6, 36, berlin, day.plusDays(1)), shifts[1].window)
+        // A day the changes do not touch has none.
+        val later = day.plusDays(2).atStartOfDay(berlin).toInstant()..day.plusDays(3).atStartOfDay(berlin).toInstant()
+        assertTrue(clockShifts(moments, later).isEmpty())
     }
 }

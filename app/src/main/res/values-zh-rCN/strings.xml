@@ -552,6 +552,15 @@
     <string name="session_zones_note_data">区间为最大心率 %1$s 的 50–60 %% 至 90–100 %%，最大心率是过去一年中至少三个月中达到的最高心率；您可以在设置中自行设定。</string>
     <string name="session_zones_note_set">区间为设置中设定的最大心率 %1$s 的 50–60 %% 至 90–100 %%。</string>
     <string name="session_zones_note_age">区间为最大心率 %1$s 的 50–60 %% 至 90–100 %%，该最大心率按出生年份以 208 − 0.7 × 年龄估算；您可以在设置中选择其他方式。</string>
+    <string name="clock_change_title">时钟变化</string>
+    <string name="clock_change">时钟从 %1$s 变为 %2$s，因此这一天长 %3$s。</string>
+    <string name="clock_change_shaded">时钟在图表下方标出的时段内从 %1$s 变为 %2$s，因此这一天长 %3$s。</string>
+    <string name="clock_change_end_doubled">这一天按 %1$s 绘制，后一天按 %2$s 绘制，因此这一天的最后 %3$s 也出现在后一天的开头。</string>
+    <string name="clock_change_end_missing">这一天按 %1$s 绘制，后一天按 %2$s 绘制，因此这一天结束后的 %3$s 不出现在任何一天的图表中。</string>
+    <string name="clock_change_shift">时钟在 %3$s 与 %4$s 之间从 %1$s 变为 %2$s：即您按旧时间的最后一次锻炼或睡眠与按新时间的第一次之间。</string>
+    <string name="clock_change_start_doubled">前一天按 %1$s 绘制，这一天按 %2$s 绘制，因此这一天的最初 %3$s 也出现在前一天的末尾。</string>
+    <string name="clock_change_start_missing">前一天按 %1$s 绘制，这一天按 %2$s 绘制，因此这一天开始前的 %3$s 不出现在任何一天的图表中。</string>
+    <string name="clock_change_marked">在图表下方，彩色标出时钟变化的时段，灰色标出出现两次的时段。每日总计将每个读数只计一次。</string>
     <string name="settings_max_hr">最大心率</string>
     <string name="settings_max_hr_auto">根据您的数据</string>
     <string name="settings_max_hr_body">决定活动分钟的阈值和您锻炼的心率区间。任何估算都可能与您的真实最大值相差 10 bpm 或更多；测试得出的值最好。</string>

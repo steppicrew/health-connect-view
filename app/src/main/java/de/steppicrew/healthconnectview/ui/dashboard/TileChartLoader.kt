@@ -1,7 +1,14 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
-import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import de.steppicrew.healthconnectview.health.clockShifts
+import de.steppicrew.healthconnectview.health.ClockChange
+import kotlinx.coroutines.async
+import de.steppicrew.healthconnectview.health.clockChanges
+import de.steppicrew.healthconnectview.health.recordedDayZone
 import de.steppicrew.healthconnectview.health.dayZone
+import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
 import java.time.ZoneId
 import java.time.LocalDateTime
 import de.steppicrew.healthconnectview.health.sessionDays
@@ -123,6 +130,37 @@ internal class TileChartLoader(
             catching { repository.dayZone(span.startDate(offset, today)) }.getOrDefault(HealthRepository.DEFAULT_ZONE)
         } else {
             HealthRepository.DEFAULT_ZONE
+        }
+        // The neighbours' clocks, beside the chart rather than before it: they only add a note.
+        // Not tomorrow's, which has no records yet and would read as a change back home.
+        val clockChangesRead = if (span == Span.DAY) {
+            val date = span.startDate(offset, today)
+            val zone = dayZone
+            async {
+                val previous = catching { repository.recordedDayZone(date.minusDays(1)) }.getOrNull()
+                val next = date.plusDays(1).takeUnless { it.isAfter(LocalDate.now()) }
+                    ?.let { catching { repository.recordedDayZone(it) }.getOrNull() }
+                val changes = clockChanges(date, zone, previous, next)
+                // Where the clock actually changed: only asked on a day whose edges already
+                // show a change, and from workouts and nights a day either side.
+                val shifts = if (changes.none { it.kind != ClockChange.Kind.SUMMER_TIME }) {
+                    emptyList()
+                } else {
+                    val day = date.atStartOfDay(zone).toInstant()..date.plusDays(1).atStartOfDay(zone).toInstant()
+                    val range = TimeRangeFilter.between(day.start.minus(SHIFT_REACH), minOf(day.endInclusive.plus(SHIFT_REACH), Instant.now()))
+                    val moments = catching {
+                        repository.read(ExerciseSessionRecord::class, range).flatMap { r ->
+                            listOfNotNull(r.startZoneOffset?.let { r.startTime to it }, r.endZoneOffset?.let { r.endTime to it })
+                        } + repository.read(SleepSessionRecord::class, range).flatMap { r ->
+                            listOfNotNull(r.startZoneOffset?.let { r.startTime to it }, r.endZoneOffset?.let { r.endTime to it })
+                        }
+                    }.getOrDefault(emptyList())
+                    clockShifts(moments, day)
+                }
+                changes to shifts
+            }
+        } else {
+            null
         }
         val metric = spec.aggregate
         val origins = source?.let { setOf(DataOrigin(it)) } ?: emptySet()
@@ -840,6 +878,9 @@ internal class TileChartLoader(
             },
             secondaryZones = DIASTOLIC_ZONES.takeIf { spec.type == BloodPressureRecord::class },
             extent = dayExtent(span, offset, sessions),
+            clockChanges = clockChangesRead?.await()?.first.orEmpty(),
+            clockShifts = clockChangesRead?.await()?.second.orEmpty(),
+            day = span.startDate(offset, today).takeIf { span == Span.DAY },
             heartRateLocked = sessionKind != null && !heartRateGranted,
             approximated = approximated,
             hrv = hrvSummary,
@@ -1412,3 +1453,5 @@ internal data class ChartExtras(
     val usualBand: List<ValueBand> = emptyList(),
 )
 
+/** How far either side of a day workouts and nights are read to find where its clock changed. */
+private val SHIFT_REACH: java.time.Duration = java.time.Duration.ofDays(1)

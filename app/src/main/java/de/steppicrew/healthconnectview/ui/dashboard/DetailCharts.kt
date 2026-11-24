@@ -353,6 +353,9 @@ private fun previousYearOverlay(data: TileDetailData): List<OverlayLine> {
 private const val PREVIOUS_YEAR_ALPHA = 0.7f
 
 private val HALF_DAY: Duration = Duration.ofHours(12)
+
+/** The least width a clock change is marked with: a skipped hour has none of its own. */
+private val CLOCK_CHANGE_SLIVER: java.time.Duration = java.time.Duration.ofMinutes(10)
 private const val TRAINING_ALPHA = 0.7f
 
 /**
@@ -419,11 +422,20 @@ internal fun DataLineChart(
         scatter = data.nightPoints,
         baseline = data.baseline,
         overlays = previousYearOverlay(data),
-        // Each training day centred on its point, as the day's value sits at its start.
+        // Each training day centred on its point, as the day's value sits at its start; on a
+        // day whose clock changed, the hours concerned -- a skipped hour, a moment, a sliver.
         strip = trainingColor().let { color ->
             data.trainingDays.map { day ->
                 val point = day.atStartOfDay(HealthRepository.DEFAULT_ZONE).toInstant()
                 StripSegment(point.minus(HALF_DAY), point.plus(HALF_DAY), color)
+            }
+        } + MaterialTheme.colorScheme.tertiary.let { color ->
+            // Where the clock actually changed, in colour: grey is only how two drawn days meet,
+            // and drawn after, so hours shown twice stay grey where a change window covers them.
+            data.clockShifts.map { StripSegment(it.window.start, it.window.endInclusive, color) }
+        } + MaterialTheme.colorScheme.outline.let { color ->
+            data.clockChanges.filter { it.onChart }.map { change ->
+                StripSegment(change.span.start, maxOf(change.span.endInclusive, change.span.start.plus(CLOCK_CHANGE_SLIVER)), color)
             }
         },
         onVisibleRange = onVisibleRange,

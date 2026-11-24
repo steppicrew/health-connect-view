@@ -580,6 +580,15 @@
     <string name="session_zones_note_data">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, la plus haute atteinte au cours d’au moins trois mois de l’année écoulée ; vous pouvez fixer la vôtre dans les paramètres.</string>
     <string name="session_zones_note_set">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, fixée dans les paramètres.</string>
     <string name="session_zones_note_age">Les zones vont de 50–60 %% à 90–100 %% d’une fréquence cardiaque maximale de %1$s, estimée d’après votre année de naissance comme 208 − 0,7 × âge ; vous pouvez choisir une autre méthode dans les paramètres.</string>
+    <string name="clock_change_title">Changement d’heure</string>
+    <string name="clock_change">L’heure est passée de %1$s à %2$s ; cette journée dure donc %3$s.</string>
+    <string name="clock_change_shaded">L’heure est passée de %1$s à %2$s dans la plage marquée sous le graphique ; cette journée dure donc %3$s.</string>
+    <string name="clock_change_end_doubled">Ce jour est tracé à %1$s et le suivant à %2$s : les %3$s dernières de ce jour apparaissent donc aussi au début du suivant.</string>
+    <string name="clock_change_end_missing">Ce jour est tracé à %1$s et le suivant à %2$s : les %3$s après la fin de ce jour n’apparaissent donc sur le graphique d’aucun jour.</string>
+    <string name="clock_change_shift">L’heure est passée de %1$s à %2$s entre %3$s et %4$s : votre dernier entraînement ou votre dernière nuit à l’ancienne heure et le premier à la nouvelle.</string>
+    <string name="clock_change_start_doubled">La veille est tracée à %1$s et ce jour à %2$s : les %3$s premières de ce jour apparaissent donc aussi à la fin de la veille.</string>
+    <string name="clock_change_start_missing">La veille est tracée à %1$s et ce jour à %2$s : les %3$s avant le début de ce jour n’apparaissent donc sur le graphique d’aucun jour.</string>
+    <string name="clock_change_marked">Sous le graphique, la couleur marque où l’heure a changé et le gris les heures affichées deux fois. Les totaux du jour comptent chaque mesure une fois.</string>
     <string name="settings_max_hr">Fréquence cardiaque maximale</string>
     <string name="settings_max_hr_auto">D’après vos données</string>
     <string name="settings_max_hr_body">Fixe les seuils des minutes actives et les zones cardiaques de vos entraînements. Toute estimation peut s’écarter de votre vrai maximum de 10 bpm ou plus ; une valeur issue d’un test est la meilleure.</string>

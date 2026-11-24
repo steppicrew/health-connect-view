@@ -552,6 +552,15 @@
     <string name="session_zones_note_data">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, yang tertinggi dicapai pada setidaknya tiga bulan dalam setahun terakhir; Anda dapat menetapkan sendiri di setelan.</string>
     <string name="session_zones_note_set">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, sesuai setelan.</string>
     <string name="session_zones_note_age">Zona adalah 50–60 %% hingga 90–100 %% dari detak jantung maksimum %1$s, diperkirakan dari tahun lahir Anda sebagai 208 − 0,7 × usia; Anda dapat memilih cara lain di setelan.</string>
+    <string name="clock_change_title">Pergantian waktu</string>
+    <string name="clock_change">Jam berubah dari %1$s ke %2$s, jadi hari ini berlangsung %3$s.</string>
+    <string name="clock_change_shaded">Jam berubah dari %1$s ke %2$s di bagian yang ditandai di bawah grafik, jadi hari ini berlangsung %3$s.</string>
+    <string name="clock_change_end_doubled">Hari ini digambar dengan %1$s dan hari berikutnya dengan %2$s, jadi %3$s terakhir hari ini juga muncul di awal hari berikutnya.</string>
+    <string name="clock_change_end_missing">Hari ini digambar dengan %1$s dan hari berikutnya dengan %2$s, jadi %3$s setelah akhir hari ini tidak muncul di grafik hari mana pun.</string>
+    <string name="clock_change_shift">Jam berubah dari %1$s ke %2$s antara %3$s dan %4$s: latihan atau malam terakhir Anda pada jam lama dan yang pertama pada jam baru.</string>
+    <string name="clock_change_start_doubled">Hari sebelumnya digambar dengan %1$s dan hari ini dengan %2$s, jadi %3$s pertama hari ini juga muncul di akhir hari sebelumnya.</string>
+    <string name="clock_change_start_missing">Hari sebelumnya digambar dengan %1$s dan hari ini dengan %2$s, jadi %3$s sebelum awal hari ini tidak muncul di grafik hari mana pun.</string>
+    <string name="clock_change_marked">Di bawah grafik, warna menandai tempat jam berubah dan abu-abu menandai jam yang tampil dua kali. Total harian menghitung setiap pengukuran sekali.</string>
     <string name="settings_max_hr">Detak jantung maksimum</string>
     <string name="settings_max_hr_auto">Dari data Anda</string>
     <string name="settings_max_hr_body">Menentukan batas menit aktif dan zona detak jantung latihan Anda. Setiap perkiraan bisa meleset 10 bpm atau lebih dari maksimum Anda yang sebenarnya; nilai dari tes adalah yang terbaik.</string>

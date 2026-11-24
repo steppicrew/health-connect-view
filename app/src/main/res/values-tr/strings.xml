@@ -566,6 +566,15 @@
     <string name="session_zones_note_data">Bölgeler, son bir yılda en az üç ayda ulaşılan en yüksek nabız olan %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlardan kendi değerinizi belirleyebilirsiniz.</string>
     <string name="session_zones_note_set">Bölgeler, ayarlarda belirlenen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır.</string>
     <string name="session_zones_note_age">Bölgeler, doğum yılınızdan 208 − 0,7 × yaş olarak tahmin edilen %1$s maksimum nabzın %%50–60 ile %%90–100 arasıdır; ayarlarda başka bir yol seçebilirsiniz.</string>
+    <string name="clock_change_title">Saat değişimi</string>
+    <string name="clock_change">Saat %1$s’den %2$s’ye geçti, bu yüzden bu gün %3$s sürüyor.</string>
+    <string name="clock_change_shaded">Saat, grafiğin altında işaretlenen aralıkta %1$s’den %2$s’ye geçti, bu yüzden bu gün %3$s sürüyor.</string>
+    <string name="clock_change_end_doubled">Bu gün %1$s ile, sonraki gün %2$s ile çizilir; bu yüzden bu günün son %3$s sonraki günün başında da görünür.</string>
+    <string name="clock_change_end_missing">Bu gün %1$s ile, sonraki gün %2$s ile çizilir; bu yüzden bu günün bitişinden sonraki %3$s hiçbir günün grafiğinde görünmez.</string>
+    <string name="clock_change_shift">Saat %3$s ile %4$s arasında %1$s’den %2$s’ye geçti: eski saatteki son antrenmanınız veya geceniz ile yeni saatteki ilki.</string>
+    <string name="clock_change_start_doubled">Önceki gün %1$s ile, bu gün %2$s ile çizilir; bu yüzden bu günün ilk %3$s önceki günün sonunda da görünür.</string>
+    <string name="clock_change_start_missing">Önceki gün %1$s ile, bu gün %2$s ile çizilir; bu yüzden bu günün başlangıcından önceki %3$s hiçbir günün grafiğinde görünmez.</string>
+    <string name="clock_change_marked">Grafiğin altında renk saatin değiştiği yeri, gri ise iki kez gösterilen saatleri işaretler. Günlük toplamlar her ölçümü bir kez sayar.</string>
     <string name="settings_max_hr">Maksimum nabız</string>
     <string name="settings_max_hr_auto">Verilerinizden</string>
     <string name="settings_max_hr_body">Aktif dakikaların sınırlarını ve antrenmanlarınızın nabız bölgelerini belirler. Her tahmin gerçek maksimumunuzdan 10 bpm veya daha fazla sapabilir; en iyisi bir testten gelen değerdir.</string>

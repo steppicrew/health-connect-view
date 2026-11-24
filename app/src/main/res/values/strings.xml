@@ -598,6 +598,15 @@
     <string name="session_drift_note">The moving time, without breaks, cut into two halves of equal length. More beats per kilometre at the same speed means the heart worked harder in the second half: warmth, lost fluid or tiredness, but also climbs or wind. The warm-up falls into the first half.</string>
     <string name="session_zones_note_data">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, the highest reached in at least three months of the past year; you can set your own in settings.</string>
     <string name="session_zones_note_age">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, estimated from your year of birth as 208 − 0.7 × age; you can choose another way in settings.</string>
+    <string name="clock_change_title">Clock change</string>
+    <string name="clock_change">The clock changed from %1$s to %2$s, so this day is %3$s long.</string>
+    <string name="clock_change_shaded">The clock changed from %1$s to %2$s in the stretch marked under the chart, so this day is %3$s long.</string>
+    <string name="clock_change_end_doubled">This day is drawn on %1$s and the next on %2$s, so this day’s last %3$s also appear at the start of the next day.</string>
+    <string name="clock_change_end_missing">This day is drawn on %1$s and the next on %2$s, so the %3$s after this day’s end appear on no day’s chart.</string>
+    <string name="clock_change_shift">The clock changed from %1$s to %2$s between %3$s and %4$s: your last workout or night on the old clock and the first on the new one.</string>
+    <string name="clock_change_start_doubled">The day before is drawn on %1$s and this day on %2$s, so this day’s first %3$s also appear at the end of the day before.</string>
+    <string name="clock_change_start_missing">The day before is drawn on %1$s and this day on %2$s, so the %3$s before this day’s start appear on no day’s chart.</string>
+    <string name="clock_change_marked">Under the chart, colour marks where the clock changed and grey the hours shown twice. Daily totals count every reading once.</string>
     <string name="session_zones_note_set">Zones are 50–60 %% to 90–100 %% of a maximum heart rate of %1$s, as set in settings.</string>
     <string name="settings_max_hr">Maximum heart rate</string>
     <string name="settings_max_hr_auto">From your data</string>

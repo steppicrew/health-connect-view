@@ -560,6 +560,15 @@
     <string name="session_zones_note_data">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, der höchsten in mindestens drei Monaten des vergangenen Jahres erreichten; Sie können in den Einstellungen eine eigene festlegen.</string>
     <string name="session_zones_note_set">Die Zonen sind 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, wie in den Einstellungen festgelegt.</string>
     <string name="session_zones_note_age">Die Zonen reichen von 50–60 %% bis 90–100 %% einer maximalen Herzfrequenz von %1$s, geschätzt aus Ihrem Geburtsjahr als 208 − 0,7 × Alter; in den Einstellungen können Sie einen anderen Weg wählen.</string>
+    <string name="clock_change_title">Zeitumstellung</string>
+    <string name="clock_change">Die Uhr wechselte von %1$s auf %2$s, daher ist dieser Tag %3$s lang.</string>
+    <string name="clock_change_shaded">Die Uhr wechselte im unter dem Diagramm markierten Abschnitt von %1$s auf %2$s, daher ist dieser Tag %3$s lang.</string>
+    <string name="clock_change_end_doubled">Dieser Tag ist auf %1$s gezeichnet, der nächste auf %2$s: Die letzten %3$s dieses Tages erscheinen daher auch am Anfang des nächsten.</string>
+    <string name="clock_change_end_missing">Dieser Tag ist auf %1$s gezeichnet, der nächste auf %2$s: Die %3$s nach dem Ende dieses Tages erscheinen daher in keinem Tagesdiagramm.</string>
+    <string name="clock_change_shift">Die Uhr wechselte von %1$s auf %2$s zwischen %3$s und %4$s: Ihrem letzten Training oder Ihrer letzten Nacht auf der alten Uhrzeit und dem ersten auf der neuen.</string>
+    <string name="clock_change_start_doubled">Der Vortag ist auf %1$s gezeichnet, dieser Tag auf %2$s: Die ersten %3$s dieses Tages erscheinen daher auch am Ende des Vortags.</string>
+    <string name="clock_change_start_missing">Der Vortag ist auf %1$s gezeichnet, dieser Tag auf %2$s: Die %3$s vor dem Anfang dieses Tages erscheinen daher in keinem Tagesdiagramm.</string>
+    <string name="clock_change_marked">Unter dem Diagramm markiert Farbe, wo die Uhr wechselte, und Grau die doppelt gezeigten Stunden. Tagessummen zählen jeden Messwert einmal.</string>
     <string name="settings_max_hr">Maximale Herzfrequenz</string>
     <string name="settings_max_hr_auto">Aus Ihren Daten</string>
     <string name="settings_max_hr_body">Bestimmt die Grenzen der aktiven Minuten und die Herzfrequenzzonen Ihrer Trainings. Jede Schätzung kann Ihr echtes Maximum um 10 bpm oder mehr verfehlen; ein Wert aus einem Test ist am besten.</string>

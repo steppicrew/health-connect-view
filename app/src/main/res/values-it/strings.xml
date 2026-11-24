@@ -580,6 +580,15 @@
     <string name="session_zones_note_data">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, la più alta raggiunta in almeno tre mesi dell’ultimo anno; puoi impostare la tua nelle impostazioni.</string>
     <string name="session_zones_note_set">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, impostata nelle impostazioni.</string>
     <string name="session_zones_note_age">Le zone vanno dal 50–60 %% al 90–100 %% di una frequenza cardiaca massima di %1$s, stimata dal tuo anno di nascita come 208 − 0,7 × età; puoi scegliere un altro modo nelle impostazioni.</string>
+    <string name="clock_change_title">Cambio d’ora</string>
+    <string name="clock_change">L’orologio è passato da %1$s a %2$s, quindi questo giorno dura %3$s.</string>
+    <string name="clock_change_shaded">L’orologio è passato da %1$s a %2$s nel tratto segnato sotto il grafico, quindi questo giorno dura %3$s.</string>
+    <string name="clock_change_end_doubled">Questo giorno è disegnato con %1$s e il successivo con %2$s, quindi le sue ultime %3$s compaiono anche all’inizio del successivo.</string>
+    <string name="clock_change_end_missing">Questo giorno è disegnato con %1$s e il successivo con %2$s, quindi le %3$s dopo la sua fine non compaiono nel grafico di nessun giorno.</string>
+    <string name="clock_change_shift">L’orologio è passato da %1$s a %2$s tra %3$s e %4$s: il tuo ultimo allenamento o notte con l’ora vecchia e il primo con quella nuova.</string>
+    <string name="clock_change_start_doubled">Il giorno prima è disegnato con %1$s e questo con %2$s, quindi le sue prime %3$s compaiono anche alla fine del giorno prima.</string>
+    <string name="clock_change_start_missing">Il giorno prima è disegnato con %1$s e questo con %2$s, quindi le %3$s prima del suo inizio non compaiono nel grafico di nessun giorno.</string>
+    <string name="clock_change_marked">Sotto il grafico, il colore segna dove è cambiata l’ora e il grigio le ore mostrate due volte. I totali giornalieri contano ogni misurazione una volta.</string>
     <string name="settings_max_hr">Frequenza cardiaca massima</string>
     <string name="settings_max_hr_auto">Dai tuoi dati</string>
     <string name="settings_max_hr_body">Definisce le soglie dei minuti attivi e le zone di frequenza cardiaca dei tuoi allenamenti. Ogni stima può scostarsi dal tuo vero massimo di 10 bpm o più; un valore da un test è il migliore.</string>

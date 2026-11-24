@@ -1,5 +1,10 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import java.time.ZoneOffset
+import de.steppicrew.healthconnectview.health.ClockShift
+import androidx.compose.ui.platform.LocalLocale
+import java.time.format.DateTimeFormatter
+import de.steppicrew.healthconnectview.health.ClockChange
 import de.steppicrew.healthconnectview.ui.components.HeatmapLegend
 import de.steppicrew.healthconnectview.ui.components.heatmapColors
 import de.steppicrew.healthconnectview.ui.components.heatmapValue
@@ -225,6 +230,12 @@ internal fun SpanSummary(
 
         if (data.listPending || data.contributingApps.isNotEmpty()) {
             SourceSection(data = data, onSelectSource = onSelectSource)
+        }
+
+        // Open, not behind the "i": without it doubled hours read as a repeat in the data, and a
+        // 25-hour day as broken.
+        if (data.clockChanges.isNotEmpty() || data.clockShifts.isNotEmpty()) {
+            ClockChangeNotes(data.clockChanges, data.clockShifts, data.drawsChart, data.day)
         }
 
         // A session type draws its sessions rather than a series: see SessionTimeline for why
@@ -600,3 +611,79 @@ private val TileDetailData.expectsTrend: Boolean
 
 /** The aggregate for a session type comes back in hours; durations format from minutes. */
 internal const val MINUTES_PER_HOUR = 60
+
+/**
+ * Where the clock changed and between which times, then how the drawn days meet where their
+ * clocks differ, then what the chart marks.
+ */
+@Composable
+private fun ClockChangeNotes(changes: List<ClockChange>, shifts: List<ClockShift>, chart: Boolean, day: LocalDate?) {
+    val offset = DateTimeFormatter.ofPattern("O", LocalLocale.current.platformLocale)
+    fun length(duration: java.time.Duration) =
+        duration.toMinutes().let { if (it % 60 == 0L) Formatting.hours(it / 60) else Formatting.duration(duration) }
+    // A moment on its own clock, as it was lived, with the date where it is not the day shown.
+    fun moment(time: Instant, zone: ZoneOffset): String {
+        val date = time.atOffset(zone).toLocalDate()
+        val clock = Formatting.time(time, zone) + " " + offset.format(zone)
+        return if (date == day) clock else Formatting.dayAndMonth(time, zone) + " " + clock
+    }
+    // What happened stays open; how the drawn days meet folds behind the "i" once the windows
+    // already say it -- without a window it is all there is, so it stays open then.
+    val edges = changes.filter { it.kind != ClockChange.Kind.SUMMER_TIME }
+    val folded = shifts.isNotEmpty() && edges.isNotEmpty()
+    val explanation = rememberExplanation("clock_change")
+    InfoGroup {
+        InfoTitle(stringResource(R.string.clock_change_title), explanation.takeIf { folded })
+        shifts.forEach { shift ->
+            Text(
+                stringResource(
+                    R.string.clock_change_shift,
+                    offset.format(shift.from),
+                    offset.format(shift.to),
+                    moment(shift.window.start, shift.from),
+                    moment(shift.window.endInclusive, shift.to),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 2.dp),
+            )
+        }
+        changes.filter { it.kind == ClockChange.Kind.SUMMER_TIME }.forEach { change ->
+            Text(
+                stringResource(
+                    if (chart) R.string.clock_change_shaded else R.string.clock_change,
+                    offset.format(change.from),
+                    offset.format(change.to),
+                    length(change.dayLength ?: change.length),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 2.dp),
+            )
+        }
+        if (chart && (shifts.isNotEmpty() || edges.any { it.onChart })) {
+            Text(
+                stringResource(R.string.clock_change_marked),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 2.dp),
+            )
+        }
+        if (!folded || explanation.expanded == true) {
+            edges.forEach { change ->
+                Text(
+                    stringResource(
+                        when (change.kind) {
+                            ClockChange.Kind.DOUBLED_AT_END -> R.string.clock_change_end_doubled
+                            ClockChange.Kind.MISSING_AFTER -> R.string.clock_change_end_missing
+                            ClockChange.Kind.DOUBLED_AT_START -> R.string.clock_change_start_doubled
+                            else -> R.string.clock_change_start_missing
+                        },
+                        offset.format(change.from),
+                        offset.format(change.to),
+                        length(change.length),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = 2.dp),
+                )
+            }
+        }
+    }
+}

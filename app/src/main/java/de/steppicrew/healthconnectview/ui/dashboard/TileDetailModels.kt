@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.ClockShift
+import de.steppicrew.healthconnectview.health.ClockChange
 import de.steppicrew.healthconnectview.health.YearHeatmap
 import de.steppicrew.healthconnectview.health.HrvStanding
 import de.steppicrew.healthconnectview.health.HrvSummary
@@ -207,6 +209,12 @@ data class TileDetailData(
      * keeps the fixed axis exactly as before.
      */
     val extent: ClosedRange<Instant>? = null,
+    /** Where the day's clock changes -- summer time, a flight -- so it is not a plain 24 hours. */
+    val clockChanges: List<ClockChange> = emptyList(),
+    /** Where the clock actually changed on a travel day, as far as workouts and nights tell. */
+    val clockShifts: List<ClockShift> = emptyList(),
+    /** The day shown, where a day is: a change's time on another day says which. */
+    val day: java.time.LocalDate? = null,
     /**
      * True when the curve's intermediate values were rescaled to match the deduplicated
      * total. The end value and the timing are right; the points between are apportioned.
