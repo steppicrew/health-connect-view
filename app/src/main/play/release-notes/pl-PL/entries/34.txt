@@ -1,0 +1,1 @@
+1.12.1 — Dni podróży i czas letni: dzień ze zmianą czasu mówi, kiedy zegar się zmienił – między Twoim ostatnim treningiem lub nocą według starego czasu a pierwszym według nowego – i zaznacza ten odcinek pod wykresem; godziny pokazane przez dwa dni są szare.

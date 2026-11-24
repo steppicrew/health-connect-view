@@ -1,0 +1,1 @@
+1.12.1 — Seyahat günleri ve yaz saati: saatin değiştiği bir gün, değişimin ne zaman olduğunu – eski saatteki son antrenmanınız veya geceniz ile yeni saatteki ilki arasında – gösterir ve bu aralığı grafiğin altında işaretler; iki günün gösterdiği saatler gri işaretlenir.

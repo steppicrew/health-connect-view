@@ -98,6 +98,7 @@ fun WhatsNewCard(modifier: Modifier = Modifier) {
 
 /** Each versionCode with new features, and the text naming them; see [WhatsNewCard]. */
 private val WHATS_NEW: Map<Int, Int> = mapOf(
+    34 to R.string.whats_new_34,
     33 to R.string.whats_new_33,
     32 to R.string.whats_new_32,
     30 to R.string.whats_new_30,

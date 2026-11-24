@@ -1,0 +1,1 @@
+1.12.1 — Dias de viagem e horário de verão: um dia em que o relógio mudou diz quando – entre seu último treino ou noite no horário antigo e o primeiro no novo – e marca esse trecho sob o gráfico; horas mostradas em dois dias ficam em cinza.

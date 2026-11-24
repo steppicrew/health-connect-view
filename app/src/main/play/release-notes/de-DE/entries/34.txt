@@ -1,0 +1,1 @@
+1.12.1 — Reisetage und Sommerzeit: Ein Tag mit Zeitumstellung sagt, wann die Uhr wechselte – zwischen Ihrem letzten Training oder Ihrer letzten Nacht auf der alten Uhrzeit und dem ersten auf der neuen – und markiert diesen Abschnitt unter dem Diagramm; Stunden, die zwei Tage zeigen, sind grau markiert.

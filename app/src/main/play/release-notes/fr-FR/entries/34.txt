@@ -1,0 +1,1 @@
+1.12.1 — Jours de voyage et heure d’été : un jour où l’heure a changé indique quand – entre votre dernier entraînement ou votre dernière nuit à l’ancienne heure et le premier à la nouvelle – et marque cette plage sous le graphique ; les heures que deux jours affichent sont marquées en gris.

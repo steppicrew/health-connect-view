@@ -1,0 +1,1 @@
+1.12.1 — Hari perjalanan dan waktu musim panas: hari dengan pergantian jam menunjukkan kapan jam berubah – antara latihan atau malam terakhir Anda pada jam lama dan yang pertama pada jam baru – dan menandai bagian itu di bawah grafik; jam yang ditampilkan dua hari ditandai abu-abu.
