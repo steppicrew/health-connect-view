@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.active
 
+import de.steppicrew.healthconnectview.health.resolveMaxHeartRate
 import android.app.Application
 import android.util.Log
 import androidx.health.connect.client.permission.HealthPermission
@@ -11,8 +12,6 @@ import de.steppicrew.healthconnectview.health.ActiveMinutes
 import de.steppicrew.healthconnectview.health.HealthRepository
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.health.MaxSource
-import de.steppicrew.healthconnectview.health.maxHeartRate
-import de.steppicrew.healthconnectview.health.observedMaxHeartRate
 import de.steppicrew.healthconnectview.health.readActiveMinutes
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.util.catching
@@ -58,8 +57,7 @@ suspend fun readActive(
     val started = System.currentTimeMillis()
     return catching {
         val settings = settingsStore.settings.first()
-        val (max, source) = maxHeartRate(settings.maxRule, settings.maxHeartRate, settings.birthYear, { repository.observedMaxHeartRate(last) })
-            ?: return ActiveRead.NoMax
+        val (max, source) = repository.resolveMaxHeartRate(settings, last) ?: return ActiveRead.NoMax
         Log.i(TAG, "maximum in ${System.currentTimeMillis() - started} ms")
         val typeName = HeartRateRecord::class.simpleName.orEmpty()
         val preferred = when (val chosen = sourceStore.selections.first()[typeName]) {

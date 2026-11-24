@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.session
 
+import de.steppicrew.healthconnectview.health.resolveMaxHeartRate
+import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
 import android.app.Application
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -26,7 +28,6 @@ import de.steppicrew.healthconnectview.health.coversDistance
 import de.steppicrew.healthconnectview.health.heartZones
 import de.steppicrew.healthconnectview.health.maxHeartRate
 import de.steppicrew.healthconnectview.health.needsData
-import de.steppicrew.healthconnectview.health.observedMaxHeartRate
 import de.steppicrew.healthconnectview.settings.SettingsStore
 import de.steppicrew.healthconnectview.health.movementDuring
 import de.steppicrew.healthconnectview.ui.components.SessionLine
@@ -198,8 +199,8 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
                 .toMap()
         }
         val zones = catching { dashboardStore.config.first() }.getOrNull()
-            ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones
-            ?: spec?.tile?.defaultZones
+            ?.tiles?.firstOrNull { it.typeName == spec?.type?.simpleName }?.effectiveZones(KnownMaxHeartRate.bpm.value)
+            ?: spec?.tile?.defaultZonesFor(KnownMaxHeartRate.bpm.value)
 
         // A workout's zones, where the rule needs no data; the data's peak takes seconds to
         // read, so a rule that needs it follows in [observedZones].
@@ -248,8 +249,7 @@ class SessionViewModel(application: Application) : AndroidViewModel(application)
         val points = detail?.heartRate ?: return null
         if (detail.session.kind != Session.Kind.EXERCISE || detail.heartZones != null) return null
         val settings = catching { settingsStore.settings.first() }.getOrNull() ?: return null
-        val (max, source) = maxHeartRate(settings.maxRule, settings.maxHeartRate, settings.birthYear, { repository.observedMaxHeartRate() })
-            ?: return null
+        val (max, source) = repository.resolveMaxHeartRate(settings) ?: return null
         return heartZones(points, detail.movement?.breaks.orEmpty(), max, source)
     }
 

@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import de.steppicrew.healthconnectview.health.resolveMaxHeartRate
 import de.steppicrew.healthconnectview.ui.SharedDate
 import de.steppicrew.healthconnectview.ui.active.readActive
 import de.steppicrew.healthconnectview.settings.SettingsStore
@@ -189,6 +193,15 @@ class DashboardViewModel(
 
     init {
         refresh()
+        // The heart-rate tile's default bands follow the maximum heart rate, and the data's
+        // peak takes seconds: found beside the tiles, never before them, and again when the
+        // rule, the year of birth or the number changes.
+        viewModelScope.launch {
+            settingsStore.settings
+                .map { Triple(it.maxRule, it.maxHeartRate, it.birthYear) }
+                .distinctUntilChanged()
+                .collectLatest { catching { repository.resolveMaxHeartRate(settingsStore.settings.first()) } }
+        }
     }
 
     /** The load in flight, cancelled when a newer one starts. */

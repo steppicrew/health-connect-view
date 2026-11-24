@@ -164,6 +164,13 @@ data class TileSpec(
      */
     val occasional: Boolean = false,
 ) {
+    /**
+     * [defaultZones] against a maximum heart rate: the heart-rate defaults follow it, every
+     * other type's stay as they are.
+     */
+    fun defaultZonesFor(maxHeartRate: Int?): ValueZones? =
+        if (defaultZones === ValueZones.DEFAULT_HEART_RATE) ValueZones.heartRate(maxHeartRate) else defaultZones
+
     enum class Form {
         /** The day's total or latest reading, as a number. The fallback any type can use. */
         NUMBER,

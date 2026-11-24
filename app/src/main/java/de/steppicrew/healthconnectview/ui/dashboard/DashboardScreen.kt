@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
 import de.steppicrew.healthconnectview.ui.SharedDate
 import de.steppicrew.healthconnectview.health.Span
 import de.steppicrew.healthconnectview.dashboard.Tile
@@ -201,12 +202,13 @@ fun DashboardScreen(
         )
     }
 
+    val maxHeartRate by KnownMaxHeartRate.bpm.collectAsStateWithLifecycle()
     editingZonesFor?.let { editing ->
         ZonesDialog(
             typeName = editing.tile.typeName,
             displayName = stringResource(editing.spec.displayNameRes),
             currentZones = editing.tile.zones,
-            defaultZones = editing.spec.tile.defaultZones,
+            defaultZones = editing.spec.tile.defaultZonesFor(maxHeartRate),
             onDismiss = { editingZonesFor = null },
             onSave = viewModel::setZones,
         )

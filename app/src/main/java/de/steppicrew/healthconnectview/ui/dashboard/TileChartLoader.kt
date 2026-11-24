@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
 import de.steppicrew.healthconnectview.health.dayZone
 import java.time.ZoneId
 import java.time.LocalDateTime
@@ -1293,8 +1294,9 @@ internal class TileChartLoader(
     private suspend fun zonesFor(spec: RecordTypeSpec<*>?): ValueZones? {
         val name = spec?.type?.simpleName ?: return null
         val stored = catching { dashboardStore.config.first() }.getOrNull()
-        return stored?.tiles?.firstOrNull { it.typeName == name }?.effectiveZones
-            ?: spec.tile.defaultZones
+        val max = KnownMaxHeartRate.bpm.value
+        return stored?.tiles?.firstOrNull { it.typeName == name }?.effectiveZones(max)
+            ?: spec.tile.defaultZonesFor(max)
     }
 
     /**

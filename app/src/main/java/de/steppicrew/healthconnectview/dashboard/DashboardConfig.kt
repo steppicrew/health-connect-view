@@ -127,8 +127,11 @@ data class Tile(
     val goalRule: AdaptiveGoalRule?
         get() = spec?.tile?.adaptiveRule?.takeIf { adaptiveGoal }?.copy(floor = goalFloor)
 
-    /** The value bands actually in force: the user's override, else the type's default. */
-    val effectiveZones: ValueZones? get() = zones ?: spec?.tile?.defaultZones
+    /**
+     * The value bands actually in force: the user's override, else the type's default, which
+     * for heart rate follows [maxHeartRate].
+     */
+    fun effectiveZones(maxHeartRate: Int?): ValueZones? = zones ?: spec?.tile?.defaultZonesFor(maxHeartRate)
 
     /** Whether the tile spans more than one cell, which is what the options need room for. */
     val isLarge: Boolean get() = width > 1 || height > 1

@@ -56,4 +56,14 @@ class ValueZonesTest {
     fun `empty bounds still yield a colour`() {
         assertEquals(ValueZones.ZONE_COLORS.first(), ValueZones(emptyList()).colorFor(120.0))
     }
+
+    @Test
+    fun `heart-rate bands follow the maximum above 100`() {
+        // The owner's maximum gives the bands they described; 170 at 54 moves the upper two.
+        assertEquals(listOf(50.0, 100.0, 141.0, 161.0), ValueZones.heartRate(201).bounds)
+        assertEquals(listOf(50.0, 100.0, 119.0, 136.0), ValueZones.heartRate(170).bounds)
+        assertEquals(ValueZones.DEFAULT_HEART_RATE, ValueZones.heartRate(null))
+        // A maximum so low that the bands would fall below 100 is not believed.
+        assertEquals(ValueZones.DEFAULT_HEART_RATE, ValueZones.heartRate(140))
+    }
 }

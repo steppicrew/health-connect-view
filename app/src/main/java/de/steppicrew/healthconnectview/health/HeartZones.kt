@@ -1,5 +1,9 @@
 package de.steppicrew.healthconnectview.health
 
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import de.steppicrew.healthconnectview.settings.Settings
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.time.TimeRangeFilter
 import de.steppicrew.healthconnectview.registry.Point
@@ -109,6 +113,26 @@ suspend fun maxHeartRate(
         }
     }
 }
+
+/**
+ * The maximum heart rate the chosen rule gave last, for the heart-rate tile's default bands,
+ * which must not wait seconds for the data's peak. In memory only: where it comes from the
+ * data it is derived from readings, and nothing derived from them is kept on disk.
+ */
+object KnownMaxHeartRate {
+    private val known = MutableStateFlow<Int?>(null)
+    val bpm: StateFlow<Int?> = known.asStateFlow()
+
+    fun record(bpm: Int?) {
+        known.value = bpm
+    }
+}
+
+/** [maxHeartRate] by the rule in [settings], reading the data's peak where it needs it, and recorded in [KnownMaxHeartRate]. */
+suspend fun HealthRepository.resolveMaxHeartRate(settings: Settings, today: LocalDate = LocalDate.now()): Pair<Int, MaxSource>? =
+    maxHeartRate(settings.maxRule, settings.maxHeartRate, settings.birthYear, { observedMaxHeartRate(today) }, today)
+        // Only today's: a past window's maximum would set today's bands by a younger age.
+        .also { if (today == LocalDate.now()) KnownMaxHeartRate.record(it?.first) }
 
 /** Whether the rule reads the data's peak, which takes Health Connect seconds. */
 val MaxRule.needsData: Boolean get() = this == MaxRule.DATA || this == MaxRule.HIGHER

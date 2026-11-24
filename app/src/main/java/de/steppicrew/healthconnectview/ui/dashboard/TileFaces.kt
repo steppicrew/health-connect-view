@@ -1,5 +1,7 @@
 package de.steppicrew.healthconnectview.ui.dashboard
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.steppicrew.healthconnectview.health.KnownMaxHeartRate
 import de.steppicrew.healthconnectview.ui.components.LocalClockZone
 import androidx.compose.runtime.CompositionLocalProvider
 import de.steppicrew.healthconnectview.health.endZone
@@ -94,8 +96,10 @@ internal fun TileBody(
 ) {
     val progress = data.progress
     val workoutTap = onOpenWorkout?.let { WorkoutTap(it, onLongClick) }
-    // The user's bands where they set them; the type's defaults otherwise.
-    val zones = data.tile.effectiveZones
+    // The user's bands where they set them; the type's defaults otherwise, recoloured when the
+    // maximum heart rate they follow is found.
+    val maxHeartRate by KnownMaxHeartRate.bpm.collectAsStateWithLifecycle()
+    val zones = data.tile.effectiveZones(maxHeartRate)
 
     // A day of a one-value-a-day type has no chart to draw, so its tile falls back to the value.
     val chart = data.chart?.takeIf { it.drawsChart || it.sessions.isNotEmpty() }

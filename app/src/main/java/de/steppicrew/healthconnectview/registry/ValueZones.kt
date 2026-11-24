@@ -80,5 +80,22 @@ data class ValueZones(
          * 100-140, 140-160, 160+. Only a default -- the whole point is that they are editable.
          */
         val DEFAULT_HEART_RATE = ValueZones(listOf(50.0, 100.0, 140.0, 160.0))
+
+        /**
+         * The heart-rate defaults against a maximum heart rate: the upper two boundaries at 70
+         * and 80 % of it, which is where 140 and 160 sat for the owner's maximum of 201 -- the
+         * bands were described from it. A fixed 160 is nearly the whole of a maximum of 170 at
+         * 54. Below 50 and above 100 at rest keep their meaning at any age, so those two stay.
+         * [DEFAULT_HEART_RATE] where the maximum is not known.
+         */
+        fun heartRate(max: Int?): ValueZones {
+            val hard = max?.let { Math.round(it * HARD_SHARE).toDouble() }
+            val maximum = max?.let { Math.round(it * MAXIMUM_SHARE).toDouble() }
+            if (hard == null || maximum == null || hard <= 100.0 || maximum <= hard) return DEFAULT_HEART_RATE
+            return ValueZones(listOf(50.0, 100.0, hard, maximum))
+        }
+
+        private const val HARD_SHARE = 0.7
+        private const val MAXIMUM_SHARE = 0.8
     }
 }
