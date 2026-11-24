@@ -1025,5 +1025,6 @@
     <string name="active_max_age">La tua frequenza cardiaca massima: %1$s bpm, dal tuo anno di nascita (208 − 0,7 × età).</string>
     <string name="active_max_data">La tua frequenza cardiaca massima: %1$s bpm, il terzo picco mensile più alto dell’ultimo anno nei tuoi dati.</string>
     <string name="active_max_data_alone">Le soglie si basano su %1$s bpm, la frequenza cardiaca più alta nei tuoi dati. Se dai raramente il massimo, il tuo vero massimo è più alto e si contano troppi minuti. Inserisci il tuo anno di nascita o il tuo massimo nelle Impostazioni.</string>
+    <string name="active_workout_days">Un punto indica un giorno con un allenamento; tocca la sua barra per vedere gli allenamenti.</string>
     <string name="active_counted">Dalla frequenza cardiaca registrata da %1$s, che copre il %2$s di questi giorni. Fuori da un allenamento un minuto conta solo se vicino sono stati registrati passi o distanza.</string>
 </resources>

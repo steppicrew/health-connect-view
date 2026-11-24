@@ -1055,5 +1055,6 @@
     <string name="active_max_age">Twoje tętno maksymalne: %1$s bpm, z roku urodzenia (208 − 0,7 × wiek).</string>
     <string name="active_max_data">Twoje tętno maksymalne: %1$s bpm, trzeci najwyższy miesięczny szczyt z ostatniego roku w Twoich danych.</string>
     <string name="active_max_data_alone">Progi opierają się na %1$s bpm, najwyższym tętnie w Twoich danych. Jeśli rzadko dajesz z siebie wszystko, Twoje prawdziwe maksimum jest wyższe i liczy się za dużo minut. Podaj rok urodzenia lub swoje maksimum w Ustawieniach.</string>
+    <string name="active_workout_days">Kropka oznacza dzień z treningiem; dotknij jego słupka, aby zobaczyć treningi.</string>
     <string name="active_counted">Na podstawie tętna zapisanego przez %1$s, które obejmuje %2$s tych dni. Poza treningiem minuta liczy się tylko wtedy, gdy w pobliżu zapisano kroki lub dystans.</string>
 </resources>

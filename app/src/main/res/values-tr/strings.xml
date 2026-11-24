@@ -995,5 +995,6 @@
     <string name="active_max_age">Maksimum nabzınız: %1$s bpm, doğum yılınızdan (208 − 0,7 × yaş).</string>
     <string name="active_max_data">Maksimum nabzınız: %1$s bpm, verilerinizde son bir yılın üçüncü en yüksek aylık zirvesi.</string>
     <string name="active_max_data_alone">Sınırlar, verilerinizdeki en yüksek nabız olan %1$s bpm’ye dayanır. Nadiren sınıra zorluyorsanız gerçek maksimumunuz daha yüksektir ve çok fazla dakika sayılır. Ayarlar’da doğum yılınızı veya maksimumunuzu girin.</string>
+    <string name="active_workout_days">Nokta, antrenman yapılan bir günü gösterir; antrenmanları görmek için çubuğuna dokunun.</string>
     <string name="active_counted">%1$s tarafından kaydedilen nabızdan; bu günlerin %2$s kadarını kapsar. Antrenman dışında bir dakika yalnızca yakınında adım veya mesafe kaydı varsa sayılır.</string>
 </resources>

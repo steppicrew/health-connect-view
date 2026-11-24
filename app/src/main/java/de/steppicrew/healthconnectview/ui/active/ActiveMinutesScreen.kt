@@ -1,5 +1,10 @@
 package de.steppicrew.healthconnectview.ui.active
 
+import java.time.LocalDate
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,6 +86,7 @@ fun ActiveMinutesScreen(
     onBack: () -> Unit,
     onOpenPermissions: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenWorkouts: (LocalDate) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     OnResume { viewModel.onResume() }
@@ -129,7 +135,7 @@ fun ActiveMinutesScreen(
                 )
                 ActiveRead.Empty -> Message(stringResource(R.string.active_none), body)
                 ActiveRead.Failed -> Message(stringResource(R.string.tile_failed), body)
-                is ActiveRead.Data -> Figures(read, state.span, body, onOpenSettings)
+                is ActiveRead.Data -> Figures(read, state.span, body, onOpenSettings, onOpenWorkouts)
             }
         }
     }
@@ -143,7 +149,7 @@ private fun Message(text: String, modifier: Modifier) {
 }
 
 @Composable
-private fun Figures(read: ActiveRead.Data, span: Span, modifier: Modifier, onOpenSettings: () -> Unit) {
+private fun Figures(read: ActiveRead.Data, span: Span, modifier: Modifier, onOpenSettings: () -> Unit, onOpenWorkouts: (LocalDate) -> Unit) {
     val minutes = read.minutes
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val weeks = minutes.days.chunked(DAYS_PER_WEEK)
@@ -165,8 +171,16 @@ private fun Figures(read: ActiveRead.Data, span: Span, modifier: Modifier, onOpe
             color = muted,
         )
 
-        ActiveBars(minutes.days, span, Modifier.padding(top = 16.dp).fillMaxWidth().height(BAR_HEIGHT.dp))
+        ActiveBars(minutes.days, span, Modifier.padding(top = 16.dp).fillMaxWidth().height(BAR_HEIGHT.dp), onOpenDay = onOpenWorkouts)
         Legend(minutes)
+        if (minutes.days.any { it.workout }) {
+            Text(
+                text = stringResource(R.string.active_workout_days),
+                style = MaterialTheme.typography.bodySmall,
+                color = muted,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
 
         if (span != Span.WEEK) {
             InfoGroup {
@@ -276,39 +290,93 @@ private fun Legend(minutes: ActiveMinutes) {
  * A bar a day, moderate at the bottom and vigorous above, on a scale of the fullest day. Under
  * a week the days are named; four weeks are too narrow for that. The figures beside say the
  * same, so a screen reader skips the drawing.
+ *
+ * With [onOpenDay] -- the screen, not the tile -- it gets a scale of guide lines in minutes, a
+ * week each day's minutes above its bar, and a dot under each day a workout touched, whose bar
+ * opens that day's workouts. The tile keeps the bare bars: an axis would take half of it.
  */
 @Composable
-internal fun ActiveBars(days: List<ActiveDay>, span: Span, modifier: Modifier) {
+internal fun ActiveBars(days: List<ActiveDay>, span: Span, modifier: Modifier, onOpenDay: ((LocalDate) -> Unit)? = null) {
     val moderate = MaterialTheme.colorScheme.primary
     val vigorous = MaterialTheme.colorScheme.tertiary
     val track = MaterialTheme.colorScheme.surfaceVariant
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val top = days.maxOfOrNull { it.moderate + it.vigorous }?.coerceAtLeast(MIN_SCALE) ?: MIN_SCALE
     val locale = LocalLocale.current.platformLocale
+    val scaled = onOpenDay != null
+    val axis = if (scaled) AXIS_WIDTH.dp else 0.dp
+    val measurer = rememberTextMeasurer()
+    val labelStyle = MaterialTheme.typography.labelSmall.copy(color = muted)
+    val guides = if (scaled) guideLines(top) else emptyList()
+    // "1h", not "1h 0m": a guide sits on a round step.
+    val guideLabels = guides.map { if (it % 60 == 0) Formatting.hours(it / 60L) else Formatting.duration(Duration.ofMinutes(it.toLong())) }
     Column(modifier.clearAndSetSemantics { }) {
-        Canvas(Modifier.fillMaxWidth().weight(1f)) {
-            val slot = size.width / days.size
-            val bar = slot * BAR_SHARE
-            days.forEachIndexed { index, day ->
-                val x = index * slot + (slot - bar) / 2
-                fun rect(color: Color, from: Int, minutes: Int) {
-                    if (minutes <= 0) return
-                    val y0 = size.height * (1f - from.toFloat() / top)
-                    val h = size.height * minutes.toFloat() / top
-                    drawRoundRect(color, Offset(x, y0 - h), Size(bar, h), CornerRadius(2.dp.toPx()))
+        // Left to right like the drawing below, which does not mirror in a right-to-left language.
+        if (scaled && span == Span.WEEK) CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(Modifier.fillMaxWidth().padding(start = axis, bottom = 4.dp)) {
+                days.forEach { day ->
+                    val total = day.moderate + day.vigorous
+                    Text(
+                        text = if (total > 0) Formatting.duration(Duration.ofMinutes(total.toLong())) else "",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = muted,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        modifier = Modifier.weight(1f),
+                    )
                 }
-                drawRect(track, Offset(x, size.height - 1.dp.toPx()), Size(bar, 1.dp.toPx()))
-                rect(moderate, 0, day.moderate)
-                rect(vigorous, day.moderate, day.vigorous)
             }
         }
-        // Left to right like the drawing above, which does not mirror in a right-to-left language.
+        Canvas(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .then(
+                    if (onOpenDay == null) {
+                        Modifier
+                    } else {
+                        Modifier.pointerInput(days) {
+                            detectTapGestures { tap ->
+                                val slot = (size.width - axis.toPx()) / days.size
+                                val day = days.getOrNull(((tap.x - axis.toPx()) / slot).toInt().takeIf { tap.x >= axis.toPx() } ?: -1)
+                                if (day?.workout == true) onOpenDay(day.date)
+                            }
+                        }
+                    },
+                ),
+        ) {
+            val left = axis.toPx()
+            val dots = if (scaled) DOT_SPACE.dp.toPx() else 0f
+            val height = size.height - dots
+            val slot = (size.width - left) / days.size
+            val bar = slot * BAR_SHARE
+            guides.forEachIndexed { index, minutes ->
+                val y = height * (1f - minutes.toFloat() / top)
+                drawLine(track, Offset(left, y), Offset(size.width, y), strokeWidth = 1.dp.toPx())
+                val label = measurer.measure(guideLabels[index], labelStyle)
+                drawText(label, topLeft = Offset(left - 4.dp.toPx() - label.size.width, y - label.size.height / 2))
+            }
+            days.forEachIndexed { index, day ->
+                val x = left + index * slot + (slot - bar) / 2
+                fun rect(color: Color, from: Int, minutes: Int) {
+                    if (minutes <= 0) return
+                    val y0 = height * (1f - from.toFloat() / top)
+                    val h = height * minutes.toFloat() / top
+                    drawRoundRect(color, Offset(x, y0 - h), Size(bar, h), CornerRadius(2.dp.toPx()))
+                }
+                drawRect(track, Offset(x, height - 1.dp.toPx()), Size(bar, 1.dp.toPx()))
+                rect(moderate, 0, day.moderate)
+                rect(vigorous, day.moderate, day.vigorous)
+                if (scaled && day.workout) drawCircle(muted, DOT_RADIUS.dp.toPx(), Offset(x + bar / 2, height + dots / 2))
+            }
+        }
         if (span == Span.WEEK) CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
+            Row(Modifier.fillMaxWidth().padding(start = axis, top = 4.dp)) {
                 days.forEach { day ->
                     Text(
                         text = day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, locale),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = muted,
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         modifier = Modifier.weight(1f),
@@ -318,6 +386,18 @@ internal fun ActiveBars(days: List<ActiveDay>, span: Span, modifier: Modifier) {
         }
     }
 }
+
+/** Guide lines at a round step, two or three of them below [top]. */
+private fun guideLines(top: Int): List<Int> {
+    val step = GUIDE_STEPS.firstOrNull { top / it <= MAX_GUIDES } ?: GUIDE_STEPS.last()
+    return generateSequence(step) { it + step }.takeWhile { it <= top }.toList()
+}
+
+private val GUIDE_STEPS = listOf(15, 30, 60, 90, 120, 180, 240, 360)
+private const val MAX_GUIDES = 3
+private const val AXIS_WIDTH = 40
+private const val DOT_SPACE = 10
+private const val DOT_RADIUS = 2.5f
 
 private val SPANS = listOf(Span.WEEK, Span.MONTH)
 private val ZONE: ZoneId get() = ZoneId.systemDefault()

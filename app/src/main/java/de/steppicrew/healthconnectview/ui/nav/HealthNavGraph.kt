@@ -1,5 +1,6 @@
 package de.steppicrew.healthconnectview.ui.nav
 
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import android.net.Uri
 import android.util.Log
 import de.steppicrew.healthconnectview.health.Session
@@ -327,6 +328,10 @@ fun HealthNavGraph(
                 onBack = { navController.popBackStack() },
                 onOpenPermissions = { navController.navigate(Routes.PERMISSIONS) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                // Onto this screen, so Back returns to it.
+                onOpenWorkouts = { date ->
+                    navController.navigate(Routes.tileDetail(ExerciseSessionRecord::class.simpleName.orEmpty(), date.toString()))
+                },
             )
         }
 

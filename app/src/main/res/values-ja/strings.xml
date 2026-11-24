@@ -965,5 +965,6 @@
     <string name="active_max_age">最大心拍数：%1$s bpm（生まれ年から、208 − 0.7 × 年齢）。</string>
     <string name="active_max_data">最大心拍数：%1$s bpm（データ内の過去1年間で3番目に高い月間ピーク）。</string>
     <string name="active_max_data_alone">しきい値はデータ内の最高心拍数%1$s bpmに基づいています。全力を出すことが少なければ実際の最大値はもっと高く、時間が多く数えられます。設定で生まれ年か最大心拍数を入力してください。</string>
+    <string name="active_workout_days">点はワークアウトのある日を示します。棒をタップするとワークアウトを表示します。</string>
     <string name="active_counted">%1$sが記録した心拍数に基づきます（この期間の%2$sをカバー）。ワークアウト外では、近くに歩数や距離の記録がある分のみ計算します。</string>
 </resources>

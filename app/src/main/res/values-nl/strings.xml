@@ -995,5 +995,6 @@
     <string name="active_max_age">Je maximale hartslag: %1$s bpm, uit je geboortejaar (208 − 0,7 × leeftijd).</string>
     <string name="active_max_data">Je maximale hartslag: %1$s bpm, de op twee na hoogste maandpiek van het afgelopen jaar in je gegevens.</string>
     <string name="active_max_data_alone">De grenzen komen van %1$s bpm, de hoogste hartslag in je gegevens. Ga je zelden tot het uiterste, dan ligt je echte maximum hoger en tellen er te veel minuten. Vul bij Instellingen je geboortejaar of je maximum in.</string>
+    <string name="active_workout_days">Een stip markeert een dag met een training; tik op de balk om de trainingen te zien.</string>
     <string name="active_counted">Uit de hartslag die %1$s heeft vastgelegd, die %2$s van deze dagen beslaat. Buiten een training telt een minuut alleen als er in de buurt stappen of afstand zijn vastgelegd.</string>
 </resources>

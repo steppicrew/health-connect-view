@@ -997,5 +997,6 @@
     <string name="active_max_age">Ihre maximale Herzfrequenz: %1$s bpm, aus Ihrem Geburtsjahr (208 − 0,7 × Alter).</string>
     <string name="active_max_data">Ihre maximale Herzfrequenz: %1$s bpm, der dritthöchste Monatshöchstwert des letzten Jahres in Ihren Daten.</string>
     <string name="active_max_data_alone">Die Grenzen beruhen auf %1$s bpm, der höchsten Herzfrequenz in Ihren Daten. Gehen Sie selten ans Limit, liegt Ihr echtes Maximum höher, und es zählen zu viele Minuten. Geben Sie in den Einstellungen Ihr Geburtsjahr oder Ihr Maximum an.</string>
+    <string name="active_workout_days">Ein Punkt markiert einen Tag mit Training; tippen Sie auf seinen Balken, um die Trainings zu sehen.</string>
     <string name="active_counted">Aus der Herzfrequenz, die %1$s erfasst hat; sie deckt %2$s dieser Tage ab. Außerhalb eines Trainings zählt eine Minute nur, wenn in ihrer Nähe Schritte oder Strecke erfasst wurden.</string>
 </resources>

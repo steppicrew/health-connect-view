@@ -1033,5 +1033,6 @@
     <string name="active_max_age">Your maximum heart rate: %1$s bpm, from your year of birth (208 − 0.7 × age).</string>
     <string name="active_max_data">Your maximum heart rate: %1$s bpm, the third-highest monthly peak of the past year in your data.</string>
     <string name="active_max_data_alone">The limits come from %1$s bpm, the highest heart rate in your data. If you rarely go all out, your real maximum is higher and too many minutes count. Enter your year of birth or your maximum in Settings.</string>
+    <string name="active_workout_days">A dot marks a day with a workout; tap its bar to see the workouts.</string>
     <string name="active_counted">From the heart rate %1$s recorded, which covers %2$s of these days. Outside a workout a minute counts only where steps or distance were recorded near it.</string>
 </resources>

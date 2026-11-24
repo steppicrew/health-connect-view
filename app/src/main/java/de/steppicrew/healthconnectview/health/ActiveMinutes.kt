@@ -45,7 +45,8 @@ data class ActiveMinutes(
     val weighted: Int get() = days.sumOf { it.weighted }
 }
 
-data class ActiveDay(val date: LocalDate, val moderate: Int, val vigorous: Int) {
+/** [workout] is whether a workout touched the day, so its bar can open the day's workouts. */
+data class ActiveDay(val date: LocalDate, val moderate: Int, val vigorous: Int, val workout: Boolean = false) {
     val weighted: Int get() = moderate + 2 * vigorous
 }
 
@@ -145,7 +146,7 @@ fun activeMinutes(
     val days = generateSequence(first) { it.plusDays(1) }.takeWhile { !it.isAfter(last) }.map { date ->
         val from = Duration.between(start, date.atStartOfDay(zone).toInstant()).toMinutes().toInt()
         val to = Duration.between(start, date.plusDays(1).atStartOfDay(zone).toInstant()).toMinutes().toInt()
-        ActiveDay(date, (from until to).sumOf { moderate[it] }, (from until to).sumOf { vigorous[it] })
+        ActiveDay(date, (from until to).sumOf { moderate[it] }, (from until to).sumOf { vigorous[it] }, (from until to).any { inWorkout[it] })
     }.toList()
     return ActiveMinutes(days, limits, writer, leftOut, if (minutes == 0) 0.0 else covered.toDouble() / minutes, unconfirmed)
 }

@@ -965,5 +965,6 @@
     <string name="active_max_age">Detak jantung maksimum Anda: %1$s bpm, dari tahun lahir Anda (208 − 0,7 × usia).</string>
     <string name="active_max_data">Detak jantung maksimum Anda: %1$s bpm, puncak bulanan tertinggi ketiga dalam setahun terakhir di data Anda.</string>
     <string name="active_max_data_alone">Batas ini berasal dari %1$s bpm, detak jantung tertinggi di data Anda. Jika Anda jarang berusaha penuh, maksimum Anda yang sebenarnya lebih tinggi dan terlalu banyak menit yang dihitung. Masukkan tahun lahir atau maksimum Anda di Setelan.</string>
+    <string name="active_workout_days">Titik menandai hari dengan latihan; ketuk batangnya untuk melihat latihannya.</string>
     <string name="active_counted">Dari detak jantung yang dicatat %1$s, yang mencakup %2$s dari hari-hari ini. Di luar latihan, satu menit hanya dihitung jika ada langkah atau jarak tercatat di dekatnya.</string>
 </resources>

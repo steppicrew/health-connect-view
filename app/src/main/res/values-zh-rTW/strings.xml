@@ -965,5 +965,6 @@
     <string name="active_max_age">您的最大心率：%1$s bpm，依出生年份（208 − 0.7 × 年齡）。</string>
     <string name="active_max_data">您的最大心率：%1$s bpm，即您資料中過去一年第三高的月度峰值。</string>
     <string name="active_max_data_alone">門檻基於 %1$s bpm，即您資料中的最高心率。如果您很少全力以赴，您的真實最大值更高，計入的分鐘會過多。請在「設定」中填寫出生年份或最大心率。</string>
+    <string name="active_workout_days">圓點標示有運動的日子；輕觸其長條即可查看運動。</string>
     <string name="active_counted">依據 %1$s 記錄的心率，涵蓋這幾天的 %2$s。在運動以外，只有附近記錄了步數或距離的分鐘才會計入。</string>
 </resources>
