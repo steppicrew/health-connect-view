@@ -40,6 +40,52 @@ SECTIONS = [
 ]
 
 
+# Each translation under its own name, and the BCP 47 tag browsers send: Android's folder names
+# say pt-rBR and zh-rCN, and keep Indonesian under its old code `in`.
+LANGUAGES = {
+    "en": ("en", "English"),
+    "ar": ("ar", "العربية"),
+    "de": ("de", "Deutsch"),
+    "es": ("es", "Español"),
+    "fr": ("fr", "Français"),
+    "hi": ("hi", "हिन्दी"),
+    "in": ("id", "Bahasa Indonesia"),
+    "it": ("it", "Italiano"),
+    "ja": ("ja", "日本語"),
+    "ko": ("ko", "한국어"),
+    "nl": ("nl", "Nederlands"),
+    "pl": ("pl", "Polski"),
+    "pt-rBR": ("pt-BR", "Português (Brasil)"),
+    "ru": ("ru", "Русский"),
+    "tr": ("tr", "Türkçe"),
+    "zh-rCN": ("zh-CN", "简体中文"),
+    "zh-rTW": ("zh-TW", "繁體中文"),
+}
+RTL = {"ar"}
+
+# GitHub Pages serves files as they are, with no choice by the browser's language, so the English
+# root page picks the translation itself, once. A link to English carries ?lang=en and stays.
+CHOOSE = """<script>
+(function () {
+  if (location.search.indexOf("lang=") >= 0) return;
+  var pages = %s;
+  var wanted = navigator.languages || [navigator.language || ""];
+  for (var i = 0; i < wanted.length; i++) {
+    var tag = wanted[i].toLowerCase();
+    if (tag.indexOf("zh") === 0) tag = /hant|tw|hk|mo/.test(tag) ? "zh-tw" : "zh-cn";
+    var base = tag.split("-")[0], page = tag in pages ? pages[tag] : pages[base];
+    // Another region of the same language before English: pt-PT reads the Brazilian page.
+    for (var key in pages) if (page === undefined && key.split("-")[0] === base) page = pages[key];
+    if (page !== undefined) { if (page) location.replace(page); return; }
+  }
+})();
+</script>"""
+
+
+def page_name(lang: str) -> str:
+    return "index.html" if lang == "en" else f"index.{lang}.html"
+
+
 def strings_for(lang_dir: Path) -> dict[str, str]:
     path = lang_dir / "strings.xml"
     if not path.exists():
@@ -54,7 +100,7 @@ def strings_for(lang_dir: Path) -> dict[str, str]:
     return out
 
 
-def render(values: dict[str, str], lang: str, updated: str) -> str:
+def render(values: dict[str, str], lang: str, updated: str, languages: list[str]) -> str:
     def get(key: str) -> str:
         return values.get(key, "")
 
@@ -74,12 +120,31 @@ def render(values: dict[str, str], lang: str, updated: str) -> str:
     heading = get("privacy_title") or "Privacy"
     summary = get("privacy_summary")
 
+    tag = LANGUAGES[lang][0]
+    # Every language under its own name; this one as text, English with ?lang=en so the root
+    # page's choice does not send the reader straight back.
+    links = " · ".join(
+        f'<span aria-current="page">{html.escape(LANGUAGES[other][1])}</span>' if other == lang
+        else f'<a href="{page_name(other)}{"?lang=en" if other == "en" else ""}" hreflang="{LANGUAGES[other][0]}" '
+             f'lang="{LANGUAGES[other][0]}">{html.escape(LANGUAGES[other][1])}</a>'
+        for other in languages
+    )
+    alternates = "\n".join(
+        f'<link rel="alternate" hreflang="{LANGUAGES[other][0]}" href="{page_name(other)}">' for other in languages
+    )
+    pages = "{" + ", ".join(
+        f'"{LANGUAGES[other][0].lower()}": "{"" if other == "en" else page_name(other)}"' for other in languages
+    ) + "}"
+    choose = CHOOSE % pages if lang == "en" else ""
+
     return f"""<!DOCTYPE html>
-<html lang="{lang}">
+<html lang="{tag}"{' dir="rtl"' if lang in RTL else ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(app)} — {html.escape(heading)}</title>
+{alternates}
+{choose}
 <style>
   :root {{
     color-scheme: light dark;
@@ -101,6 +166,7 @@ def render(values: dict[str, str], lang: str, updated: str) -> str:
   footer {{ margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
             font-size: .9rem; color: var(--muted); }}
   a {{ color: var(--accent); }}
+  nav {{ margin-top: .75rem; line-height: 1.9; }}
 </style>
 </head>
 <body>
@@ -109,6 +175,7 @@ def render(values: dict[str, str], lang: str, updated: str) -> str:
 {chr(10).join(body)}
   <footer>
     <p>Last updated: {updated} · <a href="{SOURCE}">{SOURCE.removeprefix("https://")}</a></p>
+    <nav aria-label="Language">{links}</nav>
   </footer>
 </body>
 </html>
@@ -174,23 +241,25 @@ def main() -> int:
         print("error: no default strings found", file=sys.stderr)
         return 1
 
-    written = []
     # index.html is the default locale; each translation gets its own file.
-    (out_dir / "index.html").write_text(render(default, "en", updated), encoding="utf-8")
-    written.append(out_dir / "index.html")
-
+    translations = {"en": default}
     for lang_dir in sorted(RES.glob("values-*")):
         lang = lang_dir.name.removeprefix("values-")
-        if lang in {"night"}:
-            continue
         values = strings_for(lang_dir)
-        if not values:
+        if lang not in LANGUAGES or not values:
             continue
         # Fall back per key, matching Android: a partially translated locale shows English
         # for what it has not translated rather than an empty section.
-        merged = {**default, **values}
-        target = out_dir / f"index.{lang}.html"
-        target.write_text(render(merged, lang, updated), encoding="utf-8")
+        translations[lang] = {**default, **values}
+    missing = {d.name.removeprefix("values-") for d in RES.glob("values-*") if strings_for(d).get("privacy_title")} - LANGUAGES.keys()
+    if missing:
+        print(f"error: no name for {', '.join(sorted(missing))} in LANGUAGES", file=sys.stderr)
+        return 1
+
+    written = []
+    for lang, values in translations.items():
+        target = out_dir / page_name(lang)
+        target.write_text(render(values, lang, updated, list(translations)), encoding="utf-8")
         written.append(target)
 
     for path in written:
