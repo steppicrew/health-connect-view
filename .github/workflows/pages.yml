@@ -31,7 +31,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # The whole history, so the page is dated by the last change to its own text, not by
           # whichever release last touched strings.xml.
@@ -40,8 +40,8 @@ jobs:
         run: |
           updated="$(git log -1 --format=%cs -G 'name="privacy_' -- 'app/src/main/res/values*/strings.xml' scripts/privacy-page.py)"
           python3 scripts/privacy-page.py _site "$updated"
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
