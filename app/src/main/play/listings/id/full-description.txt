@@ -50,6 +50,6 @@ Semua yang di atas gratis dan akan tetap gratis. Pro, sekali beli, membuka:
 
 OPEN SOURCE
 
-Kode sumbernya terbuka untuk umum, jadi setiap pernyataan dapat diperiksa.
+Setiap pernyataan dapat diperiksa di kode sumber: github.com/steppicrew/health-connect-view
 
 Ada fitur yang Anda perlukan? Kirim email ke hcview@steppicrew.de.

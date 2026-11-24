@@ -50,6 +50,6 @@ Alles oben ist kostenlos und bleibt es. Pro schaltet mit einem einmaligen Kauf f
 
 OPEN SOURCE
 
-Der Quellcode ist öffentlich, jede Aussage ist also überprüfbar.
+Jede Aussage ist im Quellcode prüfbar: github.com/steppicrew/health-connect-view
 
 Fehlt Ihnen eine Funktion? Schreiben Sie an hcview@steppicrew.de.

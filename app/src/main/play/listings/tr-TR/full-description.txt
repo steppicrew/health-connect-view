@@ -50,6 +50,6 @@ Yukarıdakilerin hepsi ücretsizdir ve öyle kalacaktır. Pro, tek seferlik bir 
 
 AÇIK KAYNAK
 
-Kaynak kodu herkese açıktır; yukarıdaki her iddia doğrulanabilir.
+Her iddia kaynak kodunda doğrulanabilir: github.com/steppicrew/health-connect-view
 
 Eksik bir özellik mi var? hcview@steppicrew.de adresine yazın.

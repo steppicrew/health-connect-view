@@ -52,6 +52,6 @@ PRO — 買い切り、定期購入なし
 
 オープンソース
 
-ソースコードは公開されているため、上記の記述はすべて確認できます。
+上記の記述はすべて公開ソースコードで確認できます: github.com/steppicrew/health-connect-view
 
 欲しい機能がありましたら、hcview@steppicrew.de までメールでお知らせください。

@@ -52,6 +52,6 @@ Aankopen gaan met je Google-account mee naar een nieuwe telefoon.
 
 OPEN SOURCE
 
-De broncode is openbaar, dus elke bewering hierboven kan worden gecontroleerd.
+Alles is te controleren in de code: github.com/steppicrew/health-connect-view
 
 Mis je een functie? Mail naar hcview@steppicrew.de.

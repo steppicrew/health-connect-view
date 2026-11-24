@@ -50,6 +50,6 @@ Tutto quanto sopra è gratuito e lo resterà. Pro, un acquisto unico, sblocca:
 
 OPEN SOURCE
 
-Il codice sorgente è pubblico, quindi ogni affermazione è verificabile.
+Ogni affermazione è verificabile nel codice: github.com/steppicrew/health-connect-view
 
 Ti manca una funzione? Scrivi a hcview@steppicrew.de.

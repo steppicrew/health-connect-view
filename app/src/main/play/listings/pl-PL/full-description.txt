@@ -52,6 +52,6 @@ Zakupy przechodzą z Twoim kontem Google na nowy telefon.
 
 OTWARTE ŹRÓDŁO
 
-Kod źródłowy jest publiczny, więc każde powyższe twierdzenie można sprawdzić.
+Każde twierdzenie można sprawdzić w kodzie: github.com/steppicrew/health-connect-view
 
 Brakuje Ci jakiejś funkcji? Napisz na hcview@steppicrew.de.

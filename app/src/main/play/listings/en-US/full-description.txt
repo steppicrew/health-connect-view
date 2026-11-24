@@ -50,6 +50,6 @@ Everything above is free and stays free. Pro is a single in-app purchase that un
 
 OPEN SOURCE
 
-The source code is public, so every claim above can be verified.
+Every claim above can be checked in the public source: github.com/steppicrew/health-connect-view
 
 Missing a feature? Write to hcview@steppicrew.de.
