@@ -49,7 +49,12 @@ play {
 
 android {
     namespace = "de.steppicrew.healthconnectview"
-    compileSdk = 37
+    // 37.1: the Compose libraries from BOM 2026.11 compile against it. targetSdk stays 37.
+    compileSdk {
+        version = release(37) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = "de.steppicrew.healthconnectview"

@@ -219,7 +219,8 @@ settings while backgrounded.
 
 ## Build and tooling
 
-- `compileSdk`/`targetSdk` 37, `minSdk` 26 (mandated by the connect-client AAR). Bytecode
+- `compileSdk` 37.1 (Compose from BOM 2026.11 needs it), `targetSdk` 37, `minSdk` 26 (mandated by
+  the connect-client AAR). Bytecode
   targets JVM 17 — do not set 25, AGP does not support it.
 - AGP 9 **bundles the Kotlin plugin**; applying `org.jetbrains.kotlin.android` fails the build.
 - `allWarningsAsError` and lint `warningsAsErrors` are on, with no baseline. Fix warnings
