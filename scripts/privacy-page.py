@@ -17,6 +17,7 @@ on GitHub cannot fall behind either: it did once, a month of exports and routes 
 date moves only when the text does, so regenerating an unchanged policy leaves the file alone.
 """
 import html
+import json
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -63,9 +64,51 @@ LANGUAGES = {
 }
 RTL = {"ar"}
 
-# No script picks the reader's language: Play rejected the policy URL as "indirect" (25.11.2026)
-# when the root page switched to a translation by itself. The link must land on the policy text;
-# every page lists the other languages instead.
+# Offered, in its own words, to a reader whose browser prefers that language.
+HINTS = {
+    "en": "This page is also available in English.",
+    "ar": "هذه الصفحة متاحة أيضًا باللغة العربية.",
+    "de": "Diese Seite gibt es auch auf Deutsch.",
+    "es": "Esta página también está disponible en español.",
+    "fr": "Cette page est également disponible en français.",
+    "hi": "यह पेज हिन्दी में भी उपलब्ध है।",
+    "in": "Halaman ini juga tersedia dalam Bahasa Indonesia.",
+    "it": "Questa pagina è disponibile anche in italiano.",
+    "ja": "このページは日本語でもご覧いただけます。",
+    "ko": "이 페이지는 한국어로도 보실 수 있습니다.",
+    "nl": "Deze pagina is ook beschikbaar in het Nederlands.",
+    "pl": "Ta strona jest dostępna również po polsku.",
+    "pt-rBR": "Esta página também está disponível em português.",
+    "ru": "Эта страница также доступна на русском языке.",
+    "tr": "Bu sayfa Türkçe olarak da mevcuttur.",
+    "zh-rCN": "本页面也提供简体中文版。",
+    "zh-rTW": "本頁面也提供繁體中文版。",
+}
+
+# The script only *offers* the reader's language; it never navigates. Play rejected the policy
+# URL as "indirect" (25.11.2026) while the root page switched to a translation by itself: the
+# link must land on the policy text. A reader arriving from our own language list chose already.
+OFFER = """<script>
+(function () {
+  if (document.referrer.indexOf(location.origin) === 0) return;
+  var pages = %s, here = %s;
+  var wanted = navigator.languages || [navigator.language || ""];
+  for (var i = 0; i < wanted.length; i++) {
+    var tag = wanted[i].toLowerCase();
+    if (tag.indexOf("zh") === 0) tag = /hant|tw|hk|mo/.test(tag) ? "zh-tw" : "zh-cn";
+    var base = tag.split("-")[0], key = tag in pages ? tag : base in pages ? base : undefined;
+    // Another region of the same language before the next preference: pt-PT reads the Brazilian page.
+    for (var k in pages) if (key === undefined && k.split("-")[0] === base) key = k;
+    if (key === undefined) continue;
+    if (key === here) return;
+    var p = pages[key], a = document.createElement("a"), hint = document.getElementById("hint");
+    a.href = p[0]; a.textContent = p[1]; a.lang = key; a.hreflang = key;
+    if (p[2]) a.dir = "rtl";
+    hint.appendChild(a); hint.hidden = false;
+    return;
+  }
+})();
+</script>"""
 
 
 def page_name(lang: str) -> str:
@@ -114,6 +157,12 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
              f'lang="{LANGUAGES[other][0]}">{html.escape(LANGUAGES[other][1])}</a>'
         for other in languages
     )
+    offer = OFFER % (
+        json.dumps({
+            LANGUAGES[other][0].lower(): [page_name(other), HINTS[other], other in RTL] for other in languages
+        }, ensure_ascii=False),
+        json.dumps(tag.lower()),
+    )
     alternates = "\n".join(
         f'<link rel="alternate" hreflang="{LANGUAGES[other][0]}" href="{page_name(other)}">' for other in languages
     )
@@ -146,17 +195,20 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
   footer {{ margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
             font-size: .9rem; color: var(--muted); }}
   a {{ color: var(--accent); }}
-  nav {{ margin-top: .75rem; line-height: 1.9; }}
+  nav {{ margin: 0 0 1.5rem; font-size: .9rem; line-height: 1.9; color: var(--muted); }}
+  .hint {{ margin: 0 0 1.5rem; padding: .6rem .9rem; border: 1px solid var(--rule); border-radius: .5rem; }}
 </style>
 </head>
 <body>
+  <nav aria-label="Language">{links}</nav>
+  <p class="hint" id="hint" hidden></p>
   <h1>{html.escape(app)}</h1>
   <p class="lede">{html.escape(summary)}</p>
 {chr(10).join(body)}
   <footer>
     <p>Last updated: {updated} · <a href="{SOURCE}">{SOURCE.removeprefix("https://")}</a></p>
-    <nav aria-label="Language">{links}</nav>
   </footer>
+{offer}
 </body>
 </html>
 """
