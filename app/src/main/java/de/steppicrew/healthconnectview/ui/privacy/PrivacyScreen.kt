@@ -58,6 +58,7 @@ private fun PrivacyText(modifier: Modifier) {
 
         listOf(
             R.string.privacy_summary to null,
+            R.string.privacy_data_title to R.string.privacy_data_body,
             R.string.privacy_no_network_title to R.string.privacy_no_network_body,
             R.string.privacy_read_only_title to R.string.privacy_read_only_body,
             R.string.privacy_storage_title to R.string.privacy_storage_body,

@@ -745,14 +745,16 @@
     <string name="chart_source_readings_weekly">Ölçümlerin haftalık ortalamaları, gün başına bir uygulama</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
-    <string name="privacy_title">Gizlilik</string>
+    <string name="privacy_title">Gizlilik politikası</string>
     <string name="privacy_summary">Bu uygulama, Health Connect’in cihazınızda zaten sakladığı sağlık verilerini size gösterir. Bir görüntüleyicidir: okur ve gösterir. Tek istisna, sizin başlattığınız bir dışa aktarmadır.</string>
+    <string name="privacy_data_title">Uygulamanın okuduğu veriler ve amacı</string>
+    <string name="privacy_data_body">İzninizle uygulama, Health Connect tarafından cihazınızda tutulan sağlık ve fitness verilerini okur: etkinlik (adımlar, mesafe, egzersiz oturumları ve rotalar gibi), vücut ölçümleri, döngü takibi, beslenme ve sıvı alımı, uyku, farkındalık ve yaşamsal değerler (kalp atış hızı, tansiyon ve kandaki oksijen gibi). Bu verileri tek bir amaçla kullanır: bunları size bu cihazda listeler, grafikler ve özetler olarak ve kendi başlattığınız dışa aktarmalarda göstermek. Geliştirici bunların hiçbirini toplamaz: hiçbir şey geliştiriciye veya başka birine gönderilmez ve hiçbir şey reklam ya da profil oluşturma için kullanılmaz.</string>
     <string name="privacy_no_network_title">Verileriniz cihazınızdan asla çıkmaz</string>
     <string name="privacy_no_network_body">Uygulamanın hiçbir internet izni yok. Bu, nasıl davrandığımıza dair bir söz değil: uygulamanın herhangi bir ağ bağlantısı kurmasını Android’in kendisi engeller. Verilerinizin gönderileceği bir sunucu yoktur; hiçbir türde analiz, izleme veya reklam kodu da yoktur.</string>
     <string name="privacy_read_only_title">Salt okunur erişim</string>
     <string name="privacy_read_only_body">Yalnızca okuma izinleri istenir; bu yüzden uygulama sağlık kayıtlarınızı değiştiremez veya silemez. Hangi veri türlerine izin vereceğinize her tür için ayrı olarak siz karar verirsiniz ve varsayılan olarak hiçbir şey seçili değildir.</string>
-    <string name="privacy_storage_title">Uygulama hiçbir şey saklamaz</string>
-    <string name="privacy_storage_body">Sağlık verileri yalnızca siz onlara bakarken bellekte tutulur ve uygulama bunları asla kendiliğinden depolamaya yazmaz. Tek istisna bir dışa aktarmadır: istediğinizde dosya, Android’in kendi kaydetme penceresinde seçtiğiniz yere yazılır ve uygulama hiçbir kopya tutmaz. Görüntülediğiniz veya yazdırdığınız bir rapor doğrudan bellekten Android’in yazdırma önizlemesine gider, oradan da yalnızca sizin gönderdiğiniz yere. Bunun dışında uygulama yalnızca görünüm ayarlarınızı tutar. “Ayarları dışa aktar” ile bunları seçtiğiniz bir dosyaya kaydedebilirsiniz; dosyada sağlık verisi bulunmaz. Yedekleme ve cihaz aktarımı devre dışıdır; bu yüzden buluta hiçbir şey kopyalanmaz.</string>
+    <string name="privacy_storage_title">Verilerin ne kadar süre saklandığı</string>
+    <string name="privacy_storage_body">Geliştirici hiçbir veri toplamaz, bu nedenle hiçbir veri saklamaz. Sağlık verileri yalnızca siz onlara bakarken bellekte tutulur ve uygulama bunları asla kendiliğinden depolamaya yazmaz. Tek istisna bir dışa aktarmadır: istediğinizde dosya, Android’in kendi kaydetme penceresinde seçtiğiniz yere yazılır ve uygulama hiçbir kopya tutmaz. Görüntülediğiniz veya yazdırdığınız bir rapor doğrudan bellekten Android’in yazdırma önizlemesine gider, oradan da yalnızca sizin gönderdiğiniz yere. Bunun dışında uygulama yalnızca görünüm ayarlarınızı tutar. “Ayarları dışa aktar” ile bunları seçtiğiniz bir dosyaya kaydedebilirsiniz; dosyada sağlık verisi bulunmaz. Yedekleme ve cihaz aktarımı devre dışıdır; bu yüzden buluta hiçbir şey kopyalanmaz. Görüntüleme ayarlarınız, uygulamayı kaldırana veya depolama alanını temizleyene kadar cihazınızda kalır.</string>
     <string name="privacy_sharing_title">Paylaşım yok</string>
     <string name="privacy_sharing_body">Sağlık verileriniz geliştirici dahil hiç kimseyle paylaşılmaz. Hiçbir üçüncü taraf SDK bunları almaz. Dışa aktarılan bir dosya sizindir: oradan nereye gideceği size kalmıştır.</string>
     <string name="permission_routes_title">Tüm egzersiz rotaları</string>
@@ -817,8 +819,8 @@
     <string name="route_unavailable">Rota okunamadı.</string>
     <string name="privacy_routes_title">Egzersiz rotaları</string>
     <string name="privacy_routes_body">Rota, bir oturum sırasında bulunduğunuz yerlerdir; Health Connect’in tuttuğu en hassas veridir. Uygulama bir rotayı yalnızca o oturumu açtığınızda ve yalnızca siz o rotaya veya tüm rotalara izin verdikten sonra gösterir. Rotayı haritasız çizer ve yalnızca siz bakarken tutar. Bir rota uygulamadan yalnızca sizin dışa aktardığınız ve seçtiğiniz yere kaydedilen bir GPX dosyası olarak çıkar.</string>
-    <string name="privacy_control_title">Kontrol sizde</string>
-    <string name="privacy_control_body">Erişimi istediğiniz zaman Health Connect ayarlarından geri alabilirsiniz. Uygulamayı kaldırmak, tuttuğu her şeyi kaldırır; çünkü ayarlarınız dışında hiçbir şey tutmaz.</string>
+    <string name="privacy_control_title">Verilerinizi silme</string>
+    <string name="privacy_control_body">Geliştiriciden silmesini isteyeceğiniz bir şey yoktur, çünkü hakkınızdaki hiçbir veri geliştiriciye ulaşmaz. Uygulamanın sakladığı şeyi, yani görüntüleme ayarlarınızı kaldırmak için Android ayarlarında uygulamanın depolama alanını temizleyin veya uygulamayı kaldırın. Sağlık verileri Health Connect içinde tutulur: bunları Health Connect ayarlarından veya verileri yazan uygulamadan silebilirsiniz. Bu uygulama yalnızca okuduğu için bunları silemez. Uygulamanın erişimini istediğiniz zaman Health Connect ayarlarından geri alabilirsiniz. Sorular: hcview@steppicrew.de.</string>
     <string name="privacy_purchases_title">Satın almalar</string>
     <string name="privacy_purchases_body">İsteğe bağlı ücretli özellikler tamamen Google Play tarafından yürütülür. Uygulama ödeme bilgilerinizi asla görmez ve satın alma kontrolleri ağ üzerinden değil, Play Store uygulaması aracılığıyla yapılır.</string>
     <string name="privacy_contact_title">Kaynak ve iletişim</string>

@@ -719,14 +719,16 @@
     <string name="chart_source_readings_weekly">測定値の 1 週間の平均（1 日につき 1 つのアプリ）</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
-    <string name="privacy_title">プライバシー</string>
+    <string name="privacy_title">プライバシー ポリシー</string>
     <string name="privacy_summary">このアプリは、ヘルスコネクトがすでにデバイスに保存している健康データを表示します。ビューアーなので、読み取って表示するだけです。唯一の例外は、ご自身で開始するエクスポートです。</string>
+    <string name="privacy_data_title">アプリが読み取るデータとその目的</string>
+    <string name="privacy_data_body">アプリは、許可を得たうえで、ヘルスコネクトがデバイスに保存している健康とフィットネスのデータを読み取ります。対象は、アクティビティ（歩数、距離、エクササイズ セッション、ルートなど）、身体測定値、月経周期の記録、栄養と水分補給、睡眠、マインドフルネス、バイタル（心拍数、血圧、血中酸素など）です。これらのデータの用途は一つだけです。このデバイス上でリスト、グラフ、概要として表示すること、そしてご自身で開始するエクスポートです。デベロッパーはこれらのデータを一切収集しません。デベロッパーにもほかの誰にも何も送信されず、広告やプロファイリングに使われることもありません。</string>
     <string name="privacy_no_network_title">データがデバイスの外に出ることはありません</string>
     <string name="privacy_no_network_body">このアプリにはインターネットの権限が一切ありません。これは私たちの振る舞いについての約束ではなく、Android そのものがアプリのネットワーク接続を防いでいます。データを送信するサーバーはなく、分析、トラッキング、広告のコードも一切ありません。</string>
     <string name="privacy_read_only_title">読み取り専用のアクセス</string>
     <string name="privacy_read_only_body">読み取り権限のみをリクエストするため、アプリが健康記録を変更したり削除したりすることはできません。許可するデータタイプは 1 つずつご自身で選び、初期状態では何も選択されていません。</string>
-    <string name="privacy_storage_title">アプリは何も保存しません</string>
-    <string name="privacy_storage_body">健康データは表示している間だけメモリに保持され、アプリが自らストレージに書き込むことはありません。唯一の例外はエクスポートです。エクスポートを指示すると、Android の保存ダイアログで選んだ場所にファイルが書き込まれ、アプリはコピーを残しません。表示または印刷するレポートは、メモリから直接 Android の印刷プレビューに渡され、そこから送られるのはご自身が送った先だけです。それ以外にアプリが保存するのは表示設定のみです。「設定をエクスポート」で、選んだファイルに保存することもできます。健康データは含まれません。バックアップとデバイス間の転送は無効になっているため、クラウドに何もコピーされません。</string>
+    <string name="privacy_storage_title">データの保持期間</string>
+    <string name="privacy_storage_body">デベロッパーはデータを収集しないため、何も保持しません。健康データは表示している間だけメモリに保持され、アプリが自らストレージに書き込むことはありません。唯一の例外はエクスポートです。エクスポートを指示すると、Android の保存ダイアログで選んだ場所にファイルが書き込まれ、アプリはコピーを残しません。表示または印刷するレポートは、メモリから直接 Android の印刷プレビューに渡され、そこから送られるのはご自身が送った先だけです。それ以外にアプリが保存するのは表示設定のみです。「設定をエクスポート」で、選んだファイルに保存することもできます。健康データは含まれません。バックアップとデバイス間の転送は無効になっているため、クラウドに何もコピーされません。表示設定は、アプリをアンインストールするかストレージを消去するまでデバイスに残ります。</string>
     <string name="privacy_sharing_title">共有はしません</string>
     <string name="privacy_sharing_body">健康データは開発者を含め、誰とも共有されません。サードパーティの SDK がデータを受け取ることもありません。エクスポートしたファイルはあなたのものであり、その後の扱いはあなた次第です。</string>
     <string name="permission_routes_title">すべてのエクササイズ ルート</string>
@@ -791,8 +793,8 @@
     <string name="route_unavailable">ルートを読み取れませんでした。</string>
     <string name="privacy_routes_title">エクササイズ ルート</string>
     <string name="privacy_routes_body">ルートとは、セッション中にいた場所で、ヘルスコネクトが保持する中で最も機密性の高いデータです。アプリがルートを表示するのは、そのセッションを開いたときだけで、しかもそのルートまたはすべてのルートを許可した後に限ります。地図なしでルートを描き、見ている間だけ保持します。ルートがアプリの外に出るのは、ご自身でエクスポートし、選んだ場所に保存した GPX ファイルとしてのみです。</string>
-    <string name="privacy_control_title">いつでもご自身で管理できます</string>
-    <string name="privacy_control_body">アクセスはヘルスコネクトの設定でいつでも取り消せます。アプリをアンインストールすると、アプリが保持するものはすべて削除されます。設定以外は何も保持していないためです。</string>
+    <string name="privacy_control_title">データの削除</string>
+    <string name="privacy_control_body">デベロッパーに削除を依頼する必要があるものはありません。ユーザーに関するデータがデベロッパーに届くことはないためです。アプリが保持している表示設定を削除するには、Android の設定でアプリのストレージを消去するか、アプリをアンインストールしてください。健康データそのものはヘルスコネクトに属しています。ヘルスコネクトの設定、またはデータを書き込んだアプリで削除できます。このアプリは読み取るだけなので、削除することはできません。アプリのアクセスは、ヘルスコネクトの設定でいつでも取り消せます。お問い合わせ: hcview@steppicrew.de</string>
     <string name="privacy_purchases_title">購入</string>
     <string name="privacy_purchases_body">オプションの有料機能は、すべて Google Play が処理します。アプリが支払い情報を見ることはなく、購入の確認はネットワーク経由ではなく Play ストア アプリを通じて行われます。</string>
     <string name="privacy_contact_title">ソースと連絡先</string>

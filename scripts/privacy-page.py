@@ -30,6 +30,7 @@ RES = ROOT / "app/src/main/res"
 
 # Order matters: it is the reading order of the page, and mirrors the in-app screen.
 SECTIONS = [
+    ("privacy_data_title", "privacy_data_body"),
     ("privacy_no_network_title", "privacy_no_network_body"),
     ("privacy_read_only_title", "privacy_read_only_body"),
     ("privacy_storage_title", "privacy_storage_body"),
@@ -196,13 +197,15 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
             font-size: .9rem; color: var(--muted); }}
   a {{ color: var(--accent); }}
   nav {{ margin: 0 0 1.5rem; font-size: .9rem; line-height: 1.9; color: var(--muted); }}
+  .app {{ margin: 0 0 1.5rem; color: var(--fg); font-weight: 600; }}
   .hint {{ margin: 0 0 1.5rem; padding: .6rem .9rem; border: 1px solid var(--rule); border-radius: .5rem; }}
 </style>
 </head>
 <body>
   <nav aria-label="Language">{links}</nav>
   <p class="hint" id="hint" hidden></p>
-  <h1>{html.escape(app)}</h1>
+  <h1>{html.escape(heading)}</h1>
+  <p class="app">{html.escape(app)}</p>
   <p class="lede">{html.escape(summary)}</p>
 {chr(10).join(body)}
   <footer>

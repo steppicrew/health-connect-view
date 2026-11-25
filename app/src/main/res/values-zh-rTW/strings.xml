@@ -719,14 +719,16 @@
     <string name="chart_source_readings_weekly">測量值的每週平均值，每天一個應用程式</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
-    <string name="privacy_title">隱私權</string>
+    <string name="privacy_title">隱私權政策</string>
     <string name="privacy_summary">這個應用程式會向您顯示 Health Connect 已儲存在您裝置上的健康資料。它是檢視器：只讀取和顯示。唯一的例外是您自己啟動的匯出。</string>
+    <string name="privacy_data_title">這個應用程式讀取哪些資料，以及用途</string>
+    <string name="privacy_data_body">經您許可，這個應用程式會讀取 Health Connect 在您裝置上保存的健康與健身資料：活動（例如步數、距離、運動記錄和路線）、身體測量資料、生理期記錄、營養與飲水、睡眠、正念以及生命徵象（例如心率、血壓和血氧）。這個應用程式只將這些資料用於一個目的：在這部裝置上以清單、圖表和摘要的形式向您顯示，以及用於您自行發起的匯出。開發人員不會收集其中任何資料：不會向開發人員或其他任何人傳送任何內容，也不會將任何內容用於廣告或剖析。</string>
     <string name="privacy_no_network_title">您的資料絕不會離開您的裝置</string>
     <string name="privacy_no_network_body">這個應用程式完全沒有網路權限。這不是我們對自身行為的承諾，而是 Android 本身禁止這個應用程式建立任何網路連線。沒有可以傳送您資料的伺服器，也沒有任何分析、追蹤或廣告程式碼。</string>
     <string name="privacy_read_only_title">唯讀存取權</string>
     <string name="privacy_read_only_body">只要求讀取權限，因此這個應用程式無法變更或刪除您的健康記錄。要允許哪些資料類型由您逐一選擇，預設不選取任何項目。</string>
-    <string name="privacy_storage_title">這個應用程式不會儲存任何內容</string>
-    <string name="privacy_storage_body">健康資料只會在您查看時保留在記憶體中，這個應用程式絕不會自行將其寫入儲存空間。唯一的例外是匯出：當您要求匯出時，檔案會寫入您在 Android 內建儲存對話方塊中選擇的位置，這個應用程式不會保留任何副本。您檢視或列印的報告會直接從記憶體送到 Android 內建的列印預覽，之後只會送到您指定的地方。除此之外，這個應用程式只會保留您的顯示設定。您可以透過「匯出設定」將其儲存到您選擇的檔案中，其中不含任何健康資料。備份和裝置間轉移功能已停用，因此不會將任何內容複製到雲端。</string>
+    <string name="privacy_storage_title">資料保留多久</string>
+    <string name="privacy_storage_body">開發人員不收集任何資料，因此也不保留任何資料。健康資料只會在您查看時保留在記憶體中，這個應用程式絕不會自行將其寫入儲存空間。唯一的例外是匯出：當您要求匯出時，檔案會寫入您在 Android 內建儲存對話方塊中選擇的位置，這個應用程式不會保留任何副本。您檢視或列印的報告會直接從記憶體送到 Android 內建的列印預覽，之後只會送到您指定的地方。除此之外，這個應用程式只會保留您的顯示設定。您可以透過「匯出設定」將其儲存到您選擇的檔案中，其中不含任何健康資料。備份和裝置間轉移功能已停用，因此不會將任何內容複製到雲端。您的顯示設定會保留在裝置上，直到您解除安裝這個應用程式或清除其儲存空間。</string>
     <string name="privacy_sharing_title">不分享</string>
     <string name="privacy_sharing_body">您的健康資料絕不會與任何人分享，包括開發人員在內。任何第三方 SDK 都不會收到這些資料。匯出的檔案屬於您：之後的去向由您決定。</string>
     <string name="permission_routes_title">所有運動路線</string>
@@ -791,8 +793,8 @@
     <string name="route_unavailable">無法讀取路線。</string>
     <string name="privacy_routes_title">運動路線</string>
     <string name="privacy_routes_body">路線是您在活動期間所處的位置，是 Health Connect 中最敏感的資料。這個應用程式只會在您開啟該次活動時、且在您允許該路線或所有路線之後才顯示路線。它不使用地圖繪製路線，且只在您查看時保留。路線只會以您自己匯出、儲存到您所選位置的 GPX 檔案形式離開這個應用程式。</string>
-    <string name="privacy_control_title">由您掌控</string>
-    <string name="privacy_control_body">您可以隨時在 Health Connect 設定中撤銷存取權。解除安裝這個應用程式會移除它保留的所有內容，因為除了您的設定之外，它不會保留任何東西。</string>
+    <string name="privacy_control_title">刪除您的資料</string>
+    <string name="privacy_control_body">您不需要要求開發人員刪除任何內容，因為沒有任何關於您的資料會傳到開發人員手上。如要移除這個應用程式保留的內容（也就是您的顯示設定），請在 Android 設定中清除其儲存空間或解除安裝這個應用程式。健康資料本身屬於 Health Connect：您可以在 Health Connect 設定中或在寫入這些資料的應用程式中刪除。這個應用程式只會讀取資料，因此無法刪除。您可以隨時在 Health Connect 設定中撤銷這個應用程式的存取權。如有疑問：hcview@steppicrew.de</string>
     <string name="privacy_purchases_title">購買</string>
     <string name="privacy_purchases_body">選用的付費功能完全由 Google Play 處理。這個應用程式絕不會看到您的付款資料，購買驗證是透過 Play 商店應用程式完成，而不是透過網路。</string>
     <string name="privacy_contact_title">原始碼與聯絡方式</string>

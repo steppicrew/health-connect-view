@@ -719,14 +719,16 @@
     <string name="chart_source_readings_weekly">측정값의 주간 평균, 하루에 앱 하나</string>
 
     <!-- Privacy policy. Every claim here must stay true of the shipped build. -->
-    <string name="privacy_title">개인정보</string>
+    <string name="privacy_title">개인정보처리방침</string>
     <string name="privacy_summary">이 앱은 헬스 커넥트가 이미 기기에 저장한 건강 데이터를 보여 줍니다. 보기 전용 앱으로, 읽고 표시만 합니다. 유일한 예외는 직접 시작하는 내보내기입니다.</string>
+    <string name="privacy_data_title">앱이 읽는 데이터와 그 목적</string>
+    <string name="privacy_data_body">앱은 사용자의 허가를 받아 헬스 커넥트가 기기에 보관하는 건강 및 피트니스 데이터를 읽습니다. 활동(걸음 수, 거리, 운동 세션, 경로 등), 신체 측정값, 생리 주기 기록, 영양 및 수분 섭취, 수면, 마음챙김, 생체 신호(심박수, 혈압, 혈중 산소 등)가 여기에 해당합니다. 앱은 이 데이터를 한 가지 목적으로만 사용합니다. 이 기기에서 목록, 차트, 요약으로 보여 드리고, 사용자가 직접 시작한 내보내기에 담는 것입니다. 개발자는 이 데이터를 전혀 수집하지 않습니다. 개발자나 다른 누구에게도 아무것도 전송되지 않으며, 광고나 프로파일링에 사용되는 것도 없습니다.</string>
     <string name="privacy_no_network_title">데이터는 기기 밖으로 나가지 않습니다</string>
     <string name="privacy_no_network_body">이 앱에는 인터넷 권한이 전혀 없습니다. 이는 저희의 행동에 대한 약속이 아니라, Android 자체가 앱의 모든 네트워크 연결을 막는 것입니다. 데이터를 보낼 서버가 없으며, 분석, 추적, 광고 코드도 전혀 없습니다.</string>
     <string name="privacy_read_only_title">읽기 전용 액세스</string>
     <string name="privacy_read_only_body">읽기 권한만 요청하므로 앱이 건강 기록을 변경하거나 삭제할 수 없습니다. 허용할 데이터 유형은 하나씩 직접 선택하며, 기본으로 선택된 것은 없습니다.</string>
-    <string name="privacy_storage_title">앱은 아무것도 저장하지 않습니다</string>
-    <string name="privacy_storage_body">건강 데이터는 보고 있는 동안에만 메모리에 보관되며, 앱이 스스로 저장소에 쓰는 일은 없습니다. 유일한 예외는 내보내기입니다. 요청하면 Android의 저장 대화상자에서 선택한 위치에 파일이 기록되며, 앱은 사본을 보관하지 않습니다. 보거나 인쇄하는 보고서는 메모리에서 바로 Android의 인쇄 미리보기로 전달되며, 그 이후에는 직접 보낸 곳으로만 갑니다. 그 밖에 앱이 보관하는 것은 표시 설정뿐입니다. ‘설정 내보내기’로 원하는 파일에 저장할 수 있으며, 건강 데이터는 포함되지 않습니다. 백업과 기기 간 전송이 꺼져 있으므로 클라우드로 복사되는 것은 없습니다.</string>
+    <string name="privacy_storage_title">데이터 보관 기간</string>
+    <string name="privacy_storage_body">개발자는 데이터를 수집하지 않으므로 아무것도 보관하지 않습니다. 건강 데이터는 보고 있는 동안에만 메모리에 보관되며, 앱이 스스로 저장소에 쓰는 일은 없습니다. 유일한 예외는 내보내기입니다. 요청하면 Android의 저장 대화상자에서 선택한 위치에 파일이 기록되며, 앱은 사본을 보관하지 않습니다. 보거나 인쇄하는 보고서는 메모리에서 바로 Android의 인쇄 미리보기로 전달되며, 그 이후에는 직접 보낸 곳으로만 갑니다. 그 밖에 앱이 보관하는 것은 표시 설정뿐입니다. ‘설정 내보내기’로 원하는 파일에 저장할 수 있으며, 건강 데이터는 포함되지 않습니다. 백업과 기기 간 전송이 꺼져 있으므로 클라우드로 복사되는 것은 없습니다. 표시 설정은 앱을 삭제하거나 앱 저장소를 지울 때까지 기기에 남습니다.</string>
     <string name="privacy_sharing_title">공유하지 않음</string>
     <string name="privacy_sharing_body">건강 데이터는 개발자를 포함해 누구와도 공유되지 않습니다. 어떤 서드 파티 SDK도 데이터를 받지 않습니다. 내보낸 파일은 사용자의 것이며, 그 이후의 사용은 사용자가 결정합니다.</string>
     <string name="permission_routes_title">모든 운동 경로</string>
@@ -791,8 +793,8 @@
     <string name="route_unavailable">경로를 읽을 수 없습니다.</string>
     <string name="privacy_routes_title">운동 경로</string>
     <string name="privacy_routes_body">경로는 세션 동안 있었던 장소로, 헬스 커넥트가 보관하는 가장 민감한 데이터입니다. 앱은 해당 세션을 열었을 때만, 그리고 그 경로나 모든 경로를 허용한 뒤에만 경로를 표시합니다. 지도 없이 경로를 그리며, 보고 있는 동안에만 보관합니다. 경로는 직접 내보내 선택한 위치에 저장한 GPX 파일로만 앱 밖으로 나갑니다.</string>
-    <string name="privacy_control_title">사용자가 직접 관리</string>
-    <string name="privacy_control_body">헬스 커넥트 설정에서 언제든지 액세스를 취소할 수 있습니다. 앱을 삭제하면 앱이 보관하던 모든 것이 삭제됩니다. 설정 외에는 아무것도 보관하지 않기 때문입니다.</string>
+    <string name="privacy_control_title">데이터 삭제</string>
+    <string name="privacy_control_body">개발자에게 삭제를 요청할 것은 없습니다. 사용자에 관한 데이터가 개발자에게 전달되지 않기 때문입니다. 앱이 보관하는 표시 설정을 지우려면 Android 설정에서 앱 저장소를 지우거나 앱을 삭제하세요. 건강 데이터 자체는 헬스 커넥트에 속합니다. 헬스 커넥트 설정이나 데이터를 기록한 앱에서 삭제할 수 있습니다. 이 앱은 읽기만 하므로 데이터를 삭제할 수 없습니다. 앱의 액세스 권한은 헬스 커넥트 설정에서 언제든지 취소할 수 있습니다. 문의: hcview@steppicrew.de</string>
     <string name="privacy_purchases_title">구매</string>
     <string name="privacy_purchases_body">선택적 유료 기능은 전적으로 Google Play가 처리합니다. 앱은 결제 정보를 볼 수 없으며, 구매 확인은 네트워크가 아니라 Play 스토어 앱을 통해 이루어집니다.</string>
     <string name="privacy_contact_title">소스 및 문의</string>
