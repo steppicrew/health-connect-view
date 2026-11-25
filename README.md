@@ -7,6 +7,9 @@ steps, sleep, heart rate, weight, blood pressure and every other type it support
 Health Connect collects what your watch, scale and fitness apps write, but offers no good way
 to actually look at it. This is that missing viewer: a read-only browser for your own data.
 
+[Get it on Google Play](https://play.google.com/store/apps/details?id=de.steppicrew.healthconnectview)
+· [Privacy policy](https://steppicrew.github.io/health-connect-view/)
+
 ## Why it is different
 
 **It has no internet permission.** Not a promise — a property of the build. Android prevents
@@ -25,6 +28,9 @@ straight into the file you pick in the system's save dialog, and the app keeps n
 report you view or print is built in memory and handed to the system's print preview.
 
 **You choose what to share.** Permissions are requested per data type, nothing preselected.
+
+The [privacy policy](https://steppicrew.github.io/health-connect-view/) says the same in
+every app language; it is the app's own Privacy screen, published from the same strings.
 
 **Totals are correct.** When several apps write the same metric, their records overlap.
 Summing them double-counts, so all totals come from Health Connect's own deduplicating
@@ -132,7 +138,13 @@ Publishing to Play is scripted as well:
 
 `release.sh` refuses a dirty tree or a version already published, and stops unless
 `app/src/main/play/release-notes/<lang>/entries/<versionCode>.txt` exists for every store
-language. The store listing lives beside them in `app/src/main/play/listings/`.
+language. A release with features also needs its dashboard "What's new" card
+(`whats_new_<versionCode>` in every language and an entry in `WHATS_NEW`); one of fixes alone passes `--fixes-only`. The
+store listing lives beside the notes in `app/src/main/play/listings/`.
+
+The privacy page is not part of a release. `.github/workflows/pages.yml` rebuilds it whenever
+a push to main changes the privacy strings and publishes it to GitHub Pages; the English page
+switches to the reader's browser language once, and every page links all the others.
 
 ## Project layout
 
@@ -157,7 +169,8 @@ Elsewhere:
 | `scripts/` | Building, signing, releasing, store assets, the privacy page |
 | `docs/ROADMAP.md` | What was built and why, with the measurements behind the decisions |
 | `docs/FEATURE-IDEAS.md` | Ideas not yet planned |
-| `PRIVACY.md` | The privacy policy, generated from the app's privacy strings by `scripts/privacy-page.py`; published to https://steppicrew.github.io/health-connect-view/ by `.github/workflows/pages.yml` when main is pushed |
+| `PRIVACY.md` | The English privacy policy, generated from the app's privacy strings by `scripts/privacy-page.py --markdown PRIVACY.md` |
+| `.github/workflows/pages.yml` | Builds the privacy page in every language from the same strings and publishes it to [GitHub Pages](https://steppicrew.github.io/health-connect-view/) |
 | `CLAUDE.md` | Working notes: the Health Connect behaviours that were expensive to find |
 
 The registry is the heart of it: one generic `RecordTypeSpec` holding lambdas, keyed by
