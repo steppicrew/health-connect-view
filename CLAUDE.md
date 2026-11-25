@@ -289,7 +289,7 @@ trustworthy for INTERVAL types; verify on the phone.
 `steppicrew` is the user's public handle and is fine in the repo. **Never commit** their real
 name, their personal email address, or absolute `/home/...` paths — this file is public, so
 the forbidden values are deliberately not written out here; read them from the machine's
-global git config. Commit as `steppicrew <google@steppicrew.de>`, set repo-locally, and add no
+global git config. Commit as `steppicrew <hcview@steppicrew.de>`, set repo-locally, and add no
 `Co-Authored-By` trailers.
 
 `.env` holds the keystore path and passwords and is gitignored; `.env.example` is the tracked
