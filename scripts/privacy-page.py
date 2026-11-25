@@ -63,23 +63,9 @@ LANGUAGES = {
 }
 RTL = {"ar"}
 
-# GitHub Pages serves files as they are, with no choice by the browser's language, so the English
-# root page picks the translation itself, once. A link to English carries ?lang=en and stays.
-CHOOSE = """<script>
-(function () {
-  if (location.search.indexOf("lang=") >= 0) return;
-  var pages = %s;
-  var wanted = navigator.languages || [navigator.language || ""];
-  for (var i = 0; i < wanted.length; i++) {
-    var tag = wanted[i].toLowerCase();
-    if (tag.indexOf("zh") === 0) tag = /hant|tw|hk|mo/.test(tag) ? "zh-tw" : "zh-cn";
-    var base = tag.split("-")[0], page = tag in pages ? pages[tag] : pages[base];
-    // Another region of the same language before English: pt-PT reads the Brazilian page.
-    for (var key in pages) if (page === undefined && key.split("-")[0] === base) page = pages[key];
-    if (page !== undefined) { if (page) location.replace(page); return; }
-  }
-})();
-</script>"""
+# No script picks the reader's language: Play rejected the policy URL as "indirect" (25.11.2026)
+# when the root page switched to a translation by itself. The link must land on the policy text;
+# every page lists the other languages instead.
 
 
 def page_name(lang: str) -> str:
@@ -121,21 +107,16 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
     summary = get("privacy_summary")
 
     tag = LANGUAGES[lang][0]
-    # Every language under its own name; this one as text, English with ?lang=en so the root
-    # page's choice does not send the reader straight back.
+    # Every language under its own name; this one as text.
     links = " · ".join(
         f'<span aria-current="page">{html.escape(LANGUAGES[other][1])}</span>' if other == lang
-        else f'<a href="{page_name(other)}{"?lang=en" if other == "en" else ""}" hreflang="{LANGUAGES[other][0]}" '
+        else f'<a href="{page_name(other)}" hreflang="{LANGUAGES[other][0]}" '
              f'lang="{LANGUAGES[other][0]}">{html.escape(LANGUAGES[other][1])}</a>'
         for other in languages
     )
     alternates = "\n".join(
         f'<link rel="alternate" hreflang="{LANGUAGES[other][0]}" href="{page_name(other)}">' for other in languages
     )
-    pages = "{" + ", ".join(
-        f'"{LANGUAGES[other][0].lower()}": "{"" if other == "en" else page_name(other)}"' for other in languages
-    ) + "}"
-    choose = CHOOSE % pages if lang == "en" else ""
 
     return f"""<!DOCTYPE html>
 <html lang="{tag}"{' dir="rtl"' if lang in RTL else ""}>
@@ -144,7 +125,6 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(app)} — {html.escape(heading)}</title>
 {alternates}
-{choose}
 <style>
   :root {{
     color-scheme: light dark;

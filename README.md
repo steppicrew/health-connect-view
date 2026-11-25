@@ -143,8 +143,9 @@ language. A release with features also needs its dashboard "What's new" card
 store listing lives beside the notes in `app/src/main/play/listings/`.
 
 The privacy page is not part of a release. `.github/workflows/pages.yml` rebuilds it whenever
-a push to main changes the privacy strings and publishes it to GitHub Pages; the English page
-switches to the reader's browser language once, and every page links all the others.
+a push to main changes the privacy strings and publishes it to GitHub Pages. Every page links
+all the others, and none switches language by itself: Play rejects a policy URL that does not
+land directly on the policy text.
 
 ## Project layout
 
