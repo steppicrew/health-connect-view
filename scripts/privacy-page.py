@@ -104,7 +104,7 @@ OFFER = """<script>
     if (key === here) return;
     var p = pages[key], a = document.createElement("a"), hint = document.getElementById("hint");
     a.href = p[0]; a.textContent = p[1]; a.lang = key; a.hreflang = key;
-    if (p[2]) a.dir = "rtl";
+    a.dir = p[2] ? "rtl" : "ltr";
     hint.appendChild(a); hint.hidden = false;
     return;
   }
@@ -151,11 +151,10 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
     summary = get("privacy_summary")
 
     tag = LANGUAGES[lang][0]
-    # Every language under its own name; this one as text.
-    links = " · ".join(
-        f'<span aria-current="page">{html.escape(LANGUAGES[other][1])}</span>' if other == lang
-        else f'<a href="{page_name(other)}" hreflang="{LANGUAGES[other][0]}" '
-             f'lang="{LANGUAGES[other][0]}">{html.escape(LANGUAGES[other][1])}</a>'
+    # Every language under its own name. Choosing one is the reader's own click, never a redirect.
+    options = "".join(
+        f'<option value="{page_name(other)}" lang="{LANGUAGES[other][0]}"{" selected" if other == lang else ""}>'
+        f'{html.escape(LANGUAGES[other][1])}</option>'
         for other in languages
     )
     offer = OFFER % (
@@ -164,9 +163,6 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
         }, ensure_ascii=False),
         json.dumps(tag.lower()),
     )
-    alternates = "\n".join(
-        f'<link rel="alternate" hreflang="{LANGUAGES[other][0]}" href="{page_name(other)}">' for other in languages
-    )
 
     return f"""<!DOCTYPE html>
 <html lang="{tag}"{' dir="rtl"' if lang in RTL else ""}>
@@ -174,7 +170,6 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(app)} — {html.escape(heading)}</title>
-{alternates}
 <style>
   :root {{
     color-scheme: light dark;
@@ -196,13 +191,15 @@ def render(values: dict[str, str], lang: str, updated: str, languages: list[str]
   footer {{ margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
             font-size: .9rem; color: var(--muted); }}
   a {{ color: var(--accent); }}
-  nav {{ margin: 0 0 1.5rem; font-size: .9rem; line-height: 1.9; color: var(--muted); }}
+  nav {{ display: flex; justify-content: flex-end; margin: 0 0 1rem; }}
+  select {{ font: inherit; font-size: .9rem; color: var(--fg); background: var(--bg);
+            border: 1px solid var(--rule); border-radius: .4rem; padding: .25rem .5rem; }}
   .app {{ margin: 0 0 1.5rem; color: var(--fg); font-weight: 600; }}
   .hint {{ margin: 0 0 1.5rem; padding: .6rem .9rem; border: 1px solid var(--rule); border-radius: .5rem; }}
 </style>
 </head>
 <body>
-  <nav aria-label="Language">{links}</nav>
+  <nav><select aria-label="Language" onchange="location.href = this.value">{options}</select></nav>
   <p class="hint" id="hint" hidden></p>
   <h1>{html.escape(heading)}</h1>
   <p class="app">{html.escape(app)}</p>
